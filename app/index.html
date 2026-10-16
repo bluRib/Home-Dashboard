@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Dashboard, Link Check</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/link.css">
+</head>
+<body>
+
+<h1>Home Dashboard, link check</h1>
+<div class="sub">Step 5 of BUILD.md. Confirms the Home Assistant pipe before any Encom art is wired in.</div>
+
+<div class="panel">
+  <h2>Connection</h2>
+  <div id="status">
+    <span id="dot"></span>
+    <span id="statusText">Starting</span>
+    <span id="statusDetail"></span>
+  </div>
+  <div class="row">
+    <button id="reconnect">Reconnect</button>
+    <button id="dump">Download room table</button>
+  </div>
+</div>
+
+<div class="panel" id="setup" hidden>
+  <h2>Setup needed</h2>
+  <div class="help">
+    <div id="setupWhy"></div>
+    <ol>
+      <li>Open <code>app/.env</code> and paste your long lived token after <code>HA_TOKEN=</code>. Create one in Home Assistant under Profile, Security tab, "Long-lived access tokens".</li>
+      <li>Set <code>HA_HOST</code> to your Home Assistant hostname or IP.</li>
+      <li>From the project root run <code>python tools/gen_config.py</code></li>
+      <li>Reload this page.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Totals</h2>
+  <div class="metrics">
+    <div class="metric"><div class="v" id="mEntities">0</div><div class="k">Entities</div></div>
+    <div class="metric"><div class="v" id="mEvents">0</div><div class="k">Events seen</div></div>
+    <div class="metric"><div class="v" id="mRate">0.0</div><div class="k">Events / min</div></div>
+    <div class="metric warn"><div class="v" id="mAlerts">0</div><div class="k">Alerts now</div></div>
+    <div class="metric warn"><div class="v" id="mUnassigned">0</div><div class="k">No room</div></div>
+    <div class="metric"><div class="v" id="mVersion">-</div><div class="k">HA version</div></div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Entities per system</h2>
+  <table>
+    <thead><tr><th>System</th><th>Entities</th><th>Alerts</th></tr></thead>
+    <tbody id="systems"><tr><td colspan="3" class="empty">Waiting for connection</td></tr></tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Entities per room</h2>
+  <table>
+    <thead><tr><th>Room</th><th>Level</th><th>Entities</th><th></th></tr></thead>
+    <tbody id="rooms"><tr><td colspan="4" class="empty">Waiting for connection</td></tr></tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Live state changes</h2>
+  <div id="feed"><div class="empty">Waiting for connection</div></div>
+</div>
+
+<script type="module">
+import { HA_CONFIG } from './js/config.js';
+import { HomeAssistant, Status } from './js/ha.js';
+import { Bus } from './js/bus.js';
+import { toMessage, stateToMessage, Severity } from './js/message.js';
+import { ROOMS, groupByRoom } from './js/rooms.js';
+
+const $ = (id) => document.getElementById(id);
+const SYSTEMS = ['climate', 'security', 'cameras', 'energy', 'house', 'network'];
+
+const ha = new HomeAssistant(HA_CONFIG);
+const bus = new Bus(ha);
+
+// ---------------------------------------------------------------------------
+// Connection status
+// ---------------------------------------------------------------------------
+const WORKING = new Set([Status.CONNECTING, Status.AUTHENTICATING, Status.LOADING]);
+
+ha.on('status', ({ status, detail, version }) => {
+  $('statusText').textContent = status;
+  $('statusDetail').textContent = detail || '';
+  $('mVersion').textContent = version || '-';
+
+  const dot = $('dot');
+  dot.className = status === Status.READY ? 'ready'
+    : WORKING.has(status) ? 'working'
+    : (status === Status.FAILED || status === Status.RETRYING) ? 'bad'
+    : '';
+
+  // Only a missing or rejected token is something the user must go fix.
+  const needsSetup = status === Status.FAILED;
+  $('setup').hidden = !needsSetup;
+  if (needsSetup) $('setupWhy').textContent = detail;
+});
+
+// ---------------------------------------------------------------------------
+// Totals
+// ---------------------------------------------------------------------------
+const alerts = new Set();   // entity_id of everything currently in alert
+let eventCount = 0;
+const started = Date.now();
+
+function refreshTotals() {
+  $('mEntities').textContent = ha.states.size;
+  $('mEvents').textContent = eventCount;
+  $('mAlerts').textContent = alerts.size;
+  const minutes = (Date.now() - started) / 60000;
+  $('mRate').textContent = minutes > 0.05 ? (eventCount / minutes).toFixed(1) : '0.0';
+}
+
+// ---------------------------------------------------------------------------
+// Tables, rebuilt from the full state map
+// ---------------------------------------------------------------------------
+function refreshTables() {
+  const grouped = groupByRoom(ha.states);
+
+  // Per system
+  const counts = {};
+  for (const s of SYSTEMS) counts[s] = { n: 0, alerts: 0 };
+  for (const state of ha.states.values()) {
+    const m = stateToMessage(state);
+    const slot = counts[m.stream] || (counts[m.stream] = { n: 0, alerts: 0 });
+    slot.n += 1;
+    if (m.severity === Severity.ALERT) slot.alerts += 1;
+  }
+  $('systems').innerHTML = Object.entries(counts)
+    .map(([name, c]) =>
+      '<tr><td>' + name + '</td><td class="num">' + c.n + '</td>' +
+      '<td class="num">' + (c.alerts || '') + '</td></tr>')
+    .join('');
+
+  // Per room, plus the unassigned bucket, which is the number that matters
+  // for BUILD.md open item 3.
+  const rows = ROOMS.map((r) =>
+    '<tr><td>' + r.name + '</td><td class="num">' + r.level + '</td>' +
+    '<td class="num">' + grouped[r.key].length + '</td>' +
+    '<td class="est">' + (r.est ? 'estimated' : '') + '</td></tr>').join('');
+
+  $('rooms').innerHTML = rows +
+    '<tr><td>Unassigned</td><td class="num"></td>' +
+    '<td class="num">' + grouped._unassigned.length + '</td><td class="est"></td></tr>';
+
+  $('mUnassigned').textContent = grouped._unassigned.length;
+}
+
+// ---------------------------------------------------------------------------
+// Live feed
+// ---------------------------------------------------------------------------
+const MAX_ROWS = 200;
+const feed = $('feed');
+
+function addRow(m) {
+  if (feed.firstElementChild && feed.firstElementChild.className === 'empty') {
+    feed.innerHTML = '';
+  }
+
+  const time = new Date(m.at);
+  const clock = isNaN(time) ? '--:--:--' : time.toTimeString().slice(0, 8);
+  const value = m.state === null ? 'removed'
+    : m.state + (m.unit ? ' ' + m.unit : '');
+
+  const el = document.createElement('div');
+  el.className = 'ev ' + m.severity;
+  el.innerHTML =
+    '<span class="t"></span><span class="sys"></span>' +
+    '<span class="what"></span><span class="val"></span>';
+  el.children[0].textContent = clock;
+  el.children[1].textContent = m.stream;
+  el.children[2].textContent = m.title + (m.room ? '  [' + m.location + ']' : '');
+  el.children[3].textContent = value;
+
+  feed.prepend(el);
+  while (feed.childElementCount > MAX_ROWS) feed.lastElementChild.remove();
+}
+
+// ---------------------------------------------------------------------------
+// Wiring
+// ---------------------------------------------------------------------------
+// The monitor is registered as a screen so it uses the same contract the real
+// system screens will use.
+bus.register('link', {
+  message(m) {
+    eventCount += 1;
+    if (m.severity === Severity.ALERT) alerts.add(m.entityId);
+    else alerts.delete(m.entityId);
+    addRow(m);
+  },
+});
+bus.activate('link');
+
+ha.on('states', (states) => {
+  alerts.clear();
+  for (const state of states.values()) {
+    if (stateToMessage(state).severity === Severity.ALERT) alerts.add(state.entity_id);
+  }
+  refreshTables();
+  refreshTotals();
+  if (feed.firstElementChild && feed.firstElementChild.className === 'empty') {
+    feed.innerHTML = '<div class="empty">Connected. Waiting for a state change.</div>';
+  }
+});
+
+ha.on('event', (event) => bus.message(toMessage(event)));
+
+// Totals tick on a timer rather than per event, so a busy house does not
+// thrash the DOM.
+setInterval(refreshTotals, 1000);
+setInterval(() => { if (ha.status === Status.READY) refreshTables(); }, 15000);
+addEventListener('resize', () => bus.resize());
+
+$('reconnect').onclick = () => { ha.close(); ha.connect(); };
+
+// Dumps the per room entity table BUILD.md section 9 asks for, so the room
+// names and assignments can be confirmed against the real house.
+$('dump').onclick = () => {
+  const grouped = groupByRoom(ha.states);
+  const report = { generated: new Date().toISOString(), rooms: {}, unassigned: [] };
+
+  for (const r of ROOMS) {
+    report.rooms[r.key] = {
+      name: r.name,
+      level: r.level,
+      estimated: !!r.est,
+      entities: grouped[r.key].map((s) => ({
+        entity_id: s.entity_id,
+        friendly_name: (s.attributes && s.attributes.friendly_name) || '',
+        state: s.state,
+      })),
+    };
+  }
+  report.unassigned = grouped._unassigned.map((s) => ({
+    entity_id: s.entity_id,
+    friendly_name: (s.attributes && s.attributes.friendly_name) || '',
+    state: s.state,
+  }));
+
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'room-entities.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+bus.start();
+ha.connect();
+</script>
+</body>
+</html>

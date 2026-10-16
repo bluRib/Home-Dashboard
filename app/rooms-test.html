@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Room matcher check</title>
+<style>
+  body { background: #03060a; color: #bff4ff; font: 14px "Share Tech Mono", ui-monospace, monospace; padding: 20px; }
+  .pass { color: #4dffb0; }
+  .fail { color: #ff8a1f; font-weight: bold; }
+  h1 { font-size: 16px; letter-spacing: .1em; }
+  td { padding: 2px 14px 2px 0; }
+</style>
+</head>
+<body>
+<h1>Room matcher check</h1>
+<div id="out">running</div>
+
+<script type="module">
+import { roomForEntity, ROOMS } from './js/rooms.js';
+
+// [entity_id, friendly_name, expected room key or null]
+const CASES = [
+  ['light.master_bedroom',        '',                      'master_bed'],
+  ['light.x',                     'Master Bedroom Lamp',   'master_bed'],
+  ['light.x',                     'Master Bath Vanity',    'master_bath'],
+  ['light.x',                     'Master Closet Light',   'master_closet'],
+  ['light.apis_room',             '',                      'apis_room'],
+  ['light.x',                     "Api's Room Light",      'apis_room'],
+  ['binary_sensor.x',             "Api's Bathroom Motion", 'hall_bath'],
+  ['light.x',                     'Hall Bath Vanity',      'hall_bath'],
+  ['light.x',                     "Jovan's Closet Light",  'jovan_closet'],
+  ['light.jovans_closet',         '',                      'jovan_closet'],
+  ['light.x',                     "AK's Room Lamp",        'aks_room'],
+  ['light.aks_room_ceiling',      '',                      'aks_room'],
+  ['light.x',                     "Amanda's Closet Light", 'amanda_closet'],
+  ['sensor.x',                    'Laundry Washer',        'laundry'],
+  ['light.x',                     'Kitchen Pendants',      'kitchen'],
+  ['fan.x',                       'Living Room Fan',       'living'],
+  ['cover.x',                     'Garage Door',           'garage'],
+  ['light.x',                     'Office 2 Ceiling',      'office2'],
+  ['light.x',                     'Office Desk Lamp',      'office'],
+  ['light.x',                     'Stair Hall Light',      'stair_hall'],
+  ['light.x',                     'Hall Light',            'hall0'],
+  ['light.x',                     'Upstairs Hallway Light','hall1'],
+  ['camera.x',                    'Front Porch Camera',    'porch'],
+  ['light.x',                     'Pantry Light',          'pantry'],
+  ['binary_sensor.x',             'Patio Doors',           'patio'],
+  // Deliberately ambiguous: four baths in the house, so this must NOT guess.
+  ['light.x',                     'Bathroom Light',        null],
+  // People are not rooms. HA names person and device_tracker entities after
+  // household members, and those must not land in that person's closet.
+  ['device_tracker.jovans_phone',  "Jovan's Phone",         null],
+  ['device_tracker.x',             "Amanda's iPhone",       null],
+  ['person.ak',                    'AK',                    null],
+  // Must not be dragged into a room by a stray substring.
+  ['sensor.x',                    'Outdoor Temperature',   null],
+];
+
+const rows = [];
+let pass = 0, fail = 0;
+
+for (const [id, friendly, want] of CASES) {
+  const state = { entity_id: id, attributes: { friendly_name: friendly } };
+  const got = roomForEntity(state);
+  const gotKey = got ? got.key : null;
+  const ok = gotKey === want;
+  ok ? pass++ : fail++;
+  rows.push('<tr class="' + (ok ? 'pass' : 'fail') + '"><td>' + (ok ? 'PASS' : 'FAIL') +
+    '</td><td>' + (friendly || id) + '</td><td>want ' + want +
+    '</td><td>got ' + gotKey + '</td></tr>');
+}
+
+// Every room key referenced by an alias must exist in ROOMS.
+const keys = new Set(ROOMS.map((r) => r.key));
+const dangling = [];
+for (const r of ROOMS) if (!r.key) dangling.push(r.name);
+
+document.getElementById('out').innerHTML =
+  '<p>' + pass + ' passed, <span class="' + (fail ? 'fail' : 'pass') + '">' +
+  fail + ' failed</span>, ' + ROOMS.length + ' rooms defined' +
+  (dangling.length ? ', dangling: ' + dangling.join(', ') : '') + '</p>' +
+  '<table>' + rows.join('') + '</table>';
+
+document.title = fail === 0 ? 'ALL PASS' : fail + ' FAILED';
+</script>
+</body>
+</html>

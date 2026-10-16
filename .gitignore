@@ -1,0 +1,20 @@
+# Secrets. The Home Assistant token lives in app/.env and is copied into the
+# two generated config files by tools/gen_config.py. None of them may ever be
+# committed. The .example file is the safe template.
+app/.env
+app/js/config.js
+ha-boardroom/config.local.js
+!app/.env.example
+
+# Dependencies and the esbuild binary, restored by
+# ha-boardroom/tools/install-deps.py
+ha-boardroom/node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store

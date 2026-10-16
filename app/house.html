@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Dashboard, House</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/house.css">
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="c" aria-label="3D model of the house, click a room to zoom in"></canvas>
+</div>
+<svg id="lead" aria-hidden="true"></svg>
+<div id="tags"></div>
+
+<div id="ui">
+  <button id="b3" class="on">3D</button>
+  <button id="bt">Top</button>
+  <button id="lb0" class="on">Both</button>
+  <button id="lb1">Level 0</button>
+  <button id="lb2">Level 1</button>
+</div>
+
+<div id="link">
+  <span id="dot"></span>
+  <span id="linkText">Starting</span>
+  <span id="evc">0 ev</span>
+</div>
+
+<aside id="room" aria-live="polite">
+  <header>
+    <span id="rn">Room</span>
+    <button id="rx" aria-label="Close room panel">&times;</button>
+  </header>
+  <dl class="kv">
+    <dt>Level</dt><dd id="rlv">0</dd>
+    <dt>Temp</dt><dd id="rt">-</dd>
+    <dt>Lights on</dt><dd id="rl">0</dd>
+    <dt>Motion</dt><dd id="rm">Clear</dd>
+    <dt>Alerts</dt><dd id="ra">0</dd>
+  </dl>
+  <div id="ralerts"></div>
+  <div id="rest"></div>
+</aside>
+
+<div id="hint">Drag to rotate, scroll to zoom, click a room. Escape backs out.</div>
+<div id="load">Building model</div>
+
+<script type="module">
+import { HA_CONFIG } from './js/config.js';
+import { HomeAssistant, Status } from './js/ha.js';
+import { Bus } from './js/bus.js';
+import { toMessage, stateToMessage } from './js/message.js';
+import { HouseScreen } from './js/screens/house.js';
+
+const $ = (id) => document.getElementById(id);
+
+const ha = new HomeAssistant(HA_CONFIG);
+const bus = new Bus(ha);
+
+const house = new HouseScreen({
+  canvas: $('c'),
+  tagLayer: $('tags'),
+  leadLayer: $('lead'),
+  // model.json, objects.json and labels.json are loaded as static files
+  // rather than inlined, per BUILD.md step 6. Note the folder is "models".
+  basePath: '../models/',
+  onRoomOpen: showRoom,
+  onRoomClose: () => $('room').classList.remove('open'),
+});
+
+// ---------------------------------------------------------------------------
+// Room panel
+// ---------------------------------------------------------------------------
+function showRoom(info) {
+  $('rn').textContent = info.name;
+  $('rlv').textContent = info.level;
+  $('rt').textContent = info.temp === null ? '-' : info.temp.toFixed(1);
+  $('rl').textContent = info.lightsOn;
+
+  $('rm').textContent = info.motion ? 'Active' : 'Clear';
+  $('rm').className = info.motion ? 'motion' : '';
+
+  $('ra').textContent = info.alerts.length;
+  $('ra').className = info.alerts.length ? 'alert' : '';
+
+  $('ralerts').innerHTML = '';
+  for (const id of info.alerts) {
+    const row = document.createElement('div');
+    const state = ha.states.get(id);
+    const name = (state && state.attributes && state.attributes.friendly_name) || id;
+    row.textContent = name + ': ' + (state ? state.state : 'unknown');
+    $('ralerts').appendChild(row);
+  }
+
+  // Rooms whose rectangle was estimated rather than measured, so a wrong
+  // looking highlight has an explanation on screen.
+  $('rest').textContent = info.estimated ? 'Rectangle is estimated, not measured' : '';
+  $('room').classList.add('open');
+}
+
+$('rx').onclick = () => house.unfocus();
+
+// ---------------------------------------------------------------------------
+// Controls
+// ---------------------------------------------------------------------------
+const viewButtons = { b3: '3d', bt: 'top' };
+for (const [id, preset] of Object.entries(viewButtons)) {
+  $(id).onclick = () => {
+    house.setView(preset);
+    for (const other of Object.keys(viewButtons)) {
+      $(other).classList.toggle('on', other === id);
+    }
+  };
+}
+
+const levelButtons = ['lb0', 'lb1', 'lb2'];
+levelButtons.forEach((id, i) => {
+  $(id).onclick = () => {
+    house.setLevel(i);
+    levelButtons.forEach((other, j) => $(other).classList.toggle('on', i === j));
+  };
+});
+
+// ---------------------------------------------------------------------------
+// Connection status
+// ---------------------------------------------------------------------------
+const WORKING = new Set([Status.CONNECTING, Status.AUTHENTICATING, Status.LOADING]);
+let events = 0;
+
+ha.on('status', ({ status, detail }) => {
+  $('linkText').textContent = status;
+  $('dot').className = status === Status.READY ? 'ready'
+    : WORKING.has(status) ? 'working'
+    : (status === Status.FAILED || status === Status.RETRYING) ? 'bad'
+    : '';
+  if (status === Status.FAILED) {
+    $('load').innerHTML = '<div class="err">Home Assistant link failed: ' +
+      detail + '</div>';
+    $('load').classList.remove('gone');
+  }
+});
+
+// Seed every room from the initial state dump, so lights that were already on
+// are already glowing on the first frame instead of waiting for a change.
+ha.on('states', (states) => {
+  for (const state of states.values()) house.message(stateToMessage(state));
+});
+
+ha.on('event', (event) => {
+  events += 1;
+  $('evc').textContent = events + ' ev';
+  bus.message(toMessage(event));
+});
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+bus.register('house', house);
+bus.activate('house');
+bus.start();
+
+addEventListener('resize', () => bus.resize());
+
+// The model is a 1.5 MB fetch, so the loading cover stays until it is built.
+(async () => {
+  try {
+    await house.load();
+    $('load').classList.add('gone');
+    setTimeout(() => $('load').remove(), 600);
+    // Re-seed in case states arrived while the model was still loading.
+    if (ha.states.size) {
+      for (const state of ha.states.values()) house.message(stateToMessage(state));
+    }
+  } catch (err) {
+    console.error(err);
+    $('load').innerHTML = '<div class="err">' + err.message + '</div>';
+  }
+})();
+
+ha.connect();
+</script>
+</body>
+</html>

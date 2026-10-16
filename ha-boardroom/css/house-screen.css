@@ -1,0 +1,427 @@
+/* House screen: full viewport grid.
+ *
+ * Encom's boardroom is a fixed 1900x715 canvas of absolutely positioned
+ * panels, which leaves the house small and the screen half empty. This screen
+ * keeps the Encom look (same cyan, same yellow rules, same header bars, same
+ * mono numerals) but lays out with fr units so every panel grows with the
+ * window.
+ *
+ * Only the House screen uses this. The other systems still use the original
+ * boardroom layout.
+ */
+
+#house-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 10px;
+    gap: 10px;
+    background: #000;
+
+    /* left rail, hero, right rail, with a timeline strip underneath */
+    grid-template-columns: minmax(200px, 17vw) minmax(0, 1fr) minmax(230px, 21vw);
+    grid-template-rows: minmax(0, 1fr) minmax(90px, 13vh);
+    grid-template-areas:
+        "left house right"
+        "timeline timeline timeline";
+
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    color: #9fe8e8;
+    font-size: clamp(11px, 0.75vw, 16px);
+}
+
+#house-screen * {
+    box-sizing: border-box;
+}
+
+/* ---- panel chrome, matching Encom's header rules ---- */
+
+.hs-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.hs-head {
+    flex: none;
+    color: #00eeee;
+    font-size: clamp(11px, 0.78vw, 15px);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #00eeee;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Encom's double rule: a thin second line under the header. */
+.hs-head::after {
+    content: "";
+    display: block;
+    margin-top: 2px;
+    border-bottom: 1px solid rgba(0, 238, 238, .35);
+}
+
+.hs-head em {
+    float: right;
+    font-style: normal;
+    color: #ffcc00;
+    letter-spacing: .1em;
+}
+
+.hs-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ---- areas ---- */
+
+#hs-left     { grid-area: left; }
+#hs-house    { grid-area: house; }
+#hs-right    { grid-area: right; }
+#hs-timeline { grid-area: timeline; }
+
+/* ---- the hero, the 3D house ---- */
+
+#hs-house .hs-body {
+    border: 1px solid rgba(0, 238, 238, .22);
+}
+
+#house-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: none;
+}
+
+#house-lead,
+#house-tags {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+#house-tags .house-tag {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    cursor: pointer;
+    white-space: nowrap;
+    color: #bff4ff;
+    font-size: clamp(11px, 0.62vw, 14px);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    background: rgba(0, 0, 0, .6);
+    border-left: 2px solid #00eeee;
+}
+
+#house-tags .house-tag i {
+    font-style: normal;
+    margin-left: 6px;
+    color: #fff;
+}
+
+/* Rule 10: orange only ever means a problem. */
+#house-tags .house-tag.alert {
+    color: #ff8a1f;
+    border-left-color: #ff8a1f;
+}
+
+#house-tags .house-tag.alert i { color: #ff8a1f; }
+#house-tags .house-tag.motion  { border-left-color: #4dffb0; }
+
+/* ---- left rail: floors, room list, detail ---- */
+
+#hs-floors {
+    flex: none;
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.hs-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #00eeee;
+    color: #9fe8e8;
+    font-family: inherit;
+    font-size: clamp(11px, 0.62vw, 13px);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 2px;
+    cursor: pointer;
+}
+
+.hs-btn:hover { background: rgba(0, 238, 238, .16); }
+.hs-btn.on    { background: #00eeee; color: #000; }
+
+#hs-room-list {
+    flex: 0 0 34%;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0 0 6px;
+    padding: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+#hs-room-list li {
+    padding: 2px 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(11px, 0.72vw, 15px);
+}
+
+#hs-room-list li:hover { background: rgba(0, 238, 238, .14); }
+#hs-room-list li.sel   { background: #00eeee; color: #000; }
+
+#hs-detail {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.hs-detail-name {
+    color: #fff;
+    font-size: clamp(13px, 1vw, 20px);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.hs-detail-name span {
+    display: block;
+    color: #00eeee;
+    font-size: clamp(11px, 0.6vw, 13px);
+    letter-spacing: .12em;
+    opacity: .75;
+}
+
+#hs-detail dl {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1px 8px;
+    margin: 0 0 8px;
+}
+
+#hs-detail dt {
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    opacity: .65;
+    font-size: clamp(11px, 0.62vw, 13px);
+}
+
+#hs-detail dd {
+    margin: 0;
+    text-align: right;
+    color: #fff;
+    font-size: clamp(11px, 0.72vw, 15px);
+}
+
+#hs-detail dd.alert  { color: #ff8a1f; }
+#hs-detail dd.motion { color: #4dffb0; }
+
+.hs-dev-head {
+    color: #00eeee;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: clamp(11px, 0.6vw, 13px);
+    border-bottom: 1px solid rgba(0, 238, 238, .3);
+    margin-bottom: 3px;
+}
+
+.hs-dev {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 1px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+    font-size: clamp(11px, 0.66vw, 14px);
+}
+
+.hs-dev span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hs-dev b { color: #fff; font-weight: normal; }
+.hs-dev.alert span, .hs-dev.alert b { color: #ff8a1f; }
+
+.hs-empty {
+    opacity: .5;
+    padding: 8px 2px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+
+/* ---- right rail: stats then rooms table ---- */
+
+#hs-stats {
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.hs-stat {
+    border-left: 2px solid #00eeee;
+    padding-left: 7px;
+}
+
+.hs-stat b {
+    display: block;
+    color: #fff;
+    font-weight: normal;
+    font-size: clamp(20px, 1.9vw, 38px);
+    line-height: 1.05;
+}
+
+.hs-stat span {
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: clamp(11px, 0.6vw, 13px);
+    opacity: .7;
+}
+
+.hs-stat.alert       { border-left-color: #ff8a1f; }
+.hs-stat.alert b     { color: #ff8a1f; }
+
+#hs-rooms-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+#hs-rooms {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(11px, 0.72vw, 15px);
+}
+
+#hs-rooms thead th {
+    position: sticky;
+    top: 0;
+    background: #000;
+    color: #00eeee;
+    text-align: left;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: clamp(11px, 0.58vw, 12px);
+    border-bottom: 1px solid rgba(0, 238, 238, .4);
+    padding: 2px 3px;
+}
+
+#hs-rooms td {
+    padding: 2px 3px;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+    white-space: nowrap;
+}
+
+#hs-rooms tbody tr { cursor: pointer; }
+#hs-rooms tbody tr:hover { background: rgba(0, 238, 238, .12); }
+#hs-rooms tbody tr.sel   { background: rgba(0, 238, 238, .22); }
+
+.hs-r-name {
+    max-width: 0;
+    width: 99%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hs-r-lvl  { opacity: .55; }
+.hs-r-num  { text-align: right; color: #fff; }
+.hs-r-lt   { color: #ffcc00; }
+.hs-r-flag { text-align: center; width: 2em; }
+
+#hs-rooms tr.on   .hs-r-name { color: #fff; }
+#hs-rooms tr.motion .hs-r-flag { color: #4dffb0; }
+#hs-rooms tr.alert .hs-r-name,
+#hs-rooms tr.alert .hs-r-flag { color: #ff8a1f; }
+
+/* ---- bottom strip: timeline plus elapsed and clocks ---- */
+
+#hs-timeline .hs-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 14px;
+    align-items: stretch;
+}
+
+#hs-timeline-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#hs-elapsed {
+    align-self: center;
+    color: #fff;
+    font-size: clamp(22px, 2.3vw, 46px);
+    letter-spacing: .06em;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+#hs-zones {
+    align-self: center;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 1px 14px;
+}
+
+#hs-zones div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(0, 238, 238, .25);
+    font-size: clamp(11px, 0.62vw, 13px);
+}
+
+#hs-zones span {
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    opacity: .7;
+}
+
+#hs-zones b { color: #fff; font-weight: normal; }
+
+/* Narrow screens: drop the left rail rather than crush all three columns. */
+@media (max-width: 1200px) {
+    #house-screen {
+        grid-template-columns: minmax(0, 1fr) minmax(210px, 30vw);
+        grid-template-areas:
+            "house right"
+            "timeline timeline";
+    }
+    #hs-left { display: none; }
+}
+
+/* Rows breathe on tall screens so the table fills its panel instead of
+   stopping halfway down. */
+#hs-rooms td {
+    padding-top: clamp(2px, 0.42vh, 9px);
+    padding-bottom: clamp(2px, 0.42vh, 9px);
+}
+
+/* Rooms that have not reported anything yet. Present so the table is the full
+   house, dimmed so they do not read as live. */
+#hs-rooms tr.dim td { opacity: .42; }
+#hs-rooms tr.dim { cursor: default; }
+
+#hs-room-list li.dim { opacity: .42; }
