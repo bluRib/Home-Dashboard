@@ -253,8 +253,16 @@ function renderAlerts() {
         return;
     }
     if (!feeds.alerts.length) {
-        box.style.display = "none";
-        box.innerHTML = "";
+        /* Nothing to show, but say so differently when the last check did not
+           get through, so a silent panel is never read as an all clear. */
+        if (feeds.alertsOk === false) {
+            box.style.display = "block";
+            box.innerHTML = '<div class="cl-alert-down">Alerts unavailable, ' +
+                'could not reach the National Weather Service</div>';
+        } else {
+            box.style.display = "none";
+            box.innerHTML = "";
+        }
         return;
     }
     box.style.display = "block";
@@ -389,6 +397,10 @@ function renderAir() {
     html += '<div class="cl-air-group"><div class="cl-sub">House</div><div class="cl-reads">';
     html += one("Upstairs PM2.5", a.upstairsPm25 === null ? null : Math.round(a.upstairsPm25), "",
                 a.upstairsPm25 !== null && a.upstairsPm25 > L.pm25 ? "warn" : "");
+    html += one("Upstairs VOC", a.upstairsVoc === null ? null : Math.round(a.upstairsVoc), "",
+                a.upstairsVoc !== null && a.upstairsVoc > L.voc ? "warn" : "");
+    html += one("Living VOC", a.livingVoc === null ? null : Math.round(a.livingVoc), "",
+                a.livingVoc !== null && a.livingVoc > L.voc ? "warn" : "");
     html += one("Living humidity", a.livingHumidity === null ? null : Math.round(a.livingHumidity), "%",
                 humidityClass(a.livingHumidity, L));
     html += one("Attic humidity", a.atticHumidity === null ? null : Math.round(a.atticHumidity), "%",
@@ -600,13 +612,32 @@ function renderTrend() {
 
 var DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-/* Plain glyphs rather than an icon set, so nothing extra has to load. */
+/* Plain glyphs rather than an icon set, so nothing extra has to load.
+   Every one is in the basic multilingual plane and so is a single code unit.
+   The windy glyph used to be written ἲC, which is not a valid four digit
+   escape: JavaScript read it as ἲ followed by a literal C, which is why
+   today showed a Greek letter and a C once the condition turned windy.
+   Astral characters would need a surrogate pair, and would not render in the
+   mono face anyway, so the set stays inside the BMP.
+   All fifteen Home Assistant weather conditions are covered. */
 var ICON = {
-    sunny: "☀", clear: "☀", "clear-night": "☾",
-    partlycloudy: "⛅", cloudy: "☁", fog: "▒",
-    rainy: "☔", pouring: "☔", lightning: "⚡",
-    "lightning-rainy": "⚡", snowy: "❄", "snowy-rainy": "❄",
-    hail: "❄", windy: "ἲC", exceptional: "⚠"
+    "clear-night": "☾",
+    cloudy: "☁",
+    exceptional: "⚠",
+    fog: "▒",
+    hail: "⁂",
+    lightning: "⚡",
+    "lightning-rainy": "⚡",
+    partlycloudy: "⛅",
+    pouring: "☔",
+    rainy: "☂",
+    snowy: "❄",
+    "snowy-rainy": "❅",
+    sunny: "☀",
+    windy: "≋",
+    "windy-variant": "≋",
+    /* Not Home Assistant conditions, but harmless aliases. */
+    clear: "☀"
 };
 
 function renderForecast() {

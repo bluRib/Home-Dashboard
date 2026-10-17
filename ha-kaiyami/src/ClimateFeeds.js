@@ -45,6 +45,12 @@ var AIR = {
     deskCo2: "sensor.loft_jovans_desk_aq_carbon_dioxide",
     deskPm25: "sensor.loft_jovans_desk_aq_pm2_5",
     upstairsPm25: "sensor.upstairs_air_sensor_pm25",
+    /* There is no VOC sensor on Jovan's desk. The only two in the house are
+       the Upstairs Air Sensor and the Living Room, both reporting a VOC
+       index rather than a concentration: roughly 1 to 500 with 100 as the
+       normal baseline, so the threshold is an index, not ppb. */
+    upstairsVoc: "sensor.upstairs_air_sensor_voc_index",
+    livingVoc: "sensor.living_room_voc_index",
     livingHumidity: "sensor.living_room_humidity",
     atticHumidity: "sensor.attic_temp_sensor_humidity",
     purifier: "fan.living_room_air",
@@ -71,22 +77,26 @@ var PLANT_ROOMS = {
 };
 
 /* Thresholds. Orange past these, per rule 10. */
-var LIMITS = { co2: 1000, pm25: 35, humidityLow: 30, humidityHigh: 60 };
+var LIMITS = { co2: 1000, pm25: 35, voc: 250, humidityLow: 30, humidityHigh: 60 };
 
 var ALERTS_EVERY = 5 * 60 * 1000;
 var MINUTELY_EVERY = 5 * 60 * 1000;
 var HISTORY_EVERY = 10 * 60 * 1000;
 var FORECAST_EVERY = 15 * 60 * 1000;
-var PM_WINDOW = 5;            // readings kept for the median
+var MEDIAN_WINDOW = 5;        // readings kept for the median
 
 function ClimateFeeds(ha, onUpdate) {
     this.ha = ha;
     this.onUpdate = onUpdate || function () {};
     this.alerts = [];
+    /* null until the first poll finishes, then true or false. An empty
+       alerts list and a failed check look identical on screen otherwise,
+       and "no alerts" is not a safe thing to imply when the check failed. */
+    this.alertsOk = null;
     this.minutely = null;
     this.history = null;
     this.forecast = [];
-    this.pmHistory = {};      // entity id -> recent readings, for the median
+    this.recent = {};         // entity id -> recent readings, for the median
     this._timers = [];        // refresh intervals
     this._debounce = {};      // zone key -> pending setpoint timer
     this._pending = {};       // zone key -> setpoint tapped but not yet sent
@@ -175,16 +185,17 @@ ClimateFeeds.prototype.zones = function () {
     return out;
 };
 
-/* A median over the last few readings, because the upstairs sensor spikes and
-   a single spike should not paint the panel orange. */
-ClimateFeeds.prototype.smoothPm = function (id) {
+/* A median over the last few readings. Both the particulate and the VOC
+   sensors spike hard enough that a single reading should not paint the panel
+   orange: Jovan's desk has gone from 31 to 649 and back inside a minute. */
+ClimateFeeds.prototype.median = function (id) {
     var v = this.num(id);
     if (v === null) {
         return null;
     }
-    var list = this.pmHistory[id] || (this.pmHistory[id] = []);
+    var list = this.recent[id] || (this.recent[id] = []);
     list.push(v);
-    while (list.length > PM_WINDOW) {
+    while (list.length > MEDIAN_WINDOW) {
         list.shift();
     }
     var sorted = list.slice().sort(function (a, b) { return a - b; });
@@ -197,8 +208,10 @@ ClimateFeeds.prototype.air = function () {
         deskTemp: this.num(AIR.deskTemp),
         deskHumidity: this.num(AIR.deskHumidity),
         deskCo2: this.num(AIR.deskCo2),
-        deskPm25: this.smoothPm(AIR.deskPm25),
-        upstairsPm25: this.smoothPm(AIR.upstairsPm25),
+        deskPm25: this.median(AIR.deskPm25),
+        upstairsPm25: this.median(AIR.upstairsPm25),
+        upstairsVoc: this.median(AIR.upstairsVoc),
+        livingVoc: this.median(AIR.livingVoc),
         livingHumidity: this.num(AIR.livingHumidity),
         atticHumidity: this.num(AIR.atticHumidity),
         purifierOn: fan ? fan.state === "on" : null,
@@ -313,17 +326,24 @@ ClimateFeeds.prototype.togglePurifier = function (onSent) {
 
 /* ---- National Weather Service alerts -------------------------------------- */
 
-ClimateFeeds.prototype.refreshAlerts = function () {
+ClimateFeeds.prototype.refreshAlerts = function (isRetry) {
     var self = this;
     var url = "https://api.weather.gov/alerts/active?point=" + HOME.lat + "," + HOME.lon;
+
     /* No request headers. The endpoint answers with application/geo+json
        anyway, and its CORS preflight only allows API-Key and User-Agent, so
        sending Accept turned this into a preflighted request that the browser
-       then refused. Plain GET is a simple request and goes straight through. */
+       refused outright. Plain GET is a simple request and goes straight
+       through. It still fails occasionally on a transient network error, so
+       one retry, and the outcome is recorded either way. */
     fetch(url)
-        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (r) {
+            if (!r.ok) {
+                throw new Error("status " + r.status);
+            }
+            return r.json();
+        })
         .then(function (data) {
-            if (!data) { return; }
             self.alerts = (data.features || []).map(function (f) {
                 var p = f.properties || {};
                 return {
@@ -333,9 +353,17 @@ ClimateFeeds.prototype.refreshAlerts = function () {
                     ends: p.ends || p.expires || ""
                 };
             });
+            self.alertsOk = true;
             self.onUpdate();
         })
-        .catch(function () {});
+        .catch(function () {
+            if (!isRetry) {
+                setTimeout(function () { self.refreshAlerts(true); }, 20000);
+                return;
+            }
+            self.alertsOk = false;
+            self.onUpdate();
+        });
 };
 
 /* ---- next 60 minutes of rain ---------------------------------------------- */

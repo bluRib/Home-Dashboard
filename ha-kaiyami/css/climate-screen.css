@@ -147,6 +147,17 @@
     line-height: 1.3;
 }
 
+/* The check failed, as opposed to there being nothing to report. Muted, not
+   orange: orange is for a real problem with the house. */
+.cl-alert-down {
+    padding: 3px 6px;
+    margin-bottom: 4px;
+    border: 1px solid rgba(0, 238, 238, .3);
+    font-size: clamp(9px, 0.55vw, 11px);
+    line-height: 1.3;
+    opacity: .6;
+}
+
 .cl-now { margin-bottom: 6px; }
 
 .cl-now-temp {

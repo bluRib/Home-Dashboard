@@ -90,7 +90,20 @@ def main():
     env_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_ENV
     out_path = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_OUT
 
-    cfg = build(read_env(env_path))
+    # Say which file is being read, so there is no doubt it is the one that
+    # was just edited. Keys are reported by length, never by value.
+    env_path = os.path.abspath(env_path)
+    print('reading', env_path)
+
+    raw = read_env(env_path)
+    cfg = build(raw)
+
+    if 'PW_KEY' in raw and raw['PW_KEY'].strip():
+        print('  PW_KEY   found, %d chars' % len(raw['PW_KEY'].strip()))
+    elif 'PW_KEY' in raw:
+        print('  PW_KEY   PRESENT BUT EMPTY in %s' % env_path)
+    else:
+        print('  PW_KEY   NOT FOUND in %s' % env_path)
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     body = json.dumps(cfg, indent=2)
@@ -124,9 +137,15 @@ def main():
     else:
         print('  token    EMPTY. Set HA_TOKEN in %s and run this again.' % env_path)
     if cfg['pirateWeatherKey']:
-        print('  pw key   %d chars' % len(cfg['pirateWeatherKey']))
+        print('  pw key   written, %d chars' % len(cfg['pirateWeatherKey']))
     else:
-        print('  pw key   EMPTY. Optional. Only the next 60 minutes of rain needs it.')
+        print('')
+        print('  PIRATE WEATHER KEY IS MISSING.')
+        print('  The Climate screen will say "No key" on the next 60 minutes')
+        print('  of rain. Everything else works without it.')
+        print('  Add a line to %s like:' % env_path)
+        print('      PW_KEY=your_key_here')
+        print('  then run this script again and reload the page.')
 
 
 if __name__ == '__main__':

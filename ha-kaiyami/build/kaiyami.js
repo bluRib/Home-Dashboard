@@ -50543,10 +50543,11 @@
     this.onUpdate = onUpdate || function() {
     };
     this.alerts = [];
+    this.alertsOk = null;
     this.minutely = null;
     this.history = null;
     this.forecast = [];
-    this.pmHistory = {};
+    this.recent = {};
     this._timers = [];
     this._debounce = {};
     this._pending = {};
@@ -50563,7 +50564,7 @@
     var n = Number(v);
     return isFinite(n) ? n : null;
   }
-  var HOME, EXTERIOR, ZONES, AIR, THERMOSTAT_ROOMS, PLANT_ROOMS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, PM_WINDOW;
+  var HOME, EXTERIOR, ZONES, AIR, THERMOSTAT_ROOMS, PLANT_ROOMS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, MEDIAN_WINDOW;
   var init_ClimateFeeds = __esm({
     "src/ClimateFeeds.js"() {
       HOME = { lat: 35.02763, lon: -81.99418 };
@@ -50592,6 +50593,12 @@
         deskCo2: "sensor.loft_jovans_desk_aq_carbon_dioxide",
         deskPm25: "sensor.loft_jovans_desk_aq_pm2_5",
         upstairsPm25: "sensor.upstairs_air_sensor_pm25",
+        /* There is no VOC sensor on Jovan's desk. The only two in the house are
+           the Upstairs Air Sensor and the Living Room, both reporting a VOC
+           index rather than a concentration: roughly 1 to 500 with 100 as the
+           normal baseline, so the threshold is an index, not ppb. */
+        upstairsVoc: "sensor.upstairs_air_sensor_voc_index",
+        livingVoc: "sensor.living_room_voc_index",
         livingHumidity: "sensor.living_room_humidity",
         atticHumidity: "sensor.attic_temp_sensor_humidity",
         purifier: "fan.living_room_air",
@@ -50608,12 +50615,12 @@
         dining: "sensor.sm4_snake_plant_dining_room_temperature",
         office: "sensor.sm3_aglaonema_evergreen_office_temperature"
       };
-      LIMITS = { co2: 1e3, pm25: 35, humidityLow: 30, humidityHigh: 60 };
+      LIMITS = { co2: 1e3, pm25: 35, voc: 250, humidityLow: 30, humidityHigh: 60 };
       ALERTS_EVERY = 5 * 60 * 1e3;
       MINUTELY_EVERY = 5 * 60 * 1e3;
       HISTORY_EVERY = 10 * 60 * 1e3;
       FORECAST_EVERY = 15 * 60 * 1e3;
-      PM_WINDOW = 5;
+      MEDIAN_WINDOW = 5;
       ClimateFeeds.prototype.start = function() {
         var self = this;
         if (!this.ha) {
@@ -50695,14 +50702,14 @@
         }
         return out;
       };
-      ClimateFeeds.prototype.smoothPm = function(id) {
+      ClimateFeeds.prototype.median = function(id) {
         var v = this.num(id);
         if (v === null) {
           return null;
         }
-        var list = this.pmHistory[id] || (this.pmHistory[id] = []);
+        var list = this.recent[id] || (this.recent[id] = []);
         list.push(v);
-        while (list.length > PM_WINDOW) {
+        while (list.length > MEDIAN_WINDOW) {
           list.shift();
         }
         var sorted = list.slice().sort(function(a, b) {
@@ -50716,8 +50723,10 @@
           deskTemp: this.num(AIR.deskTemp),
           deskHumidity: this.num(AIR.deskHumidity),
           deskCo2: this.num(AIR.deskCo2),
-          deskPm25: this.smoothPm(AIR.deskPm25),
-          upstairsPm25: this.smoothPm(AIR.upstairsPm25),
+          deskPm25: this.median(AIR.deskPm25),
+          upstairsPm25: this.median(AIR.upstairsPm25),
+          upstairsVoc: this.median(AIR.upstairsVoc),
+          livingVoc: this.median(AIR.livingVoc),
           livingHumidity: this.num(AIR.livingHumidity),
           atticHumidity: this.num(AIR.atticHumidity),
           purifierOn: fan ? fan.state === "on" : null,
@@ -50851,15 +50860,15 @@
           }
         });
       };
-      ClimateFeeds.prototype.refreshAlerts = function() {
+      ClimateFeeds.prototype.refreshAlerts = function(isRetry) {
         var self = this;
         var url = "https://api.weather.gov/alerts/active?point=" + HOME.lat + "," + HOME.lon;
         fetch(url).then(function(r) {
-          return r.ok ? r.json() : null;
-        }).then(function(data) {
-          if (!data) {
-            return;
+          if (!r.ok) {
+            throw new Error("status " + r.status);
           }
+          return r.json();
+        }).then(function(data) {
           self.alerts = (data.features || []).map(function(f) {
             var p = f.properties || {};
             return {
@@ -50869,8 +50878,17 @@
               ends: p.ends || p.expires || ""
             };
           });
+          self.alertsOk = true;
           self.onUpdate();
         }).catch(function() {
+          if (!isRetry) {
+            setTimeout(function() {
+              self.refreshAlerts(true);
+            }, 2e4);
+            return;
+          }
+          self.alertsOk = false;
+          self.onUpdate();
         });
       };
       ClimateFeeds.prototype.refreshMinutely = function() {
@@ -51285,8 +51303,13 @@
       return;
     }
     if (!feeds2.alerts.length) {
-      box.style.display = "none";
-      box.innerHTML = "";
+      if (feeds2.alertsOk === false) {
+        box.style.display = "block";
+        box.innerHTML = '<div class="cl-alert-down">Alerts unavailable, could not reach the National Weather Service</div>';
+      } else {
+        box.style.display = "none";
+        box.innerHTML = "";
+      }
       return;
     }
     box.style.display = "block";
@@ -51404,6 +51427,18 @@
       a.upstairsPm25 === null ? null : Math.round(a.upstairsPm25),
       "",
       a.upstairsPm25 !== null && a.upstairsPm25 > L.pm25 ? "warn" : ""
+    );
+    html += one(
+      "Upstairs VOC",
+      a.upstairsVoc === null ? null : Math.round(a.upstairsVoc),
+      "",
+      a.upstairsVoc !== null && a.upstairsVoc > L.voc ? "warn" : ""
+    );
+    html += one(
+      "Living VOC",
+      a.livingVoc === null ? null : Math.round(a.livingVoc),
+      "",
+      a.livingVoc !== null && a.livingVoc > L.voc ? "warn" : ""
     );
     html += one(
       "Living humidity",
@@ -51790,21 +51825,23 @@
       MODE_LABEL = { off: "Off", heat: "Heat", cool: "Cool", heat_cool: "Auto" };
       DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       ICON = {
-        sunny: "\u2600",
-        clear: "\u2600",
         "clear-night": "\u263E",
-        partlycloudy: "\u26C5",
         cloudy: "\u2601",
+        exceptional: "\u26A0",
         fog: "\u2592",
-        rainy: "\u2614",
-        pouring: "\u2614",
+        hail: "\u2042",
         lightning: "\u26A1",
         "lightning-rainy": "\u26A1",
+        partlycloudy: "\u26C5",
+        pouring: "\u2614",
+        rainy: "\u2602",
         snowy: "\u2744",
-        "snowy-rainy": "\u2744",
-        hail: "\u2744",
-        windy: "\u1F32C",
-        exceptional: "\u26A0"
+        "snowy-rainy": "\u2745",
+        sunny: "\u2600",
+        windy: "\u224B",
+        "windy-variant": "\u224B",
+        /* Not Home Assistant conditions, but harmless aliases. */
+        clear: "\u2600"
       };
       DAYS2 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       MONTHS2 = [
