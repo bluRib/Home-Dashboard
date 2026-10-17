@@ -51,17 +51,23 @@ var AIR = {
     purifierSpeed: "sensor.living_room_air_fan_speed"
 };
 
-/* Room temperatures for the thermal house. The two thermostats cover their
-   zones. Snake Plant Dining is the Dining room, per the brief.
-   Corn Plant and White Aglaonema are left out until Jovan confirms the rooms,
-   though their entity ids say living_room and office. */
-var ROOM_TEMPS = {
+/* Room temperatures for the thermal house, in two tiers.
+   A thermostat is the better reading for any room it serves, so the plant
+   sensors only colour rooms no thermostat covers. Confirmed by Jovan:
+   Corn Plant and Snake Plant Living are both in the living room, which the
+   downstairs thermostat already covers, so neither is used. White Aglaonema
+   is the office, which has no thermostat, so it colours that room. */
+var THERMOSTAT_ROOMS = {
     loft: "sensor.loft_upstairs_thermostat_air_temperature",
     aks_room: "sensor.loft_upstairs_thermostat_air_temperature",
     bath1: "sensor.loft_upstairs_thermostat_air_temperature",
     living: "sensor.living_room_downstairs_thermostat_air_temperature",
-    kitchen: "sensor.living_room_downstairs_thermostat_air_temperature",
-    dining: "sensor.sm4_snake_plant_dining_room_temperature"
+    kitchen: "sensor.living_room_downstairs_thermostat_air_temperature"
+};
+
+var PLANT_ROOMS = {
+    dining: "sensor.sm4_snake_plant_dining_room_temperature",
+    office: "sensor.sm3_aglaonema_evergreen_office_temperature"
 };
 
 /* Thresholds. Orange past these, per rule 10. */
@@ -203,15 +209,27 @@ ClimateFeeds.prototype.air = function () {
 };
 
 ClimateFeeds.prototype.roomTemps = function () {
-    var out = {}, key;
-    for (key in ROOM_TEMPS) {
-        if (ROOM_TEMPS.hasOwnProperty(key)) {
-            var v = this.num(ROOM_TEMPS[key]);
+    var out = {}, key, v;
+
+    for (key in THERMOSTAT_ROOMS) {
+        if (THERMOSTAT_ROOMS.hasOwnProperty(key)) {
+            v = this.num(THERMOSTAT_ROOMS[key]);
             if (v !== null) {
                 out[key] = v;
             }
         }
     }
+
+    /* Second, and never over a thermostat reading. */
+    for (key in PLANT_ROOMS) {
+        if (PLANT_ROOMS.hasOwnProperty(key) && out[key] === undefined) {
+            v = this.num(PLANT_ROOMS[key]);
+            if (v !== null) {
+                out[key] = v;
+            }
+        }
+    }
+
     return out;
 };
 
@@ -298,7 +316,11 @@ ClimateFeeds.prototype.togglePurifier = function (onSent) {
 ClimateFeeds.prototype.refreshAlerts = function () {
     var self = this;
     var url = "https://api.weather.gov/alerts/active?point=" + HOME.lat + "," + HOME.lon;
-    fetch(url, { headers: { Accept: "application/geo+json" } })
+    /* No request headers. The endpoint answers with application/geo+json
+       anyway, and its CORS preflight only allows API-Key and User-Agent, so
+       sending Accept turned this into a preflighted request that the browser
+       then refused. Plain GET is a simple request and goes straight through. */
+    fetch(url)
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (data) {
             if (!data) { return; }
@@ -435,4 +457,4 @@ function numOrNull(v) {
     return isFinite(n) ? n : null;
 }
 
-export { ClimateFeeds, HOME, LIMITS, ROOM_TEMPS };
+export { ClimateFeeds, HOME, LIMITS, THERMOSTAT_ROOMS, PLANT_ROOMS };

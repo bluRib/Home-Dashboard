@@ -50563,7 +50563,7 @@
     var n = Number(v);
     return isFinite(n) ? n : null;
   }
-  var HOME, EXTERIOR, ZONES, AIR, ROOM_TEMPS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, PM_WINDOW;
+  var HOME, EXTERIOR, ZONES, AIR, THERMOSTAT_ROOMS, PLANT_ROOMS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, PM_WINDOW;
   var init_ClimateFeeds = __esm({
     "src/ClimateFeeds.js"() {
       HOME = { lat: 35.02763, lon: -81.99418 };
@@ -50597,13 +50597,16 @@
         purifier: "fan.living_room_air",
         purifierSpeed: "sensor.living_room_air_fan_speed"
       };
-      ROOM_TEMPS = {
+      THERMOSTAT_ROOMS = {
         loft: "sensor.loft_upstairs_thermostat_air_temperature",
         aks_room: "sensor.loft_upstairs_thermostat_air_temperature",
         bath1: "sensor.loft_upstairs_thermostat_air_temperature",
         living: "sensor.living_room_downstairs_thermostat_air_temperature",
-        kitchen: "sensor.living_room_downstairs_thermostat_air_temperature",
-        dining: "sensor.sm4_snake_plant_dining_room_temperature"
+        kitchen: "sensor.living_room_downstairs_thermostat_air_temperature"
+      };
+      PLANT_ROOMS = {
+        dining: "sensor.sm4_snake_plant_dining_room_temperature",
+        office: "sensor.sm3_aglaonema_evergreen_office_temperature"
       };
       LIMITS = { co2: 1e3, pm25: 35, humidityLow: 30, humidityHigh: 60 };
       ALERTS_EVERY = 5 * 60 * 1e3;
@@ -50724,10 +50727,18 @@
         };
       };
       ClimateFeeds.prototype.roomTemps = function() {
-        var out = {}, key;
-        for (key in ROOM_TEMPS) {
-          if (ROOM_TEMPS.hasOwnProperty(key)) {
-            var v = this.num(ROOM_TEMPS[key]);
+        var out = {}, key, v;
+        for (key in THERMOSTAT_ROOMS) {
+          if (THERMOSTAT_ROOMS.hasOwnProperty(key)) {
+            v = this.num(THERMOSTAT_ROOMS[key]);
+            if (v !== null) {
+              out[key] = v;
+            }
+          }
+        }
+        for (key in PLANT_ROOMS) {
+          if (PLANT_ROOMS.hasOwnProperty(key) && out[key] === void 0) {
+            v = this.num(PLANT_ROOMS[key]);
             if (v !== null) {
               out[key] = v;
             }
@@ -50843,7 +50854,7 @@
       ClimateFeeds.prototype.refreshAlerts = function() {
         var self = this;
         var url = "https://api.weather.gov/alerts/active?point=" + HOME.lat + "," + HOME.lon;
-        fetch(url, { headers: { Accept: "application/geo+json" } }).then(function(r) {
+        fetch(url).then(function(r) {
           return r.ok ? r.json() : null;
         }).then(function(data) {
           if (!data) {
