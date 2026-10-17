@@ -790,11 +790,36 @@
             </div>
 
             <div class="hs-panel" id="hs-timeline">
-                <div class="hs-head">Event Timeline <em>Last 10 min</em></div>
+                <div class="hs-head">House Status <em>Live</em></div>
                 <div class="hs-body">
-                    <canvas id="hs-timeline-canvas"></canvas>
-                    <div id="hs-elapsed">00:00:00</div>
-                    <div id="hs-zones"></div>
+
+                    <div id="hs-tl">
+                        <canvas id="hs-timeline-canvas"></canvas>
+                        <div id="hs-tl-empty">No events in the last 10 minutes</div>
+                        <div id="hs-tl-tip"></div>
+                        <div id="hs-tl-legend">
+                            <span class="normal">Normal</span>
+                            <span class="motion">Motion</span>
+                            <span class="alert">Alert</span>
+                        </div>
+                    </div>
+
+                    <div class="hs-cell" id="hs-clock">
+                        <div id="hs-time">--:--:--</div>
+                        <div id="hs-date"></div>
+                    </div>
+
+                    <div class="hs-cell" id="hs-weather">
+                        <div class="hs-cell-head">Weather</div>
+                        <div id="hs-wx-body"><span class="hs-wait">Waiting</span></div>
+                    </div>
+
+                    <div class="hs-cell" id="hs-energy">
+                        <div class="hs-cell-head">Energy <em id="hs-en-scope">Monitored</em></div>
+                        <div id="hs-en-body"><span class="hs-wait">Waiting</span></div>
+                        <canvas id="hs-en-canvas"></canvas>
+                    </div>
+
                 </div>
             </div>
 

@@ -79,10 +79,10 @@
           },
           // Get the Nth element in the matched element set OR
           // Get the whole matched element set as a clean array
-          get: function(num) {
-            return num != null ? (
+          get: function(num2) {
+            return num2 != null ? (
               // Return just the one element from the set
-              num < 0 ? this[num + this.length] : this[num]
+              num2 < 0 ? this[num2 + this.length] : this[num2]
             ) : (
               // Return all the elements in a clean array
               slice.call(this)
@@ -3693,7 +3693,7 @@
             }
           },
           css: function(elem, name, extra, styles) {
-            var val, num, hooks, origName = jQuery.camelCase(name);
+            var val, num2, hooks, origName = jQuery.camelCase(name);
             name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(elem.style, origName));
             hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
             if (hooks && "get" in hooks) {
@@ -3706,8 +3706,8 @@
               val = cssNormalTransform[name];
             }
             if (extra === "" || extra) {
-              num = parseFloat(val);
-              return extra === true || jQuery.isNumeric(num) ? num || 0 : val;
+              num2 = parseFloat(val);
+              return extra === true || jQuery.isNumeric(num2) ? num2 || 0 : val;
             }
             return val;
           }
@@ -9004,30 +9004,30 @@
       })(function(moment) {
         var weekEndings = "vas\xE1rnap h\xE9tf\u0151n kedden szerd\xE1n cs\xFCt\xF6rt\xF6k\xF6n p\xE9nteken szombaton".split(" ");
         function translate(number, withoutSuffix, key, isFuture) {
-          var num = number, suffix;
+          var num2 = number, suffix;
           switch (key) {
             case "s":
               return isFuture || withoutSuffix ? "n\xE9h\xE1ny m\xE1sodperc" : "n\xE9h\xE1ny m\xE1sodperce";
             case "m":
               return "egy" + (isFuture || withoutSuffix ? " perc" : " perce");
             case "mm":
-              return num + (isFuture || withoutSuffix ? " perc" : " perce");
+              return num2 + (isFuture || withoutSuffix ? " perc" : " perce");
             case "h":
               return "egy" + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "hh":
-              return num + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
+              return num2 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "d":
               return "egy" + (isFuture || withoutSuffix ? " nap" : " napja");
             case "dd":
-              return num + (isFuture || withoutSuffix ? " nap" : " napja");
+              return num2 + (isFuture || withoutSuffix ? " nap" : " napja");
             case "M":
               return "egy" + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "MM":
-              return num + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
+              return num2 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "y":
               return "egy" + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
             case "yy":
-              return num + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
+              return num2 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
           }
           return "";
         }
@@ -10988,9 +10988,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num) {
+        function plural(word, num2) {
           var forms = word.split("_");
-          return num % 10 === 1 && num % 100 !== 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
+          return num2 % 10 === 1 && num2 % 100 !== 11 ? forms[0] : num2 % 10 >= 2 && num2 % 10 <= 4 && (num2 % 100 < 10 || num2 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -12186,9 +12186,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num) {
+        function plural(word, num2) {
           var forms = word.split("_");
-          return num % 10 === 1 && num % 100 !== 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
+          return num2 % 10 === 1 && num2 % 100 !== 11 ? forms[0] : num2 % 10 >= 2 && num2 % 10 <= 4 && (num2 % 100 < 10 || num2 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -18423,8 +18423,8 @@
         },
         degToRad: (function() {
           var degreeToRadiansFactor = Math.PI / 180;
-          return function(degrees) {
-            return degrees * degreeToRadiansFactor;
+          return function(degrees2) {
+            return degrees2 * degreeToRadiansFactor;
           };
         })(),
         radToDeg: (function() {
@@ -23177,7 +23177,7 @@
           var parts = morph.name.match(pattern);
           if (parts && parts.length > 1) {
             var label = parts[1];
-            var num = parts[2];
+            var num2 = parts[2];
             if (!animations[label]) animations[label] = { start: Infinity, end: -Infinity };
             var animation = animations[label];
             if (i < animation.start) animation.start = i;
@@ -34058,7 +34058,7 @@
           var chunks = morph.name.match(pattern);
           if (chunks && chunks.length > 1) {
             var name = chunks[1];
-            var num = chunks[2];
+            var num2 = chunks[2];
             if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: -Infinity };
             var range = frameRanges[name];
             if (i < range.start) range.start = i;
@@ -39465,7 +39465,7 @@
         return 1 / (1 + Math.exp(-t * 12 + 6));
       };
       Utils.shadeColor = function(color, percent) {
-        var num = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num >> 16) + amt, G = (num >> 8 & 255) + amt, B = (num & 255) + amt;
+        var num2 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num2 >> 16) + amt, G = (num2 >> 8 & 255) + amt, B = (num2 & 255) + amt;
         return "#" + (16777216 + (R < 255 ? R < 1 ? 0 : R : 255) * 65536 + (G < 255 ? G < 1 ? 0 : G : 255) * 256 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
       };
       Utils.drawCurvedRectangle = function(ctx, left, top, width, height, radius) {
@@ -49553,7 +49553,17 @@
       MAX_EVENTS = 400;
       HouseState.prototype.message = function(m, isSeed) {
         if (!isSeed) {
-          this.events.push({ at: Date.now(), severity: m.severity, room: m.room, title: m.title });
+          this.events.push({
+            at: Date.now(),
+            severity: m.severity,
+            room: m.room,
+            /* The room name as shown, for the timeline hover label. m.room is
+               only the key, and unassigned entities have no key at all. */
+            location: m.location,
+            title: m.title,
+            state: m.state,
+            unit: m.unit
+          });
           if (this.events.length > MAX_EVENTS) {
             this.events.shift();
           }
@@ -49655,6 +49665,287 @@
           return a + b;
         }, 0) / temps.length : null;
         return { lights, alerts, avgTemp: avg, rooms: live };
+      };
+    }
+  });
+
+  // src/HouseFeeds.js
+  function HouseFeeds(ha2, onUpdate) {
+    this.ha = ha2;
+    this.onUpdate = onUpdate || function() {
+    };
+    this.weather = null;
+    this.energy = { watts: null, todayKwh: null, meters: 0, series: [], whole: false };
+    this._timers = [];
+  }
+  function num(v) {
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function stamp(row) {
+    if (row.lu !== void 0) {
+      return row.lu * 1e3;
+    }
+    return Date.parse(row.last_updated || row.last_changed || 0);
+  }
+  function toWatts(state2) {
+    if (!state2) {
+      return NaN;
+    }
+    var value = parseFloat(state2.state);
+    if (!isFinite(value)) {
+      return NaN;
+    }
+    var unit = state2.attributes && state2.attributes.unit_of_measurement || "W";
+    return unit.toLowerCase() === "kw" ? value * 1e3 : value;
+  }
+  var WHOLE_HOUSE_POWER, WHOLE_HOUSE_ENERGY, WEATHER_EVERY, ENERGY_EVERY, POWER_TICK, CHART_MINUTES, CHART_BUCKETS;
+  var init_HouseFeeds = __esm({
+    "src/HouseFeeds.js"() {
+      WHOLE_HOUSE_POWER = null;
+      WHOLE_HOUSE_ENERGY = null;
+      WEATHER_EVERY = 10 * 60 * 1e3;
+      ENERGY_EVERY = 5 * 60 * 1e3;
+      POWER_TICK = 10 * 1e3;
+      CHART_MINUTES = 60;
+      CHART_BUCKETS = 60;
+      HouseFeeds.prototype.start = function() {
+        var self = this;
+        if (!this.ha) {
+          return;
+        }
+        this.refreshWeather();
+        this.refreshEnergyTotal();
+        this.loadPowerHistory();
+        this.samplePower();
+        this._timers.push(setInterval(function() {
+          self.refreshWeather();
+        }, WEATHER_EVERY));
+        this._timers.push(setInterval(function() {
+          self.refreshEnergyTotal();
+        }, ENERGY_EVERY));
+        this._timers.push(setInterval(function() {
+          self.samplePower();
+        }, POWER_TICK));
+      };
+      HouseFeeds.prototype.stop = function() {
+        for (var i = 0; i < this._timers.length; i++) {
+          clearInterval(this._timers[i]);
+        }
+        this._timers = [];
+      };
+      HouseFeeds.prototype._byClass = function(deviceClass, skipReturned) {
+        var out = [];
+        if (!this.ha || !this.ha.states) {
+          return out;
+        }
+        this.ha.states.forEach(function(state2, id) {
+          if (id.indexOf("sensor.") !== 0) {
+            return;
+          }
+          var attrs = state2.attributes || {};
+          if (attrs.device_class !== deviceClass) {
+            return;
+          }
+          if (skipReturned && id.indexOf("returned") >= 0) {
+            return;
+          }
+          out.push(id);
+        });
+        return out;
+      };
+      HouseFeeds.prototype.weatherEntity = function() {
+        var found = null;
+        if (!this.ha || !this.ha.states) {
+          return null;
+        }
+        this.ha.states.forEach(function(state2, id) {
+          if (!found && id.indexOf("weather.") === 0) {
+            found = id;
+          }
+        });
+        return found;
+      };
+      HouseFeeds.prototype.refreshWeather = function() {
+        var self = this;
+        var id = this.weatherEntity();
+        if (!id) {
+          return;
+        }
+        var state2 = this.ha.states.get(id);
+        var attrs = state2 && state2.attributes || {};
+        var w = {
+          entity: id,
+          condition: state2 ? state2.state : "",
+          temp: num(attrs.temperature),
+          feels: num(attrs.apparent_temperature),
+          humidity: num(attrs.humidity),
+          unit: attrs.temperature_unit || "",
+          high: null,
+          low: null,
+          hours: []
+        };
+        this.weather = w;
+        this.onUpdate();
+        this._forecast(id, "daily").then(function(list) {
+          if (list.length) {
+            w.high = num(list[0].temperature);
+            w.low = num(list[0].templow);
+            self.onUpdate();
+          }
+        }).catch(function() {
+        });
+        this._forecast(id, "hourly").then(function(list) {
+          var now = Date.now(), out = [], i;
+          for (i = 0; i < list.length && out.length < 4; i++) {
+            var at = Date.parse(list[i].datetime);
+            if (isFinite(at) && at > now) {
+              out.push({ at, temp: num(list[i].temperature), condition: list[i].condition });
+            }
+          }
+          w.hours = out;
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      HouseFeeds.prototype._forecast = function(entityId, type) {
+        return this.ha.command({
+          type: "call_service",
+          domain: "weather",
+          service: "get_forecasts",
+          service_data: { type },
+          target: { entity_id: entityId },
+          return_response: true
+        }).then(function(result) {
+          var response = result && result.response || {};
+          var entry = response[entityId] || {};
+          return entry.forecast || [];
+        });
+      };
+      HouseFeeds.prototype.currentWatts = function() {
+        if (WHOLE_HOUSE_POWER) {
+          var one = this.ha.states.get(WHOLE_HOUSE_POWER);
+          var single = one ? toWatts(one) : NaN;
+          return isFinite(single) ? single : null;
+        }
+        var ids = this._byClass("power", false);
+        var total = 0, seen = 0, i, watts;
+        for (i = 0; i < ids.length; i++) {
+          watts = toWatts(this.ha.states.get(ids[i]));
+          if (isFinite(watts)) {
+            total += watts;
+            seen++;
+          }
+        }
+        this.energy.meters = seen;
+        return seen ? total : null;
+      };
+      HouseFeeds.prototype.loadPowerHistory = function() {
+        var self = this;
+        var ids = WHOLE_HOUSE_POWER ? [WHOLE_HOUSE_POWER] : this._byClass("power", false);
+        if (!ids.length) {
+          return;
+        }
+        var end = Date.now();
+        var start2 = end - CHART_MINUTES * 60 * 1e3;
+        var width = (end - start2) / CHART_BUCKETS;
+        this.ha.command({
+          type: "history/history_during_period",
+          start_time: new Date(start2).toISOString(),
+          end_time: new Date(end).toISOString(),
+          entity_ids: ids,
+          minimal_response: true,
+          no_attributes: true
+        }).then(function(history) {
+          var sums = new Array(CHART_BUCKETS);
+          var counted = new Array(CHART_BUCKETS);
+          var b;
+          for (b = 0; b < CHART_BUCKETS; b++) {
+            sums[b] = 0;
+            counted[b] = false;
+          }
+          Object.keys(history).forEach(function(id) {
+            var rows2 = history[id] || [];
+            var value = NaN;
+            var r = 0;
+            for (b = 0; b < CHART_BUCKETS; b++) {
+              var edge = start2 + (b + 1) * width;
+              while (r < rows2.length && stamp(rows2[r]) <= edge) {
+                var v = parseFloat(rows2[r].s !== void 0 ? rows2[r].s : rows2[r].state);
+                if (isFinite(v)) {
+                  value = v;
+                }
+                r++;
+              }
+              if (isFinite(value)) {
+                sums[b] += value;
+                counted[b] = true;
+              }
+            }
+          });
+          var series = [];
+          for (b = 0; b < CHART_BUCKETS; b++) {
+            series.push(counted[b] ? sums[b] : null);
+          }
+          self.energy.series = series;
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      HouseFeeds.prototype.samplePower = function() {
+        var watts = this.currentWatts();
+        this.energy.watts = watts;
+        this.energy.whole = !!WHOLE_HOUSE_POWER;
+        if (watts !== null) {
+          this.energy.series.push(watts);
+          while (this.energy.series.length > CHART_BUCKETS) {
+            this.energy.series.shift();
+          }
+        }
+        this.onUpdate();
+      };
+      HouseFeeds.prototype.refreshEnergyTotal = function() {
+        var self = this;
+        var ids = WHOLE_HOUSE_ENERGY ? [WHOLE_HOUSE_ENERGY] : this._byClass("energy", true);
+        if (!ids.length) {
+          return;
+        }
+        if (WHOLE_HOUSE_ENERGY) {
+          var one = this.ha.states.get(WHOLE_HOUSE_ENERGY);
+          var value = one ? parseFloat(one.state) : NaN;
+          this.energy.todayKwh = isFinite(value) ? value : null;
+          this.onUpdate();
+          return;
+        }
+        var midnight = /* @__PURE__ */ new Date();
+        midnight.setHours(0, 0, 0, 0);
+        this.ha.command({
+          type: "history/history_during_period",
+          start_time: midnight.toISOString(),
+          end_time: (/* @__PURE__ */ new Date()).toISOString(),
+          entity_ids: ids,
+          minimal_response: true,
+          no_attributes: true
+        }).then(function(history) {
+          var total = 0, meters = 0;
+          Object.keys(history).forEach(function(id) {
+            var rows2 = history[id] || [];
+            if (rows2.length < 2) {
+              return;
+            }
+            var first = parseFloat(rows2[0].s !== void 0 ? rows2[0].s : rows2[0].state);
+            var tail = rows2[rows2.length - 1];
+            var last = parseFloat(tail.s !== void 0 ? tail.s : tail.state);
+            if (!isFinite(first) || !isFinite(last)) {
+              return;
+            }
+            total += last >= first ? last - first : last;
+            meters++;
+          });
+          self.energy.todayKwh = meters ? total : null;
+          self.onUpdate();
+        }).catch(function() {
+        });
       };
     }
   });
@@ -49817,47 +50108,159 @@
     return String(n).length < 2 ? "0" + n : String(n);
   }
   function renderClock() {
-    var el = $id("hs-elapsed");
+    var el = $id("hs-time");
     if (!el) {
       return;
     }
-    var s = Math.floor((Date.now() - started) / 1e3);
-    el.textContent = pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s % 3600 / 60)) + ":" + pad(s % 60);
-    var zonesEl = $id("hs-zones");
-    if (zonesEl && !zonesEl.getAttribute("data-built")) {
-      zonesEl.setAttribute("data-built", "1");
-      var h = "";
-      for (var i = 0; i < ZONES.length; i++) {
-        h += "<div><span>" + ZONES[i][0] + '</span><b id="hs-tz-' + i + '"></b></div>';
-      }
-      zonesEl.innerHTML = h;
+    var now = /* @__PURE__ */ new Date();
+    var h = now.getHours();
+    var suffix = h < 12 ? "AM" : "PM";
+    var h12 = h % 12;
+    if (h12 === 0) {
+      h12 = 12;
     }
-    for (var z = 0; z < ZONES.length; z++) {
-      var t = $id("hs-tz-" + z);
-      if (t) {
-        t.textContent = (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", {
-          timeZone: ZONES[z][1],
-          hour12: false
-        });
-      }
+    el.innerHTML = h12 + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds()) + "<small>" + suffix + "</small>";
+    var date = $id("hs-date");
+    if (date) {
+      date.textContent = DAYS[now.getDay()] + ", " + MONTHS[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
     }
   }
-  function sizeTimeline() {
-    if (!timelineCanvas) {
+  function degrees(v, unit) {
+    return v === null || v === void 0 ? "--" : Math.round(v) + (unit || "");
+  }
+  function hourLabel(at) {
+    var d = new Date(at);
+    var h = d.getHours() % 12;
+    if (h === 0) {
+      h = 12;
+    }
+    return h + (d.getHours() < 12 ? "a" : "p");
+  }
+  function renderWeather() {
+    var box = $id("hs-wx-body");
+    if (!box) {
       return;
     }
-    var panel = timelineCanvas.parentNode;
-    var w = panel.clientWidth;
-    var h = panel.clientHeight;
+    var w = feeds && feeds.weather;
+    if (!w) {
+      box.innerHTML = '<span class="hs-wait">No weather entity</span>';
+      return;
+    }
+    var unit = w.unit || "";
+    var html = '<div id="hs-wx-now"><div id="hs-wx-temp">' + degrees(w.temp, unit) + '</div><div id="hs-wx-cond">' + String(w.condition || "").replace(/_/g, " ") + '</div></div><div id="hs-wx-stats"><span>High</span><b>' + degrees(w.high, unit) + "</b><span>Low</span><b>" + degrees(w.low, unit) + "</b><span>Humidity</span><b>" + (w.humidity === null ? "--" : Math.round(w.humidity) + "%") + "</b></div>";
+    if (w.hours && w.hours.length) {
+      html += '<div id="hs-wx-hours">';
+      for (var i = 0; i < w.hours.length; i++) {
+        html += "<div><span>" + hourLabel(w.hours[i].at) + "</span><b>" + degrees(w.hours[i].temp, "") + "</b></div>";
+      }
+      html += "</div>";
+    }
+    box.innerHTML = html;
+  }
+  function renderEnergy() {
+    var box = $id("hs-en-body");
+    if (!box) {
+      return;
+    }
+    var e = feeds && feeds.energy;
+    if (!e || e.watts === null) {
+      box.innerHTML = '<span class="hs-wait">No power sensors</span>';
+      return;
+    }
+    var scope = $id("hs-en-scope");
+    if (scope) {
+      scope.textContent = e.whole ? "Whole house" : "Monitored";
+      scope.title = e.whole ? "" : e.meters + " circuits reporting, no whole house meter";
+    }
+    box.innerHTML = '<span id="hs-en-now">' + (e.watts / 1e3).toFixed(2) + '<i>kW</i></span><span id="hs-en-today"><span>Today</span> <b>' + (e.todayKwh === null ? "--" : e.todayKwh.toFixed(1) + " kWh") + "</b></span>";
+  }
+  function drawEnergyChart() {
+    if (!energyCtx || !energyCanvas) {
+      return;
+    }
+    var w = energyCanvas.clientWidth;
+    var h = energyCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = energyCtx;
+    ctx.clearRect(0, 0, w, h);
+    var series = feeds && feeds.energy.series || [];
+    var points = [], i;
+    for (i = 0; i < series.length; i++) {
+      if (series[i] !== null && isFinite(series[i])) {
+        points.push({ i, v: series[i] });
+      }
+    }
+    if (points.length < 2) {
+      return;
+    }
+    var max = 0, min = Infinity;
+    for (i = 0; i < points.length; i++) {
+      if (points[i].v > max) {
+        max = points[i].v;
+      }
+      if (points[i].v < min) {
+        min = points[i].v;
+      }
+    }
+    if (max - min < 1) {
+      max = min + 1;
+    }
+    var span = series.length - 1 || 1;
+    var xAt = function(idx) {
+      return idx / span * w;
+    };
+    var yAt = function(v) {
+      return h - 1 - (v - min) / (max - min) * (h - 2);
+    };
+    ctx.beginPath();
+    ctx.moveTo(xAt(points[0].i), h);
+    for (i = 0; i < points.length; i++) {
+      ctx.lineTo(xAt(points[i].i), yAt(points[i].v));
+    }
+    ctx.lineTo(xAt(points[points.length - 1].i), h);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(0,238,238,.14)";
+    ctx.fill();
+    ctx.beginPath();
+    for (i = 0; i < points.length; i++) {
+      var px = xAt(points[i].i), py = yAt(points[i].v);
+      if (i) {
+        ctx.lineTo(px, py);
+      } else {
+        ctx.moveTo(px, py);
+      }
+    }
+    ctx.strokeStyle = "#00eeee";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    var last = points[points.length - 1];
+    ctx.beginPath();
+    ctx.arc(xAt(last.i), yAt(last.v), 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = "#e6fbff";
+    ctx.fill();
+  }
+  function sizeOne(canvas, ctx) {
+    if (!canvas || !ctx) {
+      return;
+    }
+    var w = canvas.clientWidth;
+    var h = canvas.clientHeight;
     if (!w || !h) {
       return;
     }
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    timelineCanvas.width = Math.floor(w * dpr);
-    timelineCanvas.height = Math.floor(h * dpr);
-    timelineCanvas.style.width = w + "px";
-    timelineCanvas.style.height = h + "px";
-    timelineCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function sizeCanvases() {
+    sizeOne(timelineCanvas, timelineCtx);
+    sizeOne(energyCanvas, energyCtx);
+  }
+  function colorFor(severity) {
+    return severity === Severity.ALERT ? "#ff8a1f" : severity === Severity.MOTION ? "#4dffb0" : "#00eeee";
   }
   function drawTimeline() {
     if (!timelineCtx || !timelineCanvas) {
@@ -49870,52 +50273,129 @@
     }
     var ctx = timelineCtx;
     ctx.clearRect(0, 0, w, h);
+    var now = Date.now();
+    var events = state && state.events || [];
+    var top = Math.min(18, h * 0.3);
+    var base = h - 1;
+    var i, gx;
     ctx.strokeStyle = "rgba(255,255,255,.10)";
     ctx.lineWidth = 1;
-    for (var i = 0; i <= 10; i++) {
-      var x = Math.floor(w * i / 10) + 0.5;
+    for (i = 0; i <= 10; i++) {
+      gx = Math.floor(w * i / 10) + 0.5;
       ctx.beginPath();
-      ctx.moveTo(x, h * 0.3);
-      ctx.lineTo(x, h);
+      ctx.moveTo(gx, top);
+      ctx.lineTo(gx, base);
       ctx.stroke();
     }
-    ctx.fillStyle = "rgba(0,238,238,.6)";
-    ctx.font = "11px Menlo, Consolas, monospace";
-    for (var g = 0; g <= 10; g += 2) {
-      ctx.fillText(10 - g + "m", Math.floor(w * g / 10) + 4, 12);
+    ctx.beginPath();
+    ctx.moveTo(0, base + 0.5);
+    ctx.lineTo(w, base + 0.5);
+    ctx.strokeStyle = "rgba(0,238,238,.35)";
+    ctx.stroke();
+    ctx.fillStyle = "rgba(0,238,238,.55)";
+    ctx.font = "10px Menlo, Consolas, monospace";
+    for (i = 0; i <= 10; i += 2) {
+      ctx.fillText(10 - i + "m", Math.floor(w * i / 10) + 3, 10);
     }
-    var now = Date.now();
-    var events = state ? state.events : [];
-    for (var e = 0; e < events.length; e++) {
-      var ev = events[e];
+    marks = [];
+    var drawn = 0;
+    for (i = 0; i < events.length; i++) {
+      var ev = events[i];
       var age = now - ev.at;
-      if (age > TIMELINE_WINDOW) {
+      if (age < 0 || age > TIMELINE_WINDOW) {
         continue;
       }
+      drawn++;
       var px = w * (1 - age / TIMELINE_WINDOW);
-      var tall = ev.severity === Severity.ALERT;
-      ctx.strokeStyle = tall ? "#ff8a1f" : ev.severity === Severity.MOTION ? "#4dffb0" : "rgba(0,238,238,.65)";
+      var isAlert = ev.severity === Severity.ALERT;
+      var isMotion = ev.severity === Severity.MOTION;
+      var height = isAlert ? base - top : isMotion ? (base - top) * 0.66 : (base - top) * 0.42;
+      var py = base - height;
+      ctx.strokeStyle = colorFor(ev.severity);
+      ctx.globalAlpha = isAlert ? 1 : 0.8;
       ctx.beginPath();
-      ctx.moveTo(px, h);
-      ctx.lineTo(px, tall ? h * 0.36 : h * 0.6);
+      ctx.moveTo(px, base);
+      ctx.lineTo(px, py);
       ctx.stroke();
+      ctx.globalAlpha = 1;
+      if (isAlert) {
+        ctx.fillStyle = "#ff8a1f";
+        ctx.fillRect(px - 1.5, py - 3, 3, 3);
+      }
+      marks.push({ x: px, y: py, ev });
+    }
+    var wrap = $id("hs-tl");
+    if (wrap) {
+      if (drawn) {
+        wrap.classList.remove("empty");
+      } else {
+        wrap.classList.add("empty");
+      }
     }
   }
-  var ZONES, TIMELINE_WINDOW, HouseView, state, started, selected, active, dirty, lastRender, resizeTimer, observer, timelineCanvas, timelineCtx;
+  function bindTimelineHover() {
+    var wrap = $id("hs-tl");
+    var tip = $id("hs-tl-tip");
+    if (!wrap || !tip || wrap.getAttribute("data-hover")) {
+      return;
+    }
+    wrap.setAttribute("data-hover", "1");
+    var move = function(clientX, clientY) {
+      var box = wrap.getBoundingClientRect();
+      var x = clientX - box.left;
+      var y = clientY - box.top;
+      var best = null, bestDx = HIT_RADIUS + 1, i, dx;
+      for (i = 0; i < marks.length; i++) {
+        dx = Math.abs(marks[i].x - x);
+        if (dx < bestDx) {
+          bestDx = dx;
+          best = marks[i];
+        }
+      }
+      if (!best) {
+        tip.style.display = "none";
+        return;
+      }
+      var ev = best.ev;
+      var ago = Math.max(0, Math.round((Date.now() - ev.at) / 1e3));
+      var when = ago < 60 ? ago + "s ago" : Math.round(ago / 60) + "m ago";
+      var value = ev.state === null || ev.state === void 0 ? "" : " is " + ev.state + (ev.unit ? " " + ev.unit : "");
+      tip.className = ev.severity === Severity.ALERT ? "alert" : ev.severity === Severity.MOTION ? "motion" : "";
+      tip.innerHTML = "<b>" + (ev.location || "Unassigned") + "</b> " + ev.title + value + ", " + when;
+      tip.style.display = "block";
+      var tw = tip.offsetWidth;
+      var left = Math.min(Math.max(0, best.x + 10), Math.max(0, box.width - tw));
+      tip.style.left = left + "px";
+      tip.style.top = Math.max(0, Math.min(y - 24, box.height - tip.offsetHeight)) + "px";
+    };
+    wrap.addEventListener("mousemove", function(e) {
+      move(e.clientX, e.clientY);
+    });
+    wrap.addEventListener("mouseleave", function() {
+      tip.style.display = "none";
+    });
+    wrap.addEventListener("touchstart", function(e) {
+      if (e.touches && e.touches.length) {
+        move(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+    wrap.addEventListener("touchend", function() {
+      setTimeout(function() {
+        tip.style.display = "none";
+      }, 2500);
+    });
+  }
+  var TIMELINE_WINDOW, HIT_RADIUS, HouseView, state, feeds, selected, active, dirty, lastRender, resizeTimer, observer, timelineCanvas, timelineCtx, energyCanvas, energyCtx, marks, feedsDirty, DAYS, MONTHS;
   var init_HouseView = __esm({
     "src/HouseView.js"() {
       init_HouseState();
+      init_HouseFeeds();
       init_message();
-      ZONES = [
-        ["San Francisco", "America/Los_Angeles"],
-        ["New York", "America/New_York"],
-        ["London", "Europe/London"],
-        ["Berlin", "Europe/Berlin"]
-      ];
       TIMELINE_WINDOW = 10 * 60 * 1e3;
+      HIT_RADIUS = 7;
       HouseView = {};
       state = null;
-      started = 0;
+      feeds = null;
       selected = null;
       active = false;
       dirty = true;
@@ -49924,16 +50404,30 @@
       observer = null;
       timelineCanvas = null;
       timelineCtx = null;
-      HouseView.init = function() {
+      energyCanvas = null;
+      energyCtx = null;
+      marks = [];
+      feedsDirty = true;
+      HouseView.init = function(ha2) {
         if (!state) {
           state = new HouseState();
-          started = Date.now();
         }
-        $id("house-screen").style.display = "grid";
+        var root = $id("house-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
         active = true;
         buildFloorButtons();
         timelineCanvas = $id("hs-timeline-canvas");
         timelineCtx = timelineCanvas ? timelineCanvas.getContext("2d") : null;
+        energyCanvas = $id("hs-en-canvas");
+        energyCtx = energyCanvas ? energyCanvas.getContext("2d") : null;
+        bindTimelineHover();
+        if (!feeds && ha2) {
+          feeds = new HouseFeeds(ha2, function() {
+            feedsDirty = true;
+          });
+          feeds.start();
+        }
         if (window.HouseWidget) {
           window.HouseWidget.mount();
         }
@@ -49947,7 +50441,9 @@
       };
       HouseView.show = function() {
         active = true;
-        $id("house-screen").style.display = "grid";
+        var root = $id("house-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
         HouseView.resize();
       };
       HouseView.hide = function() {
@@ -49960,7 +50456,6 @@
       HouseView.message = function(m) {
         if (!state) {
           state = new HouseState();
-          started = Date.now();
         }
         state.message(m);
         if (window.HouseWidget) {
@@ -49971,7 +50466,6 @@
       HouseView.seed = function(messages) {
         if (!state) {
           state = new HouseState();
-          started = Date.now();
         }
         for (var i = 0; i < messages.length; i++) {
           state.message(messages[i], true);
@@ -49996,7 +50490,13 @@
           renderRooms();
           renderDetail();
         }
+        if (feedsDirty) {
+          feedsDirty = false;
+          renderWeather();
+          renderEnergy();
+        }
         renderClock();
+        drawEnergyChart();
         drawTimeline();
       };
       HouseView.resize = function() {
@@ -50006,7 +50506,8 @@
         if (window.HouseWidget) {
           window.HouseWidget.resize();
         }
-        sizeTimeline();
+        sizeCanvases();
+        feedsDirty = true;
         dirty = true;
       };
       HouseView.resizeDebounced = function() {
@@ -50018,6 +50519,21 @@
           HouseView.resize();
         }, 150);
       };
+      DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
     }
   });
 
@@ -51679,7 +52195,7 @@
         };
       })(jQuery);
       (function($2, undefined2) {
-        function num(v) {
+        function num2(v) {
           return parseInt(v, 10) || 0;
         }
         function isNumber(value) {
@@ -51855,8 +52371,8 @@
               el.css({ position: "absolute", top: iniPos.top, left: iniPos.left });
             }
             this._renderProxy();
-            curleft = num(this.helper.css("left"));
-            curtop = num(this.helper.css("top"));
+            curleft = num2(this.helper.css("left"));
+            curtop = num2(this.helper.css("top"));
             if (o.containment) {
               curleft += $2(o.containment).scrollLeft() || 0;
               curtop += $2(o.containment).scrollTop() || 0;
@@ -52161,7 +52677,7 @@
               element = $2(ce);
               p = [];
               $2(["Top", "Right", "Left", "Bottom"]).each(function(i, name) {
-                p[i] = num(element.css("padding" + name));
+                p[i] = num2(element.css("padding" + name));
               });
               that.containerOffset = element.offset();
               that.containerPosition = element.position();
@@ -56434,12 +56950,12 @@
               }
               return matches;
             }, getNumber = function(match) {
-              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num = value.substring(iValue).match(digits);
-              if (!num) {
+              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num2 = value.substring(iValue).match(digits);
+              if (!num2) {
                 throw "Missing number at position " + iValue;
               }
-              iValue += num[0].length;
-              return parseInt(num[0], 10);
+              iValue += num2[0].length;
+              return parseInt(num2[0], 10);
             }, getName = function(match, shortNames, longNames) {
               var index = -1, names = $2.map(lookAhead(match) ? longNames : shortNames, function(v, k) {
                 return [[k, v]];
@@ -56601,13 +57117,13 @@
               }
               return matches;
             }, formatNumber = function(match, value, len) {
-              var num = "" + value;
+              var num2 = "" + value;
               if (lookAhead(match)) {
-                while (num.length < len) {
-                  num = "0" + num;
+                while (num2.length < len) {
+                  num2 = "0" + num2;
                 }
               }
-              return num;
+              return num2;
             }, formatName = function(match, value, shortNames, longNames) {
               return lookAhead(match) ? longNames[value] : shortNames[value];
             }, output = "", literal = false;
@@ -59908,8 +60424,8 @@
             }
             return precision;
           },
-          _precisionOf: function(num) {
-            var str = num.toString(), decimal = str.indexOf(".");
+          _precisionOf: function(num2) {
+            var str = num2.toString(), decimal = str.indexOf(".");
             return decimal === -1 ? 0 : str.length - decimal - 1;
           },
           _adjustValue: function(value) {
@@ -60540,12 +61056,12 @@
             } else {
               index = this._getIndex(index);
               if ($2.isArray(disabled)) {
-                disabled = $2.map(disabled, function(num) {
-                  return num !== index ? num : null;
+                disabled = $2.map(disabled, function(num2) {
+                  return num2 !== index ? num2 : null;
                 });
               } else {
-                disabled = $2.map(this.tabs, function(li, num) {
-                  return num !== index ? num : null;
+                disabled = $2.map(this.tabs, function(li, num2) {
+                  return num2 !== index ? num2 : null;
                 });
               }
             }
@@ -60989,7 +61505,7 @@
     });
     LightTable.hide();
     if (system.key === "house") {
-      HouseView2.init();
+      HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
         active2 = "house";

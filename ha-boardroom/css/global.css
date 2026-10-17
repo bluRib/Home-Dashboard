@@ -76,6 +76,11 @@ body {
 }
 */
 #screensaver {
+    /* Above every screen. The House grid is a fixed, full viewport, opaque
+       panel that comes later in the document, so without this it paints over
+       the splash the moment the screen is laid out. */
+    position: relative;
+    z-index: 1000;
     display:inline-block;
     font-family: 'terminator';
     font-size: 30pt;

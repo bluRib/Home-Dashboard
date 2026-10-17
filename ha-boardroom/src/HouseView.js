@@ -12,16 +12,11 @@
  * Every widget sizes from its own panel. Nothing here hardcodes pixels.
  */
 import { HouseState } from "./HouseState.js";
+import { HouseFeeds } from "./HouseFeeds.js";
 import { Severity } from "../../app/js/message.js";
 
-var ZONES = [
-    ["San Francisco", "America/Los_Angeles"],
-    ["New York", "America/New_York"],
-    ["London", "Europe/London"],
-    ["Berlin", "Europe/Berlin"]
-];
-
 var TIMELINE_WINDOW = 10 * 60 * 1000;   // 10 minutes across the strip
+var HIT_RADIUS = 7;                     // px, how near the pointer has to be
 
 function $id(id) {
     return document.getElementById(id);
@@ -30,7 +25,7 @@ function $id(id) {
 var HouseView = {};
 
 var state = null;
-var started = 0;
+var feeds = null;
 var selected = null;
 var active = false;
 var dirty = true;
@@ -39,19 +34,38 @@ var resizeTimer = null;
 var observer = null;
 var timelineCanvas = null;
 var timelineCtx = null;
+var energyCanvas = null;
+var energyCtx = null;
+/* Screen position of every mark drawn, so the pointer can be matched to an
+   event without searching the whole ring buffer on each mousemove. */
+var marks = [];
+var feedsDirty = true;
 
-HouseView.init = function () {
+HouseView.init = function (ha) {
     if (!state) {
         state = new HouseState();
-        started = Date.now();
     }
 
-    $id("house-screen").style.display = "grid";
+    /* Laid out but not painted. onSwitch shows the splash for three seconds
+       first, and this screen is a fixed, full viewport, opaque grid: if it
+       were visible now it would cover the splash completely. visibility
+       keeps the geometry so the panels can still measure themselves. */
+    var root = $id("house-screen");
+    root.style.display = "grid";
+    root.style.visibility = "hidden";
     active = true;
 
     buildFloorButtons();
     timelineCanvas = $id("hs-timeline-canvas");
     timelineCtx = timelineCanvas ? timelineCanvas.getContext("2d") : null;
+    energyCanvas = $id("hs-en-canvas");
+    energyCtx = energyCanvas ? energyCanvas.getContext("2d") : null;
+    bindTimelineHover();
+
+    if (!feeds && ha) {
+        feeds = new HouseFeeds(ha, function () { feedsDirty = true; });
+        feeds.start();
+    }
 
     if (window.HouseWidget) {
         window.HouseWidget.mount();
@@ -70,7 +84,9 @@ HouseView.init = function () {
 
 HouseView.show = function () {
     active = true;
-    $id("house-screen").style.display = "grid";
+    var root = $id("house-screen");
+    root.style.display = "grid";
+    root.style.visibility = "visible";
     HouseView.resize();
 };
 
@@ -85,7 +101,6 @@ HouseView.hide = function () {
 HouseView.message = function (m) {
     if (!state) {
         state = new HouseState();
-        started = Date.now();
     }
     state.message(m);
     if (window.HouseWidget) {
@@ -99,7 +114,6 @@ HouseView.message = function (m) {
 HouseView.seed = function (messages) {
     if (!state) {
         state = new HouseState();
-        started = Date.now();
     }
     for (var i = 0; i < messages.length; i++) {
         state.message(messages[i], true);
@@ -128,7 +142,14 @@ HouseView.animate = function () {
         renderDetail();
     }
 
+    if (feedsDirty) {
+        feedsDirty = false;
+        renderWeather();
+        renderEnergy();
+    }
+
     renderClock();
+    drawEnergyChart();
     drawTimeline();
 };
 
@@ -141,7 +162,8 @@ HouseView.resize = function () {
     if (window.HouseWidget) {
         window.HouseWidget.resize();
     }
-    sizeTimeline();
+    sizeCanvases();
+    feedsDirty = true;
     dirty = true;
 };
 
@@ -335,51 +357,204 @@ function pad(n) {
     return String(n).length < 2 ? "0" + n : String(n);
 }
 
+/* ---- clock --------------------------------------------------------------- */
+
+var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+var MONTHS = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"];
+
 function renderClock() {
-    var el = $id("hs-elapsed");
+    var el = $id("hs-time");
     if (!el) {
         return;
     }
-    var s = Math.floor((Date.now() - started) / 1000);
-    el.textContent = pad(Math.floor(s / 3600)) + ":" +
-        pad(Math.floor((s % 3600) / 60)) + ":" + pad(s % 60);
+    var now = new Date();
 
-    var zonesEl = $id("hs-zones");
-    if (zonesEl && !zonesEl.getAttribute("data-built")) {
-        zonesEl.setAttribute("data-built", "1");
-        var h = "";
-        for (var i = 0; i < ZONES.length; i++) {
-            h += '<div><span>' + ZONES[i][0] + '</span><b id="hs-tz-' + i + '"></b></div>';
-        }
-        zonesEl.innerHTML = h;
+    var h = now.getHours();
+    var suffix = h < 12 ? "AM" : "PM";
+    var h12 = h % 12;
+    if (h12 === 0) {
+        h12 = 12;
     }
-    for (var z = 0; z < ZONES.length; z++) {
-        var t = $id("hs-tz-" + z);
-        if (t) {
-            t.textContent = new Date().toLocaleTimeString("en-GB", {
-                timeZone: ZONES[z][1],
-                hour12: false
-            });
-        }
+
+    el.innerHTML = h12 + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds()) +
+        "<small>" + suffix + "</small>";
+
+    var date = $id("hs-date");
+    if (date) {
+        date.textContent = DAYS[now.getDay()] + ", " + MONTHS[now.getMonth()] +
+            " " + now.getDate() + ", " + now.getFullYear();
     }
 }
 
-function sizeTimeline() {
-    if (!timelineCanvas) {
+/* ---- weather ------------------------------------------------------------- */
+
+function degrees(v, unit) {
+    return v === null || v === undefined ? "--" : Math.round(v) + (unit || "");
+}
+
+function hourLabel(at) {
+    var d = new Date(at);
+    var h = d.getHours() % 12;
+    if (h === 0) {
+        h = 12;
+    }
+    return h + (d.getHours() < 12 ? "a" : "p");
+}
+
+function renderWeather() {
+    var box = $id("hs-wx-body");
+    if (!box) {
         return;
     }
-    var panel = timelineCanvas.parentNode;
-    var w = panel.clientWidth;
-    var h = panel.clientHeight;
+    var w = feeds && feeds.weather;
+    if (!w) {
+        box.innerHTML = '<span class="hs-wait">No weather entity</span>';
+        return;
+    }
+
+    var unit = w.unit || "";
+    var html =
+        '<div id="hs-wx-now">' +
+            '<div id="hs-wx-temp">' + degrees(w.temp, unit) + '</div>' +
+            '<div id="hs-wx-cond">' + String(w.condition || "").replace(/_/g, " ") + '</div>' +
+        '</div>' +
+        '<div id="hs-wx-stats">' +
+            '<span>High</span><b>' + degrees(w.high, unit) + '</b>' +
+            '<span>Low</span><b>' + degrees(w.low, unit) + '</b>' +
+            '<span>Humidity</span><b>' + (w.humidity === null ? "--" : Math.round(w.humidity) + "%") + '</b>' +
+        '</div>';
+
+    if (w.hours && w.hours.length) {
+        html += '<div id="hs-wx-hours">';
+        for (var i = 0; i < w.hours.length; i++) {
+            html += '<div><span>' + hourLabel(w.hours[i].at) + '</span><b>' +
+                degrees(w.hours[i].temp, "") + '</b></div>';
+        }
+        html += '</div>';
+    }
+
+    box.innerHTML = html;
+}
+
+/* ---- energy -------------------------------------------------------------- */
+
+function renderEnergy() {
+    var box = $id("hs-en-body");
+    if (!box) {
+        return;
+    }
+    var e = feeds && feeds.energy;
+    if (!e || e.watts === null) {
+        box.innerHTML = '<span class="hs-wait">No power sensors</span>';
+        return;
+    }
+
+    var scope = $id("hs-en-scope");
+    if (scope) {
+        scope.textContent = e.whole ? "Whole house" : "Monitored";
+        scope.title = e.whole ? "" : e.meters + " circuits reporting, no whole house meter";
+    }
+
+    box.innerHTML =
+        '<span id="hs-en-now">' + (e.watts / 1000).toFixed(2) + '<i>kW</i></span>' +
+        '<span id="hs-en-today"><span>Today</span> <b>' +
+            (e.todayKwh === null ? "--" : e.todayKwh.toFixed(1) + " kWh") +
+        '</b></span>';
+}
+
+function drawEnergyChart() {
+    if (!energyCtx || !energyCanvas) {
+        return;
+    }
+    var w = energyCanvas.clientWidth;
+    var h = energyCanvas.clientHeight;
+    if (!w || !h) {
+        return;
+    }
+
+    var ctx = energyCtx;
+    ctx.clearRect(0, 0, w, h);
+
+    var series = (feeds && feeds.energy.series) || [];
+    var points = [], i;
+    for (i = 0; i < series.length; i++) {
+        if (series[i] !== null && isFinite(series[i])) {
+            points.push({ i: i, v: series[i] });
+        }
+    }
+    if (points.length < 2) {
+        return;
+    }
+
+    var max = 0, min = Infinity;
+    for (i = 0; i < points.length; i++) {
+        if (points[i].v > max) { max = points[i].v; }
+        if (points[i].v < min) { min = points[i].v; }
+    }
+    /* A flat trace sits in the middle rather than dividing by zero. */
+    if (max - min < 1) {
+        max = min + 1;
+    }
+
+    var span = series.length - 1 || 1;
+    var xAt = function (idx) { return (idx / span) * w; };
+    var yAt = function (v) { return h - 1 - ((v - min) / (max - min)) * (h - 2); };
+
+    /* Filled area under the trace, the way Encom's charts read. */
+    ctx.beginPath();
+    ctx.moveTo(xAt(points[0].i), h);
+    for (i = 0; i < points.length; i++) {
+        ctx.lineTo(xAt(points[i].i), yAt(points[i].v));
+    }
+    ctx.lineTo(xAt(points[points.length - 1].i), h);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(0,238,238,.14)";
+    ctx.fill();
+
+    ctx.beginPath();
+    for (i = 0; i < points.length; i++) {
+        var px = xAt(points[i].i), py = yAt(points[i].v);
+        if (i) { ctx.lineTo(px, py); } else { ctx.moveTo(px, py); }
+    }
+    ctx.strokeStyle = "#00eeee";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    /* Head of the trace, so now is findable at a glance. */
+    var last = points[points.length - 1];
+    ctx.beginPath();
+    ctx.arc(xAt(last.i), yAt(last.v), 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = "#e6fbff";
+    ctx.fill();
+}
+
+/* ---- timeline ------------------------------------------------------------ */
+
+function sizeOne(canvas, ctx) {
+    if (!canvas || !ctx) {
+        return;
+    }
+    var w = canvas.clientWidth;
+    var h = canvas.clientHeight;
     if (!w || !h) {
         return;
     }
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    timelineCanvas.width = Math.floor(w * dpr);
-    timelineCanvas.height = Math.floor(h * dpr);
-    timelineCanvas.style.width = w + "px";
-    timelineCanvas.style.height = h + "px";
-    timelineCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function sizeCanvases() {
+    sizeOne(timelineCanvas, timelineCtx);
+    sizeOne(energyCanvas, energyCtx);
+}
+
+function colorFor(severity) {
+    return severity === Severity.ALERT ? "#ff8a1f"
+        : severity === Severity.MOTION ? "#4dffb0"
+        : "#00eeee";
 }
 
 function drawTimeline() {
@@ -395,40 +570,140 @@ function drawTimeline() {
     var ctx = timelineCtx;
     ctx.clearRect(0, 0, w, h);
 
+    var now = Date.now();
+    var events = (state && state.events) || [];
+    var top = Math.min(18, h * 0.3);     // room for the minute labels and legend
+    var base = h - 1;
+    var i, gx;
+
+    /* Minute grid. */
     ctx.strokeStyle = "rgba(255,255,255,.10)";
     ctx.lineWidth = 1;
-    for (var i = 0; i <= 10; i++) {
-        var x = Math.floor(w * i / 10) + 0.5;
+    for (i = 0; i <= 10; i++) {
+        gx = Math.floor(w * i / 10) + 0.5;
         ctx.beginPath();
-        ctx.moveTo(x, h * 0.3);
-        ctx.lineTo(x, h);
+        ctx.moveTo(gx, top);
+        ctx.lineTo(gx, base);
         ctx.stroke();
     }
 
-    ctx.fillStyle = "rgba(0,238,238,.6)";
-    ctx.font = "11px Menlo, Consolas, monospace";
-    for (var g = 0; g <= 10; g += 2) {
-        ctx.fillText((10 - g) + "m", Math.floor(w * g / 10) + 4, 12);
+    ctx.beginPath();
+    ctx.moveTo(0, base + 0.5);
+    ctx.lineTo(w, base + 0.5);
+    ctx.strokeStyle = "rgba(0,238,238,.35)";
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(0,238,238,.55)";
+    ctx.font = "10px Menlo, Consolas, monospace";
+    for (i = 0; i <= 10; i += 2) {
+        ctx.fillText((10 - i) + "m", Math.floor(w * i / 10) + 3, 10);
     }
 
-    var now = Date.now();
-    var events = state ? state.events : [];
-    for (var e = 0; e < events.length; e++) {
-        var ev = events[e];
+    /* One mark per event, tall for alerts so trouble stands out of a busy
+       strip, and remembered so the pointer can be matched to an event. */
+    marks = [];
+    var drawn = 0;
+    for (i = 0; i < events.length; i++) {
+        var ev = events[i];
         var age = now - ev.at;
-        if (age > TIMELINE_WINDOW) {
+        if (age < 0 || age > TIMELINE_WINDOW) {
             continue;
         }
+        drawn++;
+
         var px = w * (1 - age / TIMELINE_WINDOW);
-        var tall = ev.severity === Severity.ALERT;
-        ctx.strokeStyle = tall ? "#ff8a1f"
-            : ev.severity === Severity.MOTION ? "#4dffb0"
-            : "rgba(0,238,238,.65)";
+        var isAlert = ev.severity === Severity.ALERT;
+        var isMotion = ev.severity === Severity.MOTION;
+        var height = isAlert ? (base - top)
+            : isMotion ? (base - top) * 0.66
+            : (base - top) * 0.42;
+        var py = base - height;
+
+        ctx.strokeStyle = colorFor(ev.severity);
+        ctx.globalAlpha = isAlert ? 1 : 0.8;
         ctx.beginPath();
-        ctx.moveTo(px, h);
-        ctx.lineTo(px, tall ? h * 0.36 : h * 0.6);
+        ctx.moveTo(px, base);
+        ctx.lineTo(px, py);
         ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        if (isAlert) {
+            ctx.fillStyle = "#ff8a1f";
+            ctx.fillRect(px - 1.5, py - 3, 3, 3);
+        }
+
+        marks.push({ x: px, y: py, ev: ev });
     }
+
+    var wrap = $id("hs-tl");
+    if (wrap) {
+        if (drawn) {
+            wrap.classList.remove("empty");
+        } else {
+            wrap.classList.add("empty");
+        }
+    }
+}
+
+/* ---- timeline hover ------------------------------------------------------ */
+
+function bindTimelineHover() {
+    var wrap = $id("hs-tl");
+    var tip = $id("hs-tl-tip");
+    if (!wrap || !tip || wrap.getAttribute("data-hover")) {
+        return;
+    }
+    wrap.setAttribute("data-hover", "1");
+
+    var move = function (clientX, clientY) {
+        var box = wrap.getBoundingClientRect();
+        var x = clientX - box.left;
+        var y = clientY - box.top;
+
+        var best = null, bestDx = HIT_RADIUS + 1, i, dx;
+        for (i = 0; i < marks.length; i++) {
+            dx = Math.abs(marks[i].x - x);
+            if (dx < bestDx) {
+                bestDx = dx;
+                best = marks[i];
+            }
+        }
+
+        if (!best) {
+            tip.style.display = "none";
+            return;
+        }
+
+        var ev = best.ev;
+        var ago = Math.max(0, Math.round((Date.now() - ev.at) / 1000));
+        var when = ago < 60 ? ago + "s ago" : Math.round(ago / 60) + "m ago";
+        var value = ev.state === null || ev.state === undefined
+            ? "" : " is " + ev.state + (ev.unit ? " " + ev.unit : "");
+
+        tip.className = ev.severity === Severity.ALERT ? "alert"
+            : ev.severity === Severity.MOTION ? "motion" : "";
+        tip.innerHTML = "<b>" + (ev.location || "Unassigned") + "</b> " +
+            ev.title + value + ", " + when;
+        tip.style.display = "block";
+
+        /* Keep the label inside the panel rather than letting it run off the
+           right hand edge for an event near the live end of the strip. */
+        var tw = tip.offsetWidth;
+        var left = Math.min(Math.max(0, best.x + 10), Math.max(0, box.width - tw));
+        tip.style.left = left + "px";
+        tip.style.top = Math.max(0, Math.min(y - 24, box.height - tip.offsetHeight)) + "px";
+    };
+
+    wrap.addEventListener("mousemove", function (e) { move(e.clientX, e.clientY); });
+    wrap.addEventListener("mouseleave", function () { tip.style.display = "none"; });
+    wrap.addEventListener("touchstart", function (e) {
+        if (e.touches && e.touches.length) {
+            move(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    }, { passive: true });
+    wrap.addEventListener("touchend", function () {
+        setTimeout(function () { tip.style.display = "none"; }, 2500);
+    });
 }
 
 export { HouseView };

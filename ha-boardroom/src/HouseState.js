@@ -41,7 +41,17 @@ HouseState.prototype.message = function (m, isSeed) {
     /* The initial state dump is the house as it already is, not 1481 things
        that just happened, so it must not land on the timeline. */
     if (!isSeed) {
-        this.events.push({ at: Date.now(), severity: m.severity, room: m.room, title: m.title });
+        this.events.push({
+            at: Date.now(),
+            severity: m.severity,
+            room: m.room,
+            /* The room name as shown, for the timeline hover label. m.room is
+               only the key, and unassigned entities have no key at all. */
+            location: m.location,
+            title: m.title,
+            state: m.state,
+            unit: m.unit
+        });
         if (this.events.length > MAX_EVENTS) {
             this.events.shift();
         }

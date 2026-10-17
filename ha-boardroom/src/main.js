@@ -144,7 +144,10 @@ var onSwitch = function(view){
     LightTable.hide();
 
     if(system.key === "house"){
-        HouseView.init();
+        /* init lays the screen out but leaves it invisible, so the splash is
+           what you see for these three seconds. show() reveals it, exactly
+           the way Boardroom.init and Boardroom.show divide the work. */
+        HouseView.init(ha);
         HouseView.seed(haSource.getSeed());
 
         setTimeout(function(){

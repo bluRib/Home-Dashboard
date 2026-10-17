@@ -354,13 +354,170 @@
 #hs-rooms tr.alert .hs-r-name,
 #hs-rooms tr.alert .hs-r-flag { color: #ff8a1f; }
 
-/* ---- bottom strip: timeline plus elapsed and clocks ---- */
+/* ---- bottom strip: timeline, clock, weather, energy ---- */
+/* Four cells on one row. The timeline takes whatever is left over, the three
+   readouts size to their content. Everything is min-height:0 and clipped so a
+   long value cannot push the strip past the bottom of the screen. */
 
 #hs-timeline .hs-body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    gap: clamp(8px, 1vw, 20px);
     align-items: stretch;
+    min-height: 0;
+}
+
+.hs-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding-left: clamp(8px, 0.9vw, 18px);
+    border-left: 1px solid rgba(0, 238, 238, .22);
+}
+
+.hs-cell-head {
+    flex: none;
+    color: #00eeee;
+    font-size: clamp(9px, 0.56vw, 12px);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: .85;
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+
+.hs-cell-head em {
+    font-style: normal;
+    color: #ffcc00;
+    opacity: .9;
+    margin-left: 6px;
+}
+
+.hs-wait { opacity: .45; }
+
+/* ---- clock ---- */
+
+#hs-clock { border-left: none; }
+
+#hs-time {
+    color: #fff;
+    font-size: clamp(20px, 2.1vw, 42px);
+    letter-spacing: .04em;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+#hs-time small {
+    font-size: .45em;
+    letter-spacing: .12em;
+    margin-left: .35em;
+    color: #9fe8e8;
+}
+
+#hs-date {
+    font-size: clamp(10px, 0.62vw, 13px);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .72;
+    white-space: nowrap;
+}
+
+/* ---- weather ---- */
+
+#hs-wx-body {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 0.8vw, 16px);
+    min-height: 0;
+}
+
+#hs-wx-now {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+}
+
+#hs-wx-temp {
+    color: #fff;
+    font-size: clamp(17px, 1.5vw, 30px);
+    line-height: 1.05;
+}
+
+#hs-wx-cond {
+    font-size: clamp(9px, 0.58vw, 12px);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    opacity: .78;
+}
+
+#hs-wx-stats {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0 8px;
+    font-size: clamp(9px, 0.58vw, 12px);
+    white-space: nowrap;
+}
+
+#hs-wx-stats span { opacity: .65; letter-spacing: .08em; }
+#hs-wx-stats b { color: #fff; font-weight: normal; }
+
+#hs-wx-hours {
+    display: flex;
+    gap: clamp(5px, 0.5vw, 11px);
+}
+
+#hs-wx-hours div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: clamp(9px, 0.56vw, 12px);
+    white-space: nowrap;
+}
+
+#hs-wx-hours span { opacity: .6; }
+#hs-wx-hours b { color: #fff; font-weight: normal; }
+
+/* ---- energy ---- */
+
+#hs-energy { position: relative; }
+
+#hs-en-body {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(8px, 0.8vw, 16px);
+    white-space: nowrap;
+}
+
+#hs-en-now {
+    color: #fff;
+    font-size: clamp(17px, 1.5vw, 30px);
+    line-height: 1.05;
+}
+
+#hs-en-now i { font-style: normal; font-size: .45em; opacity: .7; margin-left: .2em; }
+
+#hs-en-today { font-size: clamp(9px, 0.58vw, 12px); }
+#hs-en-today span { opacity: .65; letter-spacing: .08em; }
+#hs-en-today b { color: #fff; font-weight: normal; }
+
+#hs-en-canvas {
+    display: block;
+    width: clamp(90px, 9vw, 190px);
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 3px;
+}
+
+/* ---- timeline ---- */
+
+#hs-tl {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
 #hs-timeline-canvas {
@@ -369,37 +526,64 @@
     height: 100%;
 }
 
-#hs-elapsed {
-    align-self: center;
-    color: #fff;
-    font-size: clamp(22px, 2.3vw, 46px);
-    letter-spacing: .06em;
-    line-height: 1;
-    white-space: nowrap;
-}
-
-#hs-zones {
-    align-self: center;
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    gap: 1px 14px;
-}
-
-#hs-zones div {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    border-bottom: 1px solid rgba(0, 238, 238, .25);
-    font-size: clamp(11px, 0.62vw, 13px);
-}
-
-#hs-zones span {
-    text-transform: uppercase;
+#hs-tl-empty {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(10px, 0.66vw, 14px);
     letter-spacing: .1em;
-    opacity: .7;
+    text-transform: uppercase;
+    opacity: .45;
+    pointer-events: none;
 }
 
-#hs-zones b { color: #fff; font-weight: normal; }
+#hs-tl.empty #hs-tl-empty { display: flex; }
+
+#hs-tl-legend {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    gap: clamp(6px, 0.6vw, 12px);
+    font-size: clamp(8px, 0.52vw, 11px);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+#hs-tl-legend span { display: flex; align-items: center; opacity: .8; }
+
+#hs-tl-legend span::before {
+    content: "";
+    width: 7px;
+    height: 2px;
+    margin-right: 4px;
+}
+
+#hs-tl-legend .normal::before { background: #00eeee; }
+#hs-tl-legend .motion::before { background: #4dffb0; }
+#hs-tl-legend .alert::before  { background: #ff8a1f; }
+
+#hs-tl-tip {
+    position: absolute;
+    display: none;
+    z-index: 5;
+    max-width: 60%;
+    padding: 3px 7px;
+    background: #000;
+    border: 1px solid #00eeee;
+    color: #e6fbff;
+    font-size: clamp(9px, 0.58vw, 12px);
+    line-height: 1.35;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+#hs-tl-tip b { color: #ffcc00; font-weight: normal; }
+#hs-tl-tip.alert  { border-color: #ff8a1f; }
+#hs-tl-tip.motion { border-color: #4dffb0; }
 
 /* Narrow screens: drop the left rail rather than crush all three columns. */
 @media (max-width: 1200px) {
