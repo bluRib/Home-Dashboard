@@ -5,6 +5,7 @@ var $ = require("jquery"),
     systems = require("./systems.js"),
     haSource = require("./ha-source.js"),
     HouseView = require("./HouseView.js").HouseView,
+    ClimateView = require("./ClimateView.js").ClimateView,
     init = false;
 
 require("jquery-ui");
@@ -96,6 +97,8 @@ var ha = haSource.start(function(message){
         LightTable.message(message);
     } else if(active === "house"){
         HouseView.message(message);
+    } else if(active === "climate"){
+        ClimateView.message(message);
     } else {
         /* Encom staggered incoming events so the widgets do not all fire on
            the same frame. A busy house is burstier than GitHub was, so keep it. */
@@ -153,6 +156,15 @@ var onSwitch = function(view){
         setTimeout(function(){
             active = "house";
             HouseView.show();
+        }, 3000);
+
+    } else if(system.key === "climate"){
+        ClimateView.init(ha);
+        ClimateView.seed(haSource.getSeed());
+
+        setTimeout(function(){
+            active = "climate";
+            ClimateView.show();
         }, 3000);
 
     } else {
@@ -222,6 +234,8 @@ PleaseRotate.start({onHide: function(){
             LightTable.animate();
         } else if(active === "house"){
             HouseView.animate();
+        } else if(active === "climate"){
+            ClimateView.animate();
         } else {
             Boardroom.animate()
         }
@@ -241,6 +255,8 @@ PleaseRotate.start({onHide: function(){
             /* The House screen is a CSS grid at 100vw by 100vh, so it needs no
                scaling, only a debounced nudge so its widgets resize with it. */
             HouseView.resizeDebounced();
+        } else if(active === "climate"){
+            ClimateView.resizeDebounced();
         } else {
             Boardroom.resize();
         }

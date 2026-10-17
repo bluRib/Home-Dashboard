@@ -100,3 +100,78 @@ window.HouseWidget = {
         }
     }
 };
+
+/* ---------------------------------------------------------------------------
+   The thermal house on the Climate screen.
+
+   A second HouseScreen with its own canvas, rather than sharing the one
+   above: both screens can be initialised in the same session and a single
+   instance can only be attached to one canvas. The model JSON is fetched
+   again, but the browser serves it from cache, and the two instances never
+   talk to each other.
+
+   No tag or leader layers: the panel is a thumbnail and room labels would
+   not be readable in it.
+   --------------------------------------------------------------------------- */
+
+var thermal = null;
+var thermalMounted = false;
+
+window.HouseThermal = {
+
+    mount: function () {
+        if (thermalMounted) {
+            thermal.show();
+            return;
+        }
+
+        var canvas = document.getElementById("cl-thermal-canvas");
+        if (!canvas) {
+            console.warn("house-widget: no #cl-thermal-canvas in the page");
+            return;
+        }
+
+        thermal = new HouseScreen({ canvas: canvas, basePath: "../models/" });
+        thermal.init({});
+        thermal.show();
+        thermalMounted = true;
+
+        thermal.load().then(function () {
+            /* Straight down on both floors, which is the only view that shows
+               every room at once in a panel this small. */
+            thermal.setLevel(0);
+            thermal.setView("top");
+            var panel = document.getElementById("cl-thermal");
+            if (panel) {
+                panel.classList.add("ready");
+            }
+        }).catch(function (err) {
+            console.error("house-thermal: " + err.message);
+        });
+    },
+
+    unmount: function () {
+        if (thermal) {
+            thermal.hide();
+        }
+    },
+
+    /* { roomKey: { color, opacity } } */
+    tint: function (map) {
+        if (thermal) {
+            thermal.setTints(map);
+        }
+    },
+
+    animate: function () {
+        if (thermal) {
+            thermal.animate();
+        }
+    },
+
+    resize: function () {
+        if (thermal) {
+            thermal.resize();
+        }
+    }
+};

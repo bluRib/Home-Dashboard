@@ -126,6 +126,10 @@ export class HouseScreen {
     this.byKey = new Map();
     this.level = 0;        // 0 both, 1 level 0 only, 2 level 1 only
     this.focused = null;
+    // Thermal mode. When set, room floors take their colour from this map
+    // instead of from lights and alerts. The Climate screen drives it; the
+    // House screen never sets it and behaves exactly as before.
+    this.tints = null;
     this._idleAt = 0;
     this._prevLevel = 0;
     this._loading = null;
@@ -670,10 +674,18 @@ export class HouseScreen {
       const alert = s.alerts.size > 0;
       const lit = s.lightsOn.size > 0;
 
-      // Glow: orange only for a real problem (rule 10).
-      const target = alert ? 0.18 : lit ? 0.13 : 0.015;
-      s.planeMat.color.setHex(alert ? C.alert : C.line);
-      s.planeMat.opacity += (target - s.planeMat.opacity) * 0.08;
+      if (this.tints) {
+        // Thermal: the colour is the reading, so no alert or light tinting.
+        const t = this.tints[s.room.key];
+        s.planeMat.color.setHex(t ? t.color : C.deep);
+        const want = t ? t.opacity : 0.04;
+        s.planeMat.opacity += (want - s.planeMat.opacity) * 0.1;
+      } else {
+        // Glow: orange only for a real problem (rule 10).
+        const target = alert ? 0.18 : lit ? 0.13 : 0.015;
+        s.planeMat.color.setHex(alert ? C.alert : C.line);
+        s.planeMat.opacity += (target - s.planeMat.opacity) * 0.08;
+      }
 
       // Event beam rises and fades.
       const a = (t - s.beamAt) / BEAM_MS;
@@ -769,6 +781,12 @@ export class HouseScreen {
       this.tz = level === 2 ? -1253 : this.home.z;
       this.tr = this._fitRadius();
     }
+  }
+
+  // tints: { roomKey: { color: 0xrrggbb, opacity: 0..1 } }, or null to go back
+  // to the lights and alerts colouring.
+  setTints(tints) {
+    this.tints = tints && Object.keys(tints).length ? tints : null;
   }
 
   setView(preset) {

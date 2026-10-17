@@ -30,6 +30,11 @@ DEFAULTS = {
     'HA_SSL': 'false',
     'HA_TOKEN': '',
     'HA_RECONNECT': '2',
+    # Pirate Weather, for the next 60 minutes of rain on the Climate screen.
+    # Home Assistant's Pirate Weather integration does not expose the minutely
+    # block, so that one panel calls the API directly and needs its own key.
+    # Optional: without it every other panel still works.
+    'PW_KEY': '',
 }
 
 
@@ -77,6 +82,7 @@ def build(env):
         'httpUrl': '%s://%s:%s' % ('https' if ssl else 'http', host, port),
         'token': env['HA_TOKEN'].strip(),
         'reconnectSeconds': reconnect,
+        'pirateWeatherKey': env['PW_KEY'].strip(),
     }
 
 
@@ -117,6 +123,10 @@ def main():
         print('  token    %d chars ending %s' % (len(cfg['token']), cfg['token'][-6:]))
     else:
         print('  token    EMPTY. Set HA_TOKEN in %s and run this again.' % env_path)
+    if cfg['pirateWeatherKey']:
+        print('  pw key   %d chars' % len(cfg['pirateWeatherKey']))
+    else:
+        print('  pw key   EMPTY. Optional. Only the next 60 minutes of rain needs it.')
 
 
 if __name__ == '__main__':

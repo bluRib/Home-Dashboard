@@ -2949,7 +2949,7 @@
           });
         }
         jQuery.fn.extend({
-          on: function(types, selector, data, fn, one) {
+          on: function(types, selector, data, fn, one2) {
             var origFn, type;
             if (typeof types === "object") {
               if (typeof selector !== "string") {
@@ -2957,7 +2957,7 @@
                 selector = void 0;
               }
               for (type in types) {
-                this.on(type, selector, data, types[type], one);
+                this.on(type, selector, data, types[type], one2);
               }
               return this;
             }
@@ -2979,7 +2979,7 @@
             } else if (!fn) {
               return this;
             }
-            if (one === 1) {
+            if (one2 === 1) {
               origFn = fn;
               fn = function(event) {
                 jQuery().off(event);
@@ -4646,13 +4646,13 @@
             },
             select: {
               get: function(elem) {
-                var value, option, options = elem.options, index = elem.selectedIndex, one = elem.type === "select-one" || index < 0, values = one ? null : [], max = one ? index + 1 : options.length, i = index < 0 ? max : one ? index : 0;
+                var value, option, options = elem.options, index = elem.selectedIndex, one2 = elem.type === "select-one" || index < 0, values = one2 ? null : [], max = one2 ? index + 1 : options.length, i = index < 0 ? max : one2 ? index : 0;
                 for (; i < max; i++) {
                   option = options[i];
                   if ((option.selected || i === index) && // Don't return options that are disabled or in a disabled optgroup
                   (support.optDisabled ? !option.disabled : option.getAttribute("disabled") === null) && (!option.parentNode.disabled || !jQuery.nodeName(option.parentNode, "optgroup"))) {
                     value = jQuery(option).val();
-                    if (one) {
+                    if (one2) {
                       return value;
                     }
                     values.push(value);
@@ -35482,7 +35482,7 @@
         return null;
       }
       var webglTest;
-      var active3 = false;
+      var active4 = false;
       var initialized = false;
       var currentWidth = 0;
       var currentHeight = 0;
@@ -35536,10 +35536,10 @@
         if (typeof cb == "function") {
           setTimeout(cb, 500);
         }
-        active3 = true;
+        active4 = true;
       };
       LightTable2.hide = function(cb) {
-        active3 = false;
+        active4 = false;
         $2("#lt-mobile-readme").attr("style", "");
         $2("#k-32").attr("style", "");
         $2(".lt-header-animator-right").attr("style", "");
@@ -35559,7 +35559,7 @@
         }
       };
       LightTable2.animate = function() {
-        if (active3 && initialized) {
+        if (active4 && initialized) {
           webglTest.tick();
         }
       };
@@ -49824,8 +49824,8 @@
       };
       HouseFeeds.prototype.currentWatts = function() {
         if (WHOLE_HOUSE_POWER) {
-          var one = this.ha.states.get(WHOLE_HOUSE_POWER);
-          var single = one ? toWatts(one) : NaN;
+          var one2 = this.ha.states.get(WHOLE_HOUSE_POWER);
+          var single = one2 ? toWatts(one2) : NaN;
           return isFinite(single) ? single : null;
         }
         var ids = this._byClass("power", false);
@@ -49911,8 +49911,8 @@
           return;
         }
         if (WHOLE_HOUSE_ENERGY) {
-          var one = this.ha.states.get(WHOLE_HOUSE_ENERGY);
-          var value = one ? parseFloat(one.state) : NaN;
+          var one2 = this.ha.states.get(WHOLE_HOUSE_ENERGY);
+          var value = one2 ? parseFloat(one2.state) : NaN;
           this.energy.todayKwh = isFinite(value) ? value : null;
           this.onUpdate();
           return;
@@ -50521,6 +50521,1282 @@
       };
       DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+    }
+  });
+
+  // src/ClimateFeeds.js
+  function ClimateFeeds(ha2, onUpdate) {
+    this.ha = ha2;
+    this.onUpdate = onUpdate || function() {
+    };
+    this.alerts = [];
+    this.minutely = null;
+    this.history = null;
+    this.forecast = [];
+    this.pmHistory = {};
+    this._timers = [];
+    this._debounce = {};
+    this._pending = {};
+  }
+  function byKey(key) {
+    for (var i = 0; i < ZONES.length; i++) {
+      if (ZONES[i].key === key) {
+        return ZONES[i];
+      }
+    }
+    return null;
+  }
+  function numOrNull(v) {
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  var HOME, EXTERIOR, ZONES, AIR, ROOM_TEMPS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, PM_WINDOW;
+  var init_ClimateFeeds = __esm({
+    "src/ClimateFeeds.js"() {
+      HOME = { lat: 35.02763, lon: -81.99418 };
+      EXTERIOR = {
+        temperature: "sensor.pirateweather_temperature",
+        apparent: "sensor.pirateweather_apparent_temperature",
+        humidity: "sensor.pirateweather_humidity",
+        dewPoint: "sensor.pirateweather_dew_point",
+        windSpeed: "sensor.pirateweather_wind_speed",
+        windGust: "sensor.pirateweather_wind_gust",
+        windBearing: "sensor.pirateweather_wind_bearing",
+        uv: "sensor.pirateweather_uv_index",
+        pressure: "sensor.pirateweather_pressure",
+        visibility: "sensor.pirateweather_visibility",
+        rainChance: "sensor.pirateweather_precip_probability",
+        summary: "sensor.pirateweather_summary",
+        cloud: "sensor.pirateweather_cloud_coverage"
+      };
+      ZONES = [
+        { key: "up", label: "Upstairs", entity: "climate.loft_upstairs_thermostat" },
+        { key: "down", label: "Downstairs", entity: "climate.living_room_downstairs_thermostat" }
+      ];
+      AIR = {
+        deskTemp: "sensor.loft_jovans_desk_aq_temperature",
+        deskHumidity: "sensor.loft_jovans_desk_aq_humidity",
+        deskCo2: "sensor.loft_jovans_desk_aq_carbon_dioxide",
+        deskPm25: "sensor.loft_jovans_desk_aq_pm2_5",
+        upstairsPm25: "sensor.upstairs_air_sensor_pm25",
+        livingHumidity: "sensor.living_room_humidity",
+        atticHumidity: "sensor.attic_temp_sensor_humidity",
+        purifier: "fan.living_room_air",
+        purifierSpeed: "sensor.living_room_air_fan_speed"
+      };
+      ROOM_TEMPS = {
+        loft: "sensor.loft_upstairs_thermostat_air_temperature",
+        aks_room: "sensor.loft_upstairs_thermostat_air_temperature",
+        bath1: "sensor.loft_upstairs_thermostat_air_temperature",
+        living: "sensor.living_room_downstairs_thermostat_air_temperature",
+        kitchen: "sensor.living_room_downstairs_thermostat_air_temperature",
+        dining: "sensor.sm4_snake_plant_dining_room_temperature"
+      };
+      LIMITS = { co2: 1e3, pm25: 35, humidityLow: 30, humidityHigh: 60 };
+      ALERTS_EVERY = 5 * 60 * 1e3;
+      MINUTELY_EVERY = 5 * 60 * 1e3;
+      HISTORY_EVERY = 10 * 60 * 1e3;
+      FORECAST_EVERY = 15 * 60 * 1e3;
+      PM_WINDOW = 5;
+      ClimateFeeds.prototype.start = function() {
+        var self = this;
+        if (!this.ha) {
+          return;
+        }
+        this.refreshAlerts();
+        this.refreshMinutely();
+        this.refreshHistory();
+        this.refreshForecast();
+        this._timers.push(setInterval(function() {
+          self.refreshAlerts();
+        }, ALERTS_EVERY));
+        this._timers.push(setInterval(function() {
+          self.refreshMinutely();
+        }, MINUTELY_EVERY));
+        this._timers.push(setInterval(function() {
+          self.refreshHistory();
+        }, HISTORY_EVERY));
+        this._timers.push(setInterval(function() {
+          self.refreshForecast();
+        }, FORECAST_EVERY));
+      };
+      ClimateFeeds.prototype.stop = function() {
+        for (var i = 0; i < this._timers.length; i++) {
+          clearInterval(this._timers[i]);
+        }
+        this._timers = [];
+      };
+      ClimateFeeds.prototype.state = function(id) {
+        return this.ha && this.ha.states ? this.ha.states.get(id) : null;
+      };
+      ClimateFeeds.prototype.num = function(id) {
+        var s = this.state(id);
+        if (!s) {
+          return null;
+        }
+        var v = Number(s.state);
+        return isFinite(v) ? v : null;
+      };
+      ClimateFeeds.prototype.text = function(id) {
+        var s = this.state(id);
+        return s && s.state !== "unknown" && s.state !== "unavailable" ? s.state : "";
+      };
+      ClimateFeeds.prototype.exterior = function() {
+        var out = {};
+        for (var key in EXTERIOR) {
+          if (EXTERIOR.hasOwnProperty(key)) {
+            out[key] = key === "summary" ? this.text(EXTERIOR[key]) : this.num(EXTERIOR[key]);
+          }
+        }
+        return out;
+      };
+      ClimateFeeds.prototype.zones = function() {
+        var out = [], i;
+        for (i = 0; i < ZONES.length; i++) {
+          var z = ZONES[i];
+          var s = this.state(z.entity);
+          var a = s && s.attributes || {};
+          out.push({
+            key: z.key,
+            label: z.label,
+            entity: z.entity,
+            available: !!s,
+            mode: s ? s.state : "",
+            current: numOrNull(a.current_temperature),
+            /* Pending is the value the taps have moved to but that has not
+               been sent yet, so the number on screen answers the tap at once
+               rather than a second later. */
+            target: this._pending[z.key] !== void 0 ? this._pending[z.key] : numOrNull(a.temperature),
+            dirty: this._pending[z.key] !== void 0,
+            humidity: numOrNull(a.current_humidity),
+            action: a.hvac_action || "",
+            fan: a.fan_mode || "",
+            fanModes: a.fan_modes || [],
+            preset: a.preset_mode || "",
+            modes: a.hvac_modes || [],
+            step: numOrNull(a.target_temp_step) || 1
+          });
+        }
+        return out;
+      };
+      ClimateFeeds.prototype.smoothPm = function(id) {
+        var v = this.num(id);
+        if (v === null) {
+          return null;
+        }
+        var list = this.pmHistory[id] || (this.pmHistory[id] = []);
+        list.push(v);
+        while (list.length > PM_WINDOW) {
+          list.shift();
+        }
+        var sorted = list.slice().sort(function(a, b) {
+          return a - b;
+        });
+        return sorted[Math.floor(sorted.length / 2)];
+      };
+      ClimateFeeds.prototype.air = function() {
+        var fan = this.state(AIR.purifier);
+        return {
+          deskTemp: this.num(AIR.deskTemp),
+          deskHumidity: this.num(AIR.deskHumidity),
+          deskCo2: this.num(AIR.deskCo2),
+          deskPm25: this.smoothPm(AIR.deskPm25),
+          upstairsPm25: this.smoothPm(AIR.upstairsPm25),
+          livingHumidity: this.num(AIR.livingHumidity),
+          atticHumidity: this.num(AIR.atticHumidity),
+          purifierOn: fan ? fan.state === "on" : null,
+          purifierPct: fan && fan.attributes ? numOrNull(fan.attributes.percentage) : null,
+          purifierSpeed: this.num(AIR.purifierSpeed),
+          limits: LIMITS
+        };
+      };
+      ClimateFeeds.prototype.roomTemps = function() {
+        var out = {}, key;
+        for (key in ROOM_TEMPS) {
+          if (ROOM_TEMPS.hasOwnProperty(key)) {
+            var v = this.num(ROOM_TEMPS[key]);
+            if (v !== null) {
+              out[key] = v;
+            }
+          }
+        }
+        return out;
+      };
+      ClimateFeeds.prototype.nudgeSetpoint = function(zoneKey, delta, onSent) {
+        var self = this;
+        var zone = null, i;
+        for (i = 0; i < ZONES.length; i++) {
+          if (ZONES[i].key === zoneKey) {
+            zone = ZONES[i];
+          }
+        }
+        if (!zone) {
+          return;
+        }
+        var s = this.state(zone.entity);
+        var a = s && s.attributes || {};
+        var base = this._pending[zoneKey] !== void 0 ? this._pending[zoneKey] : numOrNull(a.temperature);
+        if (base === null) {
+          return;
+        }
+        var step = numOrNull(a.target_temp_step) || 1;
+        var next2 = Math.round((base + delta * step) * 10) / 10;
+        var min = numOrNull(a.min_temp), max = numOrNull(a.max_temp);
+        if (min !== null) {
+          next2 = Math.max(min, next2);
+        }
+        if (max !== null) {
+          next2 = Math.min(max, next2);
+        }
+        this._pending[zoneKey] = next2;
+        this.onUpdate();
+        if (this._debounce[zoneKey]) {
+          clearTimeout(this._debounce[zoneKey]);
+        }
+        this._debounce[zoneKey] = setTimeout(function() {
+          delete self._debounce[zoneKey];
+          var value = self._pending[zoneKey];
+          delete self._pending[zoneKey];
+          self.ha.callService(
+            "climate",
+            "set_temperature",
+            { temperature: value },
+            { entity_id: zone.entity }
+          ).then(function() {
+            if (onSent) {
+              onSent(zone.label + " setpoint to " + value);
+            }
+          }).catch(function(err) {
+            if (onSent) {
+              onSent(zone.label + " setpoint failed: " + err.message, true);
+            }
+          });
+          self.onUpdate();
+        }, 1e3);
+      };
+      ClimateFeeds.prototype.setMode = function(zoneKey, mode, onSent) {
+        var zone = byKey(zoneKey);
+        if (!zone) {
+          return;
+        }
+        this.ha.callService(
+          "climate",
+          "set_hvac_mode",
+          { hvac_mode: mode },
+          { entity_id: zone.entity }
+        ).then(function() {
+          if (onSent) {
+            onSent(zone.label + " mode to " + mode);
+          }
+        }).catch(function(e) {
+          if (onSent) {
+            onSent(zone.label + " mode failed: " + e.message, true);
+          }
+        });
+      };
+      ClimateFeeds.prototype.setFan = function(zoneKey, fan, onSent) {
+        var zone = byKey(zoneKey);
+        if (!zone) {
+          return;
+        }
+        this.ha.callService(
+          "climate",
+          "set_fan_mode",
+          { fan_mode: fan },
+          { entity_id: zone.entity }
+        ).then(function() {
+          if (onSent) {
+            onSent(zone.label + " fan to " + fan);
+          }
+        }).catch(function(e) {
+          if (onSent) {
+            onSent(zone.label + " fan failed: " + e.message, true);
+          }
+        });
+      };
+      ClimateFeeds.prototype.togglePurifier = function(onSent) {
+        var s = this.state(AIR.purifier);
+        var on = s && s.state === "on";
+        this.ha.callService("fan", on ? "turn_off" : "turn_on", {}, { entity_id: AIR.purifier }).then(function() {
+          if (onSent) {
+            onSent("Living Room Air " + (on ? "off" : "on"));
+          }
+        }).catch(function(e) {
+          if (onSent) {
+            onSent("Living Room Air failed: " + e.message, true);
+          }
+        });
+      };
+      ClimateFeeds.prototype.refreshAlerts = function() {
+        var self = this;
+        var url = "https://api.weather.gov/alerts/active?point=" + HOME.lat + "," + HOME.lon;
+        fetch(url, { headers: { Accept: "application/geo+json" } }).then(function(r) {
+          return r.ok ? r.json() : null;
+        }).then(function(data) {
+          if (!data) {
+            return;
+          }
+          self.alerts = (data.features || []).map(function(f) {
+            var p = f.properties || {};
+            return {
+              event: p.event || "Alert",
+              severity: p.severity || "",
+              headline: p.headline || "",
+              ends: p.ends || p.expires || ""
+            };
+          });
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      ClimateFeeds.prototype.refreshMinutely = function() {
+        var self = this;
+        var key = (window.HA_CONFIG || {}).pirateWeatherKey;
+        if (!key) {
+          this.minutely = { missingKey: true };
+          this.onUpdate();
+          return;
+        }
+        var url = "https://api.pirateweather.net/forecast/" + key + "/" + HOME.lat + "," + HOME.lon + "?exclude=daily,alerts";
+        fetch(url).then(function(r) {
+          return r.ok ? r.json() : null;
+        }).then(function(data) {
+          if (!data || !data.minutely) {
+            self.minutely = { unavailable: true };
+          } else {
+            var points = (data.minutely.data || []).map(function(d) {
+              return {
+                at: d.time * 1e3,
+                intensity: Number(d.precipIntensity) || 0,
+                probability: Number(d.precipProbability) || 0
+              };
+            });
+            self.minutely = { summary: data.minutely.summary || "", points };
+          }
+          self.onUpdate();
+        }).catch(function() {
+          self.minutely = { unavailable: true };
+          self.onUpdate();
+        });
+      };
+      ClimateFeeds.prototype.refreshHistory = function() {
+        var self = this;
+        var ids = [
+          EXTERIOR.temperature,
+          "sensor.loft_upstairs_thermostat_air_temperature",
+          "sensor.living_room_downstairs_thermostat_air_temperature"
+        ];
+        var end = Date.now();
+        var start2 = end - 24 * 3600 * 1e3;
+        this.ha.command({
+          type: "history/history_during_period",
+          start_time: new Date(start2).toISOString(),
+          end_time: new Date(end).toISOString(),
+          entity_ids: ids,
+          minimal_response: true,
+          no_attributes: true
+        }).then(function(raw) {
+          var series = {};
+          ids.forEach(function(id) {
+            series[id] = (raw[id] || []).map(function(row) {
+              return {
+                at: row.lu !== void 0 ? row.lu * 1e3 : Date.parse(row.last_updated || row.last_changed),
+                v: parseFloat(row.s !== void 0 ? row.s : row.state)
+              };
+            }).filter(function(p) {
+              return isFinite(p.at) && isFinite(p.v);
+            });
+          });
+          self.history = {
+            start: start2,
+            end,
+            outside: series[ids[0]],
+            upstairs: series[ids[1]],
+            downstairs: series[ids[2]]
+          };
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      ClimateFeeds.prototype.refreshForecast = function() {
+        var self = this;
+        this.ha.command({
+          type: "call_service",
+          domain: "weather",
+          service: "get_forecasts",
+          service_data: { type: "daily" },
+          target: { entity_id: "weather.pirateweather" },
+          return_response: true
+        }).then(function(result) {
+          var response = result && result.response || {};
+          var entry = response["weather.pirateweather"] || {};
+          self.forecast = (entry.forecast || []).slice(0, 7).map(function(d) {
+            return {
+              at: Date.parse(d.datetime),
+              condition: d.condition || "",
+              high: numOrNull(d.temperature),
+              low: numOrNull(d.templow),
+              rain: numOrNull(d.precipitation_probability)
+            };
+          });
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+    }
+  });
+
+  // src/Radar.js
+  function Radar(options) {
+    this.el = options.el;
+    this.timeEl = options.timeEl || null;
+    this.windEl = options.windEl || null;
+    this.home = options.home;
+    this.zoom = options.zoom || 8;
+    this.map = null;
+    this.layers = [];
+    this.frame = 0;
+    this.started = 0;
+    this.lastRefresh = 0;
+    this.lastStep = 0;
+    this.wind = { speed: 0, bearing: 0 };
+    this.particles = [];
+    this.ctx = null;
+    this.canvas = null;
+  }
+  function newParticle(w, h) {
+    var max = 90 + Math.random() * 130;
+    return { x: Math.random() * w, y: Math.random() * h, life: max, max };
+  }
+  function labelFor(index) {
+    var minutes = (OFFSETS.length - 1 - index) * 5;
+    if (!minutes) {
+      return "NOW";
+    }
+    return "-" + minutes + " MIN";
+  }
+  function compass(deg) {
+    var names = [
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW"
+    ];
+    return names[Math.round(deg % 360 / 22.5) % 16];
+  }
+  var TILES, NEXRAD, OFFSETS, FRAME_MS, HOLD_MS, REFRESH_MS;
+  var init_Radar = __esm({
+    "src/Radar.js"() {
+      TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+      NEXRAD = "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913";
+      OFFSETS = [
+        "m50m",
+        "m45m",
+        "m40m",
+        "m35m",
+        "m30m",
+        "m25m",
+        "m20m",
+        "m15m",
+        "m10m",
+        "m05m",
+        ""
+      ];
+      FRAME_MS = 600;
+      HOLD_MS = 1600;
+      REFRESH_MS = 5 * 60 * 1e3;
+      Radar.prototype.mount = function() {
+        if (this.map || !this.el || typeof window.L === "undefined") {
+          return;
+        }
+        var L = window.L;
+        this.map = L.map(this.el, {
+          center: [this.home.lat, this.home.lon],
+          zoom: this.zoom,
+          zoomControl: false,
+          attributionControl: false,
+          /* Drag and scroll zoom stay on, the brief asks for them. */
+          scrollWheelZoom: true,
+          dragging: true
+        });
+        L.tileLayer(TILES, { maxZoom: 18, className: "radar-base" }).addTo(this.map);
+        for (var i = 0; i < OFFSETS.length; i++) {
+          var url = NEXRAD + (OFFSETS[i] ? "-" + OFFSETS[i] : "") + "/{z}/{x}/{y}.png";
+          var layer = L.tileLayer(url, { opacity: 0, maxZoom: 12, className: "radar-echo" });
+          layer.addTo(this.map);
+          this.layers.push(layer);
+        }
+        L.circleMarker([this.home.lat, this.home.lon], {
+          radius: 5,
+          color: "#3fe0ff",
+          weight: 2,
+          fillColor: "#bff4ff",
+          fillOpacity: 0.9
+        }).addTo(this.map);
+        L.circle([this.home.lat, this.home.lon], {
+          radius: 8e3,
+          color: "#3fe0ff",
+          weight: 1,
+          opacity: 0.45,
+          fill: false
+        }).addTo(this.map);
+        this._buildWindCanvas();
+        this.started = Date.now();
+        this.lastRefresh = Date.now();
+        this.show(OFFSETS.length - 1);
+      };
+      Radar.prototype.resize = function() {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+        this._sizeWindCanvas();
+      };
+      Radar.prototype.show = function(index) {
+        for (var i = 0; i < this.layers.length; i++) {
+          this.layers[i].setOpacity(i === index ? 0.75 : 0);
+        }
+        this.frame = index;
+        if (this.timeEl) {
+          this.timeEl.textContent = labelFor(index);
+        }
+      };
+      Radar.prototype.tick = function() {
+        if (!this.map) {
+          return;
+        }
+        var now = Date.now();
+        var last = this.frame === this.layers.length - 1;
+        if (now - this.lastStep > (last ? FRAME_MS + HOLD_MS : FRAME_MS)) {
+          this.lastStep = now;
+          this.show((this.frame + 1) % this.layers.length);
+        }
+        if (now - this.lastRefresh > REFRESH_MS) {
+          this.lastRefresh = now;
+          this.refresh();
+        }
+        this._drawWind();
+      };
+      Radar.prototype.refresh = function() {
+        for (var i = 0; i < this.layers.length; i++) {
+          this.layers[i].redraw();
+        }
+      };
+      Radar.prototype.setWind = function(speedMph, bearingDegrees) {
+        this.wind.speed = Number(speedMph) || 0;
+        this.wind.bearing = Number(bearingDegrees) || 0;
+        if (this.windEl) {
+          this.windEl.textContent = Math.round(this.wind.speed) + " mph " + compass(this.wind.bearing);
+        }
+      };
+      Radar.prototype._buildWindCanvas = function() {
+        this.canvas = document.createElement("canvas");
+        this.canvas.className = "radar-wind";
+        this.el.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d");
+        this._sizeWindCanvas();
+      };
+      Radar.prototype._sizeWindCanvas = function() {
+        if (!this.canvas) {
+          return;
+        }
+        var w = this.el.clientWidth, h = this.el.clientHeight;
+        if (!w || !h) {
+          return;
+        }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.canvas.width = Math.floor(w * dpr);
+        this.canvas.height = Math.floor(h * dpr);
+        this.canvas.style.width = w + "px";
+        this.canvas.style.height = h + "px";
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var want = Math.round(w * h / 14e3);
+        this.particles = [];
+        for (var i = 0; i < want; i++) {
+          this.particles.push(newParticle(w, h));
+        }
+      };
+      Radar.prototype._drawWind = function() {
+        if (!this.ctx || !this.canvas) {
+          return;
+        }
+        var w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+        if (!w || !h) {
+          return;
+        }
+        var ctx = this.ctx;
+        ctx.clearRect(0, 0, w, h);
+        var rad = (this.wind.bearing + 180) * Math.PI / 180;
+        var speed = 0.25 + this.wind.speed * 0.055;
+        var dx = Math.sin(rad) * speed;
+        var dy = -Math.cos(rad) * speed;
+        ctx.lineWidth = 1;
+        for (var i = 0; i < this.particles.length; i++) {
+          var p = this.particles[i];
+          var px = p.x, py = p.y;
+          p.x += dx;
+          p.y += dy;
+          p.life -= 1;
+          if (p.life <= 0 || p.x < -20 || p.x > w + 20 || p.y < -20 || p.y > h + 20) {
+            this.particles[i] = newParticle(w, h);
+            continue;
+          }
+          ctx.strokeStyle = "rgba(191,244,255," + (0.07 + 0.2 * (p.life / p.max)) + ")";
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(px - dx * 7, py - dy * 7);
+          ctx.stroke();
+        }
+      };
+    }
+  });
+
+  // src/ClimateView.js
+  var ClimateView_exports = {};
+  __export(ClimateView_exports, {
+    ClimateView: () => ClimateView
+  });
+  function $id2(id) {
+    return document.getElementById(id);
+  }
+  function watchPanels2() {
+    if (observer2 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    observer2 = new ResizeObserver(function() {
+      ClimateView.resizeDebounced();
+    });
+    ["cl-radar", "cl-minutely", "cl-trend", "cl-thermal"].forEach(function(id) {
+      var el = $id2(id);
+      if (el) {
+        observer2.observe(el);
+      }
+    });
+  }
+  function sizeCanvas(canvas, ctx) {
+    if (!canvas || !ctx) {
+      return;
+    }
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function say(text, isError) {
+    var el = $id2("cl-log");
+    if (!el) {
+      return;
+    }
+    el.textContent = "muther: " + text;
+    el.className = isError ? "alert" : "";
+    clearTimeout(say._t);
+    say._t = setTimeout(function() {
+      el.textContent = "";
+      el.className = "";
+    }, 6e3);
+  }
+  function one(label, value, unit, cls) {
+    return '<div class="cl-read' + (cls ? " " + cls : "") + '"><span>' + label + "</span><b>" + (value === null || value === void 0 || value === "" ? "--" : value) + (unit && value !== null && value !== void 0 && value !== "" ? unit : "") + "</b></div>";
+  }
+  function compass2(deg) {
+    var names = [
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW"
+    ];
+    return names[Math.round(deg % 360 / 22.5) % 16];
+  }
+  function renderExterior() {
+    var box = $id2("cl-exterior");
+    if (!box || !feeds2) {
+      return;
+    }
+    var e = feeds2.exterior();
+    radar.setWind(e.windSpeed, e.windBearing);
+    var html = '<div class="cl-now"><div class="cl-now-temp">' + (e.temperature === null ? "--" : Math.round(e.temperature)) + '<i>F</i></div><div class="cl-now-cond">' + (e.summary || "") + '</div><div class="cl-now-feels">Feels ' + (e.apparent === null ? "--" : Math.round(e.apparent)) + "F</div></div>";
+    html += '<div class="cl-reads">';
+    html += one("Humidity", e.humidity === null ? null : Math.round(e.humidity), "%");
+    html += one("Dew point", e.dewPoint === null ? null : Math.round(e.dewPoint), "F");
+    html += one("Wind", e.windSpeed === null ? null : Math.round(e.windSpeed) + " " + compass2(e.windBearing || 0), " mph");
+    html += one("Gust", e.windGust === null ? null : Math.round(e.windGust), " mph");
+    html += one("UV index", e.uv === null ? null : e.uv.toFixed(1), "");
+    html += one("Pressure", e.pressure === null ? null : e.pressure.toFixed(2), " inHg");
+    html += one("Visibility", e.visibility === null ? null : e.visibility.toFixed(0), " mi");
+    html += one("Rain chance", e.rainChance === null ? null : Math.round(e.rainChance), "%");
+    html += one("Cloud", e.cloud === null ? null : Math.round(e.cloud), "%");
+    html += "</div>";
+    box.innerHTML = html;
+  }
+  function renderAlerts() {
+    var box = $id2("cl-alerts");
+    if (!box || !feeds2) {
+      return;
+    }
+    if (!feeds2.alerts.length) {
+      box.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+    box.style.display = "block";
+    var html = "";
+    for (var i = 0; i < feeds2.alerts.length; i++) {
+      var a = feeds2.alerts[i];
+      html += '<div class="cl-alert"><b>' + a.event + "</b><span>" + (a.headline || a.severity) + "</span></div>";
+    }
+    box.innerHTML = html;
+  }
+  function renderZones() {
+    var wrap = $id2("cl-zones");
+    if (!wrap || !feeds2) {
+      return;
+    }
+    var zones = feeds2.zones();
+    var html = "";
+    for (var i = 0; i < zones.length; i++) {
+      var z = zones[i];
+      var cooling = z.action === "cooling";
+      var heating = z.action === "heating";
+      var cls = "cl-zone" + (cooling ? " cooling" : "") + (heating ? " heating" : "");
+      html += '<div class="' + cls + '" data-zone="' + z.key + '">';
+      html += '<div class="cl-zone-head">' + z.label + "<em>" + (z.action ? z.action : "idle") + "</em></div>";
+      html += '<div class="cl-zone-main">';
+      html += '<div class="cl-zone-temp">' + (z.current === null ? "--" : Math.round(z.current)) + "<i>F</i></div>";
+      html += '<div class="cl-zone-set"><button class="cl-step" data-act="down" data-zone="' + z.key + '">-</button><span class="cl-setpoint' + (z.dirty ? " pending" : "") + '">' + (z.target === null ? "--" : Math.round(z.target)) + '</span><button class="cl-step" data-act="up" data-zone="' + z.key + '">+</button></div>';
+      html += "</div>";
+      html += '<div class="cl-zone-stats">';
+      html += one("Humidity", z.humidity === null ? null : Math.round(z.humidity), "%");
+      html += one("Preset", z.preset || "none", "");
+      html += "</div>";
+      html += '<div class="cl-seg" data-kind="mode">';
+      for (var m = 0; m < z.modes.length; m++) {
+        var mode = z.modes[m];
+        html += '<button class="' + (z.mode === mode ? "on" : "") + '" data-zone="' + z.key + '" data-mode="' + mode + '">' + (MODE_LABEL[mode] || mode) + "</button>";
+      }
+      html += "</div>";
+      html += '<div class="cl-seg" data-kind="fan">';
+      for (var f = 0; f < z.fanModes.length; f++) {
+        var fan = z.fanModes[f];
+        html += '<button class="' + (z.fan === fan ? "on" : "") + '" data-zone="' + z.key + '" data-fan="' + fan + '">' + fan + "</button>";
+      }
+      html += "</div>";
+      html += "</div>";
+    }
+    wrap.innerHTML = html;
+  }
+  function bindControls() {
+    var root = $id2("climate-screen");
+    root.addEventListener("click", function(e) {
+      var btn = e.target.closest("button");
+      if (!btn || !feeds2) {
+        return;
+      }
+      if (btn.classList.contains("cl-step")) {
+        feeds2.nudgeSetpoint(
+          btn.getAttribute("data-zone"),
+          btn.getAttribute("data-act") === "up" ? 1 : -1,
+          say
+        );
+        renderZones();
+        return;
+      }
+      if (btn.hasAttribute("data-mode")) {
+        feeds2.setMode(btn.getAttribute("data-zone"), btn.getAttribute("data-mode"), say);
+        return;
+      }
+      if (btn.hasAttribute("data-fan")) {
+        feeds2.setFan(btn.getAttribute("data-zone"), btn.getAttribute("data-fan"), say);
+        return;
+      }
+      if (btn.id === "cl-purifier") {
+        feeds2.togglePurifier(say);
+      }
+    });
+  }
+  function humidityClass(v, limits) {
+    if (v === null) {
+      return "";
+    }
+    return v < limits.humidityLow || v > limits.humidityHigh ? "warn" : "";
+  }
+  function renderAir() {
+    var box = $id2("cl-air");
+    if (!box || !feeds2) {
+      return;
+    }
+    var a = feeds2.air();
+    var L = a.limits;
+    var html = '<div class="cl-air-group"><div class="cl-sub">Jovan\u2019s Desk</div><div class="cl-reads">';
+    html += one("Temp", a.deskTemp === null ? null : Math.round(a.deskTemp), "F");
+    html += one(
+      "Humidity",
+      a.deskHumidity === null ? null : Math.round(a.deskHumidity),
+      "%",
+      humidityClass(a.deskHumidity, L)
+    );
+    html += one(
+      "CO2",
+      a.deskCo2 === null ? null : Math.round(a.deskCo2),
+      " ppm",
+      a.deskCo2 !== null && a.deskCo2 > L.co2 ? "warn" : ""
+    );
+    html += one(
+      "PM2.5",
+      a.deskPm25 === null ? null : Math.round(a.deskPm25),
+      "",
+      a.deskPm25 !== null && a.deskPm25 > L.pm25 ? "warn" : ""
+    );
+    html += "</div></div>";
+    html += '<div class="cl-air-group"><div class="cl-sub">House</div><div class="cl-reads">';
+    html += one(
+      "Upstairs PM2.5",
+      a.upstairsPm25 === null ? null : Math.round(a.upstairsPm25),
+      "",
+      a.upstairsPm25 !== null && a.upstairsPm25 > L.pm25 ? "warn" : ""
+    );
+    html += one(
+      "Living humidity",
+      a.livingHumidity === null ? null : Math.round(a.livingHumidity),
+      "%",
+      humidityClass(a.livingHumidity, L)
+    );
+    html += one(
+      "Attic humidity",
+      a.atticHumidity === null ? null : Math.round(a.atticHumidity),
+      "%",
+      humidityClass(a.atticHumidity, L)
+    );
+    html += "</div></div>";
+    html += '<div class="cl-air-group"><div class="cl-sub">Living Room Air</div><div class="cl-purifier"><button id="cl-purifier" class="' + (a.purifierOn ? "on" : "") + '">' + (a.purifierOn === null ? "--" : a.purifierOn ? "On" : "Off") + "</button><span>" + (a.purifierPct === null ? "" : Math.round(a.purifierPct) + "%") + (a.purifierSpeed === null ? "" : " , speed " + a.purifierSpeed) + "</span></div></div>";
+    box.innerHTML = html;
+  }
+  function renderMinutely() {
+    var note = $id2("cl-minutely-note");
+    var empty = $id2("cl-minutely-empty");
+    if (!note || !feeds2) {
+      return;
+    }
+    var m = feeds2.minutely;
+    var blank = function(short, long) {
+      note.textContent = short;
+      if (empty) {
+        empty.innerHTML = "<span>" + long + "</span>";
+        empty.className = "show";
+      }
+    };
+    if (!m) {
+      blank("Loading", "Loading");
+      return;
+    }
+    if (m.missingKey) {
+      blank("No key", "Minute by minute rain needs a Pirate Weather key.<br>Put <b>PW_KEY</b> in app/.env, then run tools/gen_config.py");
+      return;
+    }
+    if (m.unavailable || !m.points || !m.points.length) {
+      blank("Unavailable", "Minute by minute rain is not available for this location");
+      return;
+    }
+    if (empty) {
+      empty.className = "";
+    }
+    var first = -1, i;
+    for (i = 0; i < m.points.length; i++) {
+      if (m.points[i].intensity > 2e-3 || m.points[i].probability > 0.25) {
+        first = i;
+        break;
+      }
+    }
+    if (first < 0) {
+      note.textContent = "No rain in the next hour";
+    } else if (first === 0) {
+      note.textContent = "Rain now";
+    } else {
+      note.textContent = "Rain starting in " + first + " min";
+    }
+    drawMinutely(m.points);
+  }
+  function drawMinutely(points) {
+    if (!minutelyCtx || !minutelyCanvas) {
+      return;
+    }
+    var w = minutelyCanvas.clientWidth, h = minutelyCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = minutelyCtx;
+    ctx.clearRect(0, 0, w, h);
+    var top = 12, base = h - 14;
+    var max = 0.02, i;
+    for (i = 0; i < points.length; i++) {
+      if (points[i].intensity > max) {
+        max = points[i].intensity;
+      }
+    }
+    ctx.strokeStyle = "rgba(0,238,238,.10)";
+    ctx.lineWidth = 1;
+    for (i = 0; i <= 6; i++) {
+      var gx = Math.floor(w * i / 6) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(gx, top);
+      ctx.lineTo(gx, base);
+      ctx.stroke();
+    }
+    var bw = w / points.length;
+    for (i = 0; i < points.length; i++) {
+      var p = points[i];
+      var hh = Math.max(p.intensity > 0 ? 1 : 0, p.intensity / max * (base - top));
+      if (hh <= 0) {
+        continue;
+      }
+      ctx.fillStyle = p.intensity > 0.1 ? "#ff8a1f" : "#3fe0ff";
+      ctx.globalAlpha = 0.3 + 0.7 * Math.min(1, p.probability + 0.2);
+      ctx.fillRect(i * bw, base - hh, Math.max(1, bw - 1), hh);
+    }
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = "rgba(0,238,238,.35)";
+    ctx.beginPath();
+    ctx.moveTo(0, base + 0.5);
+    ctx.lineTo(w, base + 0.5);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(0,238,238,.6)";
+    ctx.font = "10px Menlo, Consolas, monospace";
+    ctx.fillText("NOW", 2, h - 3);
+    ctx.fillText("+30", w / 2 - 10, h - 3);
+    ctx.fillText("+60", w - 22, h - 3);
+  }
+  function renderTrend() {
+    if (!trendCtx || !trendCanvas || !feeds2 || !feeds2.history) {
+      return;
+    }
+    var w = trendCanvas.clientWidth, h = trendCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = trendCtx;
+    ctx.clearRect(0, 0, w, h);
+    var hist = feeds2.history;
+    var left = 28, right = 4, top = 10, bottom = 16;
+    var plotW = w - left - right, plotH = h - top - bottom;
+    var all = hist.outside.concat(hist.upstairs, hist.downstairs);
+    if (!all.length) {
+      return;
+    }
+    var min = Infinity, max = -Infinity, i;
+    for (i = 0; i < all.length; i++) {
+      if (all[i].v < min) {
+        min = all[i].v;
+      }
+      if (all[i].v > max) {
+        max = all[i].v;
+      }
+    }
+    min = Math.floor((min - 2) / 5) * 5;
+    max = Math.ceil((max + 2) / 5) * 5;
+    if (max - min < 5) {
+      max = min + 5;
+    }
+    var xAt = function(t2) {
+      return left + (t2 - hist.start) / (hist.end - hist.start) * plotW;
+    };
+    var yAt = function(v2) {
+      return top + (1 - (v2 - min) / (max - min)) * plotH;
+    };
+    ctx.font = "10px Menlo, Consolas, monospace";
+    ctx.strokeStyle = "rgba(0,238,238,.12)";
+    ctx.fillStyle = "rgba(0,238,238,.55)";
+    var steps = 4;
+    for (i = 0; i <= steps; i++) {
+      var v = min + (max - min) * i / steps;
+      var y = Math.floor(yAt(v)) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillText(Math.round(v) + "F", 2, y + 3);
+    }
+    for (i = 0; i <= 4; i++) {
+      var t = hist.start + (hist.end - hist.start) * i / 4;
+      var x = Math.floor(xAt(t)) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, h - bottom);
+      ctx.stroke();
+      var d = new Date(t);
+      var hr = d.getHours() % 12 || 12;
+      ctx.fillText(hr + (d.getHours() < 12 ? "a" : "p"), x - 6, h - 4);
+    }
+    var line = function(series, color, dashed) {
+      if (!series.length) {
+        return;
+      }
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash(dashed ? [4, 3] : []);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.4;
+      for (var k = 0; k < series.length; k++) {
+        var px = xAt(series[k].at), py = yAt(series[k].v);
+        if (k) {
+          ctx.lineTo(px, py);
+        } else {
+          ctx.moveTo(px, py);
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+    line(hist.outside, "#ff8a1f", true);
+    line(hist.downstairs, "#2aa3bb", false);
+    line(hist.upstairs, "#3fe0ff", false);
+  }
+  function renderForecast() {
+    var box = $id2("cl-forecast");
+    if (!box || !feeds2) {
+      return;
+    }
+    if (!feeds2.forecast.length) {
+      box.innerHTML = '<span class="cl-wait">Waiting</span>';
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < feeds2.forecast.length; i++) {
+      var d = feeds2.forecast[i];
+      var day = i === 0 ? "Today" : DAY_SHORT[new Date(d.at).getDay()];
+      html += '<div class="cl-day"><span class="cl-day-name">' + day + '</span><span class="cl-day-icon">' + (ICON[d.condition] || "\xB7") + '</span><span class="cl-day-hi">' + (d.high === null ? "--" : Math.round(d.high)) + '</span><span class="cl-day-lo">' + (d.low === null ? "--" : Math.round(d.low)) + '</span><span class="cl-day-rain">' + (d.rain === null ? "" : Math.round(d.rain) + "%") + "</span></div>";
+    }
+    box.innerHTML = html;
+  }
+  function pad2(n) {
+    return String(n).length < 2 ? "0" + n : String(n);
+  }
+  function renderClock2() {
+    var el = $id2("cl-time");
+    if (!el) {
+      return;
+    }
+    var now = /* @__PURE__ */ new Date();
+    var h = now.getHours();
+    var h12 = h % 12 || 12;
+    el.innerHTML = h12 + ":" + pad2(now.getMinutes()) + ":" + pad2(now.getSeconds()) + "<small>" + (h < 12 ? "AM" : "PM") + "</small>";
+    var date = $id2("cl-date");
+    if (date) {
+      date.textContent = DAYS2[now.getDay()] + ", " + MONTHS2[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
+    }
+  }
+  function tempColor(f) {
+    if (f <= COOL) {
+      var c2 = Math.max(0, Math.min(1, (COOL - f) / 12));
+      return { r: Math.round(63 - 40 * c2), g: Math.round(140 - 60 * c2), b: 255 };
+    }
+    if (f >= WARM) {
+      var wmix = Math.max(0, Math.min(1, (f - WARM) / 12));
+      return {
+        r: Math.round(63 + (255 - 63) * wmix),
+        g: Math.round(224 - (224 - 138) * wmix),
+        b: Math.round(255 - (255 - 31) * wmix)
+      };
+    }
+    return { r: 63, g: 224, b: 255 };
+  }
+  function paintThermalHouse() {
+    if (!window.HouseThermal || !feeds2) {
+      return;
+    }
+    var temps = feeds2.roomTemps();
+    var tints = {};
+    for (var key in temps) {
+      if (temps.hasOwnProperty(key)) {
+        var c2 = tempColor(temps[key]);
+        tints[key] = { color: c2.r << 16 | c2.g << 8 | c2.b, opacity: 0.3 };
+      }
+    }
+    window.HouseThermal.tint(tints);
+  }
+  var ClimateView, feeds2, radar, active2, dirty2, lastRender2, resizeTimer2, observer2, built, minutelyCanvas, minutelyCtx, trendCanvas, trendCtx, COOL, WARM, MODE_LABEL, DAY_SHORT, ICON, DAYS2, MONTHS2;
+  var init_ClimateView = __esm({
+    "src/ClimateView.js"() {
+      init_ClimateFeeds();
+      init_Radar();
+      ClimateView = {};
+      feeds2 = null;
+      radar = null;
+      active2 = false;
+      dirty2 = true;
+      lastRender2 = 0;
+      resizeTimer2 = null;
+      observer2 = null;
+      built = false;
+      minutelyCanvas = null;
+      minutelyCtx = null;
+      trendCanvas = null;
+      trendCtx = null;
+      COOL = 66;
+      WARM = 76;
+      ClimateView.init = function(ha2) {
+        var root = $id2("climate-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active2 = true;
+        minutelyCanvas = $id2("cl-minutely-canvas");
+        minutelyCtx = minutelyCanvas ? minutelyCanvas.getContext("2d") : null;
+        trendCanvas = $id2("cl-trend-canvas");
+        trendCtx = trendCanvas ? trendCanvas.getContext("2d") : null;
+        if (!feeds2 && ha2) {
+          feeds2 = new ClimateFeeds(ha2, function() {
+            dirty2 = true;
+          });
+          feeds2.start();
+        }
+        if (!radar) {
+          radar = new Radar({
+            el: $id2("cl-radar"),
+            timeEl: $id2("cl-radar-time"),
+            windEl: $id2("cl-radar-wind"),
+            home: HOME,
+            zoom: 8
+          });
+        }
+        if (!built) {
+          built = true;
+          bindControls();
+        }
+        if (window.HouseThermal) {
+          window.HouseThermal.mount();
+        }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            radar.mount();
+            ClimateView.resize();
+          });
+        });
+        watchPanels2();
+        dirty2 = true;
+      };
+      ClimateView.show = function() {
+        active2 = true;
+        var root = $id2("climate-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+        ClimateView.resize();
+      };
+      ClimateView.hide = function() {
+        active2 = false;
+        $id2("climate-screen").style.display = "none";
+        if (window.HouseThermal) {
+          window.HouseThermal.unmount();
+        }
+      };
+      ClimateView.message = function() {
+        dirty2 = true;
+      };
+      ClimateView.seed = function() {
+        dirty2 = true;
+      };
+      ClimateView.animate = function() {
+        if (!active2) {
+          return;
+        }
+        radar.tick();
+        if (window.HouseThermal) {
+          window.HouseThermal.animate();
+        }
+        renderClock2();
+        var now = Date.now();
+        if (dirty2 && now - lastRender2 > 1e3) {
+          lastRender2 = now;
+          dirty2 = false;
+          renderExterior();
+          renderAlerts();
+          renderZones();
+          renderAir();
+          renderForecast();
+          renderMinutely();
+          renderTrend();
+          paintThermalHouse();
+        }
+      };
+      ClimateView.resize = function() {
+        if (!active2) {
+          return;
+        }
+        radar.resize();
+        sizeCanvas(minutelyCanvas, minutelyCtx);
+        sizeCanvas(trendCanvas, trendCtx);
+        if (window.HouseThermal) {
+          window.HouseThermal.resize();
+        }
+        dirty2 = true;
+      };
+      ClimateView.resizeDebounced = function() {
+        if (resizeTimer2) {
+          clearTimeout(resizeTimer2);
+        }
+        resizeTimer2 = setTimeout(function() {
+          resizeTimer2 = null;
+          ClimateView.resize();
+        }, 150);
+      };
+      MODE_LABEL = { off: "Off", heat: "Heat", cool: "Cool", heat_cool: "Auto" };
+      DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      ICON = {
+        sunny: "\u2600",
+        clear: "\u2600",
+        "clear-night": "\u263E",
+        partlycloudy: "\u26C5",
+        cloudy: "\u2601",
+        fog: "\u2592",
+        rainy: "\u2614",
+        pouring: "\u2614",
+        lightning: "\u26A1",
+        "lightning-rainy": "\u26A1",
+        snowy: "\u2744",
+        "snowy-rainy": "\u2744",
+        hail: "\u2744",
+        windy: "\u1F32C",
+        exceptional: "\u26A0"
+      };
+      DAYS2 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS2 = [
         "January",
         "February",
         "March",
@@ -54658,15 +55934,15 @@
               }), size = {
                 width: element.width(),
                 height: element.height()
-              }, active3 = document.activeElement;
+              }, active4 = document.activeElement;
               try {
-                active3.id;
+                active4.id;
               } catch (e) {
-                active3 = document.body;
+                active4 = document.body;
               }
               element.wrap(wrapper);
-              if (element[0] === active3 || $2.contains(element[0], active3)) {
-                $2(active3).focus();
+              if (element[0] === active4 || $2.contains(element[0], active4)) {
+                $2(active4).focus();
               }
               wrapper = element.parent();
               if (element.css("position") === "static") {
@@ -54695,11 +55971,11 @@
               return wrapper.css(props).show();
             },
             removeWrapper: function(element) {
-              var active3 = document.activeElement;
+              var active4 = document.activeElement;
               if (element.parent().is(".ui-effects-wrapper")) {
                 element.parent().replaceWith(element);
-                if (element[0] === active3 || $2.contains(element[0], active3)) {
-                  $2(active3).focus();
+                if (element[0] === active4 || $2.contains(element[0], active4)) {
+                  $2(active4).focus();
                 }
               }
               return element;
@@ -55094,14 +56370,14 @@
             }
           },
           _activate: function(index) {
-            var active3 = this._findActive(index)[0];
-            if (active3 === this.active[0]) {
+            var active4 = this._findActive(index)[0];
+            if (active4 === this.active[0]) {
               return;
             }
-            active3 = active3 || this.active[0];
+            active4 = active4 || this.active[0];
             this._eventHandler({
-              target: active3,
-              currentTarget: active3,
+              target: active4,
+              currentTarget: active4,
               preventDefault: $2.noop
             });
           },
@@ -55124,8 +56400,8 @@
             this._focusable(this.headers);
           },
           _eventHandler: function(event) {
-            var options = this.options, active3 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active3[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active3.next(), eventData = {
-              oldHeader: active3,
+            var options = this.options, active4 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active4[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active4.next(), eventData = {
+              oldHeader: active4,
               oldPanel: toHide,
               newHeader: collapsing ? $2() : clicked,
               newPanel: toShow
@@ -55141,9 +56417,9 @@
             options.active = collapsing ? false : this.headers.index(clicked);
             this.active = clickedIsActive ? $2() : clicked;
             this._toggle(eventData);
-            active3.removeClass("ui-accordion-header-active ui-state-active");
+            active4.removeClass("ui-accordion-header-active ui-state-active");
             if (options.icons) {
-              active3.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
+              active4.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
             }
             if (!clickedIsActive) {
               clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
@@ -60614,33 +61890,33 @@
             }
           },
           _initialActive: function() {
-            var active3 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
-            if (active3 === null) {
+            var active4 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
+            if (active4 === null) {
               if (locationHash) {
                 this.tabs.each(function(i, tab) {
                   if ($2(tab).attr("aria-controls") === locationHash) {
-                    active3 = i;
+                    active4 = i;
                     return false;
                   }
                 });
               }
-              if (active3 === null) {
-                active3 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
+              if (active4 === null) {
+                active4 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
               }
-              if (active3 === null || active3 === -1) {
-                active3 = this.tabs.length ? 0 : false;
-              }
-            }
-            if (active3 !== false) {
-              active3 = this.tabs.index(this.tabs.eq(active3));
-              if (active3 === -1) {
-                active3 = collapsible ? false : 0;
+              if (active4 === null || active4 === -1) {
+                active4 = this.tabs.length ? 0 : false;
               }
             }
-            if (!collapsible && active3 === false && this.anchors.length) {
-              active3 = 0;
+            if (active4 !== false) {
+              active4 = this.tabs.index(this.tabs.eq(active4));
+              if (active4 === -1) {
+                active4 = collapsible ? false : 0;
+              }
             }
-            return active3;
+            if (!collapsible && active4 === false && this.anchors.length) {
+              active4 = 0;
+            }
+            return active4;
           },
           _getCreateEventData: function() {
             return {
@@ -60920,8 +62196,8 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active3 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active3[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active3.length ? $2() : this._getPanelForTab(active3), eventData = {
-              oldTab: active3,
+            var options = this.options, active4 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active4[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active4.length ? $2() : this._getPanelForTab(active4), eventData = {
+              oldTab: active4,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
               newPanel: toShow
@@ -60996,14 +62272,14 @@
             });
           },
           _activate: function(index) {
-            var anchor, active3 = this._findActive(index);
-            if (active3[0] === this.active[0]) {
+            var anchor, active4 = this._findActive(index);
+            if (active4[0] === this.active[0]) {
               return;
             }
-            if (!active3.length) {
-              active3 = this.active;
+            if (!active4.length) {
+              active4 = this.active;
             }
-            anchor = active3.find(".ui-tabs-anchor")[0];
+            anchor = active4.find(".ui-tabs-anchor")[0];
             this._eventHandler({
               target: anchor,
               currentTarget: anchor,
@@ -61418,6 +62694,7 @@
   var systems = require_systems();
   var haSource = (init_ha_source(), __toCommonJS(ha_source_exports));
   var HouseView2 = (init_HouseView(), __toCommonJS(HouseView_exports)).HouseView;
+  var ClimateView2 = (init_ClimateView(), __toCommonJS(ClimateView_exports)).ClimateView;
   var init = false;
   require_jquery_ui();
   $.fn.fitScreen = function(baseW, baseH) {
@@ -61465,12 +62742,14 @@
     this.css("left", left + "px");
     return this;
   };
-  var active2 = "lt";
+  var active3 = "lt";
   var ha = haSource.start(function(message) {
-    if (active2 === "lt") {
+    if (active3 === "lt") {
       LightTable.message(message);
-    } else if (active2 === "house") {
+    } else if (active3 === "house") {
       HouseView2.message(message);
+    } else if (active3 === "climate") {
+      ClimateView2.message(message);
     } else {
       setTimeout(function() {
         Boardroom.message(message);
@@ -61508,13 +62787,20 @@
       HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active2 = "house";
+        active3 = "house";
         HouseView2.show();
+      }, 3e3);
+    } else if (system.key === "climate") {
+      ClimateView2.init(ha);
+      ClimateView2.seed(haSource.getSeed());
+      setTimeout(function() {
+        active3 = "climate";
+        ClimateView2.show();
       }, 3e3);
     } else {
       Boardroom.init(system.key);
       setTimeout(function() {
-        active2 = "br";
+        active3 = "br";
         Boardroom.show();
       }, 3e3);
     }
@@ -61558,10 +62844,12 @@
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
-      if (active2 === "lt") {
+      if (active3 === "lt") {
         LightTable.animate();
-      } else if (active2 === "house") {
+      } else if (active3 === "house") {
         HouseView2.animate();
+      } else if (active3 === "climate") {
+        ClimateView2.animate();
       } else {
         Boardroom.animate();
       }
@@ -61570,11 +62858,13 @@
     animate();
     var timeout = 0;
     function onWindowResize2() {
-      if (active2 === "lt") {
+      if (active3 === "lt") {
         $("#light-table").fitLauncher();
         LightTable.resize();
-      } else if (active2 === "house") {
+      } else if (active3 === "house") {
         HouseView2.resizeDebounced();
+      } else if (active3 === "climate") {
+        ClimateView2.resizeDebounced();
       } else {
         Boardroom.resize();
       }

@@ -11,6 +11,11 @@
         <link href="css/light-table-styles.css" rel="stylesheet" type="text/css" />
         <link href="css/boardroom-styles.css" rel="stylesheet" type="text/css" />
         <link href="css/house-screen.css" rel="stylesheet" type="text/css" />
+        <link href="css/climate-screen.css" rel="stylesheet" type="text/css" />
+        <!-- Leaflet, for the radar map on the Climate screen. Plain global,
+             separate from the fork's three.js r66 and the house widget's r128. -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
         <script src="js/globe-grid.js"></script>
         <script src="js/github-2013.js"></script>
@@ -820,6 +825,78 @@
                         <canvas id="hs-en-canvas"></canvas>
                     </div>
 
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="climate-screen">
+
+            <div class="cl-panel" id="cl-radar-panel">
+                <div class="hs-head">Radar <em id="cl-radar-time">NOW</em></div>
+                <div class="hs-body">
+                    <div id="cl-radar"></div>
+                    <div id="cl-radar-hud">
+                        <span>Wind</span><b id="cl-radar-wind">--</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cl-panel" id="cl-outside">
+                <div class="hs-head">Outside <em>Pirate Weather</em></div>
+                <div class="hs-body">
+                    <div id="cl-alerts"></div>
+                    <div id="cl-exterior"><span class="cl-wait">Waiting</span></div>
+                </div>
+            </div>
+
+            <div class="cl-panel" id="cl-minutely">
+                <div class="hs-head">Next 60 Minutes <em id="cl-minutely-note">Loading</em></div>
+                <div class="hs-body">
+                    <canvas id="cl-minutely-canvas"></canvas>
+                    <div id="cl-minutely-empty"></div>
+                </div>
+            </div>
+
+            <div class="cl-panel" id="cl-trend">
+                <div class="hs-head">Inside Against Outside <em>Last 24 h</em></div>
+                <div class="hs-body">
+                    <canvas id="cl-trend-canvas"></canvas>
+                    <div id="cl-trend-legend">
+                        <span class="up">Upstairs</span>
+                        <span class="down">Downstairs</span>
+                        <span class="out">Outside</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cl-panel" id="cl-hvac">
+                <div class="hs-head">HVAC Zones <em id="cl-log"></em></div>
+                <div class="hs-body">
+                    <div id="cl-zones"></div>
+                </div>
+            </div>
+
+            <div class="cl-panel" id="cl-air-panel">
+                <div class="hs-head">Air Quality <em>Comfort</em></div>
+                <div class="hs-body">
+                    <div id="cl-air"><span class="cl-wait">Waiting</span></div>
+                </div>
+            </div>
+
+            <div class="cl-panel" id="cl-strip">
+                <div class="hs-head">Forecast <em>7 Day</em></div>
+                <div class="hs-body">
+                    <div id="cl-forecast"><span class="cl-wait">Waiting</span></div>
+                    <div class="cl-cell" id="cl-clock">
+                        <div id="cl-time">--:--:--</div>
+                        <div id="cl-date"></div>
+                    </div>
+                    <div class="cl-cell" id="cl-thermal">
+                        <div class="cl-sub">Room Temperature</div>
+                        <canvas id="cl-thermal-canvas"></canvas>
+                    </div>
                 </div>
             </div>
 
