@@ -114,6 +114,10 @@ The second concept page used a lighter variant: `#9ef6ff` (text), `#00e5ff` (glo
 
 ## 5. How Encom Boardroom is built (reviewed from source)
 
+This section describes **upstream's** repo as it ships, so the names below are
+theirs. In this fork the bundle is `build/kaiyami.js` and the folder art is
+`kaiyami_folder_big.png` / `_small.png` / `_xl.png`.
+
 Repo layout:
 ```
 index.html                  loads js/globe-grid.js, js/github-2013.js, build/encom-boardroom.js
@@ -294,8 +298,8 @@ Only the Python standard library is needed.
   `three@0.66.2`, `jquery@~2.1`, `jquery-ui@~1.10.5`, `moment@~2.6`, `moment-timezone@0.0.6`, `pusher.color@~0.2.4`, `pleaserotate.js`, `encom-globe` (pin it to a release from the same era as three r66; upstream pins `*`, which resolves to whatever is current).
 - Skip the server only deps (`express@~4.3`, `request`, `event-source`, `map-stream`, `serve-favicon`, `github-timeline-stream`, `wikipedia-stream`). They exist only for `stream-server.js`, which the Home Assistant WebSocket replaces. Skipping them avoids most Node 22 install failures (`request` is deprecated, Express 4.3 is from 2014).
 - Note: `src/main.js` requires `event-source`. Either keep that one small dep, or remove the `EventSource` block when the HA connection replaces it.
-- Build: `npx esbuild src/main.js --bundle --outfile=build/encom-boardroom.js`. Grunt and Browserify are no longer needed.
-- Step 1 needs none of this: the prebuilt `build/encom-boardroom.js` runs from any static server today.
+- Build: `npx esbuild src/main.js --bundle --outfile=build/kaiyami.js`. Grunt and Browserify are no longer needed.
+- Step 1 needs none of this: the prebuilt `build/kaiyami.js` runs from any static server today.
 
 ### Step 3. Folders become systems
 - `index.html`: rename `#lt-launch-github`, `#lt-launch-test`, `#lt-launch-wikipedia`, `#lt-launch-bitcoin`, `#lt-launch-unknown` and their `.folder-label` text to the systems in section 1.

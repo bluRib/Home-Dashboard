@@ -5,7 +5,7 @@
  * shape by ../../app/js/message.js, so the widgets never had to change.
  *
  * The token is NOT imported here. esbuild inlines whatever it can resolve, and
- * build/encom-boardroom.js is committed, so importing app/js/config.js would
+ * build/kaiyami.js is committed, so importing app/js/config.js would
  * publish the token. index.html loads config.local.js first instead, which is
  * gitignored and sets window.HA_CONFIG at runtime.
  *

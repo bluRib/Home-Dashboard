@@ -412,7 +412,7 @@ ul {
 }
 
 .folder-big {
-    background-image: url(../images/encom_folder_big.png);
+    background-image: url(../images/kaiyami_folder_big.png);
     padding: 0px;
     margin: 0px;
     width:95px;
@@ -420,7 +420,7 @@ ul {
 }
 
 .folder-small {
-    background-image: url(../images/encom_folder_small.png);
+    background-image: url(../images/kaiyami_folder_small.png);
     padding: 0px;
     margin: 0px;
     width:80px;
@@ -612,7 +612,7 @@ ul {
     }
 
     .folder-big {
-        background-image: url(../images/encom_folder_small.png);
+        background-image: url(../images/kaiyami_folder_small.png);
         width:80px;
         height: 49px;
         margin: 0;
@@ -623,7 +623,7 @@ ul {
     }
 
     .folder-small {
-        background-image: url(../images/encom_folder_small.png);
+        background-image: url(../images/kaiyami_folder_small.png);
         width:80px;
         height: 49px;
         margin: 0;
@@ -844,13 +844,13 @@ ul {
     }
 
     .folder-big {
-        background-image: url(../images/encom_folder_xl.png);
+        background-image: url(../images/kaiyami_folder_xl.png);
         width:140px;
         height: 93px;
     }
 
     .folder-small {
-        background-image: url(../images/encom_folder_big.png);
+        background-image: url(../images/kaiyami_folder_big.png);
         width:95px;
         height: 63px;
     }
