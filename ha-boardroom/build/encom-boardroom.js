@@ -8,11 +8,20 @@
     if (fn) return fn();
     throw new Error("Module not found in bundle: " + path);
   };
-  var __esm = (fn, res) => function __init() {
-    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  var __esm = (fn, res, err) => function __init() {
+    if (err) throw err[0];
+    try {
+      return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+    } catch (e) {
+      throw err = [e], e;
+    }
   };
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
   };
   var __export = (target, all) => {
     for (var name in all)
@@ -371,8 +380,8 @@
            *
            * Date: 2014-12-16
            */
-          function(window3) {
-            var i, support2, Expr, getText, isXML, tokenize, compile, select, outermostContext, sortInput, hasDuplicate, setDocument, document3, docElem2, documentIsHTML, rbuggyQSA, rbuggyMatches, matches, contains, expando = "sizzle" + 1 * /* @__PURE__ */ new Date(), preferredDoc = window3.document, dirruns = 0, done = 0, classCache = createCache(), tokenCache = createCache(), compilerCache = createCache(), sortOrder = function(a, b) {
+          (function(window3) {
+            var i, support2, Expr, getText, isXML, tokenize, compile, select, outermostContext, sortInput, hasDuplicate, setDocument, document3, docElem2, documentIsHTML, rbuggyQSA, rbuggyMatches, matches, contains2, expando = "sizzle" + 1 * /* @__PURE__ */ new Date(), preferredDoc = window3.document, dirruns = 0, done = 0, classCache = createCache(), tokenCache = createCache(), compilerCache = createCache(), sortOrder = function(a, b) {
               if (a === b) {
                 hasDuplicate = true;
               }
@@ -460,7 +469,7 @@
                         return results;
                       }
                     } else {
-                      if (context.ownerDocument && (elem = context.ownerDocument.getElementById(m)) && contains(context, elem) && elem.id === m) {
+                      if (context.ownerDocument && (elem = context.ownerDocument.getElementById(m)) && contains2(context, elem) && elem.id === m) {
                         results.push(elem);
                         return results;
                       }
@@ -710,7 +719,7 @@
               rbuggyQSA = rbuggyQSA.length && new RegExp(rbuggyQSA.join("|"));
               rbuggyMatches = rbuggyMatches.length && new RegExp(rbuggyMatches.join("|"));
               hasCompare = rnative.test(docElem2.compareDocumentPosition);
-              contains = hasCompare || rnative.test(docElem2.contains) ? function(a, b) {
+              contains2 = hasCompare || rnative.test(docElem2.contains) ? function(a, b) {
                 var adown = a.nodeType === 9 ? a.documentElement : a, bup = b && b.parentNode;
                 return a === bup || !!(bup && bup.nodeType === 1 && (adown.contains ? adown.contains(bup) : a.compareDocumentPosition && a.compareDocumentPosition(bup) & 16));
               } : function(a, b) {
@@ -737,10 +746,10 @@
                   1
                 );
                 if (compare & 1 || !support2.sortDetached && b.compareDocumentPosition(a) === compare) {
-                  if (a === doc || a.ownerDocument === preferredDoc && contains(preferredDoc, a)) {
+                  if (a === doc || a.ownerDocument === preferredDoc && contains2(preferredDoc, a)) {
                     return -1;
                   }
-                  if (b === doc || b.ownerDocument === preferredDoc && contains(preferredDoc, b)) {
+                  if (b === doc || b.ownerDocument === preferredDoc && contains2(preferredDoc, b)) {
                     return 1;
                   }
                   return sortInput ? indexOf2(sortInput, a) - indexOf2(sortInput, b) : 0;
@@ -803,7 +812,7 @@
               if ((context.ownerDocument || context) !== document3) {
                 setDocument(context);
               }
-              return contains(context, elem);
+              return contains2(context, elem);
             };
             Sizzle2.attr = function(elem, name) {
               if ((elem.ownerDocument || elem) !== document3) {
@@ -1552,7 +1561,7 @@
               });
             }
             return Sizzle2;
-          }(window2)
+          })(window2)
         );
         jQuery.find = Sizzle;
         jQuery.expr = Sizzle.selectors;
@@ -3128,7 +3137,7 @@
             return clone;
           },
           buildFragment: function(elems, context, scripts, selection) {
-            var elem, tmp, tag, wrap, contains, j, fragment = context.createDocumentFragment(), nodes = [], i = 0, l = elems.length;
+            var elem, tmp, tag, wrap, contains2, j, fragment = context.createDocumentFragment(), nodes = [], i = 0, l = elems.length;
             for (; i < l; i++) {
               elem = elems[i];
               if (elem || elem === 0) {
@@ -3157,9 +3166,9 @@
               if (selection && jQuery.inArray(elem, selection) !== -1) {
                 continue;
               }
-              contains = jQuery.contains(elem.ownerDocument, elem);
+              contains2 = jQuery.contains(elem.ownerDocument, elem);
               tmp = getAll(fragment.appendChild(elem), "script");
-              if (contains) {
+              if (contains2) {
                 setGlobalEval(tmp);
               }
               if (scripts) {
@@ -7264,13 +7273,13 @@
         return moment.lang("cs", {
           months,
           monthsShort,
-          monthsParse: function(months2, monthsShort2) {
+          monthsParse: (function(months2, monthsShort2) {
             var i, _monthsParse = [];
             for (i = 0; i < 12; i++) {
               _monthsParse[i] = new RegExp("^" + months2[i] + "$|^" + monthsShort2[i] + "$", "i");
             }
             return _monthsParse;
-          }(months, monthsShort),
+          })(months, monthsShort),
           weekdays: "ned\u011Ble_pond\u011Bl\xED_\xFAter\xFD_st\u0159eda_\u010Dtvrtek_p\xE1tek_sobota".split("_"),
           weekdaysShort: "ne_po_\xFAt_st_\u010Dt_p\xE1_so".split("_"),
           weekdaysMin: "ne_po_\xFAt_st_\u010Dt_p\xE1_so".split("_"),
@@ -9768,9 +9777,13 @@
           weekday = parseInt(weekday, 10);
           switch (weekday) {
             case 0:
+            // Sonndeg
             case 1:
+            // Méindeg
             case 3:
+            // Mëttwoch
             case 5:
+            // Freideg
             case 6:
               return true;
             default:
@@ -11175,13 +11188,13 @@
         return moment.lang("sk", {
           months,
           monthsShort,
-          monthsParse: function(months2, monthsShort2) {
+          monthsParse: (function(months2, monthsShort2) {
             var i, _monthsParse = [];
             for (i = 0; i < 12; i++) {
               _monthsParse[i] = new RegExp("^" + months2[i] + "$|^" + monthsShort2[i] + "$", "i");
             }
             return _monthsParse;
-          }(months, monthsShort),
+          })(months, monthsShort),
           weekdays: "nede\u013Ea_pondelok_utorok_streda_\u0161tvrtok_piatok_sobota".split("_"),
           weekdaysShort: "ne_po_ut_st_\u0161t_pi_so".split("_"),
           weekdaysMin: "ne_po_ut_st_\u0161t_pi_so".split("_"),
@@ -13389,14 +13402,17 @@
               if (strict) {
                 return parseTokenOneDigit;
               }
+            /* falls through */
             case "SS":
               if (strict) {
                 return parseTokenTwoDigits;
               }
+            /* falls through */
             case "SSS":
               if (strict) {
                 return parseTokenThreeDigits;
               }
+            /* falls through */
             case "DDD":
               return parseTokenOneToThreeDigits;
             case "MMM":
@@ -13456,18 +13472,22 @@
         function addTimeToArrayFromToken(token, input, config) {
           var a, datePartArray = config._a;
           switch (token) {
+            // QUARTER
             case "Q":
               if (input != null) {
                 datePartArray[MONTH] = (toInt(input) - 1) * 3;
               }
               break;
+            // MONTH
             case "M":
+            // fall through to MM
             case "MM":
               if (input != null) {
                 datePartArray[MONTH] = toInt(input) - 1;
               }
               break;
             case "MMM":
+            // fall through to MMMM
             case "MMMM":
               a = getLangDefinition(config._l).monthsParse(input);
               if (a != null) {
@@ -13476,7 +13496,9 @@
                 config._pf.invalidMonth = input;
               }
               break;
+            // DAY OF MONTH
             case "D":
+            // fall through to DD
             case "DD":
               if (input != null) {
                 datePartArray[DATE] = toInt(input);
@@ -13487,12 +13509,15 @@
                 datePartArray[DATE] = toInt(parseInt(input, 10));
               }
               break;
+            // DAY OF YEAR
             case "DDD":
+            // fall through to DDDD
             case "DDDD":
               if (input != null) {
                 config._dayOfYear = toInt(input);
               }
               break;
+            // YEAR
             case "YY":
               datePartArray[YEAR] = moment.parseTwoDigitYear(input);
               break;
@@ -13501,34 +13526,48 @@
             case "YYYYYY":
               datePartArray[YEAR] = toInt(input);
               break;
+            // AM / PM
             case "a":
+            // fall through to A
             case "A":
               config._isPm = getLangDefinition(config._l).isPM(input);
               break;
+            // 24 HOUR
             case "H":
+            // fall through to hh
             case "HH":
+            // fall through to hh
             case "h":
+            // fall through to hh
             case "hh":
               datePartArray[HOUR] = toInt(input);
               break;
+            // MINUTE
             case "m":
+            // fall through to mm
             case "mm":
               datePartArray[MINUTE] = toInt(input);
               break;
+            // SECOND
             case "s":
+            // fall through to ss
             case "ss":
               datePartArray[SECOND] = toInt(input);
               break;
+            // MILLISECOND
             case "S":
             case "SS":
             case "SSS":
             case "SSSS":
               datePartArray[MILLISECOND] = toInt(("0." + input) * 1e3);
               break;
+            // UNIX TIMESTAMP WITH MS
             case "X":
               config._d = new Date(parseFloat(input) * 1e3);
               break;
+            // TIMEZONE
             case "Z":
+            // fall through to ZZ
             case "ZZ":
               config._useUTC = true;
               config._tzm = timezoneMinutesFromString(input);
@@ -13544,6 +13583,7 @@
             case "e":
             case "E":
               token = token.substr(0, 1);
+            /* falls through */
             case "gg":
             case "gggg":
             case "GG":
@@ -14123,17 +14163,22 @@
             switch (units) {
               case "year":
                 this.month(0);
+              /* falls through */
               case "quarter":
               case "month":
                 this.date(1);
+              /* falls through */
               case "week":
               case "isoWeek":
               case "day":
                 this.hours(0);
+              /* falls through */
               case "hour":
                 this.minutes(0);
+              /* falls through */
               case "minute":
                 this.seconds(0);
+              /* falls through */
               case "second":
                 this.milliseconds(0);
             }
@@ -15331,7 +15376,7 @@
           }
           return this;
         },
-        clampScalar: /* @__PURE__ */ function() {
+        clampScalar: /* @__PURE__ */ (function() {
           var min, max;
           return function(minVal, maxVal) {
             if (min === void 0) {
@@ -15342,7 +15387,7 @@
             max.set(maxVal, maxVal);
             return this.clamp(min, max);
           };
-        }(),
+        })(),
         floor: function() {
           this.x = Math.floor(this.x);
           this.y = Math.floor(this.y);
@@ -15530,7 +15575,7 @@
           this.z = a.z * b.z;
           return this;
         },
-        applyEuler: /* @__PURE__ */ function() {
+        applyEuler: /* @__PURE__ */ (function() {
           var quaternion;
           return function(euler) {
             if (euler instanceof THREE.Euler === false) {
@@ -15540,15 +15585,15 @@
             this.applyQuaternion(quaternion.setFromEuler(euler));
             return this;
           };
-        }(),
-        applyAxisAngle: /* @__PURE__ */ function() {
+        })(),
+        applyAxisAngle: /* @__PURE__ */ (function() {
           var quaternion;
           return function(axis, angle) {
             if (quaternion === void 0) quaternion = new THREE.Quaternion();
             this.applyQuaternion(quaternion.setFromAxisAngle(axis, angle));
             return this;
           };
-        }(),
+        })(),
         applyMatrix3: function(m) {
           var x = this.x;
           var y = this.y;
@@ -15663,7 +15708,7 @@
           }
           return this;
         },
-        clampScalar: /* @__PURE__ */ function() {
+        clampScalar: /* @__PURE__ */ (function() {
           var min, max;
           return function(minVal, maxVal) {
             if (min === void 0) {
@@ -15674,7 +15719,7 @@
             max.set(maxVal, maxVal, maxVal);
             return this.clamp(min, max);
           };
-        }(),
+        })(),
         floor: function() {
           this.x = Math.floor(this.x);
           this.y = Math.floor(this.y);
@@ -15749,7 +15794,7 @@
           this.z = ax * by - ay * bx;
           return this;
         },
-        projectOnVector: /* @__PURE__ */ function() {
+        projectOnVector: /* @__PURE__ */ (function() {
           var v1, dot;
           return function(vector) {
             if (v1 === void 0) v1 = new THREE.Vector3();
@@ -15757,22 +15802,22 @@
             dot = this.dot(v1);
             return this.copy(v1).multiplyScalar(dot);
           };
-        }(),
-        projectOnPlane: /* @__PURE__ */ function() {
+        })(),
+        projectOnPlane: /* @__PURE__ */ (function() {
           var v1;
           return function(planeNormal) {
             if (v1 === void 0) v1 = new THREE.Vector3();
             v1.copy(this).projectOnVector(planeNormal);
             return this.sub(v1);
           };
-        }(),
-        reflect: /* @__PURE__ */ function() {
+        })(),
+        reflect: /* @__PURE__ */ (function() {
           var v1;
           return function(normal) {
             if (v1 === void 0) v1 = new THREE.Vector3();
             return this.sub(v1.copy(normal).multiplyScalar(2 * this.dot(normal)));
           };
-        }(),
+        })(),
         angleTo: function(v) {
           var theta = this.dot(v) / (this.length() * v.length());
           return Math.acos(THREE.Math.clamp(theta, -1, 1));
@@ -16113,7 +16158,7 @@
           }
           return this;
         },
-        clampScalar: /* @__PURE__ */ function() {
+        clampScalar: /* @__PURE__ */ (function() {
           var min, max;
           return function(minVal, maxVal) {
             if (min === void 0) {
@@ -16124,7 +16169,7 @@
             max.set(maxVal, maxVal, maxVal, maxVal);
             return this.clamp(min, max);
           };
-        }(),
+        })(),
         floor: function() {
           this.x = Math.floor(this.x);
           this.y = Math.floor(this.y);
@@ -16384,13 +16429,13 @@
           if (update !== false) this._updateQuaternion();
           return this;
         },
-        reorder: function() {
+        reorder: (function() {
           var q = new THREE.Quaternion();
           return function(newOrder) {
             q.setFromEuler(this);
             this.setFromQuaternion(q, newOrder);
           };
-        }(),
+        })(),
         fromArray: function(array) {
           this._x = array[0];
           this._y = array[1];
@@ -16443,7 +16488,7 @@
           var result = optionalTarget || new THREE.Vector3();
           return this.delta(result).multiplyScalar(t).add(this.start);
         },
-        closestPointToPointParameter: function() {
+        closestPointToPointParameter: (function() {
           var startP = new THREE.Vector3();
           var startEnd = new THREE.Vector3();
           return function(point, clampToLine) {
@@ -16457,7 +16502,7 @@
             }
             return t;
           };
-        }(),
+        })(),
         closestPointToPoint: function(point, clampToLine, optionalTarget) {
           var t = this.closestPointToPointParameter(point, clampToLine);
           var result = optionalTarget || new THREE.Vector3();
@@ -16509,7 +16554,7 @@
           }
           return this;
         },
-        setFromCenterAndSize: function() {
+        setFromCenterAndSize: (function() {
           var v1 = new THREE.Vector2();
           return function(center2, size) {
             var halfSize = v1.copy(size).multiplyScalar(0.5);
@@ -16517,7 +16562,7 @@
             this.max.copy(center2).add(halfSize);
             return this;
           };
-        }(),
+        })(),
         copy: function(box) {
           this.min.copy(box.min);
           this.max.copy(box.max);
@@ -16583,13 +16628,13 @@
           var result = optionalTarget || new THREE.Vector2();
           return result.copy(point).clamp(this.min, this.max);
         },
-        distanceToPoint: function() {
+        distanceToPoint: (function() {
           var v1 = new THREE.Vector2();
           return function(point) {
             var clampedPoint = v1.copy(point).clamp(this.min, this.max);
             return clampedPoint.sub(point).length();
           };
-        }(),
+        })(),
         intersect: function(box) {
           this.min.max(box.min);
           this.max.min(box.max);
@@ -16653,7 +16698,7 @@
           }
           return this;
         },
-        setFromCenterAndSize: function() {
+        setFromCenterAndSize: (function() {
           var v1 = new THREE.Vector3();
           return function(center2, size) {
             var halfSize = v1.copy(size).multiplyScalar(0.5);
@@ -16661,8 +16706,8 @@
             this.max.copy(center2).add(halfSize);
             return this;
           };
-        }(),
-        setFromObject: function() {
+        })(),
+        setFromObject: (function() {
           var v1 = new THREE.Vector3();
           return function(object) {
             var scope = this;
@@ -16680,7 +16725,7 @@
             });
             return this;
           };
-        }(),
+        })(),
         copy: function(box) {
           this.min.copy(box.min);
           this.max.copy(box.max);
@@ -16747,14 +16792,14 @@
           var result = optionalTarget || new THREE.Vector3();
           return result.copy(point).clamp(this.min, this.max);
         },
-        distanceToPoint: function() {
+        distanceToPoint: (function() {
           var v1 = new THREE.Vector3();
           return function(point) {
             var clampedPoint = v1.copy(point).clamp(this.min, this.max);
             return clampedPoint.sub(point).length();
           };
-        }(),
-        getBoundingSphere: function() {
+        })(),
+        getBoundingSphere: (function() {
           var v1 = new THREE.Vector3();
           return function(optionalTarget) {
             var result = optionalTarget || new THREE.Sphere();
@@ -16762,7 +16807,7 @@
             result.radius = this.size(v1).length() * 0.5;
             return result;
           };
-        }(),
+        })(),
         intersect: function(box) {
           this.min.max(box.min);
           this.max.min(box.max);
@@ -16773,7 +16818,7 @@
           this.max.max(box.max);
           return this;
         },
-        applyMatrix4: function() {
+        applyMatrix4: (function() {
           var points = [
             new THREE.Vector3(),
             new THREE.Vector3(),
@@ -16797,7 +16842,7 @@
             this.setFromPoints(points);
             return this;
           };
-        }(),
+        })(),
         translate: function(offset) {
           this.min.add(offset);
           this.max.add(offset);
@@ -16872,7 +16917,7 @@
           console.warn("DEPRECATED: Matrix3's .multiplyVector3() has been removed. Use vector.applyMatrix3( matrix ) instead.");
           return vector.applyMatrix3(this);
         },
-        multiplyVector3Array: function() {
+        multiplyVector3Array: (function() {
           var v1 = new THREE.Vector3();
           return function(a) {
             for (var i = 0, il = a.length; i < il; i += 3) {
@@ -16886,7 +16931,7 @@
             }
             return a;
           };
-        }(),
+        })(),
         multiplyScalar: function(s) {
           var te = this.elements;
           te[0] *= s;
@@ -17073,7 +17118,7 @@
           te[14] = me[14];
           return this;
         },
-        extractRotation: function() {
+        extractRotation: (function() {
           var v1 = new THREE.Vector3();
           return function(m) {
             var te = this.elements;
@@ -17092,7 +17137,7 @@
             te[10] = me[10] * scaleZ;
             return this;
           };
-        }(),
+        })(),
         makeRotationFromEuler: function(euler) {
           if (euler instanceof THREE.Euler === false) {
             console.error("ERROR: Matrix's .makeRotationFromEuler() now expects a Euler rotation rather than a Vector3 and order.  Please update your code.");
@@ -17207,7 +17252,7 @@
           te[15] = 1;
           return this;
         },
-        lookAt: function() {
+        lookAt: (function() {
           var x = new THREE.Vector3();
           var y = new THREE.Vector3();
           var z = new THREE.Vector3();
@@ -17234,7 +17279,7 @@
             te[10] = z.z;
             return this;
           };
-        }(),
+        })(),
         multiply: function(m, n) {
           if (n !== void 0) {
             console.warn("DEPRECATED: Matrix4's .multiply() now only accepts one argument. Use .multiplyMatrices( a, b ) instead.");
@@ -17321,7 +17366,7 @@
           console.warn("DEPRECATED: Matrix4's .multiplyVector4() has been removed. Use vector.applyMatrix4( matrix ) instead.");
           return vector.applyMatrix4(this);
         },
-        multiplyVector3Array: function() {
+        multiplyVector3Array: (function() {
           var v1 = new THREE.Vector3();
           return function(a) {
             for (var i = 0, il = a.length; i < il; i += 3) {
@@ -17335,7 +17380,7 @@
             }
             return a;
           };
-        }(),
+        })(),
         rotateAxis: function(v) {
           console.warn("DEPRECATED: Matrix4's .rotateAxis() has been removed. Use Vector3.transformDirection( matrix ) instead.");
           v.transformDirection(this);
@@ -17415,14 +17460,14 @@
           flat[offset + 15] = te[15];
           return flat;
         },
-        getPosition: function() {
+        getPosition: (function() {
           var v1 = new THREE.Vector3();
           return function() {
             console.warn("DEPRECATED: Matrix4's .getPosition() has been removed. Use Vector3.setFromMatrixPosition( matrix ) instead.");
             var te = this.elements;
             return v1.set(te[12], te[13], te[14]);
           };
-        }(),
+        })(),
         setPosition: function(v) {
           var te = this.elements;
           te[12] = v.x;
@@ -17646,7 +17691,7 @@
           this.setPosition(position);
           return this;
         },
-        decompose: function() {
+        decompose: (function() {
           var vector = new THREE.Vector3();
           var matrix = new THREE.Matrix4();
           return function(position, quaternion, scale) {
@@ -17680,7 +17725,7 @@
             scale.z = sz;
             return this;
           };
-        }(),
+        })(),
         makeFrustum: function(left, right, bottom, top, near, far) {
           var te = this.elements;
           var x = 2 * near / (right - left);
@@ -17807,13 +17852,13 @@
           var result = optionalTarget || new THREE.Vector3();
           return result.copy(this.direction).multiplyScalar(t).add(this.origin);
         },
-        recast: function() {
+        recast: (function() {
           var v1 = new THREE.Vector3();
           return function(t) {
             this.origin.copy(this.at(t, v1));
             return this;
           };
-        }(),
+        })(),
         closestPointToPoint: function(point, optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
           result.subVectors(point, this.origin);
@@ -17823,7 +17868,7 @@
           }
           return result.copy(this.direction).multiplyScalar(directionDistance).add(this.origin);
         },
-        distanceToPoint: function() {
+        distanceToPoint: (function() {
           var v1 = new THREE.Vector3();
           return function(point) {
             var directionDistance = v1.subVectors(point, this.origin).dot(this.direction);
@@ -17833,7 +17878,7 @@
             v1.copy(this.direction).multiplyScalar(directionDistance).add(this.origin);
             return v1.distanceTo(point);
           };
-        }(),
+        })(),
         distanceSqToSegment: function(v0, v1, optionalPointOnRay, optionalPointOnSegment) {
           var segCenter = v0.clone().add(v1).multiplyScalar(0.5);
           var segDir = v1.clone().sub(v0).normalize();
@@ -17926,12 +17971,12 @@
           }
           return this.at(t, optionalTarget);
         },
-        isIntersectionBox: function() {
+        isIntersectionBox: (function() {
           var v = new THREE.Vector3();
           return function(box) {
             return this.intersectBox(box, v) !== null;
           };
-        }(),
+        })(),
         intersectBox: function(box, optionalTarget) {
           var tmin, tmax, tymin, tymax, tzmin, tzmax;
           var invdirx = 1 / this.direction.x, invdiry = 1 / this.direction.y, invdirz = 1 / this.direction.z;
@@ -17966,7 +18011,7 @@
           if (tmax < 0) return null;
           return this.at(tmin >= 0 ? tmin : tmax, optionalTarget);
         },
-        intersectTriangle: function() {
+        intersectTriangle: (function() {
           var diff = new THREE.Vector3();
           var edge1 = new THREE.Vector3();
           var edge2 = new THREE.Vector3();
@@ -18004,7 +18049,7 @@
             }
             return this.at(QdN / DdN, optionalTarget);
           };
-        }(),
+        })(),
         applyMatrix4: function(matrix4) {
           this.direction.add(this.origin).applyMatrix4(matrix4);
           this.origin.applyMatrix4(matrix4);
@@ -18030,7 +18075,7 @@
           this.radius = radius;
           return this;
         },
-        setFromPoints: function() {
+        setFromPoints: (function() {
           var box = new THREE.Box3();
           return function(points, optionalCenter) {
             var center2 = this.center;
@@ -18046,7 +18091,7 @@
             this.radius = Math.sqrt(maxRadiusSq);
             return this;
           };
-        }(),
+        })(),
         copy: function(sphere) {
           this.center.copy(sphere.center);
           this.radius = sphere.radius;
@@ -18141,7 +18186,7 @@
           planes[5].setComponents(me3 + me2, me7 + me6, me11 + me10, me15 + me14).normalize();
           return this;
         },
-        intersectsObject: function() {
+        intersectsObject: (function() {
           var sphere = new THREE.Sphere();
           return function(object) {
             var geometry = object.geometry;
@@ -18150,7 +18195,7 @@
             sphere.applyMatrix4(object.matrixWorld);
             return this.intersectsSphere(sphere);
           };
-        }(),
+        })(),
         intersectsSphere: function(sphere) {
           var planes = this.planes;
           var center2 = sphere.center;
@@ -18163,7 +18208,7 @@
           }
           return true;
         },
-        intersectsBox: function() {
+        intersectsBox: (function() {
           var p1 = new THREE.Vector3(), p2 = new THREE.Vector3();
           return function(box) {
             var planes = this.planes;
@@ -18183,7 +18228,7 @@
             }
             return true;
           };
-        }(),
+        })(),
         containsPoint: function(point) {
           var planes = this.planes;
           for (var i = 0; i < 6; i++) {
@@ -18218,7 +18263,7 @@
           this.constant = -point.dot(this.normal);
           return this;
         },
-        setFromCoplanarPoints: function() {
+        setFromCoplanarPoints: (function() {
           var v1 = new THREE.Vector3();
           var v2 = new THREE.Vector3();
           return function(a, b, c2) {
@@ -18226,7 +18271,7 @@
             this.setFromNormalAndCoplanarPoint(normal, a);
             return this;
           };
-        }(),
+        })(),
         copy: function(plane) {
           this.normal.copy(plane.normal);
           this.constant = plane.constant;
@@ -18262,7 +18307,7 @@
           var endSign = this.distanceToPoint(line.end);
           return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
         },
-        intersectLine: function() {
+        intersectLine: (function() {
           var v1 = new THREE.Vector3();
           return function(line, optionalTarget) {
             var result = optionalTarget || new THREE.Vector3();
@@ -18280,12 +18325,12 @@
             }
             return result.copy(direction).multiplyScalar(t).add(line.start);
           };
-        }(),
+        })(),
         coplanarPoint: function(optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
           return result.copy(this.normal).multiplyScalar(-this.constant);
         },
-        applyMatrix4: function() {
+        applyMatrix4: (function() {
           var v1 = new THREE.Vector3();
           var v2 = new THREE.Vector3();
           var m1 = new THREE.Matrix3();
@@ -18297,7 +18342,7 @@
             this.setFromNormalAndCoplanarPoint(newNormal, newCoplanarPoint);
             return this;
           };
-        }(),
+        })(),
         translate: function(offset) {
           this.constant = this.constant - offset.dot(this.normal);
           return this;
@@ -18311,7 +18356,7 @@
       };
       THREE.Math = {
         PI2: Math.PI * 2,
-        generateUUID: function() {
+        generateUUID: (function() {
           var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");
           var uuid = new Array(36);
           var rnd = 0, r;
@@ -18330,7 +18375,7 @@
             }
             return uuid.join("");
           };
-        }(),
+        })(),
         // Clamp value to range <a, b>
         clamp: function(x, a, b) {
           return x < a ? a : x > b ? b : x;
@@ -18376,18 +18421,18 @@
         sign: function(x) {
           return x < 0 ? -1 : x > 0 ? 1 : 0;
         },
-        degToRad: function() {
+        degToRad: (function() {
           var degreeToRadiansFactor = Math.PI / 180;
           return function(degrees) {
             return degrees * degreeToRadiansFactor;
           };
-        }(),
-        radToDeg: function() {
+        })(),
+        radToDeg: (function() {
           var radianToDegreesFactor = 180 / Math.PI;
           return function(radians) {
             return radians * radianToDegreesFactor;
           };
-        }(),
+        })(),
         isPowerOfTwo: function(value) {
           return (value & value - 1) === 0 && value !== 0;
         }
@@ -18478,7 +18523,7 @@
         this.b = b !== void 0 ? b : new THREE.Vector3();
         this.c = c2 !== void 0 ? c2 : new THREE.Vector3();
       };
-      THREE.Triangle.normal = function() {
+      THREE.Triangle.normal = (function() {
         var v0 = new THREE.Vector3();
         return function(a, b, c2, optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
@@ -18491,8 +18536,8 @@
           }
           return result.set(0, 0, 0);
         };
-      }();
-      THREE.Triangle.barycoordFromPoint = function() {
+      })();
+      THREE.Triangle.barycoordFromPoint = (function() {
         var v0 = new THREE.Vector3();
         var v1 = new THREE.Vector3();
         var v2 = new THREE.Vector3();
@@ -18515,14 +18560,14 @@
           var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
           return result.set(1 - u - v, v, u);
         };
-      }();
-      THREE.Triangle.containsPoint = function() {
+      })();
+      THREE.Triangle.containsPoint = (function() {
         var v1 = new THREE.Vector3();
         return function(point, a, b, c2) {
           var result = THREE.Triangle.barycoordFromPoint(point, a, b, c2, v1);
           return result.x >= 0 && result.y >= 0 && result.x + result.y <= 1;
         };
-      }();
+      })();
       THREE.Triangle.prototype = {
         constructor: THREE.Triangle,
         set: function(a, b, c2) {
@@ -18543,7 +18588,7 @@
           this.c.copy(triangle.c);
           return this;
         },
-        area: function() {
+        area: (function() {
           var v0 = new THREE.Vector3();
           var v1 = new THREE.Vector3();
           return function() {
@@ -18551,7 +18596,7 @@
             v1.subVectors(this.a, this.b);
             return v0.cross(v1).length() * 0.5;
           };
-        }(),
+        })(),
         midpoint: function(optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
           return result.addVectors(this.a, this.b).add(this.c).multiplyScalar(1 / 3);
@@ -18659,7 +18704,7 @@
             }
           }
         },
-        dispatchEvent: /* @__PURE__ */ function() {
+        dispatchEvent: /* @__PURE__ */ (function() {
           var array = [];
           return function(event) {
             if (this._listeners === void 0) return;
@@ -18676,7 +18721,7 @@
               }
             }
           };
-        }()
+        })()
       };
       (function(THREE2) {
         THREE2.Raycaster = function(origin, direction, near, far) {
@@ -19022,33 +19067,33 @@
         setRotationFromQuaternion: function(q) {
           this.quaternion.copy(q);
         },
-        rotateOnAxis: function() {
+        rotateOnAxis: (function() {
           var q1 = new THREE.Quaternion();
           return function(axis, angle) {
             q1.setFromAxisAngle(axis, angle);
             this.quaternion.multiply(q1);
             return this;
           };
-        }(),
-        rotateX: function() {
+        })(),
+        rotateX: (function() {
           var v1 = new THREE.Vector3(1, 0, 0);
           return function(angle) {
             return this.rotateOnAxis(v1, angle);
           };
-        }(),
-        rotateY: function() {
+        })(),
+        rotateY: (function() {
           var v1 = new THREE.Vector3(0, 1, 0);
           return function(angle) {
             return this.rotateOnAxis(v1, angle);
           };
-        }(),
-        rotateZ: function() {
+        })(),
+        rotateZ: (function() {
           var v1 = new THREE.Vector3(0, 0, 1);
           return function(angle) {
             return this.rotateOnAxis(v1, angle);
           };
-        }(),
-        translateOnAxis: function() {
+        })(),
+        translateOnAxis: (function() {
           var v1 = new THREE.Vector3();
           return function(axis, distance) {
             v1.copy(axis);
@@ -19056,45 +19101,45 @@
             this.position.add(v1.multiplyScalar(distance));
             return this;
           };
-        }(),
+        })(),
         translate: function(distance, axis) {
           console.warn("DEPRECATED: Object3D's .translate() has been removed. Use .translateOnAxis( axis, distance ) instead. Note args have been changed.");
           return this.translateOnAxis(axis, distance);
         },
-        translateX: function() {
+        translateX: (function() {
           var v1 = new THREE.Vector3(1, 0, 0);
           return function(distance) {
             return this.translateOnAxis(v1, distance);
           };
-        }(),
-        translateY: function() {
+        })(),
+        translateY: (function() {
           var v1 = new THREE.Vector3(0, 1, 0);
           return function(distance) {
             return this.translateOnAxis(v1, distance);
           };
-        }(),
-        translateZ: function() {
+        })(),
+        translateZ: (function() {
           var v1 = new THREE.Vector3(0, 0, 1);
           return function(distance) {
             return this.translateOnAxis(v1, distance);
           };
-        }(),
+        })(),
         localToWorld: function(vector) {
           return vector.applyMatrix4(this.matrixWorld);
         },
-        worldToLocal: function() {
+        worldToLocal: (function() {
           var m1 = new THREE.Matrix4();
           return function(vector) {
             return vector.applyMatrix4(m1.getInverse(this.matrixWorld));
           };
-        }(),
-        lookAt: function() {
+        })(),
+        lookAt: (function() {
           var m1 = new THREE.Matrix4();
           return function(vector) {
             m1.lookAt(vector, this.position, this.up);
             this.quaternion.setFromRotationMatrix(m1);
           };
-        }(),
+        })(),
         add: function(object) {
           if (object === this) {
             console.warn("THREE.Object3D.add: An object can't be added as a child of itself.");
@@ -19235,14 +19280,14 @@
           _viewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
           return vector.applyProjection(_viewProjectionMatrix);
         };
-        this.unprojectVector = function() {
+        this.unprojectVector = (function() {
           var projectionMatrixInverse = new THREE.Matrix4();
           return function(vector, camera) {
             projectionMatrixInverse.getInverse(camera.projectionMatrix);
             _viewProjectionMatrix.multiplyMatrices(camera.matrixWorld, projectionMatrixInverse);
             return vector.applyProjection(_viewProjectionMatrix);
           };
-        }();
+        })();
         this.pickingRay = function(vector, camera) {
           vector.z = -1;
           var end = new THREE.Vector3(vector.x, vector.y, 1);
@@ -19760,7 +19805,7 @@
             this.boundingBox.max.set(0, 0, 0);
           }
         },
-        computeBoundingSphere: function() {
+        computeBoundingSphere: (function() {
           var box = new THREE.Box3();
           var vector = new THREE.Vector3();
           return function() {
@@ -19784,7 +19829,7 @@
               this.boundingSphere.radius = Math.sqrt(maxRadiusSq);
             }
           };
-        }(),
+        })(),
         computeVertexNormals: function() {
           if (this.attributes["position"]) {
             var i, il;
@@ -20460,7 +20505,7 @@
           return diff;
         },
         // Geometry splitting
-        makeGroups: /* @__PURE__ */ function() {
+        makeGroups: /* @__PURE__ */ (function() {
           var geometryGroupCounter = 0;
           return function(usesFaceMaterial) {
             var f, fl, face, materialIndex, groupHash, hash_map = {};
@@ -20493,7 +20538,7 @@
               this.geometryGroupsList.push(this.geometryGroups[g]);
             }
           };
-        }(),
+        })(),
         clone: function() {
           var geometry = new THREE.Geometry();
           var vertices = this.vertices;
@@ -20535,13 +20580,13 @@
         this.projectionMatrix = new THREE.Matrix4();
       };
       THREE.Camera.prototype = Object.create(THREE.Object3D.prototype);
-      THREE.Camera.prototype.lookAt = function() {
+      THREE.Camera.prototype.lookAt = (function() {
         var m1 = new THREE.Matrix4();
         return function(vector) {
           m1.lookAt(this.position, vector, this.up);
           this.quaternion.setFromRotationMatrix(m1);
         };
-      }();
+      })();
       THREE.Camera.prototype.clone = function(camera) {
         if (camera === void 0) camera = new THREE.Camera();
         THREE.Object3D.prototype.clone.call(this, camera);
@@ -21614,7 +21659,7 @@
           }
           return materials;
         },
-        parseObject: function() {
+        parseObject: (function() {
           var matrix = new THREE.Matrix4();
           return function(data, geometries, materials) {
             var object;
@@ -21683,7 +21728,7 @@
             }
             return object;
           };
-        }()
+        })()
       };
       THREE.SceneLoader = function() {
         this.onLoadStart = function() {
@@ -23034,7 +23079,7 @@
         this.bones.push(bone);
         return bone;
       };
-      THREE.SkinnedMesh.prototype.updateMatrixWorld = function() {
+      THREE.SkinnedMesh.prototype.updateMatrixWorld = (function() {
         var offsetMatrix = new THREE.Matrix4();
         return function(force) {
           this.matrixAutoUpdate && this.updateMatrix();
@@ -23071,7 +23116,7 @@
             this.boneTexture.needsUpdate = true;
           }
         };
-      }();
+      })();
       THREE.SkinnedMesh.prototype.pose = function() {
         this.updateMatrixWorld(true);
         this.normalizeSkinWeights();
@@ -23226,7 +23271,7 @@
         }
         return this.objects[i - 1].object;
       };
-      THREE.LOD.prototype.update = function() {
+      THREE.LOD.prototype.update = (function() {
         var v1 = new THREE.Vector3();
         var v2 = new THREE.Vector3();
         return function(camera) {
@@ -23248,7 +23293,7 @@
             }
           }
         };
-      }();
+      })();
       THREE.LOD.prototype.clone = function(object) {
         if (object === void 0) object = new THREE.LOD();
         THREE.Object3D.prototype.clone.call(this, object);
@@ -23259,7 +23304,7 @@
         }
         return object;
       };
-      THREE.Sprite = function() {
+      THREE.Sprite = (function() {
         var geometry = new THREE.Geometry2(3);
         geometry.vertices.set([-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0]);
         return function(material) {
@@ -23267,7 +23312,7 @@
           this.geometry = geometry;
           this.material = material !== void 0 ? material : new THREE.SpriteMaterial();
         };
-      }();
+      })();
       THREE.Sprite.prototype = Object.create(THREE.Object3D.prototype);
       THREE.Sprite.prototype.updateMatrix = function() {
         this.matrix.compose(this.position, this.quaternion, this.scale);
@@ -29367,7 +29412,7 @@
         // Get random point in triangle (via barycentric coordinates)
         // 	(uniform distribution)
         // 	http://www.cgafaq.info/wiki/Random_Point_In_Triangle
-        randomPointInTriangle: function() {
+        randomPointInTriangle: (function() {
           var vector = new THREE.Vector3();
           return function(vectorA, vectorB, vectorC) {
             var point = new THREE.Vector3();
@@ -29388,7 +29433,7 @@
             point.add(vector);
             return point;
           };
-        }(),
+        })(),
         // Get random point in face (triangle / quad)
         // (uniform distribution)
         randomPointInFace: function(face, geometry, useCachedAreas) {
@@ -29446,7 +29491,7 @@
         },
         // Get triangle area (half of parallelogram)
         //	http://mathworld.wolfram.com/TriangleArea.html
-        triangleArea: function() {
+        triangleArea: (function() {
           var vector1 = new THREE.Vector3();
           var vector2 = new THREE.Vector3();
           return function(vectorA, vectorB, vectorC) {
@@ -29455,7 +29500,7 @@
             vector1.cross(vector2);
             return 0.5 * vector1.length();
           };
-        }(),
+        })(),
         // Center geometry so that 0,0,0 is in center of bounding box
         center: function(geometry) {
           geometry.computeBoundingBox();
@@ -31330,7 +31375,7 @@
           return v;
         }
       );
-      THREE.AnimationHandler = function() {
+      THREE.AnimationHandler = (function() {
         var playing = [];
         var library = {};
         var that = {};
@@ -31433,7 +31478,7 @@
         that.CATMULLROM = 1;
         that.CATMULLROM_FORWARD = 2;
         return that;
-      }();
+      })();
       THREE.Animation = function(root, name) {
         this.root = root;
         this.data = THREE.AnimationHandler.get(name);
@@ -31488,7 +31533,7 @@
           nextKey.scl = this.getNextKeyWith("scl", h, 1);
         }
       };
-      THREE.Animation.prototype.update = function() {
+      THREE.Animation.prototype.update = (function() {
         var points = [];
         var target = new THREE.Vector3();
         var interpolateCatmullRom = function(points2, scale) {
@@ -31590,7 +31635,7 @@
             }
           }
         };
-      }();
+      })();
       THREE.Animation.prototype.getNextKeyWith = function(type, h, key) {
         var keys = this.data.hierarchy[h].keys;
         if (this.interpolationType === THREE.AnimationHandler.CATMULLROM || this.interpolationType === THREE.AnimationHandler.CATMULLROM_FORWARD) {
@@ -31766,7 +31811,7 @@
         pause: function() {
           this.isPlaying = false;
         },
-        update: /* @__PURE__ */ function() {
+        update: /* @__PURE__ */ (function() {
           var lastFrame = 0;
           var currentFrame = 0;
           return function(delta) {
@@ -31788,7 +31833,7 @@
             this.mesh.morphTargetInfluences[frame] = this.currentTime % interpolation / interpolation;
             this.mesh.morphTargetInfluences[lastFrame] = 1 - this.mesh.morphTargetInfluences[frame];
           };
-        }()
+        })()
       };
       THREE.CubeCamera = function(near, far, cubeResolution) {
         THREE.Object3D.call(this);
@@ -33281,7 +33326,7 @@
         this.setLength(length, headLength, headWidth);
       };
       THREE.ArrowHelper.prototype = Object.create(THREE.Object3D.prototype);
-      THREE.ArrowHelper.prototype.setDirection = function() {
+      THREE.ArrowHelper.prototype.setDirection = (function() {
         var axis = new THREE.Vector3();
         var radians;
         return function(dir) {
@@ -33295,7 +33340,7 @@
             this.quaternion.setFromAxisAngle(axis, radians);
           }
         };
-      }();
+      })();
       THREE.ArrowHelper.prototype.setLength = function(length, headLength, headWidth) {
         if (headLength === void 0) headLength = 0.2 * length;
         if (headWidth === void 0) headWidth = 0.2 * headLength;
@@ -33441,7 +33486,7 @@
         this.update();
       };
       THREE.CameraHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.CameraHelper.prototype.update = function() {
+      THREE.CameraHelper.prototype.update = (function() {
         var vector = new THREE.Vector3();
         var camera = new THREE.Camera();
         var projector = new THREE.Projector();
@@ -33482,7 +33527,7 @@
           }
           this.geometry.verticesNeedUpdate = true;
         };
-      }();
+      })();
       THREE.DirectionalLightHelper = function(light, size) {
         THREE.Object3D.call(this);
         this.light = light;
@@ -33511,7 +33556,7 @@
         this.targetLine.geometry.dispose();
         this.targetLine.material.dispose();
       };
-      THREE.DirectionalLightHelper.prototype.update = function() {
+      THREE.DirectionalLightHelper.prototype.update = (function() {
         var v1 = new THREE.Vector3();
         var v2 = new THREE.Vector3();
         var v3 = new THREE.Vector3();
@@ -33525,7 +33570,7 @@
           this.targetLine.geometry.verticesNeedUpdate = true;
           this.targetLine.material.color.copy(this.lightPlane.material.color);
         };
-      }();
+      })();
       THREE.EdgesHelper = function(object, hex) {
         var color = hex !== void 0 ? hex : 16777215;
         var edge = [0, 0], hash = {};
@@ -33593,7 +33638,7 @@
         this.update();
       };
       THREE.FaceNormalsHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.FaceNormalsHelper.prototype.update = function(object) {
+      THREE.FaceNormalsHelper.prototype.update = (function(object) {
         var v1 = new THREE.Vector3();
         return function(object2) {
           this.object.updateMatrixWorld(true);
@@ -33611,7 +33656,7 @@
           this.geometry.verticesNeedUpdate = true;
           return this;
         };
-      }();
+      })();
       THREE.GridHelper = function(size, step) {
         var geometry = new THREE.Geometry();
         var material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors });
@@ -33657,7 +33702,7 @@
         this.lightSphere.geometry.dispose();
         this.lightSphere.material.dispose();
       };
-      THREE.HemisphereLightHelper.prototype.update = function() {
+      THREE.HemisphereLightHelper.prototype.update = (function() {
         var vector = new THREE.Vector3();
         return function() {
           this.colors[0].copy(this.light.color).multiplyScalar(this.light.intensity);
@@ -33665,7 +33710,7 @@
           this.lightSphere.lookAt(vector.setFromMatrixPosition(this.light.matrixWorld).negate());
           this.lightSphere.geometry.colorsNeedUpdate = true;
         };
-      }();
+      })();
       THREE.PointLightHelper = function(light, sphereSize) {
         this.light = light;
         this.light.updateMatrixWorld();
@@ -33703,7 +33748,7 @@
         this.cone.geometry.dispose();
         this.cone.material.dispose();
       };
-      THREE.SpotLightHelper.prototype.update = function() {
+      THREE.SpotLightHelper.prototype.update = (function() {
         var vector = new THREE.Vector3();
         var vector2 = new THREE.Vector3();
         return function() {
@@ -33715,7 +33760,7 @@
           this.cone.lookAt(vector2.sub(vector));
           this.cone.material.color.copy(this.light.color).multiplyScalar(this.light.intensity);
         };
-      }();
+      })();
       THREE.VertexNormalsHelper = function(object, size, hex, linewidth) {
         this.object = object;
         this.size = size !== void 0 ? size : 1;
@@ -33737,7 +33782,7 @@
         this.update();
       };
       THREE.VertexNormalsHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.VertexNormalsHelper.prototype.update = function(object) {
+      THREE.VertexNormalsHelper.prototype.update = (function(object) {
         var v1 = new THREE.Vector3();
         return function(object2) {
           var keys = ["a", "b", "c", "d"];
@@ -33765,7 +33810,7 @@
           this.geometry.verticesNeedUpdate = true;
           return this;
         };
-      }();
+      })();
       THREE.VertexTangentsHelper = function(object, size, hex, linewidth) {
         this.object = object;
         this.size = size !== void 0 ? size : 1;
@@ -33786,7 +33831,7 @@
         this.update();
       };
       THREE.VertexTangentsHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.VertexTangentsHelper.prototype.update = function(object) {
+      THREE.VertexTangentsHelper.prototype.update = (function(object) {
         var v1 = new THREE.Vector3();
         return function(object2) {
           var keys = ["a", "b", "c", "d"];
@@ -33813,7 +33858,7 @@
           this.geometry.verticesNeedUpdate = true;
           return this;
         };
-      }();
+      })();
       THREE.WireframeHelper = function(object, hex) {
         var color = hex !== void 0 ? hex : 16777215;
         var edge = [0, 0], hash = {};
@@ -35024,12 +35069,204 @@
     }
   });
 
+  // ../app/js/rooms.js
+  var rooms_exports = {};
+  __export(rooms_exports, {
+    BOUNDS: () => BOUNDS,
+    LEVEL1_ELEVATION: () => LEVEL1_ELEVATION,
+    OVERRIDES: () => OVERRIDES,
+    ROOMS: () => ROOMS,
+    center: () => center,
+    contains: () => contains,
+    groupByRoom: () => groupByRoom,
+    room: () => room,
+    roomAt: () => roomAt,
+    roomForEntity: () => roomForEntity
+  });
+  function room(key) {
+    return BY_KEY.get(key) || null;
+  }
+  function center(r) {
+    return {
+      x: (r.x[0] + r.x[1]) / 2,
+      z: (r.z[0] + r.z[1]) / 2,
+      y: r.level === 1 ? LEVEL1_ELEVATION : 0
+    };
+  }
+  function contains(r, x, z) {
+    return x >= r.x[0] && x <= r.x[1] && z >= r.z[0] && z <= r.z[1];
+  }
+  function roomAt(x, z, level) {
+    for (const r of ROOMS) {
+      if (level !== void 0 && r.level !== level) continue;
+      if (contains(r, x, z)) return r;
+    }
+    return null;
+  }
+  function haystackFor(id, friendly) {
+    return (friendly + " " + id.split(".").pop()).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  function roomForEntity(entityOrId) {
+    const id = typeof entityOrId === "string" ? entityOrId : entityOrId.entity_id;
+    if (!id) return null;
+    if (OVERRIDES[id]) return room(OVERRIDES[id]);
+    const friendly = typeof entityOrId === "object" && entityOrId.attributes ? entityOrId.attributes.friendly_name || "" : "";
+    const haystack = haystackFor(id, friendly);
+    for (const [re, key] of NEEDLES) {
+      if (re.test(haystack)) return room(key);
+    }
+    return null;
+  }
+  function groupByRoom(states) {
+    const out = { _unassigned: [] };
+    for (const r of ROOMS) out[r.key] = [];
+    for (const state2 of states.values()) {
+      const r = roomForEntity(state2);
+      if (r) out[r.key].push(state2);
+      else out._unassigned.push(state2);
+    }
+    return out;
+  }
+  var ROOMS, BOUNDS, LEVEL1_ELEVATION, BY_KEY, OVERRIDES, ALIASES, TOO_GENERIC, NEEDLES;
+  var init_rooms = __esm({
+    "../app/js/rooms.js"() {
+      ROOMS = [
+        // ---- Level 0 ----------------------------------------------------------
+        { key: "master_bed", name: "Master Bedroom", level: 0, x: [6, 450], z: [-1975, -1470] },
+        { key: "kitchen", name: "Kitchen", level: 0, x: [450, 760], z: [-1420, -1090] },
+        { key: "dining", name: "Dining", level: 0, x: [677, 1275], z: [-1676, -1400] },
+        { key: "living", name: "Living", level: 0, x: [760, 1275], z: [-1400, -950] },
+        { key: "office", name: "Office", level: 0, x: [960, 1275], z: [-900, -680] },
+        { key: "office2", name: "Office 2", level: 0, x: [960, 1275], z: [-670, -460] },
+        { key: "hall_bath", name: "Hall Bath", level: 0, x: [1e3, 1275], z: [-430, -235] },
+        { key: "apis_room", name: "Api's Room", level: 0, x: [950, 1275], z: [-200, 150] },
+        { key: "garage", name: "Garage", level: 0, x: [10, 665], z: [-575, -5] },
+        { key: "hall0", name: "Hall", level: 0, x: [720, 950], z: [-620, -10] },
+        // Labeled in models/labels.json but absent from the BUILD.md table.
+        // Estimated so these spaces are not dead on the dashboard. Confirm before
+        // wiring anything that matters to them.
+        //
+        // The master closet and master bath split the strip between the master
+        // bedroom (west), the kitchen (north) and dining (east). The split is placed
+        // so each rectangle actually contains its own label point from labels.json:
+        // Closet at z -1930, Bath at z -1630.
+        { key: "master_closet", name: "Master Closet", level: 0, x: [6, 410], z: [-1e3, -700], est: true },
+        { key: "master_bath", name: "Master Bath", level: 0, x: [180, 410], z: [-1360, -1140], est: true },
+        { key: "patio", name: "Patio", level: 0, x: [760, 1275], z: [-1975, -1700], est: true },
+        { key: "wc", name: "WC", level: 0, x: [6, 180], z: [-1360, -1200], est: true },
+        // Labeled "Bath" in the export, actually the laundry beside the kitchen.
+        { key: "laundry", name: "Laundry", level: 0, x: [455, 670], z: [-1750, -1470], est: true },
+        { key: "room0", name: "Room", level: 0, x: [455, 670], z: [-1975, -1750], est: true },
+        { key: "pantry", name: "Pantry", level: 0, x: [420, 640], z: [-1060, -860], est: true },
+        { key: "mudroom", name: "Mudroom", level: 0, x: [6, 410], z: [-700, -590], est: true },
+        { key: "porch", name: "Porch", level: 0, x: [680, 950], z: [-10, 160], est: true },
+        // ---- Level 1 (exact, derived from the W1() wall calls) ----------------
+        { key: "stair_hall", name: "Stair hall", level: 1, x: [6, 405], z: [-797, -697] },
+        { key: "stairwell", name: "Stairs", level: 1, x: [6, 525], z: [-697, -583] },
+        { key: "closet_south", name: "Closet", level: 1, x: [856, 1037], z: [-1563, -1474] },
+        { key: "loft", name: "Loft", level: 1, x: [405, 1037], z: [-1324, -697] },
+        { key: "bath1", name: "Bath", level: 1, x: [405, 663], z: [-1563, -1324] },
+        { key: "hall1", name: "Hall", level: 1, x: [663, 856], z: [-1563, -1324] },
+        { key: "amanda_closet", name: "Amanda's Closet", level: 1, x: [856, 1037], z: [-1474, -1324] },
+        { key: "jovan_closet", name: "Jovan's Closet", level: 1, x: [525, 1037], z: [-697, -533] },
+        { key: "aks_room", name: "AK's Room", level: 1, x: [405, 1037], z: [-1973, -1563] }
+      ];
+      BOUNDS = { x: [0, 1280], z: [-2137, 160] };
+      LEVEL1_ELEVATION = 262;
+      BY_KEY = new Map(ROOMS.map((r) => [r.key, r]));
+      OVERRIDES = {
+        // 'light.hue_bloom_1': 'living',
+        // 'binary_sensor.front_door': 'porch',
+      };
+      ALIASES = {
+        master_bed: ["master", "master bedroom", "master bed", "primary", "primary bedroom"],
+        master_bath: ["master bath", "masterbath", "master bathroom", "primary bath"],
+        master_closet: ["master closet", "mastercloset"],
+        kitchen: ["kitchen"],
+        dining: ["dining", "dining room"],
+        living: ["living", "living room", "lounge", "family room", "front room", "den"],
+        office: ["office"],
+        office2: ["office 2", "office2", "second office", "study"],
+        // Apostrophes are stripped before matching, so "Api's" becomes "api s".
+        // Both that and the bare "apis" spelling are listed, because entity ids
+        // tend to use one and friendly names the other.
+        hall_bath: [
+          "hall bath",
+          "hallway bath",
+          "guest bath",
+          "shared bath",
+          "bathroom 1",
+          "bath 1",
+          "api s bath",
+          "apis bath",
+          "api s bathroom",
+          "apis bathroom"
+        ],
+        apis_room: ["api s room", "apis room", "api s bedroom", "apis bedroom"],
+        garage: ["garage"],
+        hall0: ["downstairs hall", "main hall", "hallway", "hall"],
+        patio: ["patio", "deck", "back porch", "backyard", "back yard"],
+        wc: ["wc", "powder", "powder room", "half bath"],
+        laundry: ["laundry", "laundry room", "washer", "dryer"],
+        pantry: ["pantry"],
+        mudroom: ["mudroom", "mud room", "utility"],
+        porch: ["porch", "front porch", "front door", "entry", "entryway", "foyer"],
+        stair_hall: ["stair hall", "upstairs hall"],
+        stairwell: ["stairs", "stairwell", "staircase"],
+        closet_south: ["south closet"],
+        loft: ["loft", "bedroom 2", "upstairs bedroom"],
+        bath1: ["upstairs bath", "bath up", "loft bath", "bathroom 2", "bath 2"],
+        hall1: ["upstairs hallway"],
+        amanda_closet: ["amanda s closet", "amandas closet", "loft closet"],
+        jovan_closet: ["jovan s closet", "jovans closet", "bedroom 3 closet"],
+        aks_room: [
+          "ak s room",
+          "aks room",
+          "ak s bedroom",
+          "aks bedroom",
+          "back bedroom",
+          "bedroom 3",
+          "rear bedroom"
+        ],
+        room0: []
+        // the label is literally "Room", too generic to match on
+      };
+      TOO_GENERIC = /* @__PURE__ */ new Set(["room", "bath", "closet", "hall"]);
+      NEEDLES = (() => {
+        const seen = /* @__PURE__ */ new Set();
+        const out = [];
+        const push = (phrase, key) => {
+          const p = phrase.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+          if (!p || seen.has(p)) return;
+          seen.add(p);
+          out.push([p, key]);
+        };
+        for (const [key, words] of Object.entries(ALIASES)) {
+          for (const w of words) push(w, key);
+        }
+        for (const r of ROOMS) {
+          const name = r.name.toLowerCase();
+          if (!TOO_GENERIC.has(name)) push(name, r.key);
+        }
+        out.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]));
+        return out.map(([phrase, key]) => [
+          new RegExp("\\b" + phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b"),
+          key
+        ]);
+      })();
+    }
+  });
+
   // src/LightTable.js
   var require_LightTable = __commonJS({
     "src/LightTable.js"(exports, module) {
       var $2 = require_jquery();
       var THREE = require_three();
       var systems2 = require_systems();
+      var rooms = (init_rooms(), __toCommonJS(rooms_exports));
+      var ROOMS2 = rooms.ROOMS;
+      var BOUNDS2 = rooms.BOUNDS;
+      var LEVEL1_ELEVATION2 = rooms.LEVEL1_ELEVATION;
       function systemByKey(key) {
         for (var i = 0; i < systems2.length; i++) {
           if (systems2[i].key === key) {
@@ -35047,13 +35284,12 @@
       };
       var LightTable2 = {};
       var lastMessageTime = null;
-      var dataStreamOn = false;
       LightTable2.init = function(_hideFn) {
         hideFn = _hideFn;
         $2(".lt-header").css("visibility", "hidden");
         $2(".content-container").css("visibility", "hidden");
         $2("#lt-keyboard").css("opacity", 0);
-        webglTest = createWebGlTest();
+        webglTest = createHouseScan();
         $2("#light-table").css("visibility", "visible");
         currentWidth = $2(window).width();
         currentHeight = $2(window).height();
@@ -35123,7 +35359,6 @@
       };
       var resizing = false;
       LightTable2.resize = function() {
-        $2("#light-table").center();
         if (!resizing && (currentWidth > 1600 && $2(window).width() <= 1600) || currentWidth <= 1600 && $2(window).width() > 1600) {
           currentWidth = $2(window).width();
           resizing = true;
@@ -35136,27 +35371,38 @@
       };
       LightTable2.message = function(message) {
         lastMessageTime = Date.now();
-        if (message.stream === "meta" && message.size > 0) {
-          $2("#datalink-status").text("CONNECTED. " + message.size + " USER" + (parseInt(message.size, 10) === 1 ? "" : "S "));
-          $2("#datalink-status").css("color", "green");
-        }
       };
+      LightTable2.setLink = function(connected) {
+        $2("#datalink-status").text(connected ? "LINK: CONNECTED" : "LINK: OFFLINE").attr("class", connected ? "link-online" : "link-offline");
+      };
+      function box(el) {
+        var node = el.jquery ? el[0] : el;
+        var cs = window.getComputedStyle(node);
+        return {
+          top: node.offsetTop,
+          left: node.offsetLeft,
+          width: parseFloat(cs.width) || 0,
+          height: parseFloat(cs.height) || 0,
+          outerWidth: node.offsetWidth,
+          outerHeight: node.offsetHeight
+        };
+      }
       function showContainer() {
         var outside = $2("#lt-container-outside");
         var inside = $2("#lt-container-inside");
-        outside.center();
-        inside.center();
-        var outsideOffset = outside.offset();
-        var insideOffset = inside.offset();
-        var outsideWidth = outside.width();
-        var outsideHeight = outside.height();
-        var insideWidth = inside.width();
-        var insideHeight = inside.height();
+        var outsideBox = box(outside);
+        var insideBox = box(inside);
+        var outsideOffset = { top: outsideBox.top, left: outsideBox.left };
+        var insideOffset = { top: insideBox.top, left: insideBox.left };
+        var outsideWidth = outsideBox.width;
+        var outsideHeight = outsideBox.height;
+        var insideWidth = insideBox.width;
+        var insideHeight = insideBox.height;
         var outsideBlockerTopRight = $2("<div>");
         var outsideBlockerBottomLeft = $2("<div>");
         var insideBlockerTopRight = $2("<div>");
         var insideBlockerBottomLeft = $2("<div>");
-        $2("body").append(outsideBlockerTopRight).append(outsideBlockerBottomLeft).append(insideBlockerTopRight).append(insideBlockerBottomLeft);
+        $2("#light-table").append(outsideBlockerTopRight).append(outsideBlockerBottomLeft).append(insideBlockerTopRight).append(insideBlockerBottomLeft);
         outsideBlockerTopRight.css({
           "background-color": "#000",
           // "background-color": "#aa0000",
@@ -35164,8 +35410,8 @@
           position: "absolute",
           top: outsideOffset.top - 5,
           left: outsideOffset.left - 5,
-          width: outside.outerWidth() + 10,
-          height: outside.outerHeight(),
+          width: outsideBox.outerWidth + 10,
+          height: outsideBox.outerHeight,
           "z-index": 15
         });
         outsideBlockerBottomLeft.css({
@@ -35235,7 +35481,7 @@
         $2(".content-container").css("opacity", 0);
       }
       function showHeaders() {
-        var aHeight = $2("#lt-header-bottom-right").position().top - 35;
+        var aHeight = box($2("#lt-header-bottom-right")).top - 35;
         setTimeout(function doHeaderAnimations() {
           $2(".lt-header-animator-outside").css({ visibility: "visible" }).animate({
             top: "25px",
@@ -35258,10 +35504,11 @@
       function showContentBoxes(item2, extraDelay) {
         var itemContent = item2.find(".content");
         item2.removeAttr("style");
-        var height = item2.height();
-        var width = item2.width();
-        var left = item2.position().left;
-        var top = item2.position().top;
+        var b = box(item2);
+        var height = b.height;
+        var width = b.width;
+        var left = b.left;
+        var top = b.top;
         var border = item2.css("border");
         var boxShadow = item2.css("box-shadow");
         var contentBorder = itemContent.css("border");
@@ -35290,7 +35537,7 @@
       function showKeyboard() {
         var keyboard = $2("#lt-keyboard");
         var spaceBar = $2("#k-32");
-        var spaceBarWidth = spaceBar.width();
+        var spaceBarWidth = box(spaceBar).width;
         spaceBar.width(0);
         keyboard.delay(2e3).animate({
           opacity: 1
@@ -35303,82 +35550,126 @@
         var keyboard = $2("#lt-keyboard");
         keyboard.css("opacity", 0);
       }
-      function createWebGlTest() {
+      function createHouseScan() {
         var canvas = document.getElementById("lt-webglCanvas");
+        canvas.width = 734;
+        canvas.height = 200;
         var renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-        var cameraDistance = 100;
-        var camera = new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 1, 400);
-        var cameraAngle = 0;
+        renderer.setSize(canvas.width, canvas.height);
+        var camera = new THREE.PerspectiveCamera(30, canvas.width / canvas.height, 1, 2e3);
+        camera.position.set(0, 25, 110);
         var scene = new THREE.Scene();
-        var splineGeometry = new THREE.Geometry();
-        var splineMaterial = new THREE.LineBasicMaterial({
-          color: 7323834,
+        camera.lookAt(scene.position);
+        var cx = (BOUNDS2.x[0] + BOUNDS2.x[1]) / 2;
+        var cz = (BOUNDS2.z[0] + BOUNDS2.z[1]) / 2;
+        var span = Math.max(BOUNDS2.x[1] - BOUNDS2.x[0], BOUNDS2.z[1] - BOUNDS2.z[0]);
+        var S = 110 / span;
+        var WALL = 244;
+        var TOP = LEVEL1_ELEVATION2 + WALL;
+        var cy = TOP / 2;
+        var fx = function(x) {
+          return (x - cx) * S;
+        };
+        var fz = function(z) {
+          return (z - cz) * S;
+        };
+        var fy = function(y2) {
+          return (y2 - cy) * S;
+        };
+        var house = new THREE.Object3D();
+        scene.add(house);
+        var roomGeometry = new THREE.Geometry();
+        var push = function(ax, ay, az, bx, by, bz) {
+          roomGeometry.vertices.push(new THREE.Vector3(ax, ay, az));
+          roomGeometry.vertices.push(new THREE.Vector3(bx, by, bz));
+        };
+        for (var i = 0; i < ROOMS2.length; i++) {
+          var r = ROOMS2[i];
+          var base = r.level === 1 ? LEVEL1_ELEVATION2 : 0;
+          var x0 = fx(r.x[0]), x1 = fx(r.x[1]);
+          var z0 = fz(r.z[0]), z1 = fz(r.z[1]);
+          var y0 = fy(base), y1 = fy(base + WALL);
+          var levels = [y0, y1];
+          for (var L = 0; L < 2; L++) {
+            var y = levels[L];
+            push(x0, y, z0, x1, y, z0);
+            push(x1, y, z0, x1, y, z1);
+            push(x1, y, z1, x0, y, z1);
+            push(x0, y, z1, x0, y, z0);
+          }
+          push(x0, y0, z0, x0, y1, z0);
+          push(x1, y0, z0, x1, y1, z0);
+          push(x1, y0, z1, x1, y1, z1);
+          push(x0, y0, z1, x0, y1, z1);
+        }
+        var roomMaterial = new THREE.LineBasicMaterial({
+          color: 4186367,
           opacity: 0,
           transparent: true
         });
-        var backdropGeometry = new THREE.Geometry();
-        var backdropMaterial = new THREE.LineBasicMaterial({
-          color: 1781549,
-          opacity: 1,
+        house.add(new THREE.Line(roomGeometry, roomMaterial, THREE.LinePieces));
+        var groundGeometry = new THREE.Geometry();
+        var gx0 = fx(BOUNDS2.x[0]), gx1 = fx(BOUNDS2.x[1]);
+        var gz0 = fz(BOUNDS2.z[0]), gz1 = fz(BOUNDS2.z[1]);
+        var gy = fy(0);
+        groundGeometry.vertices.push(new THREE.Vector3(gx0, gy, gz0));
+        groundGeometry.vertices.push(new THREE.Vector3(gx1, gy, gz0));
+        groundGeometry.vertices.push(new THREE.Vector3(gx1, gy, gz1));
+        groundGeometry.vertices.push(new THREE.Vector3(gx0, gy, gz1));
+        groundGeometry.vertices.push(new THREE.Vector3(gx0, gy, gz0));
+        var groundMaterial = new THREE.LineBasicMaterial({
+          color: 1932689,
+          opacity: 0,
           transparent: true
         });
-        var cameraUp = false;
-        renderer.setSize(canvas.width, canvas.height);
-        camera.position.z = cameraDistance;
-        camera.lookAt(scene.position);
-        lastRenderDate = /* @__PURE__ */ new Date();
-        var calc = function(x) {
-          return (x + 200) * (x + 100) * (x + 280) * (x + 10) * (x - 300) * (x - 250) * (x - 150) / Math.pow(10, 14) / 1.5;
-        };
-        for (var i = 0; i < 500; i++) {
-          var y = calc(i - 250) * Math.sin(2 * Math.PI * (i % 6) / 6 + i / 500) + Math.cos(i) * 5;
-          var z = calc(i - 250) * Math.cos(2 * Math.PI * (i % 6) / 6 + i / 500);
-          splineGeometry.vertices.push(new THREE.Vector3(i - 250, y, z));
+        house.add(new THREE.Line(groundGeometry, groundMaterial));
+        var scanGeometry = new THREE.Geometry();
+        scanGeometry.vertices.push(new THREE.Vector3(gx0, 0, gz0));
+        scanGeometry.vertices.push(new THREE.Vector3(gx1, 0, gz0));
+        scanGeometry.vertices.push(new THREE.Vector3(gx1, 0, gz1));
+        scanGeometry.vertices.push(new THREE.Vector3(gx0, 0, gz1));
+        scanGeometry.vertices.push(new THREE.Vector3(gx0, 0, gz0));
+        var scanMaterial = new THREE.LineBasicMaterial({
+          color: 12580095,
+          opacity: 0,
+          transparent: true
+        });
+        var scan = new THREE.Line(scanGeometry, scanMaterial);
+        house.add(scan);
+        var backdropGeometry = new THREE.Geometry();
+        for (var b = 0; b < 18; b++) {
+          backdropGeometry.vertices.push(new THREE.Vector3(-110, 32 - b * 4, -80));
+          backdropGeometry.vertices.push(new THREE.Vector3(110, 32 - b * 4, -80));
         }
-        splineGeometry.verticesNeedUpdate = true;
-        var splineLine = new THREE.Line(splineGeometry, splineMaterial);
-        scene.add(splineLine);
-        for (var i = 0; i < 25; i++) {
-          backdropGeometry.vertices.push(new THREE.Vector3(-500, 100 - i * 8, -100));
-          backdropGeometry.vertices.push(new THREE.Vector3(500, 100 - i * 8, -100));
-        }
-        var backdropLine = new THREE.Line(backdropGeometry, backdropMaterial, THREE.LinePieces);
-        scene.add(backdropLine);
+        var backdropMaterial = new THREE.LineBasicMaterial({
+          color: 1781549,
+          opacity: 0,
+          transparent: true
+        });
+        scene.add(new THREE.Line(backdropGeometry, backdropMaterial, THREE.LinePieces));
         renderer.render(scene, camera);
+        var scanBottom = fy(0) - 2;
+        var scanTop = fy(TOP) + 2;
         var firstRun = null;
-        var introAnimationDone = false;
+        var lastFrame = Date.now();
         return {
           tick: function() {
+            var now = Date.now();
             if (firstRun === null) {
-              firstRun = Date.now() + 2500;
+              firstRun = now;
             }
-            var renderTime = /* @__PURE__ */ new Date() - lastRenderDate;
-            var timeSinceStart = Date.now() - firstRun;
-            lastRenderDate = /* @__PURE__ */ new Date();
-            var rotateCameraBy = 2 * Math.PI / (1e4 / renderTime);
-            cameraAngle += rotateCameraBy;
-            if (timeSinceStart < 3e3) {
-              backdropMaterial.opacity = Math.max(0, (timeSinceStart - 2e3) / 3e3);
-              splineMaterial.opacity = timeSinceStart / 3e3;
-            } else if (!introAnimationDone) {
-              introAnimationDone = true;
-              backdropMaterial.opacity = 0.333;
-              splineMaterial.opacity = 1;
-            }
-            if (lastMessageTime !== null && !dataStreamOn) {
-              dataStreamOn = true;
-              $2("#datalink-status").text("CONNECTED");
-              $2("#datalink-status").css("color", "green");
-            }
-            if (Math.random() < 0.1) {
-              if (lastMessageTime === null && timeSinceStart > 8e3 || lastMessageTime !== null && Date.now() - lastMessageTime > 8e3) {
-                $2("#datalink-status").text("ERROR");
-                $2("#datalink-status").css("color", "red");
-              }
-            }
-            camera.position.x = Math.sin(cameraAngle) * 20;
+            var dt = Math.min(now - lastFrame, 100);
+            lastFrame = now;
+            var age = now - firstRun;
+            var fade = Math.min(1, age / 3e3);
+            roomMaterial.opacity = fade;
+            groundMaterial.opacity = fade * 0.7;
+            backdropMaterial.opacity = fade * 0.333;
+            scanMaterial.opacity = fade;
+            house.rotation.y += 2 * Math.PI * dt / 24e3;
+            var phase = age % 4e3 / 4e3;
+            scan.position.y = scanBottom + (scanTop - scanBottom) * phase;
             renderer.render(scene, camera);
-            splineLine.rotation.x += 0.01;
           },
           reset: function() {
             firstRun = null;
@@ -35389,27 +35680,28 @@
         $2("#lt-bandwidth").css("opacity", 0);
       }
       function writeResponse(txt) {
-        $2("#lt-command-lines").append("<div class='response'>&gt;&gt;encom-sh: " + txt + "</div>");
+        $2("#lt-command-lines").append("<div class='response'>&gt;&gt;muther: " + txt + "</div>");
       }
-      var currentDir = "encom_root";
+      var currentDir = "sys";
       function writePrompt() {
         $2(".command-blinker").removeClass("blink").removeClass("command-blinker");
-        $2("#lt-command-lines").append('<div class="command"><span class="prompt">encom-sh:' + currentDir + '$&nbsp;</span><span class="command-text"></span><span class="blink command-blinker">&nbsp;</span></div>');
+        var path = currentDir === "sys" ? "~" : "~/" + currentDir;
+        $2("#lt-command-lines").append('<div class="command"><span class="prompt">muther@sys:' + path + '$&nbsp;</span><span class="command-text"></span><span class="blink command-blinker">&nbsp;</span></div>');
       }
       function writeLs(exec) {
         var output = "";
         if (typeof exec != "undefined") {
           output = [
-            '<div class="ls">encom_root</div>',
-            '<div class="ls">bandwidth</div>',
-            '<div class="ls">framework</div>',
-            '<div class="ls">@arscan</div>',
+            '<div class="ls">sys</div>',
+            '<div class="ls">entities</div>',
+            '<div class="ls">rooms</div>',
+            '<div class="ls">muther</div>',
             '<div class="ls ls-exec">' + exec + "</div>",
-            '<div class="ls">webgl_test</div>',
-            '<div class="ls">flynn_5</div>',
+            '<div class="ls">house_scan</div>',
+            '<div class="ls">scenes</div>',
             '<div class="ls">&nbsp;</div>',
-            '<div class="ls">os12_demo</div>',
-            '<div class="ls">munkowitz</div>'
+            '<div class="ls">automations</div>',
+            '<div class="ls">logbook</div>'
           ].join("");
         } else {
           output = systems2.filter(function(system) {
@@ -35444,14 +35736,14 @@
           $2("#lt-launch-" + cdSystem.key + " .folder-label").addClass("selected");
           writeResponse("Changed directory to <span class='highlight'>" + cdSystem.key + "</span>");
           writePrompt();
-        } else if (command.indexOf("cd encom") == 0 || command == "cd /") {
-          currentDir = "encom_root";
-          writeResponse("Changed directory to <span class='highlight'>encom_root</span>");
+        } else if (command.indexOf("cd sys") == 0 || command == "cd /" || command == "cd ~") {
+          currentDir = "sys";
+          writeResponse("Changed directory to <span class='highlight'>sys</span>");
           writePrompt();
         } else if (command.indexOf("cd ") == 0) {
           writeResponse("<span class='alert'>Access denied</span>");
           writePrompt();
-        } else if (command.indexOf("ls") == 0 && currentDir == "encom_root") {
+        } else if (command.indexOf("ls") == 0 && currentDir == "sys") {
           writeLs();
           writePrompt();
         } else if (command.indexOf("ls") == 0) {
@@ -35594,7 +35886,7 @@
           return (/* @__PURE__ */ new Date()).valueOf();
         };
       }
-      var TWEEN = TWEEN || /* @__PURE__ */ function() {
+      var TWEEN = TWEEN || /* @__PURE__ */ (function() {
         var _tweens = [];
         return {
           REVISION: "13",
@@ -35627,7 +35919,7 @@
             return true;
           }
         };
-      }();
+      })();
       TWEEN.Tween = function(object) {
         var _object = object;
         var _valuesStart = {};
@@ -35994,7 +36286,7 @@
             var fc = TWEEN.Interpolation.Utils.Factorial;
             return fc(n) / fc(i) / fc(n - i);
           },
-          Factorial: /* @__PURE__ */ function() {
+          Factorial: /* @__PURE__ */ (function() {
             var a = [1];
             return function(n) {
               var s = 1, i;
@@ -36002,7 +36294,7 @@
               for (i = n; i > 1; i--) s *= i;
               return a[n] = s;
             };
-          }(),
+          })(),
           CatmullRom: function(p0, p1, p2, p3, t) {
             var v0 = (p2 - p0) * 0.5, v1 = (p3 - p1) * 0.5, t2 = t * t, t3 = t * t2;
             return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
@@ -38974,7 +39266,7 @@
             this.scene.add(ball);
             this.trackerBalls.push(ball);
             this.trackers.push({
-              update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+              update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                 return function(time) {
                   var posTime = Math.max(time, 3e3);
                   geo.vertices[a - 2].x = Math.max(-w * rand3 / 2, Math.min(w * rand3 / 2, w * Math.cos(rand2 * (rand * w + posTime / 1e3)) / 2));
@@ -38984,7 +39276,7 @@
                   geo.verticesNeedUpdate = true;
                   balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                 };
-              }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+              })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
             });
             if (Math.random() < 0.3) {
               var vert2 = new THREE.Vector3(trackerX, this.boxHeight, this.boxDepth / 2);
@@ -38997,7 +39289,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].x = Math.max(-w * rand3 / 2, Math.min(w * rand3 / 2, w * Math.cos(rand2 * (rand * w + posTime / 1e3)) / 2));
@@ -39007,7 +39299,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                   };
-                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             } else if (Math.random() > 0.7) {
               var vert2 = new THREE.Vector3(trackerX, this.boxHeight, -this.boxDepth / 2);
@@ -39020,7 +39312,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].x = Math.max(-w * rand3 / 2, Math.min(w * rand3 / 2, w * Math.cos(rand2 * (rand * w + posTime / 1e3)) / 2));
@@ -39030,7 +39322,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, 0, geo.vertices[a - 2].z);
                   };
-                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             }
           } else {
@@ -39044,7 +39336,7 @@
             this.scene.add(ball);
             this.trackerBalls.push(ball);
             this.trackers.push({
-              update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+              update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                 return function(time) {
                   var posTime = Math.max(time, 3e3);
                   geo.vertices[a - 2].z = Math.max(-d * rand3 / 2, Math.min(d * rand3 / 2, d * Math.cos(rand2 * (rand * d + posTime / 1e3)) / 2));
@@ -39054,7 +39346,7 @@
                   geo.verticesNeedUpdate = true;
                   balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                 };
-              }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+              })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
             });
             if (Math.random() < 0.3) {
               var vert2 = new THREE.Vector3(this.boxWidth / 2, this.boxHeight, trackerZ);
@@ -39067,7 +39359,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].z = Math.max(-d * rand3 / 2, Math.min(d * rand3 / 2, d * Math.cos(rand2 * (rand * d + posTime / 1e3)) / 2));
@@ -39077,7 +39369,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                   };
-                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             } else if (Math.random() > 0.7) {
               var vert2 = new THREE.Vector3(-this.boxWidth / 2, this.boxHeight, trackerZ);
@@ -39090,7 +39382,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].z = Math.max(-d * rand3 / 2, Math.min(d * rand3 / 2, d * Math.cos(rand2 * (rand * d + time / 1e3)) / 2));
@@ -39100,7 +39392,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                   };
-                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             }
           }
@@ -48803,161 +49095,6 @@
     }
   });
 
-  // ../app/js/rooms.js
-  function room(key) {
-    return BY_KEY.get(key) || null;
-  }
-  function center(r) {
-    return {
-      x: (r.x[0] + r.x[1]) / 2,
-      z: (r.z[0] + r.z[1]) / 2,
-      y: r.level === 1 ? LEVEL1_ELEVATION : 0
-    };
-  }
-  function haystackFor(id, friendly) {
-    return (friendly + " " + id.split(".").pop()).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  }
-  function roomForEntity(entityOrId) {
-    const id = typeof entityOrId === "string" ? entityOrId : entityOrId.entity_id;
-    if (!id) return null;
-    if (OVERRIDES[id]) return room(OVERRIDES[id]);
-    const friendly = typeof entityOrId === "object" && entityOrId.attributes ? entityOrId.attributes.friendly_name || "" : "";
-    const haystack = haystackFor(id, friendly);
-    for (const [re, key] of NEEDLES) {
-      if (re.test(haystack)) return room(key);
-    }
-    return null;
-  }
-  var ROOMS, BOUNDS, LEVEL1_ELEVATION, BY_KEY, OVERRIDES, ALIASES, TOO_GENERIC, NEEDLES;
-  var init_rooms = __esm({
-    "../app/js/rooms.js"() {
-      ROOMS = [
-        // ---- Level 0 ----------------------------------------------------------
-        { key: "master_bed", name: "Master Bedroom", level: 0, x: [6, 450], z: [-1975, -1470] },
-        { key: "kitchen", name: "Kitchen", level: 0, x: [450, 760], z: [-1420, -1090] },
-        { key: "dining", name: "Dining", level: 0, x: [677, 1275], z: [-1676, -1400] },
-        { key: "living", name: "Living", level: 0, x: [760, 1275], z: [-1400, -950] },
-        { key: "office", name: "Office", level: 0, x: [960, 1275], z: [-900, -680] },
-        { key: "office2", name: "Office 2", level: 0, x: [960, 1275], z: [-670, -460] },
-        { key: "hall_bath", name: "Hall Bath", level: 0, x: [1e3, 1275], z: [-430, -235] },
-        { key: "apis_room", name: "Api's Room", level: 0, x: [950, 1275], z: [-200, 150] },
-        { key: "garage", name: "Garage", level: 0, x: [10, 665], z: [-575, -5] },
-        { key: "hall0", name: "Hall", level: 0, x: [720, 950], z: [-620, -10] },
-        // Labeled in models/labels.json but absent from the BUILD.md table.
-        // Estimated so these spaces are not dead on the dashboard. Confirm before
-        // wiring anything that matters to them.
-        //
-        // The master closet and master bath split the strip between the master
-        // bedroom (west), the kitchen (north) and dining (east). The split is placed
-        // so each rectangle actually contains its own label point from labels.json:
-        // Closet at z -1930, Bath at z -1630.
-        { key: "master_closet", name: "Master Closet", level: 0, x: [6, 410], z: [-1e3, -700], est: true },
-        { key: "master_bath", name: "Master Bath", level: 0, x: [180, 410], z: [-1360, -1140], est: true },
-        { key: "patio", name: "Patio", level: 0, x: [760, 1275], z: [-1975, -1700], est: true },
-        { key: "wc", name: "WC", level: 0, x: [6, 180], z: [-1360, -1200], est: true },
-        // Labeled "Bath" in the export, actually the laundry beside the kitchen.
-        { key: "laundry", name: "Laundry", level: 0, x: [455, 670], z: [-1750, -1470], est: true },
-        { key: "room0", name: "Room", level: 0, x: [455, 670], z: [-1975, -1750], est: true },
-        { key: "pantry", name: "Pantry", level: 0, x: [420, 640], z: [-1060, -860], est: true },
-        { key: "mudroom", name: "Mudroom", level: 0, x: [6, 410], z: [-700, -590], est: true },
-        { key: "porch", name: "Porch", level: 0, x: [680, 950], z: [-10, 160], est: true },
-        // ---- Level 1 (exact, derived from the W1() wall calls) ----------------
-        { key: "stair_hall", name: "Stair hall", level: 1, x: [6, 405], z: [-797, -697] },
-        { key: "stairwell", name: "Stairs", level: 1, x: [6, 525], z: [-697, -583] },
-        { key: "closet_south", name: "Closet", level: 1, x: [856, 1037], z: [-1563, -1474] },
-        { key: "loft", name: "Loft", level: 1, x: [405, 1037], z: [-1324, -697] },
-        { key: "bath1", name: "Bath", level: 1, x: [405, 663], z: [-1563, -1324] },
-        { key: "hall1", name: "Hall", level: 1, x: [663, 856], z: [-1563, -1324] },
-        { key: "amanda_closet", name: "Amanda's Closet", level: 1, x: [856, 1037], z: [-1474, -1324] },
-        { key: "jovan_closet", name: "Jovan's Closet", level: 1, x: [525, 1037], z: [-697, -533] },
-        { key: "aks_room", name: "AK's Room", level: 1, x: [405, 1037], z: [-1973, -1563] }
-      ];
-      BOUNDS = { x: [0, 1280], z: [-2137, 160] };
-      LEVEL1_ELEVATION = 262;
-      BY_KEY = new Map(ROOMS.map((r) => [r.key, r]));
-      OVERRIDES = {
-        // 'light.hue_bloom_1': 'living',
-        // 'binary_sensor.front_door': 'porch',
-      };
-      ALIASES = {
-        master_bed: ["master", "master bedroom", "master bed", "primary", "primary bedroom"],
-        master_bath: ["master bath", "masterbath", "master bathroom", "primary bath"],
-        master_closet: ["master closet", "mastercloset"],
-        kitchen: ["kitchen"],
-        dining: ["dining", "dining room"],
-        living: ["living", "living room", "lounge", "family room", "front room", "den"],
-        office: ["office"],
-        office2: ["office 2", "office2", "second office", "study"],
-        // Apostrophes are stripped before matching, so "Api's" becomes "api s".
-        // Both that and the bare "apis" spelling are listed, because entity ids
-        // tend to use one and friendly names the other.
-        hall_bath: [
-          "hall bath",
-          "hallway bath",
-          "guest bath",
-          "shared bath",
-          "bathroom 1",
-          "bath 1",
-          "api s bath",
-          "apis bath",
-          "api s bathroom",
-          "apis bathroom"
-        ],
-        apis_room: ["api s room", "apis room", "api s bedroom", "apis bedroom"],
-        garage: ["garage"],
-        hall0: ["downstairs hall", "main hall", "hallway", "hall"],
-        patio: ["patio", "deck", "back porch", "backyard", "back yard"],
-        wc: ["wc", "powder", "powder room", "half bath"],
-        laundry: ["laundry", "laundry room", "washer", "dryer"],
-        pantry: ["pantry"],
-        mudroom: ["mudroom", "mud room", "utility"],
-        porch: ["porch", "front porch", "front door", "entry", "entryway", "foyer"],
-        stair_hall: ["stair hall", "upstairs hall"],
-        stairwell: ["stairs", "stairwell", "staircase"],
-        closet_south: ["south closet"],
-        loft: ["loft", "bedroom 2", "upstairs bedroom"],
-        bath1: ["upstairs bath", "bath up", "loft bath", "bathroom 2", "bath 2"],
-        hall1: ["upstairs hallway"],
-        amanda_closet: ["amanda s closet", "amandas closet", "loft closet"],
-        jovan_closet: ["jovan s closet", "jovans closet", "bedroom 3 closet"],
-        aks_room: [
-          "ak s room",
-          "aks room",
-          "ak s bedroom",
-          "aks bedroom",
-          "back bedroom",
-          "bedroom 3",
-          "rear bedroom"
-        ],
-        room0: []
-        // the label is literally "Room", too generic to match on
-      };
-      TOO_GENERIC = /* @__PURE__ */ new Set(["room", "bath", "closet", "hall"]);
-      NEEDLES = (() => {
-        const seen = /* @__PURE__ */ new Set();
-        const out = [];
-        const push = (phrase, key) => {
-          const p = phrase.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-          if (!p || seen.has(p)) return;
-          seen.add(p);
-          out.push([p, key]);
-        };
-        for (const [key, words] of Object.entries(ALIASES)) {
-          for (const w of words) push(w, key);
-        }
-        for (const r of ROOMS) {
-          const name = r.name.toLowerCase();
-          if (!TOO_GENERIC.has(name)) push(name, r.key);
-        }
-        out.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]));
-        return out.map(([phrase, key]) => [
-          new RegExp("\\b" + phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b"),
-          key
-        ]);
-      })();
-    }
-  });
-
   // ../app/js/message.js
   function domainOf(entityId) {
     return entityId.split(".")[0];
@@ -49746,7 +49883,7 @@
           }
         });
         $2.fn.extend({
-          focus: /* @__PURE__ */ function(orig) {
+          focus: /* @__PURE__ */ (function(orig) {
             return function(delay, fn) {
               return typeof delay === "number" ? this.each(function() {
                 var elem = this;
@@ -49758,7 +49895,7 @@
                 }, delay);
               }) : orig.apply(this, arguments);
             };
-          }($2.fn.focus),
+          })($2.fn.focus),
           scrollParent: function() {
             var scrollParent;
             if ($2.ui.ie && /(static|relative)/.test(this.css("position")) || /absolute/.test(this.css("position"))) {
@@ -49890,7 +50027,7 @@
           };
         }
         if ($2("<a>").data("a-b", "a").removeData("a-b").data("a-b")) {
-          $2.fn.removeData = /* @__PURE__ */ function(removeData) {
+          $2.fn.removeData = /* @__PURE__ */ (function(removeData) {
             return function(key) {
               if (arguments.length) {
                 return removeData.call(this, $2.camelCase(key));
@@ -49898,7 +50035,7 @@
                 return removeData.call(this);
               }
             };
-          }($2.fn.removeData);
+          })($2.fn.removeData);
         }
         $2.ui.ie = !!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase());
         $2.support.selectstart = "onselectstart" in document.createElement("div");
@@ -49998,7 +50135,7 @@
               proxiedPrototype[prop] = value;
               return;
             }
-            proxiedPrototype[prop] = /* @__PURE__ */ function() {
+            proxiedPrototype[prop] = /* @__PURE__ */ (function() {
               var _super = function() {
                 return base.prototype[prop].apply(this, arguments);
               }, _superApply = function(args) {
@@ -50013,7 +50150,7 @@
                 this._superApply = __superApply;
                 return returnValue;
               };
-            }();
+            })();
           });
           constructor.prototype = $2.widget.extend(basePrototype, {
             // TODO: remove support for widgetEventPrefix
@@ -51258,6 +51395,7 @@
               x2 - draggable.helperProportions.width / 2 < r && // Left Half
               t < y1 + draggable.helperProportions.height / 2 && // Bottom Half
               y2 - draggable.helperProportions.height / 2 < b;
+            // Top Half
             case "pointer":
               draggableLeft = (draggable.positionAbs || draggable.position.absolute).left + (draggable.clickOffset || draggable.offset.click).left;
               draggableTop = (draggable.positionAbs || draggable.position.absolute).top + (draggable.clickOffset || draggable.offset.click).top;
@@ -53026,32 +53164,32 @@
                 delayedTriggers.push(function(event2) {
                   this._trigger("remove", event2, this._uiHash());
                 });
-                delayedTriggers.push(function(c2) {
+                delayedTriggers.push((function(c2) {
                   return function(event2) {
                     c2._trigger("receive", event2, this._uiHash(this));
                   };
-                }.call(this, this.currentContainer));
-                delayedTriggers.push(function(c2) {
+                }).call(this, this.currentContainer));
+                delayedTriggers.push((function(c2) {
                   return function(event2) {
                     c2._trigger("update", event2, this._uiHash(this));
                   };
-                }.call(this, this.currentContainer));
+                }).call(this, this.currentContainer));
               }
             }
             for (i = this.containers.length - 1; i >= 0; i--) {
               if (!noPropagation) {
-                delayedTriggers.push(function(c2) {
+                delayedTriggers.push((function(c2) {
                   return function(event2) {
                     c2._trigger("deactivate", event2, this._uiHash(this));
                   };
-                }.call(this, this.containers[i]));
+                }).call(this, this.containers[i]));
               }
               if (this.containers[i].containerCache.over) {
-                delayedTriggers.push(function(c2) {
+                delayedTriggers.push((function(c2) {
                   return function(event2) {
                     c2._trigger("out", event2, this._uiHash(this));
                   };
-                }.call(this, this.containers[i]));
+                }).call(this, this.containers[i]));
                 this.containers[i].containerCache.over = 0;
               }
             }
@@ -53693,7 +53831,7 @@
             });
           };
           $2.fn.extend({
-            addClass: /* @__PURE__ */ function(orig) {
+            addClass: /* @__PURE__ */ (function(orig) {
               return function(classNames, speed, easing, callback) {
                 return speed ? $2.effects.animateClass.call(
                   this,
@@ -53703,8 +53841,8 @@
                   callback
                 ) : orig.apply(this, arguments);
               };
-            }($2.fn.addClass),
-            removeClass: /* @__PURE__ */ function(orig) {
+            })($2.fn.addClass),
+            removeClass: /* @__PURE__ */ (function(orig) {
               return function(classNames, speed, easing, callback) {
                 return arguments.length > 1 ? $2.effects.animateClass.call(
                   this,
@@ -53714,8 +53852,8 @@
                   callback
                 ) : orig.apply(this, arguments);
               };
-            }($2.fn.removeClass),
-            toggleClass: /* @__PURE__ */ function(orig) {
+            })($2.fn.removeClass),
+            toggleClass: /* @__PURE__ */ (function(orig) {
               return function(classNames, force, speed, easing, callback) {
                 if (typeof force === "boolean" || force === undefined2) {
                   if (!speed) {
@@ -53739,7 +53877,7 @@
                   );
                 }
               };
-            }($2.fn.toggleClass),
+            })($2.fn.toggleClass),
             switchClass: function(remove, add, speed, easing, callback) {
               return $2.effects.animateClass.call(this, {
                 add,
@@ -53967,7 +54105,7 @@
               }
               return queue === false ? this.each(run) : this.queue(queue || "fx", run);
             },
-            show: /* @__PURE__ */ function(orig) {
+            show: /* @__PURE__ */ (function(orig) {
               return function(option) {
                 if (standardAnimationOption(option)) {
                   return orig.apply(this, arguments);
@@ -53977,8 +54115,8 @@
                   return this.effect.call(this, args);
                 }
               };
-            }($2.fn.show),
-            hide: /* @__PURE__ */ function(orig) {
+            })($2.fn.show),
+            hide: /* @__PURE__ */ (function(orig) {
               return function(option) {
                 if (standardAnimationOption(option)) {
                   return orig.apply(this, arguments);
@@ -53988,8 +54126,8 @@
                   return this.effect.call(this, args);
                 }
               };
-            }($2.fn.hide),
-            toggle: /* @__PURE__ */ function(orig) {
+            })($2.fn.hide),
+            toggle: /* @__PURE__ */ (function(orig) {
               return function(option) {
                 if (standardAnimationOption(option) || typeof option === "boolean") {
                   return orig.apply(this, arguments);
@@ -53999,7 +54137,7 @@
                   return this.effect.call(this, args);
                 }
               };
-            }($2.fn.toggle),
+            })($2.fn.toggle),
             // helper functions
             cssUnit: function(key) {
               var style = this.css(key), val = [];
@@ -55690,6 +55828,7 @@
                   $2.datepicker._hideDatepicker();
                   handled = false;
                   break;
+                // hide on tab out
                 case 13:
                   sel = $2("td." + $2.datepicker._dayOverClass + ":not(." + $2.datepicker._currentClass + ")", inst.dpDiv);
                   if (sel[0]) {
@@ -55703,27 +55842,33 @@
                     $2.datepicker._hideDatepicker();
                   }
                   return false;
+                // don't submit the form
                 case 27:
                   $2.datepicker._hideDatepicker();
                   break;
+                // hide on escape
                 case 33:
                   $2.datepicker._adjustDate(event.target, event.ctrlKey ? -$2.datepicker._get(inst, "stepBigMonths") : -$2.datepicker._get(inst, "stepMonths"), "M");
                   break;
+                // previous month/year on page up/+ ctrl
                 case 34:
                   $2.datepicker._adjustDate(event.target, event.ctrlKey ? +$2.datepicker._get(inst, "stepBigMonths") : +$2.datepicker._get(inst, "stepMonths"), "M");
                   break;
+                // next month/year on page down/+ ctrl
                 case 35:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._clearDate(event.target);
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
+                // clear on ctrl or command +end
                 case 36:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._gotoToday(event.target);
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
+                // current on ctrl or command +home
                 case 37:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._adjustDate(event.target, isRTL ? 1 : -1, "D");
@@ -55739,6 +55884,7 @@
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
+                // -1 week on ctrl or command +up
                 case 39:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._adjustDate(event.target, isRTL ? -1 : 1, "D");
@@ -55754,6 +55900,7 @@
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
+                // +1 week on ctrl or command +down
                 default:
                   handled = false;
               }
@@ -56371,6 +56518,7 @@
                   case "D":
                   case "M":
                     return null;
+                  // Accept anything
                   case "'":
                     if (lookAhead("'")) {
                       chars += "'";
@@ -60599,6 +60747,23 @@
     });
     return el.center(ratio);
   };
+  $.fn.fitLauncher = function() {
+    var el = this;
+    el.css("transform", "none");
+    var w = el.outerWidth();
+    var h = el.outerHeight();
+    if (!w || !h) {
+      return el;
+    }
+    el.css({
+      position: "fixed",
+      top: 0,
+      left: 0,
+      "transform-origin": "0 0",
+      transform: "scale(" + $(window).width() / w + "," + $(window).height() / h + ")"
+    });
+    return el;
+  };
   $.fn.center = function(scale) {
     var top = Math.max(0, ($(window).height() - $(this).outerHeight()) / 2 + $(window).scrollTop());
     var left = Math.max(0, ($(window).width() - $(this).outerWidth()) / 2 + $(window).scrollLeft());
@@ -60624,7 +60789,8 @@
     }
   }, function(state2) {
     console.log("home assistant: " + state2.status + (state2.detail ? " (" + state2.detail + ")" : ""));
-    $("#ha-link").text("HOME ASSISTANT ... " + String(state2.status).toUpperCase());
+    $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state2.status).toUpperCase());
+    LightTable.setLink(state2.status === "ready");
   });
   var onSwitch = function(view) {
     var screensaver = $("#screensaver");
@@ -60698,7 +60864,7 @@
       console.log(ex);
       return;
     }
-    $("#light-table").fitScreen();
+    $("#light-table").fitLauncher();
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
@@ -60715,7 +60881,7 @@
     var timeout = 0;
     function onWindowResize2() {
       if (active2 === "lt") {
-        $("#light-table").fitScreen();
+        $("#light-table").fitLauncher();
         LightTable.resize();
       } else if (active2 === "house") {
         HouseView2.resizeDebounced();

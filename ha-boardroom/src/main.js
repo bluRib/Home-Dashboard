@@ -37,6 +37,37 @@ $.fn.fitScreen = function (baseW, baseH) {
     return el.center(ratio);
 };
 
+/* Scale the launcher to fill the whole viewport.
+   fitScreen above centres a fixed size screen and leaves bands around it,
+   which is right for the boardroom but wrong for the launcher: the launcher
+   is the frame, so any band reads as a border that should not be there.
+   Both launcher layouts are 16:9, so at 1920x1080, 2560x1440 and 1366x768 the
+   two scale factors are equal and nothing is distorted. On an off ratio
+   display it stretches to fill rather than letterboxing.
+   transform, not zoom: a transformed element becomes the containing block for
+   its position:fixed descendants, which keeps the two frame borders locked to
+   the launcher instead of drifting against the viewport. */
+$.fn.fitLauncher = function () {
+    var el = this;
+
+    el.css("transform", "none");
+    var w = el.outerWidth();
+    var h = el.outerHeight();
+    if(!w || !h){
+        return el;
+    }
+
+    el.css({
+        position: "fixed",
+        top: 0,
+        left: 0,
+        "transform-origin": "0 0",
+        transform: "scale(" + ($(window).width() / w) + "," + ($(window).height() / h) + ")"
+    });
+
+    return el;
+};
+
 $.fn.center = function (scale) {
 
     var top = Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop());
@@ -74,9 +105,10 @@ haSource.start(function(message){
     }
 
 }, function(state){
-    /* Connection state, visible in the console and on the boot panel. */
+    /* Connection state, visible in the console and on the launcher. */
     console.log("home assistant: " + state.status + (state.detail ? " (" + state.detail + ")" : ""));
-    $("#ha-link").text("HOME ASSISTANT ... " + String(state.status).toUpperCase());
+    $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state.status).toUpperCase());
+    LightTable.setLink(state.status === "ready");
 });
 
 var onSwitch = function(view){
@@ -172,7 +204,7 @@ PleaseRotate.start({onHide: function(){
 
 
     }
-    $("#light-table").fitScreen();
+    $("#light-table").fitLauncher();
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
 
@@ -195,7 +227,7 @@ PleaseRotate.start({onHide: function(){
     function onWindowResize(){
 
         if(active === "lt"){
-            $("#light-table").fitScreen();
+            $("#light-table").fitLauncher();
             LightTable.resize();
         } else if(active === "house"){
             /* The House screen is a CSS grid at 100vw by 100vh, so it needs no

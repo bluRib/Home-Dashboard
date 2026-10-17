@@ -1,6 +1,13 @@
 var $ = require("jquery"),
     THREE = require("three"),
-    systems = require("./systems.js");
+    systems = require("./systems.js"),
+    rooms = require("../../app/js/rooms.js");
+
+/* The scan wireframe is drawn from the same room rectangles the house widget
+   and the room panels use, so a corrected rectangle fixes this too. */
+var ROOMS = rooms.ROOMS,
+    BOUNDS = rooms.BOUNDS,
+    LEVEL1_ELEVATION = rooms.LEVEL1_ELEVATION;
 
 function systemByKey(key){
     for(var i = 0; i < systems.length; i++){
@@ -35,7 +42,7 @@ LightTable.init = function(_hideFn){
     $("#lt-keyboard").css("opacity", 0);
 
 
-    webglTest = createWebGlTest();
+    webglTest = createHouseScan();
 
     $("#light-table").css("visibility", "visible");
 
@@ -134,7 +141,6 @@ LightTable.animate = function(){
 
 var resizing = false;
 LightTable.resize = function(){
-    $("#light-table").center();
     if(!resizing && (currentWidth > 1600 && $(window).width() <= 1600) || (currentWidth <= 1600 && $(window).width() > 1600)){
 
         currentWidth = $(window).width();
@@ -151,38 +157,60 @@ LightTable.resize = function(){
 
 LightTable.message = function(message){
     lastMessageTime = Date.now();
+};
 
-    if(message.stream === "meta" && message.size > 0){
-        $("#datalink-status").text("CONNECTED. " + message.size + " USER" + (parseInt(message.size,10) === 1 ? "" : "S "));
-        $("#datalink-status").css("color", "green");
-    }
-
+/* Called by main.js on every Home Assistant status change. Green when the
+   link is up, orange when it is not, per rule 10. */
+LightTable.setLink = function(connected){
+    $("#datalink-status")
+        .text(connected ? "LINK: CONNECTED" : "LINK: OFFLINE")
+        .attr("class", connected ? "link-online" : "link-offline");
 };
 
 /* private functions */
+
+/* Layout space geometry, immune to the transform on #light-table.
+   offsetTop and offsetLeft are border box offsets from the offset parent, and
+   computed width and height are content box, which is what jQuery .width()
+   and .height() set. */
+function box(el){
+    var node = el.jquery ? el[0] : el;
+    var cs = window.getComputedStyle(node);
+    return {
+        top: node.offsetTop,
+        left: node.offsetLeft,
+        width: parseFloat(cs.width) || 0,
+        height: parseFloat(cs.height) || 0,
+        outerWidth: node.offsetWidth,
+        outerHeight: node.offsetHeight
+    };
+}
 
 function showContainer(){
     var outside = $("#lt-container-outside");
     var inside = $("#lt-container-inside");
 
-    outside.center();
-    inside.center();
+    /* Positions are relative to #light-table, which is the scaled box, so the
+       wipe blockers are measured and appended inside it too. Measuring against
+       the window instead would place them at unscaled viewport coordinates. */
+    var outsideBox = box(outside);
+    var insideBox = box(inside);
 
-    var outsideOffset = outside.offset();
-    var insideOffset = inside.offset();
+    var outsideOffset = { top: outsideBox.top, left: outsideBox.left };
+    var insideOffset = { top: insideBox.top, left: insideBox.left };
 
-    var outsideWidth = outside.width();
-    var outsideHeight = outside.height();
+    var outsideWidth = outsideBox.width;
+    var outsideHeight = outsideBox.height;
 
-    var insideWidth = inside.width();
-    var insideHeight = inside.height();
+    var insideWidth = insideBox.width;
+    var insideHeight = insideBox.height;
 
     var outsideBlockerTopRight = $("<div>");
     var outsideBlockerBottomLeft = $("<div>");
     var insideBlockerTopRight = $("<div>");
     var insideBlockerBottomLeft = $("<div>");
 
-    $('body').append(outsideBlockerTopRight)
+    $('#light-table').append(outsideBlockerTopRight)
     .append(outsideBlockerBottomLeft)
     .append(insideBlockerTopRight)
     .append(insideBlockerBottomLeft);
@@ -194,8 +222,8 @@ function showContainer(){
         position: "absolute",
         top: outsideOffset.top - 5,
         left: outsideOffset.left - 5,
-        width: outside.outerWidth() + 10,
-        height: outside.outerHeight(),
+        width: outsideBox.outerWidth + 10,
+        height: outsideBox.outerHeight,
         "z-index": 15
     });
 
@@ -281,7 +309,7 @@ function hideContainer(){
 
 function showHeaders(){
 
-    var aHeight = $("#lt-header-bottom-right").position().top - 35;
+    var aHeight = box($("#lt-header-bottom-right")).top - 35;
 
     setTimeout(function doHeaderAnimations(){
 
@@ -315,10 +343,11 @@ function showContentBoxes(item, extraDelay) {
 
     item.removeAttr("style");
 
-    var height = item.height();
-    var width = item.width();
-    var left = item.position().left;
-    var top = item.position().top;
+    var b = box(item);
+    var height = b.height;
+    var width = b.width;
+    var left = b.left;
+    var top = b.top;
 
     var border = item.css("border");
     var boxShadow = item.css("box-shadow");
@@ -371,7 +400,7 @@ function showKeyboard(){
 
     var keyboard = $("#lt-keyboard");
     var spaceBar = $("#k-32");
-    var spaceBarWidth = spaceBar.width();
+    var spaceBarWidth = box(spaceBar).width;
 
     spaceBar.width(0);
 
@@ -391,103 +420,163 @@ function hideKeyboard(){
     keyboard.css("opacity", 0);
 }
 
-function createWebGlTest(){
+/* HOUSE .SCAN
+ *
+ * Replaces Encom's DNA style spline wave. Draws the real house as a wireframe,
+ * both floors, from the room rectangles in app/js/rooms.js, with a horizontal
+ * scan plane sweeping up through it.
+ *
+ * Deliberately built on THREE.Geometry, THREE.Line and THREE.LinePieces, which
+ * are the r66 API the bundle ships. The r128 renderer belongs to the house
+ * widget alone (BUILD.md step 6) and must not be pulled in here.
+ */
+function createHouseScan(){
     var canvas = document.getElementById('lt-webglCanvas');
-    var renderer = new THREE.WebGLRenderer( { antialias : true, canvas: canvas } );
-    var cameraDistance = 100;
-    var camera = new THREE.PerspectiveCamera( 50, canvas.width / canvas.height, 1, 400 );
-    var cameraAngle=0;
-    var scene = new THREE.Scene();
-    var splineGeometry = new THREE.Geometry();
-    var splineMaterial = new THREE.LineBasicMaterial({
-        color: 0x6FC0BA,
-        opacity: 0,
-        transparent: true
-    });
 
-    var backdropGeometry = new THREE.Geometry();
-    var backdropMaterial = new THREE.LineBasicMaterial({
-        color: 0x1b2f2d,
-        opacity: 1,
-        transparent: true
-    });
+    /* Fixed backing store. The whole light table is uniformly zoom scaled, so
+       a fixed internal size stays in proportion at every viewport. */
+    canvas.width = 734;
+    canvas.height = 200;
 
-    var cameraUp = false;
-
+    var renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
     renderer.setSize(canvas.width, canvas.height);
-    camera.position.z = cameraDistance;
+
+    /* A narrow lens well back, so the plan reads flat and even rather than
+       with the near end ballooning. The panel is roughly 3.7:1, and the house
+       is long, so the framing has to hold through a full turn. */
+    var camera = new THREE.PerspectiveCamera(30, canvas.width / canvas.height, 1, 2000);
+    camera.position.set(0, 25, 110);
+
+    var scene = new THREE.Scene();
     camera.lookAt(scene.position);
 
-    lastRenderDate = new Date();
+    /* Fit the plan into a box about 110 units along its long axis, centred on
+       the origin. The panel is wide and shallow and the house is long, so the
+       limit is vertical: the footprint has to stay in frame at every angle of
+       the turn, not just side on. */
+    var cx = (BOUNDS.x[0] + BOUNDS.x[1]) / 2;
+    var cz = (BOUNDS.z[0] + BOUNDS.z[1]) / 2;
+    var span = Math.max(BOUNDS.x[1] - BOUNDS.x[0], BOUNDS.z[1] - BOUNDS.z[0]);
+    var S = 110 / span;
+    var WALL = 244;                        /* wall height in cm, rule 6 */
+    var TOP = (LEVEL1_ELEVATION + WALL);   /* top of the upstairs walls */
+    var cy = TOP / 2;
 
-    var calc = function(x){
-        return (x+200)*(x+100)*(x+280)*(x+10)*(x-300)*(x-250)*(x-150) / Math.pow(10,14)/1.5;
+    var fx = function(x){ return (x - cx) * S; };
+    var fz = function(z){ return (z - cz) * S; };
+    var fy = function(y){ return (y - cy) * S; };
+
+    var house = new THREE.Object3D();
+    scene.add(house);
+
+    /* One wireframe box per room: floor rectangle, ceiling rectangle, and the
+       four corner posts between them. */
+    var roomGeometry = new THREE.Geometry();
+    var push = function(ax, ay, az, bx, by, bz){
+        roomGeometry.vertices.push(new THREE.Vector3(ax, ay, az));
+        roomGeometry.vertices.push(new THREE.Vector3(bx, by, bz));
+    };
+
+    for(var i = 0; i < ROOMS.length; i++){
+        var r = ROOMS[i];
+        var base = r.level === 1 ? LEVEL1_ELEVATION : 0;
+        var x0 = fx(r.x[0]), x1 = fx(r.x[1]);
+        var z0 = fz(r.z[0]), z1 = fz(r.z[1]);
+        var y0 = fy(base), y1 = fy(base + WALL);
+
+        /* floor and ceiling outlines */
+        var levels = [y0, y1];
+        for(var L = 0; L < 2; L++){
+            var y = levels[L];
+            push(x0, y, z0, x1, y, z0);
+            push(x1, y, z0, x1, y, z1);
+            push(x1, y, z1, x0, y, z1);
+            push(x0, y, z1, x0, y, z0);
+        }
+        /* corner posts */
+        push(x0, y0, z0, x0, y1, z0);
+        push(x1, y0, z0, x1, y1, z0);
+        push(x1, y0, z1, x1, y1, z1);
+        push(x0, y0, z1, x0, y1, z1);
     }
 
-    for(var i = 0; i< 500; i++){
-        var y = calc(i-250) * Math.sin(2 * Math.PI * (i % 6) / 6 + i/500) + Math.cos(i) * 5;
-        var z = calc(i-250) * Math.cos(2 * Math.PI * (i % 6) / 6 + i/500);
-        splineGeometry.vertices.push(new THREE.Vector3(i - 250, y, z));
+    var roomMaterial = new THREE.LineBasicMaterial({
+        color: 0x3fe0ff, opacity: 0, transparent: true
+    });
+    house.add(new THREE.Line(roomGeometry, roomMaterial, THREE.LinePieces));
+
+    /* Ground outline, so the footprint reads even where no room sits. */
+    var groundGeometry = new THREE.Geometry();
+    var gx0 = fx(BOUNDS.x[0]), gx1 = fx(BOUNDS.x[1]);
+    var gz0 = fz(BOUNDS.z[0]), gz1 = fz(BOUNDS.z[1]);
+    var gy = fy(0);
+    groundGeometry.vertices.push(new THREE.Vector3(gx0, gy, gz0));
+    groundGeometry.vertices.push(new THREE.Vector3(gx1, gy, gz0));
+    groundGeometry.vertices.push(new THREE.Vector3(gx1, gy, gz1));
+    groundGeometry.vertices.push(new THREE.Vector3(gx0, gy, gz1));
+    groundGeometry.vertices.push(new THREE.Vector3(gx0, gy, gz0));
+    var groundMaterial = new THREE.LineBasicMaterial({
+        color: 0x1d7d91, opacity: 0, transparent: true
+    });
+    house.add(new THREE.Line(groundGeometry, groundMaterial));
+
+    /* The scan plane: a bright rectangle that rides up through the house. */
+    var scanGeometry = new THREE.Geometry();
+    scanGeometry.vertices.push(new THREE.Vector3(gx0, 0, gz0));
+    scanGeometry.vertices.push(new THREE.Vector3(gx1, 0, gz0));
+    scanGeometry.vertices.push(new THREE.Vector3(gx1, 0, gz1));
+    scanGeometry.vertices.push(new THREE.Vector3(gx0, 0, gz1));
+    scanGeometry.vertices.push(new THREE.Vector3(gx0, 0, gz0));
+    var scanMaterial = new THREE.LineBasicMaterial({
+        color: 0xbff4ff, opacity: 0, transparent: true
+    });
+    var scan = new THREE.Line(scanGeometry, scanMaterial);
+    house.add(scan);
+
+    /* Dim backdrop rules, kept from the Encom panel for the same depth cue. */
+    var backdropGeometry = new THREE.Geometry();
+    for(var b = 0; b < 18; b++){
+        backdropGeometry.vertices.push(new THREE.Vector3(-110, 32 - b * 4, -80));
+        backdropGeometry.vertices.push(new THREE.Vector3(110, 32 - b * 4, -80));
     }
-    splineGeometry.verticesNeedUpdate = true;
+    var backdropMaterial = new THREE.LineBasicMaterial({
+        color: 0x1b2f2d, opacity: 0, transparent: true
+    });
+    scene.add(new THREE.Line(backdropGeometry, backdropMaterial, THREE.LinePieces));
 
-    var splineLine = new THREE.Line(splineGeometry, splineMaterial);
-    scene.add(splineLine);
+    renderer.render(scene, camera);
 
-    for(var i = 0; i< 25; i++){
-        backdropGeometry.vertices.push(new THREE.Vector3(-500,100-i*8,-100));
-        backdropGeometry.vertices.push(new THREE.Vector3(500,100-i*8,-100));
-    }
-    var backdropLine = new THREE.Line(backdropGeometry, backdropMaterial, THREE.LinePieces);
-    scene.add(backdropLine);
-
-    renderer.render( scene, camera );
-
+    var scanBottom = fy(0) - 2;
+    var scanTop = fy(TOP) + 2;
     var firstRun = null;
-    var introAnimationDone = false;
+    var lastFrame = Date.now();
 
     return {
-        tick: function (){
+        tick: function(){
+            var now = Date.now();
             if(firstRun === null){
-                firstRun = Date.now() + 2500;
+                firstRun = now;
             }
-            // renderer.render( this.scene, this.camera );
-            var renderTime = new Date() - lastRenderDate;
-            var timeSinceStart = Date.now() - firstRun;
-            lastRenderDate = new Date();
+            var dt = Math.min(now - lastFrame, 100);
+            lastFrame = now;
 
-            var rotateCameraBy = (2 * Math.PI)/(10000/renderTime);
-            cameraAngle += rotateCameraBy;
+            /* Fade in over the first 3 seconds, same timing Encom used. */
+            var age = now - firstRun;
+            var fade = Math.min(1, age / 3000);
+            roomMaterial.opacity = fade;
+            groundMaterial.opacity = fade * 0.7;
+            backdropMaterial.opacity = fade * 0.333;
+            scanMaterial.opacity = fade;
 
-            if(timeSinceStart < 3000){
-                backdropMaterial.opacity = Math.max(0,(timeSinceStart-2000)/3000);
-                splineMaterial.opacity = timeSinceStart/3000;
-            } else if(!introAnimationDone){
-                introAnimationDone = true;
-                backdropMaterial.opacity = .333;
-                splineMaterial.opacity = 1;
-            }
+            /* One turn every 24 seconds. */
+            house.rotation.y += (2 * Math.PI) * dt / 24000;
 
-            if(lastMessageTime !== null && !dataStreamOn){
-                dataStreamOn = true;
-                $("#datalink-status").text("CONNECTED");
-                $("#datalink-status").css("color", "green");
-            }
+            /* Scan rides bottom to top every 4 seconds, then restarts. */
+            var phase = (age % 4000) / 4000;
+            scan.position.y = scanBottom + (scanTop - scanBottom) * phase;
 
-            if(Math.random() < .1){
-                if((lastMessageTime === null && timeSinceStart > 8000) || (lastMessageTime !== null && Date.now() - lastMessageTime > 8000)){
-                    $("#datalink-status").text("ERROR");
-                    $("#datalink-status").css("color", "red");
-                } 
-            }
-
-
-            camera.position.x = Math.sin(cameraAngle) * 20;
-            renderer.render(scene, camera );
-
-            splineLine.rotation.x += .01;
-
-        }, 
+            renderer.render(scene, camera);
+        },
         reset: function(){
             firstRun = null;
         }
@@ -500,31 +589,32 @@ function hideWebgl(){
 }
 
 function writeResponse(txt){
-    $("#lt-command-lines").append("<div class='response'>&gt;&gt;encom-sh: " + txt + "</div>");
+    $("#lt-command-lines").append("<div class='response'>&gt;&gt;muther: " + txt + "</div>");
 }
 
-var currentDir = "encom_root";
+var currentDir = "sys";
 
 function writePrompt(){
     $(".command-blinker").removeClass("blink").removeClass("command-blinker");
 
-    $("#lt-command-lines").append('<div class="command"><span class="prompt">encom-sh:' + currentDir + '$&nbsp;</span><span class="command-text"></span><span class="blink command-blinker">&nbsp;</span></div>');
+    var path = currentDir === "sys" ? "~" : "~/" + currentDir;
+    $("#lt-command-lines").append('<div class="command"><span class="prompt">muther@sys:' + path + '$&nbsp;</span><span class="command-text"></span><span class="blink command-blinker">&nbsp;</span></div>');
 }
 
 function writeLs(exec){
     var output = "";
     if(typeof exec != "undefined"){
         output = [
-            '<div class="ls">encom_root</div>',
-            '<div class="ls">bandwidth</div>',
-            '<div class="ls">framework</div>',
-            '<div class="ls">@arscan</div>',
+            '<div class="ls">sys</div>',
+            '<div class="ls">entities</div>',
+            '<div class="ls">rooms</div>',
+            '<div class="ls">muther</div>',
             '<div class="ls ls-exec">' + exec + '</div>',
-            '<div class="ls">webgl_test</div>',
-            '<div class="ls">flynn_5</div>',
+            '<div class="ls">house_scan</div>',
+            '<div class="ls">scenes</div>',
             '<div class="ls">&nbsp;</div>',
-            '<div class="ls">os12_demo</div>',
-            '<div class="ls">munkowitz</div>',
+            '<div class="ls">automations</div>',
+            '<div class="ls">logbook</div>',
         ].join('');
 
     } else {
@@ -574,14 +664,14 @@ function executeCommand(){
         writeResponse("Changed directory to <span class='highlight'>" + cdSystem.key + "</span>");
         writePrompt();
 
-    } else if(command.indexOf("cd encom") == 0 || command == "cd /"){
-        currentDir = "encom_root";
-        writeResponse("Changed directory to <span class='highlight'>encom_root</span>");
+    } else if(command.indexOf("cd sys") == 0 || command == "cd /" || command == "cd ~"){
+        currentDir = "sys";
+        writeResponse("Changed directory to <span class='highlight'>sys</span>");
         writePrompt();
     } else if(command.indexOf("cd ") == 0){
         writeResponse("<span class='alert'>Access denied</span>");
         writePrompt();
-    } else if(command.indexOf("ls") == 0 && currentDir == "encom_root"){
+    } else if(command.indexOf("ls") == 0 && currentDir == "sys"){
         writeLs();
         writePrompt();
 

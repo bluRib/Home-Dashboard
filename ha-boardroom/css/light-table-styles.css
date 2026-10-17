@@ -27,24 +27,42 @@ ul {
 
 .container-border{
 
+    /* Border box so the two frame borders stay inside #light-table. Without
+       it the outer frame is 4px wider than the box being scaled and its edge
+       is clipped against the side of the screen. */
+    box-sizing: border-box;
     border: 2px solid #6fc0ba;
     border-radius: 5px;
     box-shadow: 0 0 2px #005b8e, inset 0 0 2px #005b8e;
 }
+/* The launcher is one box that $.fn.fitLauncher scales to the viewport, so
+   the frame is sized here and everything inside is positioned against it.
+   1140 x 641 is 16:9, which is what makes the fit exact with no letterbox. */
+#light-table {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 1140px;
+    height: 641px;
+    transform-origin: 0 0;
+}
+
 #lt-container-outside{
     position:absolute;
+    left: 0;
+    top: 0;
     width: 1140px;
-    height: 610px;
+    height: 641px;
     z-index: 10;
 
 }
 
 #lt-container-inside {
     position:absolute;
-    left: 40px;
-    top:20px;
+    left: 20px;
+    top: 5px;
     width: 1100px;
-    height: 600px;
+    height: 631px;
     z-index: 20;
 }
 
@@ -108,7 +126,7 @@ ul {
 
 #lt-header-bottom-left {
     position: absolute;
-    top: 550px;
+    top: 581px;
 }
 
 #lt-header-bottom-left .lt-header-left-section{
@@ -150,7 +168,7 @@ ul {
 
 #lt-header-bottom-right {
     position: absolute;
-    top: 550px;
+    top: 581px;
 }
 
 .lt-header-animator-left {
@@ -218,7 +236,7 @@ ul {
 }
 
 #lt-readme .content {
-    height: 300px;
+    height: 330px;
     overflow: hidden;
 }
 #lt-mobile-readme {
@@ -236,8 +254,20 @@ ul {
 
 #lt-bandwidth {
     position: absolute;
-    top: 390px;
+    top: 420px;
 }
+
+/* HOUSE .SCAN canvas. The backing store is set in LightTable.js; this is only
+   its box on the page, which fitScreen scales with everything else. */
+#lt-webglCanvas {
+    display: block;
+    width: 100%;
+    height: 105px;
+}
+
+/* Link status in the scan panel header. Green up, orange down (rule 10). */
+#datalink-status.link-online  { color: #4dffb0; }
+#datalink-status.link-offline { color: #ff8a1f; }
 
 #lt-globalization {
     position: absolute;
@@ -246,7 +276,7 @@ ul {
 }
 
 #lt-globalization .content {
-    height: 260px;
+    height: 290px;
     overflow: hidden;
 }
 
@@ -390,7 +420,7 @@ ul {
 #lt-keyboard {
     margin-left: 8px;
     position: absolute;
-    top: 355px;
+    top: 385px;
     width: 470px;
 }
 
@@ -439,12 +469,12 @@ ul {
 #lt-far-right-column {
     position: absolute;
     left: 1000px;
-    height: 600px;
+    height: 631px;
     width: 80px;
 
 }
 
-#lt-encom-logo {
+#lt-sys-logo {
     font-family: 'Terminator';
     position: absolute;
     font-size: 8pt;
@@ -461,7 +491,7 @@ ul {
 #lt-thumbprint {
     position: absolute;
     left: 15px;
-    top: 500px;
+    top: 531px;
     z-index: 200;
     -webkit-animation: pulsate 5s;
     -webkit-animation-iteration-count: 100; 
@@ -479,7 +509,6 @@ ul {
     0% {opacity: 0.3;}
     50% {opacity: 1.0;}
     100% {opacity: 0.3;}
-}
 }
 
 
@@ -513,7 +542,7 @@ ul {
     #lt-container-outside{
         top: 0;
         width: 350px;
-        height: 610px;
+        height: 641px;
         z-index: 10;
         box-shadow: none;
         border: none;
@@ -603,20 +632,21 @@ ul {
         line-height: 16pt;
     }
 
+    #light-table {
+        width: 1540px;
+        height: 866px;
+    }
+
     #lt-container-outside{
         position:absolute;
-        /* width: 1140px; */
-        /* height: 610px; */
         width: 1540px;
-        height: 760px;
+        height: 866px;
 
     }
 
     #lt-container-inside {
-        /* width: 1100px; */
-        /* height: 600px; */
         width: 1500px;
-        height: 750px;
+        height: 856px;
     }
 
     #lt-left-column{
@@ -642,7 +672,7 @@ ul {
 
     #lt-header-bottom-left {
         position: absolute;
-        top: 700px;
+        top: 806px;
     }
 
     #lt-bottom-boxes-1 {
@@ -666,7 +696,7 @@ ul {
 
     #lt-header-bottom-right {
         position: absolute;
-        top: 700px;
+        top: 806px;
     }
 
     .lt-header-animator-left {
@@ -678,7 +708,7 @@ ul {
     }
 
     #lt-readme .content {
-        height: 380px;
+        height: 470px;
     }
     #lt-readme .content p{
         padding-left: 15px;
@@ -687,7 +717,7 @@ ul {
     }
 
     #lt-bandwidth {
-        top: 490px;
+        top: 585px;
         width: 570px;
     }
 
@@ -696,7 +726,7 @@ ul {
     }
 
     #lt-globalization .content {
-        height: 360px;
+        height: 420px;
     }
 
     #lt-command-line {
@@ -743,13 +773,13 @@ ul {
     }
 
 
-    #lt-launch-github {
+    #lt-launch-house {
         margin-top: 60px;
     }
 
     #lt-keyboard {
         margin-left: 60px;
-        top: 455px;
+        top: 535px;
         width: 600px;
     }
 
@@ -777,21 +807,22 @@ ul {
     #lt-far-right-column {
         position: absolute;
         left: 1400px;
-        height: 700px;
+        height: 866px;
         width: 80px;
 
     }
 
-    #lt-encom-logo {
+    #lt-sys-logo {
         top: 35px;
     }
 
     #lt-thumbprint {
-        top: 630px;
+        top: 736px;
     }
 
     #lt-bandwidth canvas {
         width: 100%;
+        height: 155px;
 
     }
 
