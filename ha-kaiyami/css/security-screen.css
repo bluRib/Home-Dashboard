@@ -1,0 +1,403 @@
+/* Security screen: full viewport grid, same approach as House and Climate.
+ * Panel chrome (.hs-head, .hs-body) is shared with house-screen.css.
+ */
+
+#security-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 10px;
+    gap: 10px;
+    background: #000;
+
+    grid-template-columns: minmax(210px, 17vw) minmax(0, 1fr) minmax(220px, 19vw);
+    grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr) minmax(104px, 15vh);
+    grid-template-areas:
+        "entry house  camera"
+        "entry house  alarm"
+        "strip strip  strip";
+
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    color: #9fe8e8;
+    font-size: clamp(11px, 0.75vw, 16px);
+}
+
+#security-screen * { box-sizing: border-box; }
+
+/* With no lock entities the panel is display:none, so its row would collapse
+   and leave a gap. The alarm takes the space instead. */
+#security-screen.has-locks {
+    grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 0.6fr) minmax(104px, 15vh);
+    grid-template-areas:
+        "entry house  camera"
+        "entry house  alarm"
+        "entry house  locks"
+        "strip strip  strip";
+}
+
+.sc-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#sc-entry-panel { grid-area: entry; }
+#sc-house       { grid-area: house; }
+#sc-camera      { grid-area: camera; }
+#sc-activity    { grid-area: alarm; }
+#sc-alarm-panel { grid-area: alarm; }
+#sc-locks       { grid-area: locks; }
+#sc-strip       { grid-area: strip; }
+
+/* The activity chart shares the middle column under the house. */
+#security-screen {
+    grid-template-areas:
+        "entry house    camera"
+        "entry activity alarm"
+        "strip strip    strip";
+}
+#sc-activity { grid-area: activity; }
+
+.sc-wait { opacity: .45; }
+
+/* ---- the leak banner, above every screen ---- */
+
+#leak-banner {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 14px;
+    background: rgba(255, 138, 31, .16);
+    border-bottom: 2px solid #ff8a1f;
+    color: #ffd7ae;
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    font-size: clamp(11px, 0.8vw, 16px);
+    letter-spacing: .08em;
+    animation: leakpulse 1.4s ease-in-out infinite;
+}
+
+#leak-banner b {
+    color: #ff8a1f;
+    font-weight: normal;
+    letter-spacing: .2em;
+    white-space: nowrap;
+}
+
+@keyframes leakpulse {
+    0%, 100% { background: rgba(255, 138, 31, .10); }
+    50%      { background: rgba(255, 138, 31, .26); }
+}
+
+/* ---- triggered alarm: the whole screen edge flashes ---- */
+
+#security-screen.triggered::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 4px solid #ff8a1f;
+    animation: trigflash .7s steps(2, start) infinite;
+    z-index: 900;
+}
+
+@keyframes trigflash { to { border-color: rgba(255, 138, 31, .15); } }
+
+/* ---- entry points ---- */
+
+#sc-entry-panel .hs-body { overflow-y: auto; }
+
+.sc-group { margin-bottom: 7px; }
+
+.sc-group-head {
+    color: #00eeee;
+    font-size: clamp(9px, 0.56vw, 12px);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: .85;
+    border-bottom: 1px solid rgba(0, 238, 238, .25);
+    margin-bottom: 2px;
+}
+
+.sc-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 7px;
+    align-items: baseline;
+    padding: 1px 0;
+    font-size: clamp(9px, 0.58vw, 12px);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.sc-row:hover { background: rgba(0, 238, 238, .08); }
+.sc-row-name { overflow: hidden; text-overflow: ellipsis; }
+.sc-row-state { color: #fff; }
+.sc-row-age { opacity: .5; font-size: .9em; }
+.sc-row.bad .sc-row-state { color: #ff8a1f; }
+.sc-row.bad .sc-row-name { color: #ffd7ae; }
+
+/* ---- the house ---- */
+
+#sc-house .hs-body {
+    border: 1px solid rgba(0, 238, 238, .22);
+    position: relative;
+}
+
+#sc-house-canvas { display: block; width: 100%; height: 100%; }
+
+#sc-house-lead {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+#sc-house-tags { position: absolute; inset: 0; pointer-events: none; }
+#sc-house-tags .house-tag { pointer-events: auto; }
+
+#sc-detail {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 20;
+    display: none;
+    flex-direction: column;
+    gap: 1px;
+    padding: 6px 9px;
+    background: rgba(0, 0, 0, .82);
+    border: 1px solid #00eeee;
+    font-size: clamp(9px, 0.58vw, 12px);
+    max-width: 55%;
+}
+
+#sc-detail.alert { border-color: #ff8a1f; }
+#sc-detail b { color: #fff; font-weight: normal; display: block; }
+#sc-detail span { display: block; opacity: .72; }
+
+#sc-detail button {
+    margin-top: 4px;
+    align-self: flex-start;
+    background: #000;
+    border: 1px solid rgba(0, 238, 238, .45);
+    color: #9fe8e8;
+    font-family: inherit;
+    font-size: .9em;
+    padding: 1px 8px;
+    cursor: pointer;
+}
+
+/* ---- camera ---- */
+
+#sc-camera .hs-body {
+    border: 1px solid rgba(0, 238, 238, .18);
+    display: flex;
+}
+
+#sc-camera-body { flex: 1 1 auto; min-height: 0; display: flex; }
+#sc-camera-body img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---- activity chart ---- */
+
+#sc-activity .hs-body {
+    border: 1px solid rgba(0, 238, 238, .18);
+    position: relative;
+}
+
+#sc-activity-canvas { display: block; width: 100%; height: 100%; }
+
+#sc-activity-legend {
+    position: absolute;
+    right: 6px;
+    top: 3px;
+    display: flex;
+    gap: 10px;
+    font-size: clamp(8px, 0.52vw, 11px);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+#sc-activity-legend span { display: flex; align-items: center; opacity: .8; }
+#sc-activity-legend span::before {
+    content: ""; width: 8px; height: 8px; margin-right: 4px;
+}
+#sc-activity-legend .doors::before  { background: #3fe0ff; }
+#sc-activity-legend .motion::before { background: #4dffb0; }
+
+/* ---- alarm ---- */
+
+#sc-alarm-panel .hs-head em {
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#sc-alarm-panel .hs-head em.alert { color: #ff8a1f; }
+#sc-alarm-panel .hs-body { overflow-y: auto; }
+
+.sc-alarm-state {
+    color: #fff;
+    font-size: clamp(15px, 1.35vw, 28px);
+    letter-spacing: .06em;
+    line-height: 1.1;
+}
+
+.sc-alarm-state.armed { color: #3fe0ff; }
+.sc-alarm-state.alert { color: #ff8a1f; }
+
+.sc-alarm-note {
+    font-size: clamp(9px, 0.55vw, 11px);
+    opacity: .62;
+    line-height: 1.35;
+    margin-bottom: 4px;
+}
+
+.sc-alarm-note.alert { color: #ff8a1f; opacity: 1; }
+
+.sc-alarm-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+}
+
+.sc-alarm-buttons button {
+    padding: 3px 2px;
+    background: #000;
+    border: 1px solid rgba(0, 238, 238, .4);
+    color: #9fe8e8;
+    font-family: inherit;
+    font-size: clamp(8px, 0.52vw, 11px);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sc-alarm-buttons button:hover { border-color: #00eeee; color: #fff; }
+.sc-alarm-buttons button.wide { grid-column: 1 / -1; border-color: rgba(255, 138, 31, .5); }
+.sc-alarm-buttons button.wide:hover { background: #ff8a1f; border-color: #ff8a1f; color: #000; }
+.sc-alarm-buttons button[disabled] { opacity: .35; cursor: default; }
+
+/* ---- keypad, only when Home Assistant asks for a code ---- */
+
+.sc-keypad { margin-top: 6px; border-top: 1px solid rgba(0, 238, 238, .25); padding-top: 4px; }
+
+.sc-keypad-head {
+    font-size: clamp(8px, 0.5vw, 10px);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .7;
+}
+
+.sc-keypad-dots {
+    color: #ffcc00;
+    letter-spacing: .3em;
+    font-size: clamp(11px, 0.8vw, 15px);
+    min-height: 1.2em;
+}
+
+.sc-keypad-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+
+.sc-keypad-keys button {
+    padding: 3px 0;
+    background: #000;
+    border: 1px solid rgba(0, 238, 238, .3);
+    color: #9fe8e8;
+    font-family: inherit;
+    font-size: clamp(9px, 0.6vw, 12px);
+    cursor: pointer;
+}
+
+.sc-keypad-keys button:hover { background: #00eeee; color: #000; }
+
+/* ---- locks ---- */
+
+.sc-lock {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px;
+    align-items: center;
+    font-size: clamp(9px, 0.58vw, 12px);
+    padding: 2px 0;
+}
+
+.sc-lock b { color: #3fe0ff; font-weight: normal; }
+.sc-lock.bad b { color: #ff8a1f; }
+
+.sc-lock button {
+    background: #000;
+    border: 1px solid rgba(0, 238, 238, .4);
+    color: #9fe8e8;
+    font-family: inherit;
+    font-size: .85em;
+    padding: 1px 6px;
+    cursor: pointer;
+}
+
+/* ---- bottom strip: log and clock ---- */
+
+#sc-strip .hs-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(8px, 1vw, 20px);
+    min-height: 0;
+}
+
+#sc-log { overflow-y: auto; min-height: 0; }
+
+.sc-log-row {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    gap: 10px;
+    font-size: clamp(9px, 0.55vw, 12px);
+    padding: 1px 0;
+    border-bottom: 1px solid rgba(0, 238, 238, .08);
+    white-space: nowrap;
+}
+
+.sc-log-row .t { opacity: .55; }
+.sc-log-row .w { color: #00eeee; opacity: .8; }
+.sc-log-row .n { overflow: hidden; text-overflow: ellipsis; }
+.sc-log-row .k { text-transform: uppercase; letter-spacing: .08em; opacity: .7; }
+.sc-log-row.alert .k, .sc-log-row.alert .n { color: #ff8a1f; }
+.sc-log-row.motion .k { color: #4dffb0; }
+
+.sc-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+    padding-left: clamp(8px, 0.9vw, 18px);
+    border-left: 1px solid rgba(0, 238, 238, .22);
+}
+
+#sc-time {
+    color: #fff;
+    font-size: clamp(18px, 1.9vw, 38px);
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+#sc-time small { font-size: .45em; letter-spacing: .12em; margin-left: .35em; color: #9fe8e8; }
+
+#sc-date {
+    font-size: clamp(9px, 0.6vw, 13px);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .72;
+    white-space: nowrap;
+}

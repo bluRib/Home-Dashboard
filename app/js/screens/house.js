@@ -130,6 +130,11 @@ export class HouseScreen {
     // instead of from lights and alerts. The Climate screen drives it; the
     // House screen never sets it and behaves exactly as before.
     this.tints = null;
+    // Security markers: doors, leaks and cameras pinned to the model. Only
+    // the Security screen sets these; every other screen leaves them empty
+    // and nothing is added to the scene.
+    this.markers = [];
+    this._markerGroup = null;
     this._idleAt = 0;
     this._prevLevel = 0;
     this._loading = null;
@@ -228,6 +233,7 @@ export class HouseScreen {
     this.cam.lookAt(this.ctr);
 
     this._updateEffects(t);
+    this._updateMarkerLook(t);
     this.renderer.render(this.scene, this.cam);
     this._updateTags();
   }
@@ -311,6 +317,11 @@ export class HouseScreen {
     this.tx = c.x; this.tz = c.z;
 
     this.ready = true;
+    if (this._pendingMarkers) {
+      const pending = this._pendingMarkers;
+      this._pendingMarkers = null;
+      this.setMarkers(pending);
+    }
     this.resize();
     this.r = this.tr;
     this.setLevel(0);
@@ -711,6 +722,20 @@ export class HouseScreen {
     }
   }
 
+  // Marker colour and the blink for anything open or wet. One sine shared by
+  // every blinking marker so they pulse together rather than drifting.
+  _updateMarkerLook(t) {
+    if (!this.markers.length) return;
+    const pulse = 0.5 + 0.5 * Math.sin(t / 260);
+    const state = this._markerState || {};
+    for (const m of this.markers) {
+      const s = state[m.spec.id];
+      const base = m.spec.kind === 'camera' ? 0.16 : m.spec.kind === 'leak' ? 0.8 : 0.55;
+      m.mat.color.setHex(s && s.color !== undefined ? s.color : C.line);
+      m.mat.opacity = s && s.blink ? 0.3 + 0.7 * pulse : base;
+    }
+  }
+
   // A level 0 room sitting under the level 1 footprint is hidden while both
   // floors are shown, otherwise its tag floats through the upstairs slab.
   _coveredByUpstairs(s) {
@@ -787,6 +812,61 @@ export class HouseScreen {
   // to the lights and alerts colouring.
   setTints(tints) {
     this.tints = tints && Object.keys(tints).length ? tints : null;
+  }
+
+  // markers: [{ id, kind: 'door'|'leak'|'camera', x, z, level, heading }]
+  // Rebuilt only when the set of ids changes. Colour and blink are per frame
+  // and go through updateMarkers, so a door opening does not rebuild meshes.
+  setMarkers(markers) {
+    if (!this.ready) {
+      this._pendingMarkers = markers;
+      return;
+    }
+    const sig = markers.map((m) => m.id).join('|');
+    if (sig === this._markerSig) return;
+    this._markerSig = sig;
+
+    if (this._markerGroup) this.scene.remove(this._markerGroup);
+    this._markerGroup = new THREE.Group();
+    this.scene.add(this._markerGroup);
+    this.markers = [];
+
+    for (const m of markers) {
+      const y = (m.level ? E1 : 0) + 6;
+      let mesh;
+      if (m.kind === 'door') {
+        // A slab standing in the doorway, so it reads as the door itself.
+        mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(m.axis === 'z' ? 10 : 92, 198, m.axis === 'z' ? 92 : 10),
+          new THREE.MeshBasicMaterial({ color: C.line, transparent: true, opacity: 0.55 }));
+        mesh.position.set(m.x, y + 99, m.z);
+      } else if (m.kind === 'leak') {
+        // A drop, point down.
+        mesh = new THREE.Mesh(
+          new THREE.ConeGeometry(16, 34, 10),
+          new THREE.MeshBasicMaterial({ color: C.line, transparent: true, opacity: 0.8 }));
+        mesh.rotation.x = Math.PI;
+        mesh.position.set(m.x, y + 48, m.z);
+      } else {
+        // Camera: a cone lying along its heading, which reads as a view cone.
+        mesh = new THREE.Mesh(
+          new THREE.ConeGeometry(52, 150, 4, 1, true),
+          new THREE.MeshBasicMaterial({
+            color: C.line, transparent: true, opacity: 0.16,
+            side: THREE.DoubleSide, depthWrite: false }));
+        mesh.rotation.x = Math.PI / 2;
+        mesh.rotation.z = -(m.heading || 0) * Math.PI / 180;
+        mesh.position.set(m.x, y + 120, m.z);
+      }
+      mesh.userData.marker = m;
+      this._markerGroup.add(mesh);
+      this.markers.push({ spec: m, mesh, mat: mesh.material });
+    }
+  }
+
+  // state: { id: { color, blink } }. Called every render, cheap.
+  updateMarkers(state) {
+    this._markerState = state || {};
   }
 
   setView(preset) {
@@ -913,6 +993,16 @@ export class HouseScreen {
       const lvl = slot.room.level;
       return (lvl === 0 && this.level !== 2) || (lvl === 1 && this.level !== 1);
     });
+
+    // Markers first: a door slab sits inside a room plane, so without this
+    // every marker click would just select the room behind it.
+    if (this._markerGroup) {
+      const onMarker = this.raycaster.intersectObjects(this._markerGroup.children, false);
+      if (onMarker.length && this.options.onMarkerPick) {
+        this.options.onMarkerPick(onMarker[0].object.userData.marker);
+        return;
+      }
+    }
 
     const hits = this.raycaster.intersectObjects(candidates, false);
     if (hits.length) this.focus(hits[0].object.userData.slot);

@@ -4756,7 +4756,7 @@
         function inspectPrefiltersOrTransports(structure, options, originalOptions, jqXHR) {
           var inspected = {}, seekingTransport = structure === transports;
           function inspect(dataType) {
-            var selected2;
+            var selected3;
             inspected[dataType] = true;
             jQuery.each(structure[dataType] || [], function(_, prefilterOrFactory) {
               var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
@@ -4765,10 +4765,10 @@
                 inspect(dataTypeOrTransport);
                 return false;
               } else if (seekingTransport) {
-                return !(selected2 = dataTypeOrTransport);
+                return !(selected3 = dataTypeOrTransport);
               }
             });
-            return selected2;
+            return selected3;
           }
           return inspect(options.dataTypes[0]) || !inspected["*"] && inspect("*");
         }
@@ -29914,11 +29914,11 @@
       };
       THREE.SceneUtils = {
         createMultiMaterialObject: function(geometry, materials) {
-          var group = new THREE.Object3D();
+          var group2 = new THREE.Object3D();
           for (var i = 0, l = materials.length; i < l; i++) {
-            group.add(new THREE.Mesh(geometry, materials[i]));
+            group2.add(new THREE.Mesh(geometry, materials[i]));
           }
-          return group;
+          return group2;
         },
         detach: function(child, parent, scene) {
           child.applyMatrix(parent.matrixWorld);
@@ -35141,6 +35141,10 @@
         { key: "hall_bath", name: "Hall Bath", level: 0, x: [1e3, 1275], z: [-430, -235] },
         { key: "apis_room", name: "Api's Room", level: 0, x: [950, 1275], z: [-200, 150] },
         { key: "garage", name: "Garage", level: 0, x: [10, 665], z: [-575, -5] },
+        // Measured by Jovan from the OBJ walls. Carved out of the hall, so it sits
+        // before hall0 and wins the overlap. Its door is on the z -371 side, into
+        // the small entry hall that leads to Api's Room and the Hall Bath.
+        { key: "server_room", name: "Server Room", level: 0, x: [851, 970], z: [-438, -371] },
         { key: "hall0", name: "Hall", level: 0, x: [720, 950], z: [-620, -10] },
         // Labeled in models/labels.json but absent from the BUILD.md table.
         // Estimated so these spaces are not dead on the dashboard. Confirm before
@@ -35202,7 +35206,16 @@
           "api s bathroom",
           "apis bathroom"
         ],
-        apis_room: ["api s room", "apis room", "api s bedroom", "apis bedroom"],
+        apis_room: [
+          "api s room",
+          "apis room",
+          "api s bedroom",
+          "apis bedroom",
+          "oscar s room",
+          "oscars room",
+          "oscar s bedroom",
+          "oscars bedroom"
+        ],
         garage: ["garage"],
         hall0: ["downstairs hall", "main hall", "hallway", "hall"],
         patio: ["patio", "deck", "back porch", "backyard", "back yard"],
@@ -35228,6 +35241,9 @@
           "bedroom 3",
           "rear bedroom"
         ],
+        server_room: ["server room", "server closet"],
+        // Home Assistant calls Api's area "Oscar's Bedroom". Same person, same
+        // room, so both spellings resolve here.
         room0: []
         // the label is literally "Room", too generic to match on
       };
@@ -35482,7 +35498,7 @@
         return null;
       }
       var webglTest;
-      var active4 = false;
+      var active5 = false;
       var initialized = false;
       var currentWidth = 0;
       var currentHeight = 0;
@@ -35536,10 +35552,10 @@
         if (typeof cb == "function") {
           setTimeout(cb, 500);
         }
-        active4 = true;
+        active5 = true;
       };
       LightTable2.hide = function(cb) {
-        active4 = false;
+        active5 = false;
         $2("#lt-mobile-readme").attr("style", "");
         $2("#k-32").attr("style", "");
         $2(".lt-header-animator-right").attr("style", "");
@@ -35559,7 +35575,7 @@
         }
       };
       LightTable2.animate = function() {
-        if (active4 && initialized) {
+        if (active5 && initialized) {
           webglTest.tick();
         }
       };
@@ -35945,7 +35961,7 @@
         });
         return out;
       }
-      function nameOf(state2) {
+      function nameOf2(state2) {
         return state2.attributes && state2.attributes.friendly_name || state2.entity_id;
       }
       function haReady() {
@@ -35999,7 +36015,7 @@
         if (alerts.length) {
           var names = [];
           for (i = 0; i < alerts.length && i < 3; i++) {
-            names.push(nameOf(alerts[i]));
+            names.push(nameOf2(alerts[i]));
           }
           writeResponse("<span class='alert'>" + alerts.length + " need" + (alerts.length === 1 ? "s" : "") + " you:</span> " + names.join(", ") + (alerts.length > 3 ? ", and " + (alerts.length - 3) + " more" : ""));
         } else {
@@ -36051,7 +36067,7 @@
         var ids = [], names = [], i;
         for (i = 0; i < panels.length; i++) {
           ids.push(panels[i].entity_id);
-          names.push(nameOf(panels[i]));
+          names.push(nameOf2(panels[i]));
         }
         writeResponse("Arming away: " + names.join(", ") + "...");
         return afterService(
@@ -49116,15 +49132,15 @@
           svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
           svg.setAttribute("id", "pleaserotate-graphic");
           svg.setAttribute("viewBox", "0 0 250 250");
-          var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-          group.setAttribute("id", "pleaserotate-graphic-path");
+          var group2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          group2.setAttribute("id", "pleaserotate-graphic-path");
           if (options.forcePortrait) {
-            group.setAttribute("transform", "rotate(-90 125 125)");
+            group2.setAttribute("transform", "rotate(-90 125 125)");
           }
           var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", "M190.5,221.3c0,8.3-6.8,15-15,15H80.2c-8.3,0-15-6.8-15-15V28.7c0-8.3,6.8-15,15-15h95.3c8.3,0,15,6.8,15,15V221.3zM74.4,33.5l-0.1,139.2c0,8.3,0,17.9,0,21.5c0,3.6,0,6.9,0,7.3c0,0.5,0.2,0.8,0.4,0.8s7.2,0,15.4,0h75.6c8.3,0,15.1,0,15.2,0s0.2-6.8,0.2-15V33.5c0-2.6-1-5-2.6-6.5c-1.3-1.3-3-2.1-4.9-2.1H81.9c-2.7,0-5,1.6-6.3,4C74.9,30.2,74.4,31.8,74.4,33.5zM127.7,207c-5.4,0-9.8,5.1-9.8,11.3s4.4,11.3,9.8,11.3s9.8-5.1,9.8-11.3S133.2,207,127.7,207z");
-          svg.appendChild(group);
-          group.appendChild(path);
+          svg.appendChild(group2);
+          group2.appendChild(path);
           return svg;
         }
         function setVisibility(visible) {
@@ -52054,6 +52070,1153 @@
     }
   });
 
+  // src/SecurityFeeds.js
+  function SecurityFeeds(ha2, areas3, onUpdate) {
+    this.ha = ha2;
+    this.areas = areas3;
+    this.onUpdate = onUpdate || function() {
+    };
+    this.log = [];
+    this.activity = null;
+    this.lastEvent = null;
+    this._timers = [];
+  }
+  function klass(state2) {
+    return state2.attributes && state2.attributes.device_class || "";
+  }
+  function nameOf(state2) {
+    return (state2.attributes && state2.attributes.friendly_name || state2.entity_id).trim();
+  }
+  function heldFor(state2) {
+    var since2 = Date.parse(state2.last_changed || state2.last_updated);
+    return isFinite(since2) ? Date.now() - since2 : null;
+  }
+  function roomName(key) {
+    for (var i = 0; i < ROOMS.length; i++) {
+      if (ROOMS[i].key === key) {
+        return ROOMS[i].name;
+      }
+    }
+    return "";
+  }
+  function roomCentre(key) {
+    for (var i = 0; i < ROOMS.length; i++) {
+      if (ROOMS[i].key === key) {
+        return center(ROOMS[i]);
+      }
+    }
+    return null;
+  }
+  var EXCLUDE, INTERIOR_DOORS_OFF_MAP, DOOR_SPOTS, CAMERA_SPOTS, DOORBELL_EVENTS, HISTORY_EVERY2, MAX_LOG;
+  var init_SecurityFeeds = __esm({
+    "src/SecurityFeeds.js"() {
+      init_rooms();
+      EXCLUDE = [
+        "binary_sensor.garage_deep_freezer_door_intrusion",
+        "camera.a1_03919d460402690_camera"
+      ];
+      INTERIOR_DOORS_OFF_MAP = ["binary_sensor.loft_bathroom_door_intrusion"];
+      DOOR_SPOTS = {
+        "binary_sensor.hallway_front_door_intrusion": { x: 835, z: -10, level: 0, label: "Front Door", axis: "x" },
+        "binary_sensor.hallway_garage_door_intrusion": { x: 695, z: -300, level: 0, label: "Hall to Garage", axis: "z" },
+        "binary_sensor.living_room_back_door_intrusion": { x: 1010, z: -1400, level: 0, label: "Back Door", axis: "x" },
+        "binary_sensor.garage_garage_door_intrusion": { x: 340, z: -8, level: 0, label: "Garage Door", axis: "x" }
+      };
+      CAMERA_SPOTS = {
+        "camera.reolink_doorbell": { x: 815, z: 120, level: 0, heading: 0, label: "Doorbell" },
+        "camera.front_yard_cam": { x: 620, z: 150, level: 0, heading: 20, label: "Front Yard" },
+        "camera.garage_cam": { x: 340, z: 40, level: 0, heading: 0, label: "Garage" },
+        "camera.back_door_cam": { x: 1010, z: -1960, level: 0, heading: 180, label: "Back Door" }
+      };
+      DOORBELL_EVENTS = [
+        "binary_sensor.front_door_person",
+        "binary_sensor.front_door_vehicle",
+        "binary_sensor.front_door_pet",
+        "binary_sensor.front_door_motion",
+        "binary_sensor.reolink_doorbell_motion",
+        "binary_sensor.reolink_doorbell_person_occupancy",
+        "binary_sensor.reolink_doorbell_all_occupancy"
+      ];
+      HISTORY_EVERY2 = 10 * 60 * 1e3;
+      MAX_LOG = 200;
+      SecurityFeeds.prototype.start = function() {
+        var self = this;
+        this.refreshActivity();
+        this._timers.push(setInterval(function() {
+          self.refreshActivity();
+        }, HISTORY_EVERY2));
+      };
+      SecurityFeeds.prototype.stop = function() {
+        this._timers.forEach(clearInterval);
+        this._timers = [];
+      };
+      SecurityFeeds.prototype._pick = function(test) {
+        var out = [];
+        if (!this.ha || !this.ha.states) {
+          return out;
+        }
+        this.ha.states.forEach(function(state2, id) {
+          if (EXCLUDE.indexOf(id) >= 0) {
+            return;
+          }
+          if (test(state2, id)) {
+            out.push(state2);
+          }
+        });
+        return out;
+      };
+      SecurityFeeds.prototype._place = function(state2) {
+        var id = state2.entity_id;
+        var room2 = this.areas.roomOf(id);
+        var listOnly = this.areas.listOnly(id);
+        return {
+          id,
+          name: nameOf(state2),
+          state: state2.state,
+          deviceClass: klass(state2),
+          room: room2,
+          area: this.areas.areaName(id) || (listOnly || ""),
+          listOnly: !!listOnly,
+          held: heldFor(state2)
+        };
+      };
+      SecurityFeeds.prototype.doors = function() {
+        var self = this;
+        return this._pick(function(s, id) {
+          return id.indexOf("binary_sensor.") === 0 && (klass(s) === "door" || klass(s) === "garage_door" || klass(s) === "window" || klass(s) === "opening") && INTERIOR_DOORS_OFF_MAP.indexOf(id) < 0;
+        }).map(function(s) {
+          var item2 = self._place(s);
+          item2.open = s.state === "on";
+          item2.garage = klass(s) === "garage_door";
+          item2.spot = DOOR_SPOTS[s.entity_id] || null;
+          return item2;
+        }).sort(function(a, b) {
+          return (b.open ? 1 : 0) - (a.open ? 1 : 0) || a.name.localeCompare(b.name);
+        });
+      };
+      SecurityFeeds.prototype.leaks = function() {
+        var self = this;
+        return this._pick(function(s, id) {
+          return id.indexOf("binary_sensor.") === 0 && klass(s) === "moisture";
+        }).map(function(s) {
+          var item2 = self._place(s);
+          item2.wet = s.state === "on";
+          return item2;
+        }).sort(function(a, b) {
+          return (b.wet ? 1 : 0) - (a.wet ? 1 : 0) || a.name.localeCompare(b.name);
+        });
+      };
+      SecurityFeeds.prototype.motion = function() {
+        var self = this;
+        return this._pick(function(s, id) {
+          if (id.indexOf("binary_sensor.") !== 0) {
+            return false;
+          }
+          if (klass(s) !== "motion" && klass(s) !== "occupancy") {
+            return false;
+          }
+          if (DOORBELL_EVENTS.indexOf(id) >= 0) {
+            return false;
+          }
+          return !/_cam_|driveway|front_yard/.test(id);
+        }).map(function(s) {
+          var item2 = self._place(s);
+          item2.active = s.state === "on";
+          return item2;
+        }).sort(function(a, b) {
+          return (b.active ? 1 : 0) - (a.active ? 1 : 0) || a.name.localeCompare(b.name);
+        });
+      };
+      SecurityFeeds.prototype.cameras = function() {
+        var self = this;
+        return this._pick(function(s, id) {
+          return id.indexOf("camera.") === 0 && id !== "camera.front_door_fluent";
+        }).map(function(s) {
+          var item2 = self._place(s);
+          item2.spot = CAMERA_SPOTS[s.entity_id] || null;
+          item2.picture = s.attributes && s.attributes.entity_picture || null;
+          return item2;
+        });
+      };
+      SecurityFeeds.prototype.alarm = function() {
+        var s = this.ha && this.ha.states ? this.ha.states.get("alarm_control_panel.alarmo") : null;
+        if (!s || s.state === "unavailable" || s.state === "unknown") {
+          return { configured: false, state: s ? s.state : "missing" };
+        }
+        var a = s.attributes || {};
+        var f = a.supported_features || 0;
+        var modes = [];
+        if (f & 1) {
+          modes.push({ key: "arm_home", label: "Arm Home" });
+        }
+        if (f & 2) {
+          modes.push({ key: "arm_away", label: "Arm Away" });
+        }
+        if (f & 8) {
+          modes.push({ key: "arm_night", label: "Arm Night" });
+        }
+        return {
+          configured: modes.length > 0,
+          state: s.state,
+          modes,
+          codeArmRequired: !!a.code_arm_required,
+          codeFormat: a.code_format || null,
+          openSensors: a.open_sensors || null,
+          held: heldFor(s)
+        };
+      };
+      SecurityFeeds.prototype.locks = function() {
+        var self = this;
+        return this._pick(function(s, id) {
+          return id.indexOf("lock.") === 0;
+        }).map(function(s) {
+          var item2 = self._place(s);
+          item2.locked = s.state === "locked";
+          return item2;
+        });
+      };
+      SecurityFeeds.prototype.setAlarm = function(service, code, done) {
+        var data = {};
+        if (code) {
+          data.code = code;
+        }
+        this.ha.callService(
+          "alarm_control_panel",
+          "alarm_" + service,
+          data,
+          { entity_id: "alarm_control_panel.alarmo" }
+        ).then(function() {
+          done(service.replace("_", " ") + " sent");
+        }).catch(function(e) {
+          done("alarm " + service + " failed: " + e.message, true);
+        });
+      };
+      SecurityFeeds.prototype.setLock = function(entityId, lock, done) {
+        this.ha.callService("lock", lock ? "lock" : "unlock", {}, { entity_id: entityId }).then(function() {
+          done((lock ? "Locked " : "Unlocked ") + entityId);
+        }).catch(function(e) {
+          done("lock failed: " + e.message, true);
+        });
+      };
+      SecurityFeeds.prototype.note = function(m) {
+        var id = m.entityId;
+        if (!id || EXCLUDE.indexOf(id) >= 0) {
+          return false;
+        }
+        var state2 = this.ha.states.get(id);
+        var cls = state2 ? klass(state2) : "";
+        var kind = null;
+        if (cls === "moisture") {
+          kind = m.state === "on" ? "leak" : "dry";
+        } else if (cls === "door" || cls === "garage_door" || cls === "window" || cls === "opening") {
+          if (INTERIOR_DOORS_OFF_MAP.indexOf(id) >= 0) {
+            return false;
+          }
+          kind = m.state === "on" ? "opened" : "closed";
+        } else if (cls === "motion" || cls === "occupancy") {
+          if (m.state !== "on") {
+            return false;
+          }
+          kind = "motion";
+        } else if (id.indexOf("alarm_control_panel.") === 0) {
+          kind = "alarm " + m.state;
+        } else {
+          return false;
+        }
+        var room2 = this.areas.roomOf(id);
+        var where = this.areas.areaName(id) || (room2 ? roomName(room2) : "");
+        this.log.unshift({
+          at: Date.now(),
+          id,
+          name: nameOf(state2 || { entity_id: id, attributes: {} }),
+          where,
+          kind,
+          severity: kind === "leak" ? "alert" : kind === "opened" ? "alert" : kind === "motion" ? "motion" : "normal"
+        });
+        while (this.log.length > MAX_LOG) {
+          this.log.pop();
+        }
+        if (kind === "motion" || kind === "opened" || kind === "leak") {
+          this.lastEvent = { entityId: id, at: Date.now(), room: room2 };
+        }
+        return true;
+      };
+      SecurityFeeds.prototype.refreshActivity = function() {
+        var self = this;
+        var ids = this.doors().map(function(d) {
+          return d.id;
+        }).concat(this.motion().map(function(d) {
+          return d.id;
+        }));
+        if (!ids.length) {
+          return;
+        }
+        var end = Date.now();
+        var start2 = end - 24 * 3600 * 1e3;
+        this.ha.command({
+          type: "history/history_during_period",
+          start_time: new Date(start2).toISOString(),
+          end_time: new Date(end).toISOString(),
+          entity_ids: ids,
+          minimal_response: true,
+          no_attributes: true
+        }).then(function(raw) {
+          var doorsBy = new Array(24), motionBy = new Array(24), i;
+          for (i = 0; i < 24; i++) {
+            doorsBy[i] = 0;
+            motionBy[i] = 0;
+          }
+          var doorIds = {};
+          self.doors().forEach(function(d) {
+            doorIds[d.id] = true;
+          });
+          Object.keys(raw).forEach(function(id) {
+            var rows2 = raw[id] || [];
+            var prev = null;
+            rows2.forEach(function(row) {
+              var v = row.s !== void 0 ? row.s : row.state;
+              var at = row.lu !== void 0 ? row.lu * 1e3 : Date.parse(row.last_updated || row.last_changed);
+              if (!isFinite(at)) {
+                return;
+              }
+              if (v === "on" && prev !== "on") {
+                var bucket = Math.floor((at - start2) / 36e5);
+                if (bucket >= 0 && bucket < 24) {
+                  if (doorIds[id]) {
+                    doorsBy[bucket] += 1;
+                  } else {
+                    motionBy[bucket] += 1;
+                  }
+                }
+              }
+              prev = v;
+            });
+          });
+          self.activity = { start: start2, end, doors: doorsBy, motion: motionBy };
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+    }
+  });
+
+  // src/SecurityView.js
+  var SecurityView_exports = {};
+  __export(SecurityView_exports, {
+    SecurityView: () => SecurityView
+  });
+  function $id3(id) {
+    return document.getElementById(id);
+  }
+  function watchPanels3() {
+    if (observer3 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    observer3 = new ResizeObserver(function() {
+      SecurityView.resizeDebounced();
+    });
+    ["sc-house", "sc-activity", "sc-camera"].forEach(function(id) {
+      var el = $id3(id);
+      if (el) {
+        observer3.observe(el);
+      }
+    });
+  }
+  function say2(text, isError) {
+    var el = $id3("sc-log-line");
+    if (!el) {
+      return;
+    }
+    el.textContent = "muther: " + text;
+    el.className = isError ? "alert" : "";
+    clearTimeout(say2._t);
+    say2._t = setTimeout(function() {
+      el.textContent = "";
+      el.className = "";
+    }, 6e3);
+  }
+  function since(ms) {
+    if (ms === null || ms === void 0) {
+      return "";
+    }
+    var s = Math.round(ms / 1e3);
+    if (s < 60) {
+      return s + " sec";
+    }
+    var m = Math.round(s / 60);
+    if (m < 60) {
+      return m + " min";
+    }
+    var h = Math.floor(m / 60);
+    if (h < 48) {
+      return h + " hr";
+    }
+    return Math.floor(h / 24) + " days";
+  }
+  function placeMarkers() {
+    if (!window.HouseSecurity || !feeds3) {
+      return;
+    }
+    var list = [];
+    feeds3.doors().forEach(function(d) {
+      if (d.spot) {
+        list.push({
+          id: d.id,
+          kind: "door",
+          x: d.spot.x,
+          z: d.spot.z,
+          level: d.spot.level,
+          axis: d.spot.axis,
+          label: d.spot.label
+        });
+      }
+    });
+    feeds3.leaks().forEach(function(l) {
+      var c2 = l.room ? roomCentre(l.room) : null;
+      if (c2) {
+        list.push({
+          id: l.id,
+          kind: "leak",
+          x: c2.x,
+          z: c2.z,
+          level: l.room && c2.y ? 1 : 0,
+          label: l.name
+        });
+      }
+    });
+    feeds3.cameras().forEach(function(cam) {
+      if (cam.spot) {
+        list.push({
+          id: cam.id,
+          kind: "camera",
+          x: cam.spot.x,
+          z: cam.spot.z,
+          level: cam.spot.level,
+          heading: cam.spot.heading,
+          label: cam.spot.label
+        });
+      }
+    });
+    window.HouseSecurity.markers(list);
+  }
+  function markerState() {
+    var out = {};
+    if (!feeds3) {
+      return out;
+    }
+    feeds3.doors().forEach(function(d) {
+      out[d.id] = { color: d.open ? ALERT : CYAN, blink: d.open };
+    });
+    feeds3.leaks().forEach(function(l) {
+      out[l.id] = { color: l.wet ? ALERT : CYAN, blink: l.wet };
+    });
+    feeds3.cameras().forEach(function(c2) {
+      out[c2.id] = { color: CYAN, blink: false };
+    });
+    return out;
+  }
+  function paintRooms() {
+    if (!window.HouseSecurity || !feeds3) {
+      return;
+    }
+    var tints = {};
+    feeds3.leaks().forEach(function(l) {
+      if (l.wet && l.room) {
+        tints[l.room] = { color: ALERT, opacity: 0.42 };
+      }
+    });
+    window.HouseSecurity.tint(tints);
+  }
+  function onMarkerPick(marker) {
+    selected2 = marker ? marker.id : null;
+    dirty3 = true;
+    renderDetail2();
+  }
+  function renderDetail2() {
+    var box = $id3("sc-detail");
+    if (!box) {
+      return;
+    }
+    if (!selected2 || !feeds3) {
+      box.style.display = "none";
+      return;
+    }
+    var all = feeds3.doors().concat(feeds3.leaks(), feeds3.cameras());
+    var item2 = null;
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].id === selected2) {
+        item2 = all[i];
+      }
+    }
+    if (!item2) {
+      box.style.display = "none";
+      return;
+    }
+    var bad = item2.open || item2.wet;
+    box.style.display = "block";
+    box.className = bad ? "alert" : "";
+    box.innerHTML = "<b>" + item2.name + "</b><span>" + (item2.area || "") + "</span><span>" + stateWord(item2) + " for " + since(item2.held) + '</span><button id="sc-detail-close">close</button>';
+  }
+  function stateWord(item2) {
+    if (item2.wet !== void 0) {
+      return item2.wet ? "WET" : "dry";
+    }
+    if (item2.open !== void 0) {
+      return item2.open ? "OPEN" : "closed";
+    }
+    return item2.state;
+  }
+  function group(title, items, word) {
+    if (!items.length) {
+      return "";
+    }
+    var html = '<div class="sc-group"><div class="sc-group-head">' + title + "</div>";
+    items.forEach(function(it) {
+      var bad = it.open || it.wet || it.active;
+      html += '<div class="sc-row' + (bad ? " bad" : "") + '" data-id="' + it.id + '"><span class="sc-row-name">' + it.name + '</span><span class="sc-row-state">' + (bad ? word.on : word.off) + '</span><span class="sc-row-age">' + since(it.held) + "</span></div>";
+    });
+    return html + "</div>";
+  }
+  function renderEntryList() {
+    var box = $id3("sc-entry");
+    if (!box || !feeds3) {
+      return;
+    }
+    var doors = feeds3.doors();
+    var html = "";
+    html += group(
+      "Doors",
+      doors.filter(function(d) {
+        return !d.garage;
+      }),
+      { on: "OPEN", off: "closed" }
+    );
+    html += group(
+      "Garage",
+      doors.filter(function(d) {
+        return d.garage;
+      }),
+      { on: "OPEN", off: "closed" }
+    );
+    html += group("Leaks", feeds3.leaks(), { on: "WET", off: "dry" });
+    html += group("Motion", feeds3.motion(), { on: "ACTIVE", off: "clear" });
+    box.innerHTML = html || '<span class="sc-wait">Waiting</span>';
+  }
+  function renderAlarm() {
+    var box = $id3("sc-alarm");
+    if (!box || !feeds3) {
+      return;
+    }
+    var a = feeds3.alarm();
+    if (!a.configured) {
+      box.innerHTML = '<div class="sc-alarm-state alert">ALARM NOT CONFIGURED</div><div class="sc-alarm-note">Alarmo reports "' + a.state + '". The controls stay disabled until it has usable modes.</div>';
+      $id3("security-screen").classList.remove("triggered");
+      return;
+    }
+    var triggered = a.state === "triggered";
+    $id3("security-screen").classList.toggle("triggered", triggered);
+    var cls = triggered ? "alert" : a.state === "disarmed" ? "" : "armed";
+    var html = '<div class="sc-alarm-state ' + cls + '">' + (STATE_LABEL[a.state] || a.state) + "</div>";
+    html += '<div class="sc-alarm-note">' + since(a.held) + "</div>";
+    if (a.openSensors) {
+      html += '<div class="sc-alarm-note alert">Open: ' + Object.keys(a.openSensors).length + " sensor(s)</div>";
+    }
+    html += '<div class="sc-alarm-buttons">';
+    a.modes.forEach(function(m) {
+      html += '<button data-alarm="' + m.key + '">' + m.label + "</button>";
+    });
+    html += '<button data-alarm="disarm" class="wide">Disarm</button>';
+    html += "</div>";
+    if (keypad.open) {
+      html += '<div class="sc-keypad"><div class="sc-keypad-head">Code for ' + keypad.service.replace("_", " ") + '</div><div class="sc-keypad-dots">' + (keypad.code.replace(/./g, "\u25CF") || "\xB7\xB7\xB7\xB7") + '</div><div class="sc-keypad-keys">';
+      ["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "enter"].forEach(function(k) {
+        html += '<button data-key="' + k + '">' + k + "</button>";
+      });
+      html += "</div></div>";
+    }
+    box.innerHTML = html;
+  }
+  function renderLocks() {
+    var panel = $id3("sc-locks");
+    if (!panel || !feeds3) {
+      return;
+    }
+    var locks = feeds3.locks();
+    panel.style.display = locks.length ? "" : "none";
+    if (!locks.length) {
+      return;
+    }
+    var html = "";
+    locks.forEach(function(l) {
+      html += '<div class="sc-lock' + (l.locked ? "" : " bad") + '"><span>' + l.name + "</span><b>" + (l.locked ? "Locked" : "UNLOCKED") + '</b><button data-lock="' + l.id + '" data-do="lock">Lock</button><button data-lock="' + l.id + '" data-do="unlock">Unlock</button></div>';
+    });
+    $id3("sc-locks-body").innerHTML = html;
+  }
+  function renderCamera() {
+    var box = $id3("sc-camera-body");
+    var head = $id3("sc-camera-name");
+    if (!box || !feeds3) {
+      return;
+    }
+    var cams = feeds3.cameras();
+    if (!cams.length) {
+      box.innerHTML = '<span class="sc-wait">No cameras</span>';
+      return;
+    }
+    var want = null;
+    if (feeds3.lastEvent) {
+      for (var i = 0; i < cams.length; i++) {
+        if (cams[i].room && cams[i].room === feeds3.lastEvent.room) {
+          want = cams[i];
+        }
+      }
+    }
+    if (!want) {
+      want = cams[0];
+    }
+    if (head) {
+      head.textContent = want.name + (feeds3.lastEvent ? "  " + since(Date.now() - feeds3.lastEvent.at) + " ago" : "");
+    }
+    if (lastCamera !== want.id) {
+      lastCamera = want.id;
+      var base = window.HA_CONFIG && window.HA_CONFIG.httpUrl || "";
+      box.innerHTML = want.picture ? '<img src="' + base + want.picture + '" alt="' + want.name + '">' : '<span class="sc-wait">No stream for ' + want.name + "</span>";
+    }
+  }
+  function renderLog() {
+    var box = $id3("sc-log");
+    if (!box || !feeds3) {
+      return;
+    }
+    if (!feeds3.log.length) {
+      box.innerHTML = '<div class="sc-wait">No security events yet</div>';
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < feeds3.log.length && i < 40; i++) {
+      var e = feeds3.log[i];
+      var t = new Date(e.at);
+      var h = t.getHours() % 12 || 12;
+      html += '<div class="sc-log-row ' + e.severity + '"><span class="t">' + h + ":" + pad3(t.getMinutes()) + ":" + pad3(t.getSeconds()) + (t.getHours() < 12 ? "a" : "p") + '</span><span class="w">' + (e.where || "") + '</span><span class="n">' + e.name + '</span><span class="k">' + e.kind + "</span></div>";
+    }
+    box.innerHTML = html;
+  }
+  function drawActivity() {
+    if (!activityCtx || !activityCanvas || !feeds3 || !feeds3.activity) {
+      return;
+    }
+    var w = activityCanvas.clientWidth, h = activityCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = activityCtx;
+    ctx.clearRect(0, 0, w, h);
+    var a = feeds3.activity;
+    var left = 24, right = 4, top = 8, bottom = 14;
+    var pw = w - left - right, ph = h - top - bottom;
+    var maxDoors = 1, maxMotion = 1, i;
+    for (i = 0; i < 24; i++) {
+      maxDoors = Math.max(maxDoors, a.doors[i]);
+      maxMotion = Math.max(maxMotion, a.motion[i]);
+    }
+    ctx.font = "10px Menlo, Consolas, monospace";
+    ctx.strokeStyle = "rgba(0,238,238,.12)";
+    for (i = 0; i <= 2; i++) {
+      var y = Math.floor(top + ph - ph * i / 2) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#3fe0ff";
+    ctx.fillText(String(maxDoors), 2, top + 8);
+    ctx.fillStyle = "#4dffb0";
+    ctx.fillText(String(maxMotion), 2, top + 19);
+    var bw = pw / 24;
+    var half = Math.max(1, (bw - 3) / 2);
+    for (i = 0; i < 24; i++) {
+      var x = left + i * bw;
+      var dh = a.doors[i] / maxDoors * ph;
+      var mh = a.motion[i] / maxMotion * ph;
+      if (mh > 0) {
+        ctx.fillStyle = "rgba(77,255,176,.75)";
+        ctx.fillRect(x + 1 + half, top + ph - mh, half, mh);
+      }
+      if (dh > 0) {
+        ctx.fillStyle = "#3fe0ff";
+        ctx.fillRect(x + 1, top + ph - dh, half, dh);
+      }
+      if (i % 6 === 0) {
+        var hr = new Date(a.start + i * 36e5).getHours() % 12 || 12;
+        ctx.fillStyle = "rgba(0,238,238,.5)";
+        ctx.fillText(String(hr), x, h - 3);
+      }
+    }
+  }
+  function pad3(n) {
+    return String(n).length < 2 ? "0" + n : String(n);
+  }
+  function renderClock3() {
+    var el = $id3("sc-time");
+    if (!el) {
+      return;
+    }
+    var now = /* @__PURE__ */ new Date();
+    var h = now.getHours();
+    el.innerHTML = (h % 12 || 12) + ":" + pad3(now.getMinutes()) + ":" + pad3(now.getSeconds()) + "<small>" + (h < 12 ? "AM" : "PM") + "</small>";
+    var d = $id3("sc-date");
+    if (d) {
+      d.textContent = DAYS3[now.getDay()] + ", " + MONTHS3[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
+    }
+  }
+  function bindControls2() {
+    $id3("security-screen").addEventListener("click", function(e) {
+      var btn = e.target.closest("button");
+      var row = e.target.closest(".sc-row");
+      if (row && !btn) {
+        selected2 = row.getAttribute("data-id");
+        renderDetail2();
+        return;
+      }
+      if (!btn || !feeds3) {
+        return;
+      }
+      if (btn.id === "sc-detail-close") {
+        selected2 = null;
+        renderDetail2();
+        return;
+      }
+      if (btn.hasAttribute("data-alarm")) {
+        var service = btn.getAttribute("data-alarm");
+        var a = feeds3.alarm();
+        if (a.codeFormat && (service === "disarm" || a.codeArmRequired)) {
+          keypad = { open: true, service, code: "" };
+          renderAlarm();
+        } else {
+          feeds3.setAlarm(service, null, say2);
+        }
+        return;
+      }
+      if (btn.hasAttribute("data-key")) {
+        var k = btn.getAttribute("data-key");
+        if (k === "clear") {
+          keypad.code = "";
+        } else if (k === "enter") {
+          var code = keypad.code;
+          var svc = keypad.service;
+          keypad = { open: false, service: null, code: "" };
+          feeds3.setAlarm(svc, code, say2);
+          code = null;
+        } else {
+          keypad.code += k;
+        }
+        renderAlarm();
+        return;
+      }
+      if (btn.hasAttribute("data-lock")) {
+        var id = btn.getAttribute("data-lock");
+        var wantLock = btn.getAttribute("data-do") === "lock";
+        if (!wantLock && !window.confirm("Unlock " + id + "?")) {
+          return;
+        }
+        feeds3.setLock(id, wantLock, say2);
+      }
+    });
+  }
+  var CYAN, ALERT, SecurityView, feeds3, areas, active3, dirty3, lastRender3, resizeTimer3, observer3, built2, selected2, keypad, activityCanvas, activityCtx, lastCamera, STATE_LABEL, DAYS3, MONTHS3;
+  var init_SecurityView = __esm({
+    "src/SecurityView.js"() {
+      init_SecurityFeeds();
+      CYAN = 4186367;
+      ALERT = 16747039;
+      SecurityView = {};
+      feeds3 = null;
+      areas = null;
+      active3 = false;
+      dirty3 = true;
+      lastRender3 = 0;
+      resizeTimer3 = null;
+      observer3 = null;
+      built2 = false;
+      selected2 = null;
+      keypad = { open: false, service: null, code: "" };
+      activityCanvas = null;
+      activityCtx = null;
+      lastCamera = null;
+      SecurityView.init = function(ha2, areasRef) {
+        var root = $id3("security-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active3 = true;
+        areas = areasRef;
+        activityCanvas = $id3("sc-activity-canvas");
+        activityCtx = activityCanvas ? activityCanvas.getContext("2d") : null;
+        if (!feeds3 && ha2) {
+          feeds3 = new SecurityFeeds(ha2, areas, function() {
+            dirty3 = true;
+          });
+          feeds3.start();
+        }
+        if (!built2) {
+          built2 = true;
+          bindControls2();
+        }
+        if (window.HouseSecurity) {
+          window.HouseSecurity.mount(onMarkerPick);
+        }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            SecurityView.resize();
+          });
+        });
+        watchPanels3();
+        dirty3 = true;
+      };
+      SecurityView.show = function() {
+        active3 = true;
+        var root = $id3("security-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+        SecurityView.resize();
+      };
+      SecurityView.hide = function() {
+        active3 = false;
+        $id3("security-screen").style.display = "none";
+        if (window.HouseSecurity) {
+          window.HouseSecurity.unmount();
+        }
+      };
+      SecurityView.message = function(m) {
+        if (feeds3 && feeds3.note(m)) {
+          dirty3 = true;
+        }
+        if (window.HouseSecurity) {
+          window.HouseSecurity.message(m);
+        }
+      };
+      SecurityView.seed = function() {
+        dirty3 = true;
+      };
+      SecurityView.animate = function() {
+        if (!active3) {
+          return;
+        }
+        if (window.HouseSecurity) {
+          window.HouseSecurity.animate();
+          window.HouseSecurity.markerState(markerState());
+        }
+        renderClock3();
+        drawActivity();
+        var now = Date.now();
+        if (dirty3 && now - lastRender3 > 1e3) {
+          lastRender3 = now;
+          dirty3 = false;
+          placeMarkers();
+          renderEntryList();
+          renderAlarm();
+          renderLocks();
+          renderCamera();
+          renderLog();
+          renderDetail2();
+          paintRooms();
+        }
+      };
+      SecurityView.resize = function() {
+        if (!active3) {
+          return;
+        }
+        if (window.HouseSecurity) {
+          window.HouseSecurity.resize();
+        }
+        if (activityCanvas && activityCtx) {
+          var w = activityCanvas.clientWidth, h = activityCanvas.clientHeight;
+          if (w && h) {
+            var dpr = Math.min(window.devicePixelRatio || 1, 2);
+            activityCanvas.width = Math.floor(w * dpr);
+            activityCanvas.height = Math.floor(h * dpr);
+            activityCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          }
+        }
+        dirty3 = true;
+      };
+      SecurityView.resizeDebounced = function() {
+        if (resizeTimer3) {
+          clearTimeout(resizeTimer3);
+        }
+        resizeTimer3 = setTimeout(function() {
+          resizeTimer3 = null;
+          SecurityView.resize();
+        }, 150);
+      };
+      STATE_LABEL = {
+        disarmed: "Disarmed",
+        armed_home: "Armed Home",
+        armed_away: "Armed Away",
+        armed_night: "Armed Night",
+        arming: "Arming",
+        pending: "Pending",
+        triggered: "TRIGGERED"
+      };
+      DAYS3 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS3 = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+    }
+  });
+
+  // src/Areas.js
+  var Areas_exports = {};
+  __export(Areas_exports, {
+    AREAS_LIST_ONLY: () => AREAS_LIST_ONLY,
+    AREA_TO_ROOM: () => AREA_TO_ROOM,
+    Areas: () => Areas,
+    OUTDOOR_AREAS: () => OUTDOOR_AREAS,
+    OVERRIDES: () => OVERRIDES2
+  });
+  function Areas(ha2) {
+    this.ha = ha2;
+    this.areas = {};
+    this.byEntity = {};
+    this.loaded = false;
+    this._loading = null;
+  }
+  var AREA_TO_ROOM, OVERRIDES2, AREAS_LIST_ONLY, OUTDOOR_AREAS;
+  var init_Areas = __esm({
+    "src/Areas.js"() {
+      AREA_TO_ROOM = {
+        ak_s_room: "aks_room",
+        bathroom_upstairs: "bath1",
+        blu_s_bedroom: "loft",
+        // the Loft area, named blu_s_bedroom in HA
+        garage: "garage",
+        hallway: "hall0",
+        kitchen: "kitchen",
+        laundry_room: "laundry",
+        living_room: "living",
+        master_bedroom: "master_bed",
+        office: "office",
+        /* Confirmed by Jovan, and none of these could have been guessed from a
+           name. The HA area called Oscar's Bedroom is Api's bathroom, which is
+           the Hall Bath. Print Room is Jovan's Closet upstairs, by the stairs.
+           Server Room is the small closet off the level 0 hall. */
+        api_s_bedroom: "hall_bath",
+        print_room: "jovan_closet",
+        server_room: "server_room"
+      };
+      OVERRIDES2 = {
+        /* The Oscar's Bedroom area holds both the bathroom leak sensor and a
+           bedroom temperature sensor. The area maps to the Hall Bath, so the
+           bedroom reading is sent back to the bedroom. */
+        "sensor.oscar_s_bedroom_temp_sensor_temperature": "apis_room",
+        "sensor.oscar_s_bedroom_temp_sensor_humidity": "apis_room",
+        /* No area in Home Assistant. Plant sensors used by the Climate screen. */
+        "sensor.sm4_snake_plant_dining_room_temperature": "dining",
+        "sensor.sm3_aglaonema_evergreen_office_temperature": "office",
+        /* No area in Home Assistant. The doorbell and its detections, which sit
+           at the front door rather than in the hallway the camera is filed under. */
+        "camera.reolink_doorbell": "porch",
+        "binary_sensor.reolink_doorbell_motion": "porch",
+        "binary_sensor.reolink_doorbell_person_occupancy": "porch",
+        "binary_sensor.reolink_doorbell_all_occupancy": "porch",
+        "binary_sensor.front_door_motion": "porch",
+        "binary_sensor.front_door_person": "porch",
+        "binary_sensor.front_door_vehicle": "porch",
+        "binary_sensor.front_door_pet": "porch",
+        "camera.front_door_fluent": "porch"
+      };
+      AREAS_LIST_ONLY = { attic: "Attic" };
+      OUTDOOR_AREAS = {
+        front_yard: "front",
+        back_yard: "back",
+        outdoor: "front",
+        herb_garden: "back",
+        ornamental_garden: "front"
+      };
+      Areas.prototype.load = function() {
+        var self = this;
+        if (this._loading) {
+          return this._loading;
+        }
+        this._loading = Promise.all([
+          this.ha.command({ type: "config/area_registry/list" }),
+          this.ha.command({ type: "config/device_registry/list" }),
+          this.ha.command({ type: "config/entity_registry/list" })
+        ]).then(function(results) {
+          var areas3 = results[0], devices = results[1], entities = results[2];
+          self.areas = {};
+          areas3.forEach(function(a) {
+            self.areas[a.area_id] = a;
+          });
+          var deviceArea = {};
+          devices.forEach(function(d) {
+            deviceArea[d.id] = d.area_id || null;
+          });
+          self.byEntity = {};
+          entities.forEach(function(e) {
+            var area = e.area_id || deviceArea[e.device_id] || null;
+            if (area) {
+              self.byEntity[e.entity_id] = area;
+            }
+          });
+          self.loaded = true;
+          return self;
+        }).catch(function(err) {
+          console.warn("areas: could not read the registries, " + (err && err.message ? err.message : "unknown error"));
+          self.loaded = false;
+          self._loading = null;
+          return self;
+        });
+        return this._loading;
+      };
+      Areas.prototype.areaOf = function(entityId) {
+        return this.byEntity[entityId] || null;
+      };
+      Areas.prototype.areaName = function(entityId) {
+        var id = this.areaOf(entityId);
+        var area = id ? this.areas[id] : null;
+        return area ? area.name : "";
+      };
+      Areas.prototype.roomOf = function(entityId) {
+        var id = this.areaOf(entityId);
+        var fromArea = id ? AREA_TO_ROOM[id] : null;
+        if (fromArea) {
+          return fromArea;
+        }
+        return OVERRIDES2[entityId] || null;
+      };
+      Areas.prototype.listOnly = function(entityId) {
+        var id = this.areaOf(entityId);
+        return id && AREAS_LIST_ONLY[id] ? AREAS_LIST_ONLY[id] : null;
+      };
+      Areas.prototype.overrides = function() {
+        return OVERRIDES2;
+      };
+      Areas.prototype.outdoorOf = function(entityId) {
+        var id = this.areaOf(entityId);
+        return id ? OUTDOOR_AREAS[id] || null : null;
+      };
+      Areas.prototype.entitiesIn = function(areaId) {
+        var out = [];
+        for (var id in this.byEntity) {
+          if (this.byEntity.hasOwnProperty(id) && this.byEntity[id] === areaId) {
+            out.push(id);
+          }
+        }
+        return out;
+      };
+      Areas.prototype.coverage = function(roomKeys) {
+        var mappedRooms = {};
+        var areasWithoutRoom = [];
+        var id;
+        for (id in this.areas) {
+          if (!this.areas.hasOwnProperty(id)) {
+            continue;
+          }
+          if (AREA_TO_ROOM[id]) {
+            mappedRooms[AREA_TO_ROOM[id]] = true;
+          } else if (!OUTDOOR_AREAS[id]) {
+            areasWithoutRoom.push(this.areas[id].name);
+          }
+        }
+        var roomsWithoutArea = (roomKeys || []).filter(function(k) {
+          return !mappedRooms[k];
+        });
+        return { areasWithoutRoom, roomsWithoutArea };
+      };
+    }
+  });
+
+  // src/LeakWatch.js
+  var LeakWatch_exports = {};
+  __export(LeakWatch_exports, {
+    LeakWatch: () => LeakWatch
+  });
+  function LeakWatch(ha2, areas3) {
+    this.ha = ha2;
+    this.areas = areas3;
+    this.wet = [];
+    this._timer = null;
+  }
+  var CHECK_MS;
+  var init_LeakWatch = __esm({
+    "src/LeakWatch.js"() {
+      CHECK_MS = 5e3;
+      LeakWatch.prototype.start = function() {
+        var self = this;
+        if (this._timer || !this.ha) {
+          return;
+        }
+        this._timer = setInterval(function() {
+          self.check();
+        }, CHECK_MS);
+        this.check();
+      };
+      LeakWatch.prototype.stop = function() {
+        if (this._timer) {
+          clearInterval(this._timer);
+        }
+        this._timer = null;
+      };
+      LeakWatch.prototype.check = function() {
+        if (!this.ha || !this.ha.states) {
+          return;
+        }
+        var self = this;
+        var wet = [];
+        this.ha.states.forEach(function(state2, id) {
+          if (id.indexOf("binary_sensor.") !== 0) {
+            return;
+          }
+          var cls = state2.attributes && state2.attributes.device_class || "";
+          if (cls !== "moisture" || state2.state !== "on") {
+            return;
+          }
+          wet.push({
+            id,
+            name: (state2.attributes && state2.attributes.friendly_name || id).trim(),
+            where: self.areas ? self.areas.areaName(id) : ""
+          });
+        });
+        var signature = wet.map(function(w) {
+          return w.id;
+        }).sort().join("|");
+        if (signature === this._signature) {
+          return;
+        }
+        this._signature = signature;
+        this.wet = wet;
+        this.paint();
+      };
+      LeakWatch.prototype.paint = function() {
+        var el = document.getElementById("leak-banner");
+        if (!el) {
+          return;
+        }
+        if (!this.wet.length) {
+          el.style.display = "none";
+          el.textContent = "";
+          return;
+        }
+        var parts = this.wet.map(function(w) {
+          return w.name + (w.where ? " (" + w.where + ")" : "");
+        });
+        el.innerHTML = "<b>WATER LEAK</b><span>" + parts.join("  |  ") + "</span>";
+        el.style.display = "flex";
+      };
+    }
+  });
+
   // node_modules/jquery-ui/jquery-ui.js
   var require_jquery_ui = __commonJS({
     "node_modules/jquery-ui/jquery-ui.js"() {
@@ -53430,17 +54593,17 @@
         });
         $2.ui.plugin.add("draggable", "stack", {
           start: function() {
-            var min, o = this.data("ui-draggable").options, group = $2.makeArray($2(o.stack)).sort(function(a, b) {
+            var min, o = this.data("ui-draggable").options, group2 = $2.makeArray($2(o.stack)).sort(function(a, b) {
               return (parseInt($2(a).css("zIndex"), 10) || 0) - (parseInt($2(b).css("zIndex"), 10) || 0);
             });
-            if (!group.length) {
+            if (!group2.length) {
               return;
             }
-            min = parseInt($2(group[0]).css("zIndex"), 10) || 0;
-            $2(group).each(function(i) {
+            min = parseInt($2(group2[0]).css("zIndex"), 10) || 0;
+            $2(group2).each(function(i) {
               $2(this).css("zIndex", min + i);
             });
-            this.css("zIndex", min + group.length);
+            this.css("zIndex", min + group2.length);
           }
         });
         $2.ui.plugin.add("draggable", "zIndex", {
@@ -56175,15 +57338,15 @@
               }), size = {
                 width: element.width(),
                 height: element.height()
-              }, active4 = document.activeElement;
+              }, active5 = document.activeElement;
               try {
-                active4.id;
+                active5.id;
               } catch (e) {
-                active4 = document.body;
+                active5 = document.body;
               }
               element.wrap(wrapper);
-              if (element[0] === active4 || $2.contains(element[0], active4)) {
-                $2(active4).focus();
+              if (element[0] === active5 || $2.contains(element[0], active5)) {
+                $2(active5).focus();
               }
               wrapper = element.parent();
               if (element.css("position") === "static") {
@@ -56212,11 +57375,11 @@
               return wrapper.css(props).show();
             },
             removeWrapper: function(element) {
-              var active4 = document.activeElement;
+              var active5 = document.activeElement;
               if (element.parent().is(".ui-effects-wrapper")) {
                 element.parent().replaceWith(element);
-                if (element[0] === active4 || $2.contains(element[0], active4)) {
-                  $2(active4).focus();
+                if (element[0] === active5 || $2.contains(element[0], active5)) {
+                  $2(active5).focus();
                 }
               }
               return element;
@@ -56611,14 +57774,14 @@
             }
           },
           _activate: function(index) {
-            var active4 = this._findActive(index)[0];
-            if (active4 === this.active[0]) {
+            var active5 = this._findActive(index)[0];
+            if (active5 === this.active[0]) {
               return;
             }
-            active4 = active4 || this.active[0];
+            active5 = active5 || this.active[0];
             this._eventHandler({
-              target: active4,
-              currentTarget: active4,
+              target: active5,
+              currentTarget: active5,
               preventDefault: $2.noop
             });
           },
@@ -56641,8 +57804,8 @@
             this._focusable(this.headers);
           },
           _eventHandler: function(event) {
-            var options = this.options, active4 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active4[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active4.next(), eventData = {
-              oldHeader: active4,
+            var options = this.options, active5 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active5[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active5.next(), eventData = {
+              oldHeader: active5,
               oldPanel: toHide,
               newHeader: collapsing ? $2() : clicked,
               newPanel: toShow
@@ -56658,9 +57821,9 @@
             options.active = collapsing ? false : this.headers.index(clicked);
             this.active = clickedIsActive ? $2() : clicked;
             this._toggle(eventData);
-            active4.removeClass("ui-accordion-header-active ui-state-active");
+            active5.removeClass("ui-accordion-header-active ui-state-active");
             if (options.icons) {
-              active4.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
+              active5.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
             }
             if (!clickedIsActive) {
               clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
@@ -58893,7 +60056,7 @@
           },
           /* Generate the HTML for the current state of the date picker. */
           _generateHTML: function(inst) {
-            var maxDraw, prevText, prev, nextText, next2, currentText, gotoDate, controls, buttonPanel, firstDay, showWeek, dayNames, dayNamesMin, monthNames, monthNamesShort, beforeShowDay, showOtherMonths, selectOtherMonths, defaultDate, html, dow, row, group, col, selectedDate, cornerClass, calender, thead, day, daysInMonth, leadDays, curRows, numRows, printDate, dRow, tbody, daySettings, otherMonth, unselectable, tempDate = /* @__PURE__ */ new Date(), today = this._daylightSavingAdjust(
+            var maxDraw, prevText, prev, nextText, next2, currentText, gotoDate, controls, buttonPanel, firstDay, showWeek, dayNames, dayNamesMin, monthNames, monthNamesShort, beforeShowDay, showOtherMonths, selectOtherMonths, defaultDate, html, dow, row, group2, col, selectedDate, cornerClass, calender, thead, day, daysInMonth, leadDays, curRows, numRows, printDate, dRow, tbody, daySettings, otherMonth, unselectable, tempDate = /* @__PURE__ */ new Date(), today = this._daylightSavingAdjust(
               new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate())
             ), isRTL = this._get(inst, "isRTL"), showButtonPanel = this._get(inst, "showButtonPanel"), hideIfNoPrevNext = this._get(inst, "hideIfNoPrevNext"), navigationAsDateFormat = this._get(inst, "navigationAsDateFormat"), numMonths = this._getNumberOfMonths(inst), showCurrentAtPos = this._get(inst, "showCurrentAtPos"), stepMonths = this._get(inst, "stepMonths"), isMultiMonth = numMonths[0] !== 1 || numMonths[1] !== 1, currentDate = this._daylightSavingAdjust(!inst.currentDay ? new Date(9999, 9, 9) : new Date(inst.currentYear, inst.currentMonth, inst.currentDay)), minDate = this._getMinMaxDate(inst, "min"), maxDate = this._getMinMaxDate(inst, "max"), drawMonth = inst.drawMonth - showCurrentAtPos, drawYear = inst.drawYear;
             if (drawMonth < 0) {
@@ -58950,7 +60113,7 @@
             html = "";
             dow;
             for (row = 0; row < numMonths[0]; row++) {
-              group = "";
+              group2 = "";
               this.maxRows = 4;
               for (col = 0; col < numMonths[1]; col++) {
                 selectedDate = this._daylightSavingAdjust(new Date(drawYear, drawMonth, inst.selectedDay));
@@ -59039,9 +60202,9 @@
                   drawYear++;
                 }
                 calender += "</tbody></table>" + (isMultiMonth ? "</div>" + (numMonths[0] > 0 && col === numMonths[1] - 1 ? "<div class='ui-datepicker-row-break'></div>" : "") : "");
-                group += calender;
+                group2 += calender;
               }
-              html += group;
+              html += group2;
             }
             html += buttonPanel;
             inst._keyEvent = false;
@@ -62131,33 +63294,33 @@
             }
           },
           _initialActive: function() {
-            var active4 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
-            if (active4 === null) {
+            var active5 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
+            if (active5 === null) {
               if (locationHash) {
                 this.tabs.each(function(i, tab) {
                   if ($2(tab).attr("aria-controls") === locationHash) {
-                    active4 = i;
+                    active5 = i;
                     return false;
                   }
                 });
               }
-              if (active4 === null) {
-                active4 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
+              if (active5 === null) {
+                active5 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
               }
-              if (active4 === null || active4 === -1) {
-                active4 = this.tabs.length ? 0 : false;
-              }
-            }
-            if (active4 !== false) {
-              active4 = this.tabs.index(this.tabs.eq(active4));
-              if (active4 === -1) {
-                active4 = collapsible ? false : 0;
+              if (active5 === null || active5 === -1) {
+                active5 = this.tabs.length ? 0 : false;
               }
             }
-            if (!collapsible && active4 === false && this.anchors.length) {
-              active4 = 0;
+            if (active5 !== false) {
+              active5 = this.tabs.index(this.tabs.eq(active5));
+              if (active5 === -1) {
+                active5 = collapsible ? false : 0;
+              }
             }
-            return active4;
+            if (!collapsible && active5 === false && this.anchors.length) {
+              active5 = 0;
+            }
+            return active5;
           },
           _getCreateEventData: function() {
             return {
@@ -62437,8 +63600,8 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active4 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active4[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active4.length ? $2() : this._getPanelForTab(active4), eventData = {
-              oldTab: active4,
+            var options = this.options, active5 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active5[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active5.length ? $2() : this._getPanelForTab(active5), eventData = {
+              oldTab: active5,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
               newPanel: toShow
@@ -62513,14 +63676,14 @@
             });
           },
           _activate: function(index) {
-            var anchor, active4 = this._findActive(index);
-            if (active4[0] === this.active[0]) {
+            var anchor, active5 = this._findActive(index);
+            if (active5[0] === this.active[0]) {
               return;
             }
-            if (!active4.length) {
-              active4 = this.active;
+            if (!active5.length) {
+              active5 = this.active;
             }
-            anchor = active4.find(".ui-tabs-anchor")[0];
+            anchor = active5.find(".ui-tabs-anchor")[0];
             this._eventHandler({
               target: anchor,
               currentTarget: anchor,
@@ -62936,6 +64099,11 @@
   var haSource = (init_ha_source(), __toCommonJS(ha_source_exports));
   var HouseView2 = (init_HouseView(), __toCommonJS(HouseView_exports)).HouseView;
   var ClimateView2 = (init_ClimateView(), __toCommonJS(ClimateView_exports)).ClimateView;
+  var SecurityView2 = (init_SecurityView(), __toCommonJS(SecurityView_exports)).SecurityView;
+  var Areas2 = (init_Areas(), __toCommonJS(Areas_exports)).Areas;
+  var LeakWatch2 = (init_LeakWatch(), __toCommonJS(LeakWatch_exports)).LeakWatch;
+  var areas2 = null;
+  var leaks = null;
   var init = false;
   require_jquery_ui();
   $.fn.fitScreen = function(baseW, baseH) {
@@ -62983,14 +64151,16 @@
     this.css("left", left + "px");
     return this;
   };
-  var active3 = "lt";
+  var active4 = "lt";
   var ha = haSource.start(function(message) {
-    if (active3 === "lt") {
+    if (active4 === "lt") {
       LightTable.message(message);
-    } else if (active3 === "house") {
+    } else if (active4 === "house") {
       HouseView2.message(message);
-    } else if (active3 === "climate") {
+    } else if (active4 === "climate") {
       ClimateView2.message(message);
+    } else if (active4 === "security") {
+      SecurityView2.message(message);
     } else {
       setTimeout(function() {
         Boardroom.message(message);
@@ -63000,8 +64170,14 @@
     console.log("home assistant: " + state2.status + (state2.detail ? " (" + state2.detail + ")" : ""));
     $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state2.status).toUpperCase());
     LightTable.setLink(state2.status === "ready");
+    if (state2.status === "ready" && areas2) {
+      areas2.load();
+    }
   });
   LightTable.setHomeAssistant(ha);
+  areas2 = new Areas2(ha);
+  leaks = new LeakWatch2(ha, areas2);
+  leaks.start();
   var onSwitch = function(view) {
     var screensaver = $("#screensaver");
     var system = null;
@@ -63028,20 +64204,27 @@
       HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active3 = "house";
+        active4 = "house";
         HouseView2.show();
       }, 3e3);
     } else if (system.key === "climate") {
       ClimateView2.init(ha);
       ClimateView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active3 = "climate";
+        active4 = "climate";
         ClimateView2.show();
+      }, 3e3);
+    } else if (system.key === "security") {
+      SecurityView2.init(ha, areas2);
+      SecurityView2.seed(haSource.getSeed());
+      setTimeout(function() {
+        active4 = "security";
+        SecurityView2.show();
       }, 3e3);
     } else {
       Boardroom.init(system.key);
       setTimeout(function() {
-        active3 = "br";
+        active4 = "br";
         Boardroom.show();
       }, 3e3);
     }
@@ -63085,12 +64268,14 @@
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
-      if (active3 === "lt") {
+      if (active4 === "lt") {
         LightTable.animate();
-      } else if (active3 === "house") {
+      } else if (active4 === "house") {
         HouseView2.animate();
-      } else if (active3 === "climate") {
+      } else if (active4 === "climate") {
         ClimateView2.animate();
+      } else if (active4 === "security") {
+        SecurityView2.animate();
       } else {
         Boardroom.animate();
       }
@@ -63099,13 +64284,15 @@
     animate();
     var timeout = 0;
     function onWindowResize2() {
-      if (active3 === "lt") {
+      if (active4 === "lt") {
         $("#light-table").fitLauncher();
         LightTable.resize();
-      } else if (active3 === "house") {
+      } else if (active4 === "house") {
         HouseView2.resizeDebounced();
-      } else if (active3 === "climate") {
+      } else if (active4 === "climate") {
         ClimateView2.resizeDebounced();
+      } else if (active4 === "security") {
+        SecurityView2.resizeDebounced();
       } else {
         Boardroom.resize();
       }

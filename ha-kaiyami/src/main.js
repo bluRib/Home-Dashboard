@@ -6,6 +6,11 @@ var $ = require("jquery"),
     haSource = require("./ha-source.js"),
     HouseView = require("./HouseView.js").HouseView,
     ClimateView = require("./ClimateView.js").ClimateView,
+    SecurityView = require("./SecurityView.js").SecurityView,
+    Areas = require("./Areas.js").Areas,
+    LeakWatch = require("./LeakWatch.js").LeakWatch,
+    areas = null,
+    leaks = null,
     init = false;
 
 require("jquery-ui");
@@ -99,6 +104,8 @@ var ha = haSource.start(function(message){
         HouseView.message(message);
     } else if(active === "climate"){
         ClimateView.message(message);
+    } else if(active === "security"){
+        SecurityView.message(message);
     } else {
         /* Encom staggered incoming events so the widgets do not all fire on
            the same frame. A busy house is burstier than GitHub was, so keep it. */
@@ -112,12 +119,30 @@ var ha = haSource.start(function(message){
     console.log("home assistant: " + state.status + (state.detail ? " (" + state.detail + ")" : ""));
     $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state.status).toUpperCase());
     LightTable.setLink(state.status === "ready");
+
+    /* Read the registries as soon as the connection is usable. load() is
+       memoised on success, so a reconnect does not refetch them. */
+    if(state.status === "ready" && areas){
+        areas.load();
+    }
 });
 
 /* MUTHER runs commands against the same connection the screens read from.
    start() returns null when there is no config, and the terminal says so
    rather than failing silently. */
 LightTable.setHomeAssistant(ha);
+
+/* The area registry, read once and shared by every screen. Nothing guesses a
+   room from a friendly name any more.
+   It is loaded from the status callback rather than here, because the
+   registries are a command on the socket and the socket has not finished
+   authenticating at this point in the file. */
+areas = new Areas(ha);
+
+/* A leak outranks whatever is on screen, so this watches the whole house all
+   the time rather than only while the Security screen is open. */
+leaks = new LeakWatch(ha, areas);
+leaks.start();
 
 var onSwitch = function(view){
     var screensaver = $("#screensaver");
@@ -165,6 +190,15 @@ var onSwitch = function(view){
         setTimeout(function(){
             active = "climate";
             ClimateView.show();
+        }, 3000);
+
+    } else if(system.key === "security"){
+        SecurityView.init(ha, areas);
+        SecurityView.seed(haSource.getSeed());
+
+        setTimeout(function(){
+            active = "security";
+            SecurityView.show();
         }, 3000);
 
     } else {
@@ -236,6 +270,8 @@ PleaseRotate.start({onHide: function(){
             HouseView.animate();
         } else if(active === "climate"){
             ClimateView.animate();
+        } else if(active === "security"){
+            SecurityView.animate();
         } else {
             Boardroom.animate()
         }
@@ -257,6 +293,8 @@ PleaseRotate.start({onHide: function(){
             HouseView.resizeDebounced();
         } else if(active === "climate"){
             ClimateView.resizeDebounced();
+        } else if(active === "security"){
+            SecurityView.resizeDebounced();
         } else {
             Boardroom.resize();
         }

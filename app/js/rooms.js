@@ -36,6 +36,10 @@ export const ROOMS = [
   { key: 'hall_bath',    name: 'Hall Bath',      level: 0, x: [1000, 1275], z: [-430, -235] },
   { key: 'apis_room',    name: "Api's Room",     level: 0, x: [950, 1275],  z: [-200, 150] },
   { key: 'garage',       name: 'Garage',         level: 0, x: [10, 665],    z: [-575, -5] },
+  // Measured by Jovan from the OBJ walls. Carved out of the hall, so it sits
+  // before hall0 and wins the overlap. Its door is on the z -371 side, into
+  // the small entry hall that leads to Api's Room and the Hall Bath.
+  { key: 'server_room',  name: 'Server Room',    level: 0, x: [851, 970],   z: [-438, -371] },
   { key: 'hall0',        name: 'Hall',           level: 0, x: [720, 950],   z: [-620, -10] },
 
   // Labeled in models/labels.json but absent from the BUILD.md table.
@@ -72,9 +76,11 @@ export const ROOMS = [
 // Rooms Jovan named that have no rectangle yet, because nothing in the OBJ
 // export or the labels marks them:
 //   Closet 2       a closet inside the master bedroom
-//   Server closet  the closet off the level 0 hall
 // Add them to ROOMS once their corners are known. Until then any entity in
 // them resolves to the enclosing room, or to nothing.
+//
+// The server closet is now in the list above as server_room, with an
+// estimated rectangle that still needs measuring.
 
 // Overall footprint, for camera fitting and for mapping rooms onto the globe.
 export const BOUNDS = { x: [0, 1280], z: [-2137, 160] };
@@ -146,7 +152,8 @@ const ALIASES = {
   // tend to use one and friendly names the other.
   hall_bath:      ['hall bath', 'hallway bath', 'guest bath', 'shared bath', 'bathroom 1',
                    'bath 1', 'api s bath', 'apis bath', 'api s bathroom', 'apis bathroom'],
-  apis_room:      ['api s room', 'apis room', 'api s bedroom', 'apis bedroom'],
+  apis_room:      ['api s room', 'apis room', 'api s bedroom', 'apis bedroom',
+                   'oscar s room', 'oscars room', 'oscar s bedroom', 'oscars bedroom'],
   garage:         ['garage'],
   hall0:          ['downstairs hall', 'main hall', 'hallway', 'hall'],
   patio:          ['patio', 'deck', 'back porch', 'backyard', 'back yard'],
@@ -166,6 +173,9 @@ const ALIASES = {
   aks_room:       ['ak s room', 'aks room', 'ak s bedroom', 'aks bedroom',
                    'back bedroom', 'bedroom 3', 'rear bedroom'],
 
+  server_room:    ['server room', 'server closet'],
+  // Home Assistant calls Api's area "Oscar's Bedroom". Same person, same
+  // room, so both spellings resolve here.
   room0:          [],   // the label is literally "Room", too generic to match on
 };
 

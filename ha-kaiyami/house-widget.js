@@ -175,3 +175,93 @@ window.HouseThermal = {
         }
     }
 };
+
+/* ---------------------------------------------------------------------------
+   The security map on the Security screen. A third HouseScreen, same reason
+   as the second: one instance can only drive one canvas, and all three
+   screens can be open in a session.
+   --------------------------------------------------------------------------- */
+
+var security = null;
+var securityMounted = false;
+
+window.HouseSecurity = {
+
+    mount: function (onMarkerPick) {
+        if (securityMounted) {
+            security.show();
+            return;
+        }
+
+        var canvas = document.getElementById("sc-house-canvas");
+        if (!canvas) {
+            console.warn("house-widget: no #sc-house-canvas in the page");
+            return;
+        }
+
+        /* No tag or leader layers. Room names are the House screen's job and
+            this map is about the markers. */
+        security = new HouseScreen({
+            canvas: canvas,
+            basePath: "../models/",
+            onMarkerPick: onMarkerPick
+        });
+
+        security.init({});
+        security.show();
+        securityMounted = true;
+
+        security.load().then(function () {
+            security.setLevel(0);
+            var panel = document.getElementById("sc-house");
+            if (panel) {
+                panel.classList.add("ready");
+            }
+        }).catch(function (err) {
+            console.error("house-security: " + err.message);
+        });
+    },
+
+    unmount: function () {
+        if (security) {
+            security.hide();
+        }
+    },
+
+    markers: function (list) {
+        if (security) {
+            security.setMarkers(list);
+        }
+    },
+
+    markerState: function (state) {
+        if (security) {
+            security.updateMarkers(state);
+        }
+    },
+
+    tint: function (map) {
+        if (security) {
+            security.setTints(map);
+        }
+    },
+
+    /* Drive the existing green ring pulse for a room that just saw motion. */
+    message: function (m) {
+        if (security) {
+            security.message(m);
+        }
+    },
+
+    animate: function () {
+        if (security) {
+            security.animate();
+        }
+    },
+
+    resize: function () {
+        if (security) {
+            security.resize();
+        }
+    }
+};
