@@ -1,13 +1,18 @@
 var $ = require("jquery"),
     THREE = require("three"),
     systems = require("./systems.js"),
-    rooms = require("../../app/js/rooms.js");
+    rooms = require("../../app/js/rooms.js"),
+    msg = require("../../app/js/message.js");
 
 /* The scan wireframe is drawn from the same room rectangles the house widget
    and the room panels use, so a corrected rectangle fixes this too. */
 var ROOMS = rooms.ROOMS,
     BOUNDS = rooms.BOUNDS,
     LEVEL1_ELEVATION = rooms.LEVEL1_ELEVATION;
+
+/* The live Home Assistant client, handed over by main.js once it exists.
+   MUTHER's commands read and act through this and nothing else. */
+var ha = null;
 
 function systemByKey(key){
     for(var i = 0; i < systems.length; i++){
@@ -157,6 +162,10 @@ LightTable.resize = function(){
 
 LightTable.message = function(message){
     lastMessageTime = Date.now();
+};
+
+LightTable.setHomeAssistant = function(client){
+    ha = client;
 };
 
 /* Called by main.js on every Home Assistant status change. Green when the
@@ -630,8 +639,196 @@ function writeLs(exec){
 }
 
 
-/* I could make this much more involved, but i'm not really interested in spending time on this part of the app */
-/* sorry for disappointing anybody looking at this to see how much functionality there is */
+/* ---------------------------------------------------------------------------
+   MUTHER
+   The README tells Jovan to type status, lights off and arm away, so those
+   have to work. They read and act through the one Home Assistant connection
+   in ha-source.js. Service calls are asynchronous, so those branches write
+   the prompt from the callback instead of straight away, which is why
+   runCommand returns a flag saying whether it already handled the prompt.
+   --------------------------------------------------------------------------- */
+
+var HELP = [
+    ["status", "lights, alerts, temperature and what is open"],
+    ["lights off", "turn off every light that is on"],
+    ["arm away", "arm the alarm panel in away mode"],
+    ["help", "this list"],
+    ["ls", "list the systems"],
+    ["cd &lt;system&gt;", "select a system"],
+    ["run &lt;system&gt;.exe", "open that system's screen"]
+];
+
+/* Every entity whose id starts with one of the given domains. */
+function entitiesIn(domains){
+    var out = [];
+    if(!ha){
+        return out;
+    }
+    ha.states.forEach(function(state, id){
+        for(var i = 0; i < domains.length; i++){
+            if(id.indexOf(domains[i] + ".") === 0){
+                out.push(state);
+                return;
+            }
+        }
+    });
+    return out;
+}
+
+function nameOf(state){
+    return (state.attributes && state.attributes.friendly_name) || state.entity_id;
+}
+
+/* True once the connection has finished its first load of every state. */
+function haReady(){
+    return ha && ha.states && ha.states.size > 0;
+}
+
+function needHa(){
+    writeResponse("<span class='alert'>No link.</span> Home Assistant is not connected yet.");
+    return false;
+}
+
+function doStatus(){
+    if(!haReady()){
+        return needHa();
+    }
+
+    var lightsOn = [], alerts = [], temps = [], seenRooms = {}, i;
+
+    ha.states.forEach(function(st, id){
+        if(id.indexOf("light.") === 0 && st.state === "on"){
+            lightsOn.push(st);
+        }
+        if(msg.severityFor(id, st) === msg.Severity.ALERT){
+            alerts.push(st);
+        }
+        var attrs = st.attributes || {};
+        if(id.indexOf("sensor.") === 0 && attrs.device_class === "temperature"){
+            var t = Number(st.state);
+            if(isFinite(t)){
+                temps.push(t);
+            }
+        }
+        var room = rooms.roomForEntity(st);
+        if(room){
+            seenRooms[room.key] = true;
+        }
+    });
+
+    var avg = null;
+    if(temps.length){
+        var sum = 0;
+        for(i = 0; i < temps.length; i++){
+            sum += temps[i];
+        }
+        avg = sum / temps.length;
+    }
+
+    var roomCount = 0, k;
+    for(k in seenRooms){
+        if(seenRooms.hasOwnProperty(k)){
+            roomCount++;
+        }
+    }
+
+    writeResponse(
+        ha.states.size + " entities across " + roomCount + " rooms. " +
+        "<span class='highlight'>" + lightsOn.length + "</span> light" +
+        (lightsOn.length === 1 ? "" : "s") + " on. " +
+        (avg === null ? "No temperature reading." : "Average " + avg.toFixed(1) + " degrees."));
+
+    if(alerts.length){
+        var names = [];
+        /* Three names keeps this a summary. SECURITY has the full list. */
+        for(i = 0; i < alerts.length && i < 3; i++){
+            names.push(nameOf(alerts[i]));
+        }
+        writeResponse("<span class='alert'>" + alerts.length + " need" +
+            (alerts.length === 1 ? "s" : "") + " you:</span> " + names.join(", ") +
+            (alerts.length > 3 ? ", and " + (alerts.length - 3) + " more" : ""));
+    } else {
+        writeResponse("Nothing needs you. All clear.");
+    }
+
+    return false;
+}
+
+/* Shared tail for the two commands that change something in the house. */
+function afterService(promise, done){
+    promise.then(function(){
+        writeResponse(done);
+        writePrompt();
+        scrollTerminal();
+    }).catch(function(err){
+        writeResponse("<span class='alert'>Error:</span> " + (err && err.message ? err.message : "service call failed"));
+        writePrompt();
+        scrollTerminal();
+    });
+    return true;
+}
+
+function doLightsOff(){
+    if(!haReady()){
+        return needHa();
+    }
+
+    var on = [];
+    ha.states.forEach(function(st, id){
+        if(id.indexOf("light.") === 0 && st.state === "on"){
+            on.push(id);
+        }
+    });
+
+    if(!on.length){
+        writeResponse("No lights are on.");
+        return false;
+    }
+
+    writeResponse("Turning off " + on.length + " light" + (on.length === 1 ? "" : "s") + "...");
+    return afterService(
+        ha.callService("light", "turn_off", {}, { entity_id: on }),
+        "<span class='highlight'>Done.</span> " + on.length + " light" +
+            (on.length === 1 ? "" : "s") + " off.");
+}
+
+function doArmAway(){
+    if(!haReady()){
+        return needHa();
+    }
+
+    var panels = entitiesIn(["alarm_control_panel"]);
+    if(!panels.length){
+        writeResponse("<span class='alert'>No alarm panel</span> in Home Assistant.");
+        return false;
+    }
+
+    var ids = [], names = [], i;
+    for(i = 0; i < panels.length; i++){
+        ids.push(panels[i].entity_id);
+        names.push(nameOf(panels[i]));
+    }
+
+    writeResponse("Arming away: " + names.join(", ") + "...");
+    return afterService(
+        ha.callService("alarm_control_panel", "alarm_arm_away", {}, { entity_id: ids }),
+        "<span class='highlight'>Armed away.</span> Watch the doors.");
+}
+
+function doHelp(){
+    var out = "", i;
+    for(i = 0; i < HELP.length; i++){
+        out += '<div class="response"><span class="highlight">' + HELP[i][0] +
+               '</span> ' + HELP[i][1] + '</div>';
+    }
+    $("#lt-command-lines").append(out);
+    return false;
+}
+
+function scrollTerminal(){
+    var cl = $("#lt-command-lines");
+    $("#lt-command-line").scrollTop(cl.height());
+}
 
 function executeCommand(){
     var command = $(".command-text").last().text();
@@ -642,6 +839,23 @@ function executeCommand(){
     var cdMatch  = /^cd ([a-z0-9_]+)$/.exec(command);
     var runSystem = runMatch ? systemByKey(runMatch[1]) : null;
     var cdSystem  = cdMatch  ? systemByKey(cdMatch[1])  : null;
+
+    /* MUTHER's own verbs come first, so "status" is never mistaken for a
+       missing file. A handler returns true when it has already written the
+       next prompt itself, which the asynchronous ones do from a callback. */
+    var handler = command === "status" ? doStatus
+        : command === "lights off" ? doLightsOff
+        : command === "arm away" ? doArmAway
+        : command === "help" || command === "?" ? doHelp
+        : null;
+
+    if(handler){
+        if(!handler()){
+            writePrompt();
+        }
+        scrollTerminal();
+        return;
+    }
 
     if(runSystem){
         if(currentDir == runSystem.key){
@@ -682,12 +896,14 @@ function executeCommand(){
     } else if(command.indexOf("run") == 0){
         writeResponse("<span class='alert'>Access denied</span>");
         writePrompt();
+    } else if(command.length){
+        writeResponse("unknown command, type <span class='highlight'>help</span>");
+        writePrompt();
     } else {
-        writeResponse("command not found");
         writePrompt();
     }
-    var cl = $("#lt-command-lines");
-    $("#lt-command-line").scrollTop(cl.height())
+
+    scrollTerminal();
 
 }
 

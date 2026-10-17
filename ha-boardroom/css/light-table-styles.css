@@ -338,6 +338,10 @@ ul {
     padding-top: 3px;
     padding-left: 25px;
     font-size: 7pt;
+    /* #lt-command-lines is nowrap so the prompt line never breaks. MUTHER's
+       answers are sentences, and a status summary is longer than the panel,
+       so they wrap instead of being clipped at the edge. */
+    white-space: normal;
 }
 
 .response .alert{
@@ -480,17 +484,24 @@ ul {
 
 }
 
+/* Anchored by its right edge, not its left, so it clears the frame border by
+   the same 72px the panels keep on the left. Upstream left this mark open on
+   the right because it ran off the side of the screen; inside the frame it
+   needs the fourth side to read as a finished box.
+   34px works for both layouts: the far right column ends 40px from the frame
+   edge in each, so right:34 puts the mark 74px in from the frame on both. */
 #lt-brand-logo {
     font-family: 'Terminator';
     position: absolute;
-    font-size: 8pt;
-    padding-left: 2px;
+    /* Sized to fit the gutter between the right hand column and the 74px
+       margin, which is all the room there is at this height. */
+    font-size: 6pt;
+    padding: 0 2px;
     top: 25px;
-    left: 20px;
+    left: auto;
+    right: 34px;
     color: #6fc0ba;
-    border-left: 2px solid #6fc0ba;
-    border-top: 2px solid #6fc0ba;
-    border-bottom: 2px solid #6fc0ba;
+    border: 2px solid #6fc0ba;
     border-radius: 4px;
 }
 

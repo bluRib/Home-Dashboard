@@ -90,7 +90,7 @@ var active = "lt";
    showing, exactly as Encom's EventSource listener did. Boardroom.message
    ignores anything whose stream is not the active system, so each screen only
    sees its own traffic. */
-haSource.start(function(message){
+var ha = haSource.start(function(message){
 
     if(active === "lt"){
         LightTable.message(message);
@@ -110,6 +110,11 @@ haSource.start(function(message){
     $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state.status).toUpperCase());
     LightTable.setLink(state.status === "ready");
 });
+
+/* MUTHER runs commands against the same connection the screens read from.
+   start() returns null when there is no config, and the terminal says so
+   rather than failing silently. */
+LightTable.setHomeAssistant(ha);
 
 var onSwitch = function(view){
     var screensaver = $("#screensaver");

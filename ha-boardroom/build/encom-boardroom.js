@@ -35257,6 +35257,210 @@
     }
   });
 
+  // ../app/js/message.js
+  var message_exports = {};
+  __export(message_exports, {
+    Severity: () => Severity,
+    domainOf: () => domainOf,
+    severityFor: () => severityFor,
+    stateToMessage: () => stateToMessage,
+    systemFor: () => systemFor,
+    toMessage: () => toMessage
+  });
+  function domainOf(entityId) {
+    return entityId.split(".")[0];
+  }
+  function systemFor(entityId, state2) {
+    const domain = domainOf(entityId);
+    const cls = state2 && state2.attributes && state2.attributes.device_class || "";
+    if (domain === "binary_sensor") return CLASS_SYSTEM[cls] || "security";
+    if (domain === "sensor") {
+      if (CLIMATE_CLASSES.has(cls)) return "climate";
+      if (ENERGY_CLASSES.has(cls)) return "energy";
+      if (cls === "battery" || cls === "timestamp") return "network";
+      return "energy";
+    }
+    return DOMAIN_SYSTEM[domain] || "house";
+  }
+  function severityFor(entityId, state2) {
+    if (!state2) return Severity.NORMAL;
+    const value = String(state2.state || "").toLowerCase();
+    const attrs = state2.attributes || {};
+    const cls = attrs.device_class || "";
+    const domain = domainOf(entityId);
+    if (value === "unavailable" || value === "unknown") return Severity.NORMAL;
+    if (cls === "battery") {
+      if (domain === "binary_sensor") return value === "on" ? Severity.ALERT : Severity.NORMAL;
+      const pct = Number(state2.state);
+      if (Number.isFinite(pct) && pct <= 20) return Severity.ALERT;
+    }
+    if (attrs.battery_level !== void 0 && attrs.battery_level !== null) {
+      const level = Number(attrs.battery_level);
+      if (Number.isFinite(level) && level <= 20) return Severity.ALERT;
+    }
+    if (domain === "binary_sensor") {
+      if (FAULT_CLASSES.has(cls)) return value === "on" ? Severity.ALERT : Severity.NORMAL;
+      if (MOTION_CLASSES.has(cls)) return value === "on" ? Severity.MOTION : Severity.NORMAL;
+      if (OPENING_CLASSES.has(cls)) return value === "on" ? Severity.ALERT : Severity.NORMAL;
+      return Severity.NORMAL;
+    }
+    if (domain === "cover") {
+      return OPEN_STATES.has(value) ? Severity.ALERT : Severity.NORMAL;
+    }
+    if (domain === "lock") {
+      return value === "unlocked" ? Severity.ALERT : Severity.NORMAL;
+    }
+    if (domain === "alarm_control_panel") {
+      return value.startsWith("triggered") || value === "pending" ? Severity.ALERT : Severity.NORMAL;
+    }
+    return Severity.NORMAL;
+  }
+  function latlonFor(roomObj) {
+    if (!roomObj) return { lat: BASE.lat, lon: BASE.lon };
+    const c2 = center(roomObj);
+    const fx = (c2.x - BOUNDS.x[0]) / (BOUNDS.x[1] - BOUNDS.x[0]);
+    const fz = (c2.z - BOUNDS.z[0]) / (BOUNDS.z[1] - BOUNDS.z[0]);
+    return {
+      lat: BASE.lat + (fz - 0.5) * SPREAD,
+      lon: BASE.lon + (fx - 0.5) * SPREAD
+    };
+  }
+  function numeric(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function toMessage(event) {
+    const { entityId, oldState, newState } = event;
+    const state2 = newState || oldState;
+    const attrs = state2 && state2.attributes || {};
+    const roomObj = roomForEntity(state2 || entityId);
+    const size = numeric(newState && newState.state);
+    const previousSize = numeric(oldState && oldState.state);
+    return {
+      // Encom's fields
+      stream: systemFor(entityId, state2),
+      latlon: latlonFor(roomObj),
+      location: roomObj ? roomObj.name : "Unassigned",
+      type: domainOf(entityId),
+      title: attrs.friendly_name || entityId,
+      url: "",
+      username: attrs.device_class || domainOf(entityId),
+      userurl: "",
+      picSmall: "images/not_available_small.png",
+      picLarge: "images/not_available_large.png",
+      size,
+      popularity: Math.abs(size - previousSize),
+      // Ours
+      entityId,
+      state: newState ? newState.state : null,
+      previous: oldState ? oldState.state : null,
+      unit: attrs.unit_of_measurement || "",
+      severity: severityFor(entityId, newState),
+      room: roomObj ? roomObj.key : null,
+      level: roomObj ? roomObj.level : null,
+      at: event.timeFired || (/* @__PURE__ */ new Date()).toISOString()
+    };
+  }
+  function stateToMessage(state2) {
+    return toMessage({
+      entityId: state2.entity_id,
+      oldState: null,
+      newState: state2,
+      timeFired: state2.last_changed || null
+    });
+  }
+  var Severity, DOMAIN_SYSTEM, CLASS_SYSTEM, CLIMATE_CLASSES, ENERGY_CLASSES, OPEN_STATES, FAULT_CLASSES, OPENING_CLASSES, MOTION_CLASSES, BASE, SPREAD;
+  var init_message = __esm({
+    "../app/js/message.js"() {
+      init_rooms();
+      Severity = {
+        NORMAL: "normal",
+        MOTION: "motion",
+        ALERT: "alert"
+      };
+      DOMAIN_SYSTEM = {
+        climate: "climate",
+        water_heater: "climate",
+        fan: "climate",
+        humidifier: "climate",
+        lock: "security",
+        alarm_control_panel: "security",
+        binary_sensor: "security",
+        camera: "cameras",
+        image_processing: "cameras",
+        sensor: "energy",
+        light: "house",
+        switch: "house",
+        cover: "house",
+        media_player: "house",
+        vacuum: "house",
+        scene: "house",
+        device_tracker: "network",
+        update: "network",
+        button: "network"
+      };
+      CLASS_SYSTEM = {
+        motion: "security",
+        occupancy: "security",
+        door: "security",
+        window: "security",
+        garage_door: "security",
+        opening: "security",
+        smoke: "security",
+        gas: "security",
+        carbon_monoxide: "security",
+        moisture: "security",
+        tamper: "security",
+        connectivity: "network",
+        battery: "network",
+        update: "network",
+        problem: "network"
+      };
+      CLIMATE_CLASSES = /* @__PURE__ */ new Set([
+        "temperature",
+        "humidity",
+        "pressure",
+        "atmospheric_pressure",
+        "carbon_dioxide",
+        "pm25",
+        "pm10",
+        "aqi",
+        "volatile_organic_compounds"
+      ]);
+      ENERGY_CLASSES = /* @__PURE__ */ new Set([
+        "energy",
+        "power",
+        "current",
+        "voltage",
+        "gas",
+        "water",
+        "power_factor",
+        "apparent_power",
+        "reactive_power",
+        "monetary"
+      ]);
+      OPEN_STATES = /* @__PURE__ */ new Set(["on", "open", "opening", "unlocked"]);
+      FAULT_CLASSES = /* @__PURE__ */ new Set([
+        "smoke",
+        "gas",
+        "carbon_monoxide",
+        "moisture",
+        "problem",
+        "tamper",
+        "safety"
+      ]);
+      OPENING_CLASSES = /* @__PURE__ */ new Set([
+        "door",
+        "window",
+        "garage_door",
+        "opening"
+      ]);
+      MOTION_CLASSES = /* @__PURE__ */ new Set(["motion", "occupancy", "presence"]);
+      BASE = { lat: 35.2271, lon: -80.8431 };
+      SPREAD = 0.9;
+    }
+  });
+
   // src/LightTable.js
   var require_LightTable = __commonJS({
     "src/LightTable.js"(exports, module) {
@@ -35264,9 +35468,11 @@
       var THREE = require_three();
       var systems2 = require_systems();
       var rooms = (init_rooms(), __toCommonJS(rooms_exports));
+      var msg = (init_message(), __toCommonJS(message_exports));
       var ROOMS2 = rooms.ROOMS;
       var BOUNDS2 = rooms.BOUNDS;
       var LEVEL1_ELEVATION2 = rooms.LEVEL1_ELEVATION;
+      var ha2 = null;
       function systemByKey(key) {
         for (var i = 0; i < systems2.length; i++) {
           if (systems2[i].key === key) {
@@ -35371,6 +35577,9 @@
       };
       LightTable2.message = function(message) {
         lastMessageTime = Date.now();
+      };
+      LightTable2.setHomeAssistant = function(client) {
+        ha2 = client;
       };
       LightTable2.setLink = function(connected) {
         $2("#datalink-status").text(connected ? "LINK: CONNECTED" : "LINK: OFFLINE").attr("class", connected ? "link-online" : "link-offline");
@@ -35712,12 +35921,170 @@
         }
         $2("#lt-command-lines").append(output);
       }
+      var HELP = [
+        ["status", "lights, alerts, temperature and what is open"],
+        ["lights off", "turn off every light that is on"],
+        ["arm away", "arm the alarm panel in away mode"],
+        ["help", "this list"],
+        ["ls", "list the systems"],
+        ["cd &lt;system&gt;", "select a system"],
+        ["run &lt;system&gt;.exe", "open that system's screen"]
+      ];
+      function entitiesIn(domains) {
+        var out = [];
+        if (!ha2) {
+          return out;
+        }
+        ha2.states.forEach(function(state2, id) {
+          for (var i = 0; i < domains.length; i++) {
+            if (id.indexOf(domains[i] + ".") === 0) {
+              out.push(state2);
+              return;
+            }
+          }
+        });
+        return out;
+      }
+      function nameOf(state2) {
+        return state2.attributes && state2.attributes.friendly_name || state2.entity_id;
+      }
+      function haReady() {
+        return ha2 && ha2.states && ha2.states.size > 0;
+      }
+      function needHa() {
+        writeResponse("<span class='alert'>No link.</span> Home Assistant is not connected yet.");
+        return false;
+      }
+      function doStatus() {
+        if (!haReady()) {
+          return needHa();
+        }
+        var lightsOn = [], alerts = [], temps = [], seenRooms = {}, i;
+        ha2.states.forEach(function(st, id) {
+          if (id.indexOf("light.") === 0 && st.state === "on") {
+            lightsOn.push(st);
+          }
+          if (msg.severityFor(id, st) === msg.Severity.ALERT) {
+            alerts.push(st);
+          }
+          var attrs = st.attributes || {};
+          if (id.indexOf("sensor.") === 0 && attrs.device_class === "temperature") {
+            var t = Number(st.state);
+            if (isFinite(t)) {
+              temps.push(t);
+            }
+          }
+          var room2 = rooms.roomForEntity(st);
+          if (room2) {
+            seenRooms[room2.key] = true;
+          }
+        });
+        var avg = null;
+        if (temps.length) {
+          var sum = 0;
+          for (i = 0; i < temps.length; i++) {
+            sum += temps[i];
+          }
+          avg = sum / temps.length;
+        }
+        var roomCount = 0, k;
+        for (k in seenRooms) {
+          if (seenRooms.hasOwnProperty(k)) {
+            roomCount++;
+          }
+        }
+        writeResponse(
+          ha2.states.size + " entities across " + roomCount + " rooms. <span class='highlight'>" + lightsOn.length + "</span> light" + (lightsOn.length === 1 ? "" : "s") + " on. " + (avg === null ? "No temperature reading." : "Average " + avg.toFixed(1) + " degrees.")
+        );
+        if (alerts.length) {
+          var names = [];
+          for (i = 0; i < alerts.length && i < 3; i++) {
+            names.push(nameOf(alerts[i]));
+          }
+          writeResponse("<span class='alert'>" + alerts.length + " need" + (alerts.length === 1 ? "s" : "") + " you:</span> " + names.join(", ") + (alerts.length > 3 ? ", and " + (alerts.length - 3) + " more" : ""));
+        } else {
+          writeResponse("Nothing needs you. All clear.");
+        }
+        return false;
+      }
+      function afterService(promise, done) {
+        promise.then(function() {
+          writeResponse(done);
+          writePrompt();
+          scrollTerminal();
+        }).catch(function(err) {
+          writeResponse("<span class='alert'>Error:</span> " + (err && err.message ? err.message : "service call failed"));
+          writePrompt();
+          scrollTerminal();
+        });
+        return true;
+      }
+      function doLightsOff() {
+        if (!haReady()) {
+          return needHa();
+        }
+        var on = [];
+        ha2.states.forEach(function(st, id) {
+          if (id.indexOf("light.") === 0 && st.state === "on") {
+            on.push(id);
+          }
+        });
+        if (!on.length) {
+          writeResponse("No lights are on.");
+          return false;
+        }
+        writeResponse("Turning off " + on.length + " light" + (on.length === 1 ? "" : "s") + "...");
+        return afterService(
+          ha2.callService("light", "turn_off", {}, { entity_id: on }),
+          "<span class='highlight'>Done.</span> " + on.length + " light" + (on.length === 1 ? "" : "s") + " off."
+        );
+      }
+      function doArmAway() {
+        if (!haReady()) {
+          return needHa();
+        }
+        var panels = entitiesIn(["alarm_control_panel"]);
+        if (!panels.length) {
+          writeResponse("<span class='alert'>No alarm panel</span> in Home Assistant.");
+          return false;
+        }
+        var ids = [], names = [], i;
+        for (i = 0; i < panels.length; i++) {
+          ids.push(panels[i].entity_id);
+          names.push(nameOf(panels[i]));
+        }
+        writeResponse("Arming away: " + names.join(", ") + "...");
+        return afterService(
+          ha2.callService("alarm_control_panel", "alarm_arm_away", {}, { entity_id: ids }),
+          "<span class='highlight'>Armed away.</span> Watch the doors."
+        );
+      }
+      function doHelp() {
+        var out = "", i;
+        for (i = 0; i < HELP.length; i++) {
+          out += '<div class="response"><span class="highlight">' + HELP[i][0] + "</span> " + HELP[i][1] + "</div>";
+        }
+        $2("#lt-command-lines").append(out);
+        return false;
+      }
+      function scrollTerminal() {
+        var cl = $2("#lt-command-lines");
+        $2("#lt-command-line").scrollTop(cl.height());
+      }
       function executeCommand() {
         var command = $2(".command-text").last().text();
         var runMatch = /^run ([a-z0-9_]+)\.exe$/.exec(command);
         var cdMatch = /^cd ([a-z0-9_]+)$/.exec(command);
         var runSystem = runMatch ? systemByKey(runMatch[1]) : null;
         var cdSystem = cdMatch ? systemByKey(cdMatch[1]) : null;
+        var handler = command === "status" ? doStatus : command === "lights off" ? doLightsOff : command === "arm away" ? doArmAway : command === "help" || command === "?" ? doHelp : null;
+        if (handler) {
+          if (!handler()) {
+            writePrompt();
+          }
+          scrollTerminal();
+          return;
+        }
         if (runSystem) {
           if (currentDir == runSystem.key) {
             $2(".ls-exec").addClass("ls-highlight");
@@ -35752,12 +36119,13 @@
         } else if (command.indexOf("run") == 0) {
           writeResponse("<span class='alert'>Access denied</span>");
           writePrompt();
+        } else if (command.length) {
+          writeResponse("unknown command, type <span class='highlight'>help</span>");
+          writePrompt();
         } else {
-          writeResponse("command not found");
           writePrompt();
         }
-        var cl = $2("#lt-command-lines");
-        $2("#lt-command-line").scrollTop(cl.height());
+        scrollTerminal();
       }
       var keyBuffer = [];
       var keysRunning = false;
@@ -49095,201 +49463,6 @@
     }
   });
 
-  // ../app/js/message.js
-  function domainOf(entityId) {
-    return entityId.split(".")[0];
-  }
-  function systemFor(entityId, state2) {
-    const domain = domainOf(entityId);
-    const cls = state2 && state2.attributes && state2.attributes.device_class || "";
-    if (domain === "binary_sensor") return CLASS_SYSTEM[cls] || "security";
-    if (domain === "sensor") {
-      if (CLIMATE_CLASSES.has(cls)) return "climate";
-      if (ENERGY_CLASSES.has(cls)) return "energy";
-      if (cls === "battery" || cls === "timestamp") return "network";
-      return "energy";
-    }
-    return DOMAIN_SYSTEM[domain] || "house";
-  }
-  function severityFor(entityId, state2) {
-    if (!state2) return Severity.NORMAL;
-    const value = String(state2.state || "").toLowerCase();
-    const attrs = state2.attributes || {};
-    const cls = attrs.device_class || "";
-    const domain = domainOf(entityId);
-    if (value === "unavailable" || value === "unknown") return Severity.NORMAL;
-    if (cls === "battery") {
-      if (domain === "binary_sensor") return value === "on" ? Severity.ALERT : Severity.NORMAL;
-      const pct = Number(state2.state);
-      if (Number.isFinite(pct) && pct <= 20) return Severity.ALERT;
-    }
-    if (attrs.battery_level !== void 0 && attrs.battery_level !== null) {
-      const level = Number(attrs.battery_level);
-      if (Number.isFinite(level) && level <= 20) return Severity.ALERT;
-    }
-    if (domain === "binary_sensor") {
-      if (FAULT_CLASSES.has(cls)) return value === "on" ? Severity.ALERT : Severity.NORMAL;
-      if (MOTION_CLASSES.has(cls)) return value === "on" ? Severity.MOTION : Severity.NORMAL;
-      if (OPENING_CLASSES.has(cls)) return value === "on" ? Severity.ALERT : Severity.NORMAL;
-      return Severity.NORMAL;
-    }
-    if (domain === "cover") {
-      return OPEN_STATES.has(value) ? Severity.ALERT : Severity.NORMAL;
-    }
-    if (domain === "lock") {
-      return value === "unlocked" ? Severity.ALERT : Severity.NORMAL;
-    }
-    if (domain === "alarm_control_panel") {
-      return value.startsWith("triggered") || value === "pending" ? Severity.ALERT : Severity.NORMAL;
-    }
-    return Severity.NORMAL;
-  }
-  function latlonFor(roomObj) {
-    if (!roomObj) return { lat: BASE.lat, lon: BASE.lon };
-    const c2 = center(roomObj);
-    const fx = (c2.x - BOUNDS.x[0]) / (BOUNDS.x[1] - BOUNDS.x[0]);
-    const fz = (c2.z - BOUNDS.z[0]) / (BOUNDS.z[1] - BOUNDS.z[0]);
-    return {
-      lat: BASE.lat + (fz - 0.5) * SPREAD,
-      lon: BASE.lon + (fx - 0.5) * SPREAD
-    };
-  }
-  function numeric(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : 0;
-  }
-  function toMessage(event) {
-    const { entityId, oldState, newState } = event;
-    const state2 = newState || oldState;
-    const attrs = state2 && state2.attributes || {};
-    const roomObj = roomForEntity(state2 || entityId);
-    const size = numeric(newState && newState.state);
-    const previousSize = numeric(oldState && oldState.state);
-    return {
-      // Encom's fields
-      stream: systemFor(entityId, state2),
-      latlon: latlonFor(roomObj),
-      location: roomObj ? roomObj.name : "Unassigned",
-      type: domainOf(entityId),
-      title: attrs.friendly_name || entityId,
-      url: "",
-      username: attrs.device_class || domainOf(entityId),
-      userurl: "",
-      picSmall: "images/not_available_small.png",
-      picLarge: "images/not_available_large.png",
-      size,
-      popularity: Math.abs(size - previousSize),
-      // Ours
-      entityId,
-      state: newState ? newState.state : null,
-      previous: oldState ? oldState.state : null,
-      unit: attrs.unit_of_measurement || "",
-      severity: severityFor(entityId, newState),
-      room: roomObj ? roomObj.key : null,
-      level: roomObj ? roomObj.level : null,
-      at: event.timeFired || (/* @__PURE__ */ new Date()).toISOString()
-    };
-  }
-  function stateToMessage(state2) {
-    return toMessage({
-      entityId: state2.entity_id,
-      oldState: null,
-      newState: state2,
-      timeFired: state2.last_changed || null
-    });
-  }
-  var Severity, DOMAIN_SYSTEM, CLASS_SYSTEM, CLIMATE_CLASSES, ENERGY_CLASSES, OPEN_STATES, FAULT_CLASSES, OPENING_CLASSES, MOTION_CLASSES, BASE, SPREAD;
-  var init_message = __esm({
-    "../app/js/message.js"() {
-      init_rooms();
-      Severity = {
-        NORMAL: "normal",
-        MOTION: "motion",
-        ALERT: "alert"
-      };
-      DOMAIN_SYSTEM = {
-        climate: "climate",
-        water_heater: "climate",
-        fan: "climate",
-        humidifier: "climate",
-        lock: "security",
-        alarm_control_panel: "security",
-        binary_sensor: "security",
-        camera: "cameras",
-        image_processing: "cameras",
-        sensor: "energy",
-        light: "house",
-        switch: "house",
-        cover: "house",
-        media_player: "house",
-        vacuum: "house",
-        scene: "house",
-        device_tracker: "network",
-        update: "network",
-        button: "network"
-      };
-      CLASS_SYSTEM = {
-        motion: "security",
-        occupancy: "security",
-        door: "security",
-        window: "security",
-        garage_door: "security",
-        opening: "security",
-        smoke: "security",
-        gas: "security",
-        carbon_monoxide: "security",
-        moisture: "security",
-        tamper: "security",
-        connectivity: "network",
-        battery: "network",
-        update: "network",
-        problem: "network"
-      };
-      CLIMATE_CLASSES = /* @__PURE__ */ new Set([
-        "temperature",
-        "humidity",
-        "pressure",
-        "atmospheric_pressure",
-        "carbon_dioxide",
-        "pm25",
-        "pm10",
-        "aqi",
-        "volatile_organic_compounds"
-      ]);
-      ENERGY_CLASSES = /* @__PURE__ */ new Set([
-        "energy",
-        "power",
-        "current",
-        "voltage",
-        "gas",
-        "water",
-        "power_factor",
-        "apparent_power",
-        "reactive_power",
-        "monetary"
-      ]);
-      OPEN_STATES = /* @__PURE__ */ new Set(["on", "open", "opening", "unlocked"]);
-      FAULT_CLASSES = /* @__PURE__ */ new Set([
-        "smoke",
-        "gas",
-        "carbon_monoxide",
-        "moisture",
-        "problem",
-        "tamper",
-        "safety"
-      ]);
-      OPENING_CLASSES = /* @__PURE__ */ new Set([
-        "door",
-        "window",
-        "garage_door",
-        "opening"
-      ]);
-      MOTION_CLASSES = /* @__PURE__ */ new Set(["motion", "occupancy", "presence"]);
-      BASE = { lat: 35.2271, lon: -80.8431 };
-      SPREAD = 0.9;
-    }
-  });
-
   // src/ha-source.js
   var ha_source_exports = {};
   __export(ha_source_exports, {
@@ -49308,11 +49481,11 @@
       );
       return null;
     }
-    var ha = new HomeAssistant(config);
+    var ha2 = new HomeAssistant(config);
     if (onStatus) {
-      ha.on("status", onStatus);
+      ha2.on("status", onStatus);
     }
-    ha.on("states", function(states) {
+    ha2.on("states", function(states) {
       seed = [];
       states.forEach(function(state2) {
         var message = stateToMessage(state2);
@@ -49322,11 +49495,11 @@
         }
       });
     });
-    ha.on("event", function(event) {
+    ha2.on("event", function(event) {
       onMessage(toMessage(event));
     });
-    ha.connect();
-    return ha;
+    ha2.connect();
+    return ha2;
   }
   var seed;
   var init_ha_source = __esm({
@@ -60777,7 +60950,7 @@
     return this;
   };
   var active2 = "lt";
-  haSource.start(function(message) {
+  var ha = haSource.start(function(message) {
     if (active2 === "lt") {
       LightTable.message(message);
     } else if (active2 === "house") {
@@ -60792,6 +60965,7 @@
     $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state2.status).toUpperCase());
     LightTable.setLink(state2.status === "ready");
   });
+  LightTable.setHomeAssistant(ha);
   var onSwitch = function(view) {
     var screensaver = $("#screensaver");
     var system = null;
