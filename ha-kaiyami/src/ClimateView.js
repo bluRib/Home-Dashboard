@@ -57,6 +57,9 @@ ClimateView.init = function (ha) {
             el: $id("cl-radar"),
             timeEl: $id("cl-radar-time"),
             windEl: $id("cl-radar-wind"),
+            bannerEl: $id("cl-radar-banner"),
+            legendEl: $id("cl-radar-legend"),
+            scrubEl: $id("cl-radar-scrub"),
             home: HOME,
             zoom: 8
         });
@@ -223,6 +226,7 @@ function renderExterior() {
     var e = feeds.exterior();
 
     radar.setWind(e.windSpeed, e.windBearing);
+    radar.setPrecip(feeds.hasPrecipitation());
 
     var html =
         '<div class="cl-now">' +

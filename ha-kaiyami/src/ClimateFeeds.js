@@ -30,8 +30,15 @@ var EXTERIOR = {
     visibility: "sensor.pirateweather_visibility",
     rainChance: "sensor.pirateweather_precip_probability",
     summary: "sensor.pirateweather_summary",
-    cloud: "sensor.pirateweather_cloud_coverage"
+    cloud: "sensor.pirateweather_cloud_coverage",
+    precipIntensity: "sensor.pirateweather_precip_intensity",
+    stormDistance: "sensor.pirateweather_nearest_storm_distance"
 };
+
+/* Roughly how far the map reaches at zoom 8 on a panel this size. A storm
+   further out than this cannot be on screen, so it does not count as
+   something to animate. */
+var MAP_RANGE_MI = 150;
 
 var ZONES = [
     { key: "up",   label: "Upstairs",   entity: "climate.loft_upstairs_thermostat" },
@@ -152,6 +159,35 @@ ClimateFeeds.prototype.exterior = function () {
         }
     }
     return out;
+};
+
+/* Is there anything falling worth animating. All three have to agree: the
+   next hour is dry, nothing is falling now, and the nearest storm is outside
+   what the map can show. Any one of them saying otherwise keeps the loop
+   running, because missing real weather is the worse failure. */
+ClimateFeeds.prototype.hasPrecipitation = function () {
+    var intensity = this.num(EXTERIOR.precipIntensity);
+    if (intensity !== null && intensity > 0) {
+        return true;
+    }
+
+    var m = this.minutely;
+    if (m && m.points && m.points.length) {
+        for (var i = 0; i < m.points.length; i++) {
+            if (m.points[i].intensity > 0) {
+                return true;
+            }
+        }
+    }
+
+    var distance = this.num(EXTERIOR.stormDistance);
+    if (distance !== null && distance <= MAP_RANGE_MI) {
+        return true;
+    }
+
+    /* Nothing said yes. If the forecast has not arrived yet, assume there is
+       weather rather than declaring the sky clear on no evidence. */
+    return m === null && intensity === null && distance === null;
 };
 
 ClimateFeeds.prototype.zones = function () {

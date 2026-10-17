@@ -50564,7 +50564,7 @@
     var n = Number(v);
     return isFinite(n) ? n : null;
   }
-  var HOME, EXTERIOR, ZONES, AIR, THERMOSTAT_ROOMS, PLANT_ROOMS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, MEDIAN_WINDOW;
+  var HOME, EXTERIOR, MAP_RANGE_MI, ZONES, AIR, THERMOSTAT_ROOMS, PLANT_ROOMS, LIMITS, ALERTS_EVERY, MINUTELY_EVERY, HISTORY_EVERY, FORECAST_EVERY, MEDIAN_WINDOW;
   var init_ClimateFeeds = __esm({
     "src/ClimateFeeds.js"() {
       HOME = { lat: 35.02763, lon: -81.99418 };
@@ -50581,8 +50581,11 @@
         visibility: "sensor.pirateweather_visibility",
         rainChance: "sensor.pirateweather_precip_probability",
         summary: "sensor.pirateweather_summary",
-        cloud: "sensor.pirateweather_cloud_coverage"
+        cloud: "sensor.pirateweather_cloud_coverage",
+        precipIntensity: "sensor.pirateweather_precip_intensity",
+        stormDistance: "sensor.pirateweather_nearest_storm_distance"
       };
+      MAP_RANGE_MI = 150;
       ZONES = [
         { key: "up", label: "Upstairs", entity: "climate.loft_upstairs_thermostat" },
         { key: "down", label: "Downstairs", entity: "climate.living_room_downstairs_thermostat" }
@@ -50672,6 +50675,25 @@
           }
         }
         return out;
+      };
+      ClimateFeeds.prototype.hasPrecipitation = function() {
+        var intensity = this.num(EXTERIOR.precipIntensity);
+        if (intensity !== null && intensity > 0) {
+          return true;
+        }
+        var m = this.minutely;
+        if (m && m.points && m.points.length) {
+          for (var i = 0; i < m.points.length; i++) {
+            if (m.points[i].intensity > 0) {
+              return true;
+            }
+          }
+        }
+        var distance = this.num(EXTERIOR.stormDistance);
+        if (distance !== null && distance <= MAP_RANGE_MI) {
+          return true;
+        }
+        return m === null && intensity === null && distance === null;
       };
       ClimateFeeds.prototype.zones = function() {
         var out = [], i;
@@ -50993,18 +51015,70 @@
     this.el = options.el;
     this.timeEl = options.timeEl || null;
     this.windEl = options.windEl || null;
+    this.bannerEl = options.bannerEl || null;
+    this.legendEl = options.legendEl || null;
+    this.scrubEl = options.scrubEl || null;
     this.home = options.home;
     this.zoom = options.zoom || 8;
     this.map = null;
     this.layers = [];
-    this.frame = 0;
-    this.started = 0;
+    this.frame = OFFSETS.length - 1;
+    this.playing = true;
+    this.hasPrecip = true;
     this.lastRefresh = 0;
     this.lastStep = 0;
     this.wind = { speed: 0, bearing: 0 };
     this.particles = [];
     this.ctx = null;
     this.canvas = null;
+    this._dragging = false;
+  }
+  function makeFilteredLayer(L) {
+    return L.GridLayer.extend({
+      initialize: function(url, options) {
+        this._url = url;
+        L.GridLayer.prototype.initialize.call(this, options);
+      },
+      createTile: function(coords, done) {
+        var size = this.getTileSize();
+        var tile = document.createElement("canvas");
+        tile.width = size.x;
+        tile.height = size.y;
+        var ctx = tile.getContext("2d", { willReadFrequently: true });
+        var img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = function() {
+          try {
+            ctx.drawImage(img, 0, 0, size.x, size.y);
+            var data = ctx.getImageData(0, 0, size.x, size.y);
+            var p = data.data;
+            for (var i = 0; i < p.length; i += 4) {
+              if (p[i + 3] === 0) {
+                continue;
+              }
+              var dbz = DBZ_BY_RGB[p[i] << 16 | p[i + 1] << 8 | p[i + 2]];
+              if (dbz === void 0 || dbz < MIN_DBZ) {
+                p[i + 3] = 0;
+              }
+            }
+            ctx.putImageData(data, 0, 0);
+          } catch (err) {
+            ctx.clearRect(0, 0, size.x, size.y);
+          }
+          done(null, tile);
+        };
+        img.onerror = function() {
+          done(null, tile);
+        };
+        img.src = L.Util.template(this._url, L.extend({
+          s: "a",
+          x: coords.x,
+          y: coords.y,
+          z: coords.z
+        }, this.options));
+        return tile;
+      }
+    });
   }
   function newParticle(w, h) {
     var max = 90 + Math.random() * 130;
@@ -51012,10 +51086,7 @@
   }
   function labelFor(index) {
     var minutes = (OFFSETS.length - 1 - index) * 5;
-    if (!minutes) {
-      return "NOW";
-    }
-    return "-" + minutes + " MIN";
+    return minutes ? "-" + minutes + " MIN" : "NOW";
   }
   function compass(deg) {
     var names = [
@@ -51038,9 +51109,11 @@
     ];
     return names[Math.round(deg % 360 / 22.5) % 16];
   }
-  var TILES, NEXRAD, OFFSETS, FRAME_MS, HOLD_MS, REFRESH_MS;
+  var RAMP_HEX, MIN_DBZ, TILES, NEXRAD, OFFSETS, FRAME_MS, HOLD_MS, REFRESH_MS, MIN_WIND_MPH, BANDS, DBZ_BY_RGB;
   var init_Radar = __esm({
     "src/Radar.js"() {
+      RAMP_HEX = "85718f85728f86738d87758b87768b887789897987897a878a7b858b7d848b7e848c7f828d81808d82808e837e8f847c8f857c90877b918879918979928b77938d759691539894579b975b9d9a60a09d64a3a068a5a36da8a671aaa976adac7ab0af7eb2b283b7b88cbabb90bdbe94bfc199c2c49dc4c7a2c7caa6cacdaaccd0afd2d4b4cfd2b4c9ccb4c6c9b4c3c7b4c0c4b4bdc1b4b9beb4b6bbb4b3b9b4b0b6b4adb3b4aab0b4a4abb4a0a8b49da5b49aa2b497a0b4949db4919ab4949bb59098b48c95b38892b2808cb07c89af7886ae7483ac7080ab6c7daa6779a96376a85f73a75b70a6576da44f67a24b64a14761a0435e9f415b9e4361a24568a6486faa4a76ae4d7db24f84b6518bbb5699c3599fc75ba6cb5eadcf60b4d462bbd865c2dc67c9e06ad0e46fd6e868d6d759d6b352d6a24bd69043d67e3cd66d35d65b11d51811d11710cd1710c81610c4160fbc150fb7140eb3140eaf130eab130da6120da2120d9e110c99110c95100c91100b880f0b840e0a800e0a7c0d0a770d09730c096f0c096b0b08660b08620a095e09327308467d085b88076f9207849d0698a806adb205c1bd05d6c704ead204ffe200ffd800ffd300ffce00ffc900ffc400ffc000ffbb00ffb600ffb100ffac00ffa700ffa200ff9900ff9400ff8f00ff8a00ff8500ff8000ff0000f80000f10000ea0000e30000d50000cd0000c60000bf0000b80000b10000aa0000a300009b00009400008d00007f0000780000710000fffffffff5ffffeaffffdfffffd4ffffc9ffffbeffffb3ffff9dffff92ffff75fffc6bfdf960faf656f7f34bf4f040f1ed36efea2bece720e9e10be3b200ffac00fca400f79b00f49300ef8800ea8300e87900e27200dd6900db05ecf005ebf005eaf005dde005dce005dbe005cdd005ccd004bdc004bcc004bbc004aeb004adb0049ea0049da0049ca0038e90038d90038c90037e80037d80036f70036e70036d70025f60025e60024f50024e50024d50023f40023e40023d40013030012f30012020011f20011e203a67b53a66b53a65b53a64b53a63b53a62b5".toLowerCase().toLowerCase();
+      MIN_DBZ = 20;
       TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
       NEXRAD = "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913";
       OFFSETS = [
@@ -51059,24 +51132,40 @@
       FRAME_MS = 600;
       HOLD_MS = 1600;
       REFRESH_MS = 5 * 60 * 1e3;
+      MIN_WIND_MPH = 5;
+      BANDS = [
+        { label: "Light", dbz: 20, color: "#00e400" },
+        { label: "Moderate", dbz: 35, color: "#ffff00" },
+        { label: "Heavy", dbz: 45, color: "#ff0000" },
+        { label: "Extreme", dbz: 55, color: "#ff00ff" }
+      ];
+      DBZ_BY_RGB = (function() {
+        var map = {};
+        for (var i = 0; i < RAMP_HEX.length; i += 6) {
+          var idx = i / 6 + 1;
+          map[parseInt(RAMP_HEX.substr(i, 6), 16)] = -32 + (idx - 1) * 0.5;
+        }
+        return map;
+      })();
       Radar.prototype.mount = function() {
         if (this.map || !this.el || typeof window.L === "undefined") {
           return;
         }
         var L = window.L;
+        var self = this;
         this.map = L.map(this.el, {
           center: [this.home.lat, this.home.lon],
           zoom: this.zoom,
           zoomControl: false,
           attributionControl: false,
-          /* Drag and scroll zoom stay on, the brief asks for them. */
           scrollWheelZoom: true,
           dragging: true
         });
         L.tileLayer(TILES, { maxZoom: 18, className: "radar-base" }).addTo(this.map);
+        var Filtered = makeFilteredLayer(L);
         for (var i = 0; i < OFFSETS.length; i++) {
           var url = NEXRAD + (OFFSETS[i] ? "-" + OFFSETS[i] : "") + "/{z}/{x}/{y}.png";
-          var layer = L.tileLayer(url, { opacity: 0, maxZoom: 12, className: "radar-echo" });
+          var layer = new Filtered(url, { opacity: 0, maxZoom: 12, className: "radar-echo" });
           layer.addTo(this.map);
           this.layers.push(layer);
         }
@@ -51095,7 +51184,8 @@
           fill: false
         }).addTo(this.map);
         this._buildWindCanvas();
-        this.started = Date.now();
+        this._buildLegend();
+        this._buildScrubber();
         this.lastRefresh = Date.now();
         this.show(OFFSETS.length - 1);
       };
@@ -51107,22 +51197,25 @@
       };
       Radar.prototype.show = function(index) {
         for (var i = 0; i < this.layers.length; i++) {
-          this.layers[i].setOpacity(i === index ? 0.75 : 0);
+          this.layers[i].setOpacity(i === index ? 0.8 : 0);
         }
         this.frame = index;
         if (this.timeEl) {
           this.timeEl.textContent = labelFor(index);
         }
+        this._paintScrubber();
       };
       Radar.prototype.tick = function() {
         if (!this.map) {
           return;
         }
         var now = Date.now();
-        var last = this.frame === this.layers.length - 1;
-        if (now - this.lastStep > (last ? FRAME_MS + HOLD_MS : FRAME_MS)) {
-          this.lastStep = now;
-          this.show((this.frame + 1) % this.layers.length);
+        if (this.playing && this.hasPrecip && !this._dragging) {
+          var last = this.frame === this.layers.length - 1;
+          if (now - this.lastStep > (last ? FRAME_MS + HOLD_MS : FRAME_MS)) {
+            this.lastStep = now;
+            this.show((this.frame + 1) % this.layers.length);
+          }
         }
         if (now - this.lastRefresh > REFRESH_MS) {
           this.lastRefresh = now;
@@ -51135,11 +51228,104 @@
           this.layers[i].redraw();
         }
       };
+      Radar.prototype.setPrecip = function(hasPrecip) {
+        if (this.hasPrecip === hasPrecip) {
+          return;
+        }
+        this.hasPrecip = hasPrecip;
+        if (this.bannerEl) {
+          this.bannerEl.textContent = hasPrecip ? "" : "NO PRECIPITATION IN RANGE";
+          this.bannerEl.style.display = hasPrecip ? "none" : "block";
+        }
+        if (!hasPrecip) {
+          this.show(this.layers.length - 1);
+        } else {
+          this.lastStep = Date.now();
+        }
+        this._paintScrubber();
+      };
+      Radar.prototype._buildLegend = function() {
+        if (!this.legendEl) {
+          return;
+        }
+        var html = '<span class="radar-legend-title">Precipitation</span>';
+        for (var i = 0; i < BANDS.length; i++) {
+          html += '<span class="radar-legend-item"><i style="background:' + BANDS[i].color + '"></i>' + BANDS[i].label + "</span>";
+        }
+        this.legendEl.innerHTML = html;
+      };
+      Radar.prototype._buildScrubber = function() {
+        if (!this.scrubEl) {
+          return;
+        }
+        var self = this;
+        var html = '<button class="radar-play" type="button"></button><div class="radar-track">';
+        for (var i = 0; i < OFFSETS.length; i++) {
+          html += '<span class="radar-tick" data-i="' + i + '"><b></b></span>';
+        }
+        html += '</div><span class="radar-stamp"></span>';
+        this.scrubEl.innerHTML = html;
+        this.scrubEl.querySelector(".radar-play").addEventListener("click", function() {
+          self.playing = !self.playing;
+          self.lastStep = Date.now();
+          self._paintScrubber();
+        });
+        var track = this.scrubEl.querySelector(".radar-track");
+        var pick = function(clientX) {
+          var box = track.getBoundingClientRect();
+          var f = (clientX - box.left) / Math.max(1, box.width);
+          var i2 = Math.round(f * (OFFSETS.length - 1));
+          self.show(Math.max(0, Math.min(OFFSETS.length - 1, i2)));
+        };
+        track.addEventListener("pointerdown", function(e) {
+          self._dragging = true;
+          self.playing = false;
+          track.setPointerCapture(e.pointerId);
+          pick(e.clientX);
+        });
+        track.addEventListener("pointermove", function(e) {
+          if (self._dragging) {
+            pick(e.clientX);
+          }
+        });
+        var release = function() {
+          self._dragging = false;
+          self._paintScrubber();
+        };
+        track.addEventListener("pointerup", release);
+        track.addEventListener("pointercancel", release);
+        this._paintScrubber();
+      };
+      Radar.prototype._paintScrubber = function() {
+        if (!this.scrubEl) {
+          return;
+        }
+        var play = this.scrubEl.querySelector(".radar-play");
+        if (play) {
+          var running = this.playing && this.hasPrecip;
+          play.textContent = running ? "\u2590\u2590" : "\u25B6";
+          play.title = running ? "Pause" : "Play";
+          play.className = "radar-play" + (running ? " on" : "");
+        }
+        var ticks = this.scrubEl.querySelectorAll(".radar-tick");
+        for (var i = 0; i < ticks.length; i++) {
+          var isNow = i === OFFSETS.length - 1;
+          ticks[i].className = "radar-tick" + (i === this.frame ? " on" : "") + (isNow ? " now" : "") + (i <= this.frame ? " past" : "");
+          ticks[i].firstChild.textContent = isNow ? "Now" : i % 2 === 0 ? "-" + (OFFSETS.length - 1 - i) * 5 : "";
+        }
+        var stamp2 = this.scrubEl.querySelector(".radar-stamp");
+        if (stamp2) {
+          var at = new Date(Date.now() - (OFFSETS.length - 1 - this.frame) * 5 * 6e4);
+          var h = at.getHours() % 12 || 12;
+          var m = at.getMinutes();
+          stamp2.textContent = h + ":" + (m < 10 ? "0" + m : m) + (at.getHours() < 12 ? "am" : "pm");
+        }
+      };
       Radar.prototype.setWind = function(speedMph, bearingDegrees) {
         this.wind.speed = Number(speedMph) || 0;
         this.wind.bearing = Number(bearingDegrees) || 0;
         if (this.windEl) {
-          this.windEl.textContent = Math.round(this.wind.speed) + " mph " + compass(this.wind.bearing);
+          this.windEl.textContent = this.wind.speed < MIN_WIND_MPH ? "calm" : Math.round(this.wind.speed) + " mph " + compass(this.wind.bearing);
         }
       };
       Radar.prototype._buildWindCanvas = function() {
@@ -51163,7 +51349,7 @@
         this.canvas.style.width = w + "px";
         this.canvas.style.height = h + "px";
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        var want = Math.round(w * h / 14e3);
+        var want = Math.round(w * h / 2e4);
         this.particles = [];
         for (var i = 0; i < want; i++) {
           this.particles.push(newParticle(w, h));
@@ -51179,11 +51365,14 @@
         }
         var ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
+        if (this.wind.speed < MIN_WIND_MPH) {
+          return;
+        }
         var rad = (this.wind.bearing + 180) * Math.PI / 180;
-        var speed = 0.25 + this.wind.speed * 0.055;
+        var speed = 0.2 + this.wind.speed * 0.04;
         var dx = Math.sin(rad) * speed;
         var dy = -Math.cos(rad) * speed;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 0.7;
         for (var i = 0; i < this.particles.length; i++) {
           var p = this.particles[i];
           var px = p.x, py = p.y;
@@ -51194,10 +51383,10 @@
             this.particles[i] = newParticle(w, h);
             continue;
           }
-          ctx.strokeStyle = "rgba(191,244,255," + (0.07 + 0.2 * (p.life / p.max)) + ")";
+          ctx.strokeStyle = "rgba(191,244,255," + (0.03 + 0.09 * (p.life / p.max)) + ")";
           ctx.beginPath();
           ctx.moveTo(px, py);
-          ctx.lineTo(px - dx * 7, py - dy * 7);
+          ctx.lineTo(px - dx * 9, py - dy * 9);
           ctx.stroke();
         }
       };
@@ -51283,6 +51472,7 @@
     }
     var e = feeds2.exterior();
     radar.setWind(e.windSpeed, e.windBearing);
+    radar.setPrecip(feeds2.hasPrecipitation());
     var html = '<div class="cl-now"><div class="cl-now-temp">' + (e.temperature === null ? "--" : Math.round(e.temperature)) + '<i>F</i></div><div class="cl-now-cond">' + (e.summary || "") + '</div><div class="cl-now-feels">Feels ' + (e.apparent === null ? "--" : Math.round(e.apparent)) + "F</div></div>";
     html += '<div class="cl-reads">';
     html += one("Humidity", e.humidity === null ? null : Math.round(e.humidity), "%");
@@ -51738,6 +51928,9 @@
             el: $id2("cl-radar"),
             timeEl: $id2("cl-radar-time"),
             windEl: $id2("cl-radar-wind"),
+            bannerEl: $id2("cl-radar-banner"),
+            legendEl: $id2("cl-radar-legend"),
+            scrubEl: $id2("cl-radar-scrub"),
             home: HOME,
             zoom: 8
           });

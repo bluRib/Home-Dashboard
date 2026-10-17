@@ -70,11 +70,17 @@
 #cl-radar-panel .hs-body {
     border: 1px solid rgba(0, 238, 238, .22);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
+/* The map takes what is left after the scrubber, which keeps its own height
+   instead of being drawn over the bottom of the radar. */
 #cl-radar {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
     background: #03060a;
 }
 
@@ -116,6 +122,128 @@
 
 #cl-radar-hud span { opacity: .65; letter-spacing: .1em; text-transform: uppercase; }
 #cl-radar-hud b { color: #fff; font-weight: normal; }
+
+/* Said plainly when the filtered radar is empty and Pirate Weather agrees,
+   so an empty map reads as an answer rather than a broken panel. */
+#cl-radar-banner {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    transform: translateX(-50%);
+    z-index: 500;
+    display: none;
+    padding: 3px 10px;
+    background: rgba(0, 0, 0, .72);
+    border: 1px solid rgba(0, 238, 238, .4);
+    color: #9fe8e8;
+    font-size: clamp(9px, 0.58vw, 12px);
+    letter-spacing: .14em;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* ---- precipitation legend ---- */
+
+#cl-radar-legend {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    gap: clamp(5px, 0.5vw, 10px);
+    padding: 2px 7px;
+    background: rgba(0, 0, 0, .66);
+    border: 1px solid rgba(0, 238, 238, .35);
+    font-size: clamp(8px, 0.52vw, 11px);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+.radar-legend-title { opacity: .55; }
+.radar-legend-item { display: flex; align-items: center; opacity: .9; }
+
+.radar-legend-item i {
+    width: 9px;
+    height: 9px;
+    margin-right: 4px;
+    font-style: normal;
+}
+
+/* ---- timeline scrubber ---- */
+
+#cl-radar-scrub {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px 2px;
+    border-top: 1px solid rgba(0, 238, 238, .22);
+}
+
+.radar-play {
+    flex: none;
+    width: clamp(18px, 1.5vw, 26px);
+    height: clamp(16px, 1.3vw, 22px);
+    background: #000;
+    border: 1px solid rgba(0, 238, 238, .45);
+    color: #9fe8e8;
+    font-family: inherit;
+    font-size: clamp(7px, 0.46vw, 10px);
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.radar-play.on { border-color: #00eeee; color: #00eeee; }
+.radar-play:hover { background: #00eeee; color: #000; }
+
+.radar-track {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: flex-end;
+    height: clamp(18px, 1.7vw, 28px);
+    cursor: pointer;
+    touch-action: none;
+}
+
+.radar-tick {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-left: 1px solid rgba(0, 238, 238, .18);
+}
+
+.radar-tick:last-child { border-right: 1px solid rgba(0, 238, 238, .18); }
+
+/* The played part of the strip, so the position is readable at a glance. */
+.radar-tick.past { background: rgba(0, 238, 238, .07); }
+.radar-tick.on { background: rgba(0, 238, 238, .26); }
+.radar-tick.now { border-left-color: rgba(0, 238, 238, .55); }
+
+.radar-tick b {
+    font-weight: normal;
+    font-size: clamp(7px, 0.46vw, 10px);
+    opacity: .6;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.radar-tick.on b { opacity: 1; color: #fff; }
+.radar-tick.now b { color: #00eeee; opacity: .9; }
+
+.radar-stamp {
+    flex: none;
+    font-size: clamp(8px, 0.55vw, 12px);
+    color: #fff;
+    white-space: nowrap;
+}
 
 /* ---- outside readouts ------------------------------------------------------ */
 
