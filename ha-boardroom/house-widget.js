@@ -40,8 +40,16 @@ window.HouseWidget = {
         screen.show();
         mounted = true;
 
+        /* Mark the panel once the model is on screen. This used to target
+           "house-widget", which is not an element on the page, so every
+           successful load threw inside the then() and surfaced through the
+           catch() below as if the model had failed to load. The panel that
+           actually holds the canvas is #hs-house. */
         screen.load().then(function () {
-            document.getElementById("house-widget").classList.add("ready");
+            var panel = document.getElementById("hs-house");
+            if (panel) {
+                panel.classList.add("ready");
+            }
         }).catch(function (err) {
             console.error("house-widget: " + err.message);
         });

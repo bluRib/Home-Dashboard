@@ -57,7 +57,13 @@ ul {
 
 }
 
+/* The launcher draws one border, and it is the outer box, which sits exactly
+   on the edge of the screen. This inner box is now only a positioning frame
+   for the columns, so it keeps its geometry and loses its border. It keeps
+   the container-border class so the launch fade still picks it up. */
 #lt-container-inside {
+    border: none;
+    box-shadow: none;
     position:absolute;
     left: 20px;
     top: 5px;
@@ -474,7 +480,7 @@ ul {
 
 }
 
-#lt-sys-logo {
+#lt-brand-logo {
     font-family: 'Terminator';
     position: absolute;
     font-size: 8pt;
@@ -812,7 +818,7 @@ ul {
 
     }
 
-    #lt-sys-logo {
+    #lt-brand-logo {
         top: 35px;
     }
 
