@@ -7,3 +7,5 @@ Quick map:
 - `viewer/` the 3D house viewer: three pages you can double click (source is `tools/viewer-template.html`)
 - `concepts/` two earlier dashboard mockups, reference only
 - `tools/` Python scripts to rebuild `model/` and `viewer/`
+- `app/` the Home Assistant data layer and the standalone link check and house pages
+- `ha-kaiyami/` the dashboard itself, the Encom Boardroom fork, served at `/ha-kaiyami/`

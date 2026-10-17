@@ -22,7 +22,7 @@ DEFAULT_OUT = os.path.join(ROOT, 'app', 'js', 'config.js')
 # baked into build/encom-boardroom.js, which is committed. So the token is
 # handed to it at runtime through a plain global instead, written here and
 # gitignored, never imported by the bundle.
-FORK_OUT = os.path.join(ROOT, 'ha-boardroom', 'config.local.js')
+FORK_OUT = os.path.join(ROOT, 'ha-kaiyami', 'config.local.js')
 
 DEFAULTS = {
     'HA_HOST': 'homeassistant.local',

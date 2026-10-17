@@ -3,12 +3,12 @@
 # committed. The .example file is the safe template.
 app/.env
 app/js/config.js
-ha-boardroom/config.local.js
+ha-kaiyami/config.local.js
 !app/.env.example
 
 # Dependencies and the esbuild binary, restored by
-# ha-boardroom/tools/install-deps.py
-ha-boardroom/node_modules/
+# ha-kaiyami/tools/install-deps.py
+ha-kaiyami/node_modules/
 
 # Python
 __pycache__/

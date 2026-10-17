@@ -33,7 +33,7 @@ export function start(onMessage, onStatus) {
     if (!config) {
         console.error(
             "ha-source: window.HA_CONFIG is missing. Run tools/gen_config.py " +
-            "from the project root, which writes ha-boardroom/config.local.js, " +
+            "from the project root, which writes ha-kaiyami/config.local.js, " +
             "and make sure index.html loads it before the bundle.");
         return null;
     }

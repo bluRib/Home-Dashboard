@@ -1,6 +1,6 @@
 """Install the client side dependencies and esbuild, without Node or npm.
 
-usage (from the ha-boardroom folder):
+usage (from the ha-kaiyami folder):
     python tools/install-deps.py
 
 Why this exists: upstream's package.json mixes 2014 era server dependencies
@@ -114,7 +114,7 @@ def install_esbuild():
 
 def main():
     if not os.path.isdir('src'):
-        sys.exit('run this from the ha-boardroom folder')
+        sys.exit('run this from the ha-kaiyami folder')
     print('installing client dependencies')
     seen = set()
     for name, version in PACKAGES.items():
