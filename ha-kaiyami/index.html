@@ -36,12 +36,21 @@
              no key at all. document.write keeps this synchronous and ahead of
              the bundle, which reads window.HA_CONFIG as it loads. -->
         <script>
-            document.write('<script src="config.local.js?t=' +
-                Date.now() + '"><\/script>');
+            /* One stamp for everything that changes when the app is rebuilt:
+               the config, the bundle, and the house widget module. A plain
+               src is cached by the browser, and after a rebuild a reload kept
+               serving the previous build, so a screen that had been changed
+               still looked like the old one. document.write keeps these
+               synchronous and in order, which the bundle needs because it
+               reads window.HA_CONFIG as it loads. */
+            (function () {
+                var t = Date.now();
+                document.write('<script src="config.local.js?t=' + t + '"><\/script>');
+                document.write('<script src="build/kaiyami.js?t=' + t + '"><\/script>');
+                document.write('<script type="module" src="house-widget.js?t=' +
+                    t + '"><\/script>');
+            }());
         </script>
-        <script src="build/kaiyami.js"></script>
-        <!-- three.js r128, module scoped, kept away from the bundle r66 -->
-        <script type="module" src="house-widget.js"></script>
         <!-- endref -->
 
     </head>
