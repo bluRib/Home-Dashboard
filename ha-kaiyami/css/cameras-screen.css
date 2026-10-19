@@ -1,0 +1,737 @@
+/* Cameras screen: the Grid's surveillance room.
+ *
+ * Full viewport grid, same approach as House, Climate and Security, and it
+ * borrows .hs-head / .hs-body from house-screen.css for the panel chrome. The
+ * chrome is recoloured to #3fe0ff here rather than Encom's #00eeee, because
+ * this screen is built on the palette in BUILD.md section 4.
+ *
+ * Nothing in here is a Home Assistant camera card. Every feed is a vector
+ * frame: thin cyan border, corner brackets, a header bar and a footer of
+ * status, wrapped around a picture that is pushed to grayscale and then colour
+ * blended back to cyan so the whole wall is monochrome.
+ *
+ * Palette: #3fe0ff primary, #bff4ff text, #ff8a1f alert, #4dffb0 motion.
+ * Orange appears only for a real person, vehicle or doorbell press.
+ */
+
+#cameras-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 14px;
+    gap: 10px;
+    background: #03060a;
+
+    /* Feeds take the room; the log and the clock share the right column, with
+       the clock pinned to the bottom right the way every other screen has it. */
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 21vw);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "status status"
+        "stage  log"
+        "stage  clock";
+
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    color: #bff4ff;
+    font-size: clamp(11px, 0.75vw, 16px);
+}
+
+#cameras-screen * { box-sizing: border-box; }
+
+#cm-status  { grid-area: status; }
+#cam-stage  { grid-area: stage; }
+#cm-log-panel { grid-area: log; }
+#cm-clock   { grid-area: clock; }
+
+#cameras-screen .cm-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* The shared Encom header rules, on this screen's palette. */
+#cameras-screen .hs-head { color: #3fe0ff; border-bottom-color: #3fe0ff; }
+#cameras-screen .hs-head::after { border-bottom-color: rgba(63, 224, 255, .35); }
+#cameras-screen .hs-head em { color: #3fe0ff; opacity: .72; }
+
+.cam-wait { opacity: .45; }
+
+/* ---- status row ------------------------------------------------------------ */
+
+#cm-status {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    min-height: 0;
+}
+
+.cm-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3px 12px;
+    border: 1px solid rgba(63, 224, 255, .25);
+    border-left: 3px solid #3fe0ff;
+    min-width: 0;
+}
+
+.cm-stat b {
+    color: #e6fbff;
+    font-weight: normal;
+    font-size: clamp(16px, 1.45vw, 30px);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cm-stat span {
+    font-size: clamp(9px, 0.55vw, 12px);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: .62;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cm-stat.bad { border-color: rgba(255, 138, 31, .5); border-left-color: #ff8a1f; }
+.cm-stat.bad b { color: #ff8a1f; }
+.cm-stat.bad span { opacity: .85; }
+
+/* ---- the stage that holds the feeds ---------------------------------------- */
+
+#cam-stage {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+#cam-grid {
+    flex: 1 1 auto;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Enlarged: the chosen feed fills the stage and the other three drop to a
+   strip of thumbnails underneath. Auto placement puts them in row 2. */
+#cam-grid.focus {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr) clamp(76px, 11.5vh, 150px);
+}
+
+#cam-grid.focus .cam-tile { grid-row: 2; }
+
+#cam-grid.focus .cam-tile.is-focus {
+    grid-row: 1;
+    grid-column: 1 / -1;
+}
+
+/* ---- one feed frame --------------------------------------------------------- */
+
+.cam-tile {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    cursor: pointer;
+    outline: none;
+}
+
+.cam-frame {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid rgba(63, 224, 255, .45);
+    background: #03060a;
+    transition: border-color .18s linear, box-shadow .18s linear;
+}
+
+.cam-tile:focus-visible .cam-frame,
+.cam-tile:hover .cam-frame {
+    border-color: #3fe0ff;
+    box-shadow: 0 0 clamp(8px, 1vw, 20px) rgba(63, 224, 255, .22);
+}
+
+/* Corner brackets. Thin, and they take the frame's alert colour with it. */
+.cam-c {
+    position: absolute;
+    width: clamp(12px, 1.5vw, 28px);
+    height: clamp(12px, 1.5vw, 28px);
+    border: 0 solid #3fe0ff;
+    filter: drop-shadow(0 0 3px rgba(63, 224, 255, .8));
+    pointer-events: none;
+    z-index: 32;
+}
+
+.cam-c.tl { top: -1px;    left: -1px;  border-top-width: 2px; border-left-width: 2px; }
+.cam-c.tr { top: -1px;    right: -1px; border-top-width: 2px; border-right-width: 2px; }
+.cam-c.bl { bottom: -1px; left: -1px;  border-bottom-width: 2px; border-left-width: 2px; }
+.cam-c.br { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
+
+/* ---- header bar ------------------------------------------------------------- */
+
+.cam-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 0.7vw, 14px);
+    padding: 2px clamp(6px, 0.7vw, 14px);
+    border-bottom: 1px solid rgba(63, 224, 255, .35);
+    background: rgba(63, 224, 255, .07);
+    font-size: clamp(8px, 0.56vw, 12px);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.cam-idno {
+    color: #03060a;
+    background: #3fe0ff;
+    padding: 0 .5em;
+    letter-spacing: .14em;
+    flex: none;
+}
+
+.cam-name { color: #e6fbff; letter-spacing: .2em; overflow: hidden; text-overflow: ellipsis; }
+.cam-view { color: #3fe0ff; opacity: .6; overflow: hidden; text-overflow: ellipsis; }
+
+/* The timecode holds the right edge, so the name never pushes it off. */
+.cam-tc {
+    margin-left: auto;
+    flex: none;
+    color: #bff4ff;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .1em;
+}
+
+/* ---- the picture ------------------------------------------------------------- */
+
+.cam-screen {
+    flex: 1 1 auto;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: #03060a;
+    /* Keeps the colour blend layer below from reaching the page behind it. */
+    isolation: isolate;
+}
+
+.cam-still,
+.cam-video,
+.cam-mjpeg,
+.cam-static {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* Grayscale first, then the tint layer paints the palette back on.
+   Brightness is pulled down before contrast is applied: at brightness above 1
+   the daylight feeds clipped every highlight to flat white, which reads as
+   blown out rather than desaturated. Contrast stays just above 1 so the
+   picture keeps its separation once the colour is gone. */
+.cam-still,
+.cam-video,
+.cam-mjpeg {
+    filter: grayscale(1) brightness(.74) contrast(1.12);
+}
+
+/* Hidden until a frame has actually decoded, so a dead feed shows the NO
+   SIGNAL panel and never a broken image icon. */
+.cam-video, .cam-mjpeg, .cam-still { opacity: 0; transition: opacity .3s linear; }
+.cam-video.on, .cam-mjpeg.on, .cam-still.on { opacity: 1; }
+
+.cam-still { filter: grayscale(1) brightness(.62) contrast(1.1) blur(1px); }
+
+/* No filter on purpose: the snow is drawn in cyan already, and grayscale
+   would be undoing the one thing the canvas is for. */
+.cam-static {
+    opacity: 0;
+    z-index: 2;
+    /* Drawn at a third of the frame, so let it scale up hard. Smoothing turns
+       snow into a grey wash. */
+    image-rendering: pixelated;
+}
+.cam-tile.offline .cam-static { opacity: .82; }
+
+/* Tint to #3fe0ff. The colour blend mode takes hue and saturation from this
+   layer and luminosity from the picture under it, so the image keeps all of
+   its detail and simply stops being colour. Slightly under full opacity so it
+   reads desaturated rather than neon. */
+.cam-tint {
+    position: absolute;
+    inset: 0;
+    background: #3fe0ff;
+    mix-blend-mode: color;
+    opacity: .80;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Fine scanlines. 1px line on a 3px pitch, low alpha, so the picture stays
+   clear at every size. */
+.cam-scan {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 10, 14, .30) 0, rgba(0, 10, 14, .30) 1px,
+        rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 3px);
+}
+
+/* The slow bright roll a CRT refresh leaves behind. */
+.cam-scan::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 18%;
+    background: linear-gradient(to bottom,
+        rgba(63, 224, 255, 0) 0%,
+        rgba(63, 224, 255, .07) 50%,
+        rgba(63, 224, 255, 0) 100%);
+    animation: cam-roll 7s linear infinite;
+}
+
+@keyframes cam-roll {
+    0%   { top: -20%; }
+    100% { top: 100%; }
+}
+
+/* Very subtle noise, from an SVG turbulence tile that jumps position a few
+   times a second. Cheaper than a canvas per feed and it never touches the
+   main loop. */
+.cam-grain {
+    position: absolute;
+    inset: -20px;
+    pointer-events: none;
+    z-index: 5;
+    opacity: .05;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
+    animation: cam-grain .8s steps(1) infinite;
+}
+
+@keyframes cam-grain {
+    0%   { background-position: 0 0; }
+    25%  { background-position: -42px 24px; }
+    50%  { background-position: 31px -33px; }
+    75%  { background-position: -18px -12px; }
+    100% { background-position: 14px 29px; }
+}
+
+/* Slight vignette, enough to round the corners of the light without eating
+   anything at the edge of frame. */
+.cam-vig {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    background: radial-gradient(ellipse at 50% 50%,
+        rgba(0, 0, 0, 0) 48%, rgba(1, 8, 12, .72) 100%);
+}
+
+/* ---- real detection boxes only --------------------------------------------- */
+
+/* Nothing on this house publishes box coordinates, so this layer stays empty.
+   The rule exists so a real box renders correctly the day one arrives. */
+.cam-boxes { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+
+.cam-boxes span {
+    position: absolute;
+    border: 1px solid #ff8a1f;
+    box-shadow: 0 0 10px rgba(255, 138, 31, .45);
+}
+
+/* ---- NO SIGNAL --------------------------------------------------------------- */
+
+.cam-nosig {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5em;
+    pointer-events: none;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 50%,
+        rgba(3, 6, 10, .18) 0%, rgba(3, 6, 10, .62) 100%);
+}
+
+.cam-nosig b {
+    color: #bff4ff;
+    font-weight: normal;
+    font-size: clamp(12px, 1.5vw, 32px);
+    letter-spacing: .34em;
+    padding: .08em .45em .08em .8em;
+    background: rgba(3, 6, 10, .74);
+    text-shadow: 0 0 clamp(6px, 0.8vw, 16px) rgba(63, 224, 255, .7);
+    animation: cam-nosig 2.4s ease-in-out infinite;
+}
+
+.cam-lastseen {
+    font-size: clamp(7px, 0.52vw, 11px);
+    letter-spacing: .18em;
+    color: #3fe0ff;
+    padding: .25em .7em;
+    background: rgba(3, 6, 10, .74);
+}
+
+@keyframes cam-nosig {
+    0%, 100% { opacity: 1; }
+    48%      { opacity: .42; }
+    50%      { opacity: .9; }
+}
+
+/* ---- detection badge --------------------------------------------------------- */
+
+.cam-badge {
+    position: absolute;
+    left: 0;
+    top: clamp(4px, 0.8vh, 12px);
+    z-index: 20;
+    padding: 1px clamp(5px, 0.6vw, 12px);
+    font-size: clamp(8px, 0.6vw, 13px);
+    letter-spacing: .22em;
+    white-space: nowrap;
+    color: #03060a;
+    background: #4dffb0;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity .14s linear, transform .14s linear;
+}
+
+.cam-tile.det .cam-badge { opacity: 1; transform: translateX(0); }
+.cam-tile.det-alert .cam-badge { background: #ff8a1f; }
+
+/* ---- footer status ----------------------------------------------------------- */
+
+.cam-foot {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 0.7vw, 14px);
+    padding: 1px clamp(6px, 0.7vw, 14px);
+    background: linear-gradient(to top,
+        rgba(3, 6, 10, .82) 0%, rgba(3, 6, 10, 0) 100%);
+    font-size: clamp(7px, 0.52vw, 11px);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* REC with its dot, pulsing only while the feed really is recording. */
+.cam-rec {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: .45em;
+    color: #bff4ff;
+    opacity: .3;
+}
+
+.cam-rec i {
+    width: .62em;
+    height: .62em;
+    border-radius: 50%;
+    background: #2aa3bb;
+    display: block;
+}
+
+.cam-rec.on { opacity: 1; color: #ff8a1f; }
+.cam-rec.on i { background: #ff8a1f; animation: cam-rec 1.5s ease-in-out infinite; }
+
+@keyframes cam-rec {
+    0%, 100% { opacity: 1;  box-shadow: 0 0 6px rgba(255, 138, 31, .9); }
+    50%      { opacity: .25; box-shadow: 0 0 0 rgba(255, 138, 31, 0); }
+}
+
+/* Signal strength. Driven by measured stream health, not decoration: dropped
+   frames and buffer depth for HLS, and the MJPEG fallback never shows four. */
+.cam-bars {
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    height: 1em;
+}
+
+.cam-bars b {
+    width: .3em;
+    background: rgba(63, 224, 255, .22);
+    display: block;
+}
+
+.cam-bars b:nth-child(1) { height: 32%; }
+.cam-bars b:nth-child(2) { height: 55%; }
+.cam-bars b:nth-child(3) { height: 78%; }
+.cam-bars b:nth-child(4) { height: 100%; }
+.cam-bars b.on { background: #3fe0ff; }
+
+.cam-live { flex: none; color: #bff4ff; opacity: .6; }
+.cam-live.ok { color: #4dffb0; opacity: 1; }
+.cam-live.bad { color: #ff8a1f; opacity: 1; }
+
+/* The detectors this camera actually has. Lit when one is reporting. */
+.cam-kinds {
+    margin-left: auto;
+    display: flex;
+    gap: .5em;
+    overflow: hidden;
+}
+
+.cam-kinds i {
+    font-style: normal;
+    color: #3fe0ff;
+    opacity: .34;
+    letter-spacing: .12em;
+}
+
+.cam-kinds i.on { opacity: 1; }
+.cam-kinds i.on.alert  { color: #ff8a1f; }
+.cam-kinds i.on.motion { color: #4dffb0; }
+
+/* ---- detection highlight ------------------------------------------------------ */
+
+.cam-tile.det-motion .cam-frame {
+    border-color: #4dffb0;
+    box-shadow: 0 0 0 1px rgba(77, 255, 176, .35),
+                0 0 clamp(10px, 1.3vw, 26px) rgba(77, 255, 176, .26);
+}
+
+.cam-tile.det-motion .cam-c { border-color: #4dffb0; }
+.cam-tile.det-motion .cam-head { border-bottom-color: rgba(77, 255, 176, .55); }
+
+.cam-tile.det-alert .cam-frame {
+    border-color: #ff8a1f;
+    box-shadow: 0 0 0 1px rgba(255, 138, 31, .45),
+                0 0 clamp(12px, 1.6vw, 32px) rgba(255, 138, 31, .32);
+    animation: cam-alert 1.3s ease-in-out infinite;
+}
+
+.cam-tile.det-alert .cam-c { border-color: #ff8a1f; }
+.cam-tile.det-alert .cam-idno { background: #ff8a1f; }
+.cam-tile.det-alert .cam-head {
+    border-bottom-color: rgba(255, 138, 31, .6);
+    background: rgba(255, 138, 31, .10);
+}
+
+@keyframes cam-alert {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(255, 138, 31, .45),
+                           0 0 clamp(12px, 1.6vw, 32px) rgba(255, 138, 31, .32); }
+    50%      { box-shadow: 0 0 0 1px rgba(255, 138, 31, .75),
+                           0 0 clamp(18px, 2.3vw, 48px) rgba(255, 138, 31, .5); }
+}
+
+/* ---- the glitch flash when a detection fires ---------------------------------- */
+
+.cam-tile.glitching .cam-screen { animation: cam-glitch .4s steps(1) 1; }
+
+@keyframes cam-glitch {
+    0%   { transform: translate3d(0, 0, 0);       filter: brightness(1.9) contrast(1.5); }
+    14%  { transform: translate3d(-1.6%, 0, 0) scaleX(1.03); filter: brightness(.55); }
+    28%  { transform: translate3d(1.2%, 0.6%, 0); filter: brightness(1.6) contrast(1.3); }
+    42%  { transform: translate3d(-0.7%, 0, 0) scaleY(1.02); filter: brightness(.8); }
+    56%  { transform: translate3d(0.5%, -0.4%, 0); filter: brightness(1.25); }
+    70%  { transform: translate3d(-0.2%, 0, 0);   filter: none; }
+    100% { transform: translate3d(0, 0, 0);       filter: none; }
+}
+
+/* A band of torn scanlines rides over the picture for the same 400 ms. */
+.cam-tile.glitching .cam-screen::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 14%;
+    z-index: 30;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(191, 244, 255, .5) 0, rgba(191, 244, 255, .5) 1px,
+        rgba(63, 224, 255, .12) 1px, rgba(63, 224, 255, .12) 4px);
+    animation: cam-tear .4s steps(5) 1;
+}
+
+@keyframes cam-tear {
+    0%   { top: 8%;  opacity: .9; }
+    40%  { top: 62%; opacity: .7; }
+    70%  { top: 30%; opacity: .5; }
+    100% { top: 88%; opacity: 0; }
+}
+
+/* ---- thumbnails, while one feed is enlarged ------------------------------------ */
+
+#cam-grid.focus .cam-tile:not(.is-focus) .cam-view,
+#cam-grid.focus .cam-tile:not(.is-focus) .cam-kinds,
+#cam-grid.focus .cam-tile:not(.is-focus) .cam-tc { display: none; }
+
+#cam-grid.focus .cam-tile:not(.is-focus) .cam-head { letter-spacing: .1em; }
+#cam-grid.focus .cam-tile:not(.is-focus) .cam-badge { letter-spacing: .1em; }
+#cam-grid.focus .cam-tile:not(.is-focus) .cam-nosig b { letter-spacing: .18em; }
+
+/* ---- the scanline wipe between layouts ---------------------------------------- */
+
+#cam-wipe {
+    position: absolute;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(to bottom,
+        rgba(63, 224, 255, 0)    0%,
+        rgba(63, 224, 255, .04) 38%,
+        rgba(63, 224, 255, .45) 47%,
+        rgba(230, 251, 255, .92) 50%,
+        rgba(63, 224, 255, .45) 53%,
+        rgba(63, 224, 255, .04) 62%,
+        rgba(63, 224, 255, 0)  100%);
+}
+
+#cam-wipe.run { animation: cam-wipe .46s linear 1; }
+
+@keyframes cam-wipe {
+    0%   { opacity: 1; transform: translateY(-105%); }
+    100% { opacity: 1; transform: translateY(105%); }
+}
+
+/* Dense scanlines ride down with the band so the swap reads as digital rather
+   than as a fade. */
+#cam-wipe::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(63, 224, 255, .22) 0, rgba(63, 224, 255, .22) 1px,
+        rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 4px);
+}
+
+/* The feeds themselves shear for the length of the wipe, which is what hides
+   the grid reflow happening underneath it. */
+#cam-stage.wiping #cam-grid { animation: cam-shear .46s steps(6) 1; }
+
+@keyframes cam-shear {
+    0%   { transform: translateX(0);      filter: brightness(1.5); }
+    20%  { transform: translateX(-0.5%);  filter: brightness(.6); }
+    40%  { transform: translateX(0.35%);  filter: brightness(1.3); }
+    60%  { transform: translateX(-0.2%);  filter: brightness(.85); }
+    80%  { transform: translateX(0.1%);   filter: brightness(1.1); }
+    100% { transform: translateX(0);      filter: none; }
+}
+
+/* ---- detection log ------------------------------------------------------------- */
+
+#cm-log-panel .hs-body { display: flex; flex-direction: column; min-height: 0; }
+
+#cam-log { flex: 1 1 auto; overflow-y: auto; min-height: 0; }
+
+.cam-log-row {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    gap: clamp(5px, 0.6vw, 12px);
+    font-size: clamp(9px, 0.56vw, 12px);
+    padding: 1px 2px;
+    border-bottom: 1px solid rgba(63, 224, 255, .08);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.cam-log-row:hover { background: rgba(63, 224, 255, .08); }
+.cam-log-row.on    { background: rgba(63, 224, 255, .14); }
+
+.cam-log-row .t { opacity: .5; font-variant-numeric: tabular-nums; }
+.cam-log-row .c { color: #3fe0ff; opacity: .8; }
+.cam-log-row .w { overflow: hidden; text-overflow: ellipsis; }
+.cam-log-row .k { text-transform: uppercase; letter-spacing: .08em; opacity: .75; }
+.cam-log-row .k b { font-weight: normal; opacity: .6; }
+
+.cam-log-row.alert  .k, .cam-log-row.alert  .w { color: #ff8a1f; }
+.cam-log-row.motion .k { color: #4dffb0; }
+
+/* Thin cyan scrollbar instead of the platform one, which reads as a seam on a
+   screen with no other chrome. */
+#cam-log::-webkit-scrollbar { width: 6px; }
+#cam-log::-webkit-scrollbar-track { background: rgba(63, 224, 255, .05); }
+#cam-log::-webkit-scrollbar-thumb { background: rgba(63, 224, 255, .3); }
+#cam-log::-webkit-scrollbar-thumb:hover { background: rgba(63, 224, 255, .5); }
+
+/* ---- clock, bottom right ------------------------------------------------------- */
+
+#cm-clock {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 0;
+    padding: 2px clamp(4px, 0.5vw, 10px);
+    border-top: 1px solid rgba(63, 224, 255, .22);
+}
+
+#cm-time {
+    color: #e6fbff;
+    font-size: clamp(18px, 1.9vw, 38px);
+    line-height: 1.05;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+#cm-time small {
+    font-size: .45em;
+    letter-spacing: .12em;
+    margin-left: .35em;
+    color: #bff4ff;
+}
+
+#cm-date {
+    font-size: clamp(9px, 0.6vw, 13px);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .7;
+    white-space: nowrap;
+}
+
+/* ---- reduced motion ------------------------------------------------------------ */
+
+/* The roll, the grain and the pulses are atmosphere. Anyone who has asked the
+   OS for less motion keeps the whole layout and loses only the animation. */
+@media (prefers-reduced-motion: reduce) {
+    .cam-grain,
+    .cam-scan::after { animation: none; }
+    .cam-rec.on i,
+    .cam-tile.det-alert .cam-frame,
+    .cam-nosig b { animation: none; }
+    #cam-wipe.run,
+    #cam-stage.wiping #cam-grid,
+    .cam-tile.glitching .cam-screen,
+    .cam-tile.glitching .cam-screen::after { animation: none; }
+}

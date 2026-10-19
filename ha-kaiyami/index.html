@@ -13,10 +13,19 @@
         <link href="css/house-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/climate-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/security-screen.css" rel="stylesheet" type="text/css" />
+        <link href="css/cameras-screen.css" rel="stylesheet" type="text/css" />
         <!-- Leaflet, for the radar map on the Climate screen. Plain global,
              separate from the fork's three.js r66 and the house widget's r128. -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet" type="text/css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+        <!-- hls.js, for the camera feeds on the Cameras screen. Home Assistant
+             hands back an HLS playlist from its stream component and nothing
+             but Safari plays that natively.
+             The light build on purpose: it drops subtitles, alternate audio and
+             DRM, none of which a security camera has, and it is the same build
+             Home Assistant's own frontend uses against these streams. -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.16/hls.light.min.js"></script>
 
         <script src="js/globe-grid.js"></script>
         <script src="js/github-2013.js"></script>
@@ -995,6 +1004,40 @@
                         <canvas id="cl-thermal-canvas"></canvas>
                     </div>
                 </div>
+            </div>
+
+        </div>
+
+        <!-- The Cameras screen. Four feed frames are built by CameraView from
+             the camera table in src/CameraFeeds.js, so the only markup here is
+             the furniture around them: the status row, the stage the feeds live
+             in, the detection log, and the clock. -->
+        <div id="cameras-screen">
+
+            <div id="cm-status">
+                <div class="cm-stat" id="cm-stat-online"><b>--</b><span>Cameras online</span></div>
+                <div class="cm-stat" id="cm-stat-rec"><b>--</b><span>Recording</span></div>
+                <div class="cm-stat" id="cm-stat-today"><b>--</b><span>Detections today</span></div>
+                <div class="cm-stat" id="cm-stat-person"><b>--</b><span>Last person detected</span></div>
+            </div>
+
+            <div id="cam-stage">
+                <div class="hs-head" id="cam-grid-head">Feeds <em>Click a feed to enlarge</em></div>
+                <div id="cam-grid"></div>
+                <!-- The scanline wipe that covers the layout swap. -->
+                <div id="cam-wipe"></div>
+            </div>
+
+            <div class="cm-panel" id="cm-log-panel">
+                <div class="hs-head">Detection Log <em>Newest first</em></div>
+                <div class="hs-body">
+                    <div id="cam-log"><div class="cam-wait">Loading history</div></div>
+                </div>
+            </div>
+
+            <div id="cm-clock">
+                <div id="cm-time">--:--:--</div>
+                <div id="cm-date"></div>
             </div>
 
         </div>

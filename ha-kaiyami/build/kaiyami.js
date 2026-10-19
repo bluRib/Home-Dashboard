@@ -8,20 +8,11 @@
     if (fn) return fn();
     throw new Error("Module not found in bundle: " + path);
   };
-  var __esm = (fn, res, err) => function __init() {
-    if (err) throw err[0];
-    try {
-      return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-    } catch (e) {
-      throw err = [e], e;
-    }
+  var __esm = (fn, res) => function __init() {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
   var __commonJS = (cb, mod) => function __require() {
-    try {
-      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-    } catch (e) {
-      throw mod = 0, e;
-    }
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __export = (target, all) => {
     for (var name in all)
@@ -380,7 +371,7 @@
            *
            * Date: 2014-12-16
            */
-          (function(window3) {
+          function(window3) {
             var i, support2, Expr, getText, isXML, tokenize, compile, select, outermostContext, sortInput, hasDuplicate, setDocument, document3, docElem2, documentIsHTML, rbuggyQSA, rbuggyMatches, matches, contains2, expando = "sizzle" + 1 * /* @__PURE__ */ new Date(), preferredDoc = window3.document, dirruns = 0, done = 0, classCache = createCache(), tokenCache = createCache(), compilerCache = createCache(), sortOrder = function(a, b) {
               if (a === b) {
                 hasDuplicate = true;
@@ -1561,7 +1552,7 @@
               });
             }
             return Sizzle2;
-          })(window2)
+          }(window2)
         );
         jQuery.find = Sizzle;
         jQuery.expr = Sizzle.selectors;
@@ -7273,13 +7264,13 @@
         return moment.lang("cs", {
           months,
           monthsShort,
-          monthsParse: (function(months2, monthsShort2) {
+          monthsParse: function(months2, monthsShort2) {
             var i, _monthsParse = [];
             for (i = 0; i < 12; i++) {
               _monthsParse[i] = new RegExp("^" + months2[i] + "$|^" + monthsShort2[i] + "$", "i");
             }
             return _monthsParse;
-          })(months, monthsShort),
+          }(months, monthsShort),
           weekdays: "ned\u011Ble_pond\u011Bl\xED_\xFAter\xFD_st\u0159eda_\u010Dtvrtek_p\xE1tek_sobota".split("_"),
           weekdaysShort: "ne_po_\xFAt_st_\u010Dt_p\xE1_so".split("_"),
           weekdaysMin: "ne_po_\xFAt_st_\u010Dt_p\xE1_so".split("_"),
@@ -9777,13 +9768,9 @@
           weekday = parseInt(weekday, 10);
           switch (weekday) {
             case 0:
-            // Sonndeg
             case 1:
-            // Méindeg
             case 3:
-            // Mëttwoch
             case 5:
-            // Freideg
             case 6:
               return true;
             default:
@@ -11188,13 +11175,13 @@
         return moment.lang("sk", {
           months,
           monthsShort,
-          monthsParse: (function(months2, monthsShort2) {
+          monthsParse: function(months2, monthsShort2) {
             var i, _monthsParse = [];
             for (i = 0; i < 12; i++) {
               _monthsParse[i] = new RegExp("^" + months2[i] + "$|^" + monthsShort2[i] + "$", "i");
             }
             return _monthsParse;
-          })(months, monthsShort),
+          }(months, monthsShort),
           weekdays: "nede\u013Ea_pondelok_utorok_streda_\u0161tvrtok_piatok_sobota".split("_"),
           weekdaysShort: "ne_po_ut_st_\u0161t_pi_so".split("_"),
           weekdaysMin: "ne_po_ut_st_\u0161t_pi_so".split("_"),
@@ -13402,17 +13389,14 @@
               if (strict) {
                 return parseTokenOneDigit;
               }
-            /* falls through */
             case "SS":
               if (strict) {
                 return parseTokenTwoDigits;
               }
-            /* falls through */
             case "SSS":
               if (strict) {
                 return parseTokenThreeDigits;
               }
-            /* falls through */
             case "DDD":
               return parseTokenOneToThreeDigits;
             case "MMM":
@@ -13472,22 +13456,18 @@
         function addTimeToArrayFromToken(token, input, config) {
           var a, datePartArray = config._a;
           switch (token) {
-            // QUARTER
             case "Q":
               if (input != null) {
                 datePartArray[MONTH] = (toInt(input) - 1) * 3;
               }
               break;
-            // MONTH
             case "M":
-            // fall through to MM
             case "MM":
               if (input != null) {
                 datePartArray[MONTH] = toInt(input) - 1;
               }
               break;
             case "MMM":
-            // fall through to MMMM
             case "MMMM":
               a = getLangDefinition(config._l).monthsParse(input);
               if (a != null) {
@@ -13496,9 +13476,7 @@
                 config._pf.invalidMonth = input;
               }
               break;
-            // DAY OF MONTH
             case "D":
-            // fall through to DD
             case "DD":
               if (input != null) {
                 datePartArray[DATE] = toInt(input);
@@ -13509,15 +13487,12 @@
                 datePartArray[DATE] = toInt(parseInt(input, 10));
               }
               break;
-            // DAY OF YEAR
             case "DDD":
-            // fall through to DDDD
             case "DDDD":
               if (input != null) {
                 config._dayOfYear = toInt(input);
               }
               break;
-            // YEAR
             case "YY":
               datePartArray[YEAR] = moment.parseTwoDigitYear(input);
               break;
@@ -13526,48 +13501,34 @@
             case "YYYYYY":
               datePartArray[YEAR] = toInt(input);
               break;
-            // AM / PM
             case "a":
-            // fall through to A
             case "A":
               config._isPm = getLangDefinition(config._l).isPM(input);
               break;
-            // 24 HOUR
             case "H":
-            // fall through to hh
             case "HH":
-            // fall through to hh
             case "h":
-            // fall through to hh
             case "hh":
               datePartArray[HOUR] = toInt(input);
               break;
-            // MINUTE
             case "m":
-            // fall through to mm
             case "mm":
               datePartArray[MINUTE] = toInt(input);
               break;
-            // SECOND
             case "s":
-            // fall through to ss
             case "ss":
               datePartArray[SECOND] = toInt(input);
               break;
-            // MILLISECOND
             case "S":
             case "SS":
             case "SSS":
             case "SSSS":
               datePartArray[MILLISECOND] = toInt(("0." + input) * 1e3);
               break;
-            // UNIX TIMESTAMP WITH MS
             case "X":
               config._d = new Date(parseFloat(input) * 1e3);
               break;
-            // TIMEZONE
             case "Z":
-            // fall through to ZZ
             case "ZZ":
               config._useUTC = true;
               config._tzm = timezoneMinutesFromString(input);
@@ -13583,7 +13544,6 @@
             case "e":
             case "E":
               token = token.substr(0, 1);
-            /* falls through */
             case "gg":
             case "gggg":
             case "GG":
@@ -14163,22 +14123,17 @@
             switch (units) {
               case "year":
                 this.month(0);
-              /* falls through */
               case "quarter":
               case "month":
                 this.date(1);
-              /* falls through */
               case "week":
               case "isoWeek":
               case "day":
                 this.hours(0);
-              /* falls through */
               case "hour":
                 this.minutes(0);
-              /* falls through */
               case "minute":
                 this.seconds(0);
-              /* falls through */
               case "second":
                 this.milliseconds(0);
             }
@@ -15376,7 +15331,7 @@
           }
           return this;
         },
-        clampScalar: /* @__PURE__ */ (function() {
+        clampScalar: /* @__PURE__ */ function() {
           var min, max;
           return function(minVal, maxVal) {
             if (min === void 0) {
@@ -15387,7 +15342,7 @@
             max.set(maxVal, maxVal);
             return this.clamp(min, max);
           };
-        })(),
+        }(),
         floor: function() {
           this.x = Math.floor(this.x);
           this.y = Math.floor(this.y);
@@ -15575,7 +15530,7 @@
           this.z = a.z * b.z;
           return this;
         },
-        applyEuler: /* @__PURE__ */ (function() {
+        applyEuler: /* @__PURE__ */ function() {
           var quaternion;
           return function(euler) {
             if (euler instanceof THREE.Euler === false) {
@@ -15585,15 +15540,15 @@
             this.applyQuaternion(quaternion.setFromEuler(euler));
             return this;
           };
-        })(),
-        applyAxisAngle: /* @__PURE__ */ (function() {
+        }(),
+        applyAxisAngle: /* @__PURE__ */ function() {
           var quaternion;
           return function(axis, angle) {
             if (quaternion === void 0) quaternion = new THREE.Quaternion();
             this.applyQuaternion(quaternion.setFromAxisAngle(axis, angle));
             return this;
           };
-        })(),
+        }(),
         applyMatrix3: function(m) {
           var x = this.x;
           var y = this.y;
@@ -15708,7 +15663,7 @@
           }
           return this;
         },
-        clampScalar: /* @__PURE__ */ (function() {
+        clampScalar: /* @__PURE__ */ function() {
           var min, max;
           return function(minVal, maxVal) {
             if (min === void 0) {
@@ -15719,7 +15674,7 @@
             max.set(maxVal, maxVal, maxVal);
             return this.clamp(min, max);
           };
-        })(),
+        }(),
         floor: function() {
           this.x = Math.floor(this.x);
           this.y = Math.floor(this.y);
@@ -15794,7 +15749,7 @@
           this.z = ax * by - ay * bx;
           return this;
         },
-        projectOnVector: /* @__PURE__ */ (function() {
+        projectOnVector: /* @__PURE__ */ function() {
           var v1, dot;
           return function(vector) {
             if (v1 === void 0) v1 = new THREE.Vector3();
@@ -15802,22 +15757,22 @@
             dot = this.dot(v1);
             return this.copy(v1).multiplyScalar(dot);
           };
-        })(),
-        projectOnPlane: /* @__PURE__ */ (function() {
+        }(),
+        projectOnPlane: /* @__PURE__ */ function() {
           var v1;
           return function(planeNormal) {
             if (v1 === void 0) v1 = new THREE.Vector3();
             v1.copy(this).projectOnVector(planeNormal);
             return this.sub(v1);
           };
-        })(),
-        reflect: /* @__PURE__ */ (function() {
+        }(),
+        reflect: /* @__PURE__ */ function() {
           var v1;
           return function(normal) {
             if (v1 === void 0) v1 = new THREE.Vector3();
             return this.sub(v1.copy(normal).multiplyScalar(2 * this.dot(normal)));
           };
-        })(),
+        }(),
         angleTo: function(v) {
           var theta = this.dot(v) / (this.length() * v.length());
           return Math.acos(THREE.Math.clamp(theta, -1, 1));
@@ -16158,7 +16113,7 @@
           }
           return this;
         },
-        clampScalar: /* @__PURE__ */ (function() {
+        clampScalar: /* @__PURE__ */ function() {
           var min, max;
           return function(minVal, maxVal) {
             if (min === void 0) {
@@ -16169,7 +16124,7 @@
             max.set(maxVal, maxVal, maxVal, maxVal);
             return this.clamp(min, max);
           };
-        })(),
+        }(),
         floor: function() {
           this.x = Math.floor(this.x);
           this.y = Math.floor(this.y);
@@ -16429,13 +16384,13 @@
           if (update !== false) this._updateQuaternion();
           return this;
         },
-        reorder: (function() {
+        reorder: function() {
           var q = new THREE.Quaternion();
           return function(newOrder) {
             q.setFromEuler(this);
             this.setFromQuaternion(q, newOrder);
           };
-        })(),
+        }(),
         fromArray: function(array) {
           this._x = array[0];
           this._y = array[1];
@@ -16488,7 +16443,7 @@
           var result = optionalTarget || new THREE.Vector3();
           return this.delta(result).multiplyScalar(t).add(this.start);
         },
-        closestPointToPointParameter: (function() {
+        closestPointToPointParameter: function() {
           var startP = new THREE.Vector3();
           var startEnd = new THREE.Vector3();
           return function(point, clampToLine) {
@@ -16502,7 +16457,7 @@
             }
             return t;
           };
-        })(),
+        }(),
         closestPointToPoint: function(point, clampToLine, optionalTarget) {
           var t = this.closestPointToPointParameter(point, clampToLine);
           var result = optionalTarget || new THREE.Vector3();
@@ -16554,7 +16509,7 @@
           }
           return this;
         },
-        setFromCenterAndSize: (function() {
+        setFromCenterAndSize: function() {
           var v1 = new THREE.Vector2();
           return function(center2, size) {
             var halfSize = v1.copy(size).multiplyScalar(0.5);
@@ -16562,7 +16517,7 @@
             this.max.copy(center2).add(halfSize);
             return this;
           };
-        })(),
+        }(),
         copy: function(box) {
           this.min.copy(box.min);
           this.max.copy(box.max);
@@ -16628,13 +16583,13 @@
           var result = optionalTarget || new THREE.Vector2();
           return result.copy(point).clamp(this.min, this.max);
         },
-        distanceToPoint: (function() {
+        distanceToPoint: function() {
           var v1 = new THREE.Vector2();
           return function(point) {
             var clampedPoint = v1.copy(point).clamp(this.min, this.max);
             return clampedPoint.sub(point).length();
           };
-        })(),
+        }(),
         intersect: function(box) {
           this.min.max(box.min);
           this.max.min(box.max);
@@ -16698,7 +16653,7 @@
           }
           return this;
         },
-        setFromCenterAndSize: (function() {
+        setFromCenterAndSize: function() {
           var v1 = new THREE.Vector3();
           return function(center2, size) {
             var halfSize = v1.copy(size).multiplyScalar(0.5);
@@ -16706,8 +16661,8 @@
             this.max.copy(center2).add(halfSize);
             return this;
           };
-        })(),
-        setFromObject: (function() {
+        }(),
+        setFromObject: function() {
           var v1 = new THREE.Vector3();
           return function(object) {
             var scope = this;
@@ -16725,7 +16680,7 @@
             });
             return this;
           };
-        })(),
+        }(),
         copy: function(box) {
           this.min.copy(box.min);
           this.max.copy(box.max);
@@ -16792,14 +16747,14 @@
           var result = optionalTarget || new THREE.Vector3();
           return result.copy(point).clamp(this.min, this.max);
         },
-        distanceToPoint: (function() {
+        distanceToPoint: function() {
           var v1 = new THREE.Vector3();
           return function(point) {
             var clampedPoint = v1.copy(point).clamp(this.min, this.max);
             return clampedPoint.sub(point).length();
           };
-        })(),
-        getBoundingSphere: (function() {
+        }(),
+        getBoundingSphere: function() {
           var v1 = new THREE.Vector3();
           return function(optionalTarget) {
             var result = optionalTarget || new THREE.Sphere();
@@ -16807,7 +16762,7 @@
             result.radius = this.size(v1).length() * 0.5;
             return result;
           };
-        })(),
+        }(),
         intersect: function(box) {
           this.min.max(box.min);
           this.max.min(box.max);
@@ -16818,7 +16773,7 @@
           this.max.max(box.max);
           return this;
         },
-        applyMatrix4: (function() {
+        applyMatrix4: function() {
           var points = [
             new THREE.Vector3(),
             new THREE.Vector3(),
@@ -16842,7 +16797,7 @@
             this.setFromPoints(points);
             return this;
           };
-        })(),
+        }(),
         translate: function(offset) {
           this.min.add(offset);
           this.max.add(offset);
@@ -16917,7 +16872,7 @@
           console.warn("DEPRECATED: Matrix3's .multiplyVector3() has been removed. Use vector.applyMatrix3( matrix ) instead.");
           return vector.applyMatrix3(this);
         },
-        multiplyVector3Array: (function() {
+        multiplyVector3Array: function() {
           var v1 = new THREE.Vector3();
           return function(a) {
             for (var i = 0, il = a.length; i < il; i += 3) {
@@ -16931,7 +16886,7 @@
             }
             return a;
           };
-        })(),
+        }(),
         multiplyScalar: function(s) {
           var te = this.elements;
           te[0] *= s;
@@ -17118,7 +17073,7 @@
           te[14] = me[14];
           return this;
         },
-        extractRotation: (function() {
+        extractRotation: function() {
           var v1 = new THREE.Vector3();
           return function(m) {
             var te = this.elements;
@@ -17137,7 +17092,7 @@
             te[10] = me[10] * scaleZ;
             return this;
           };
-        })(),
+        }(),
         makeRotationFromEuler: function(euler) {
           if (euler instanceof THREE.Euler === false) {
             console.error("ERROR: Matrix's .makeRotationFromEuler() now expects a Euler rotation rather than a Vector3 and order.  Please update your code.");
@@ -17252,7 +17207,7 @@
           te[15] = 1;
           return this;
         },
-        lookAt: (function() {
+        lookAt: function() {
           var x = new THREE.Vector3();
           var y = new THREE.Vector3();
           var z = new THREE.Vector3();
@@ -17279,7 +17234,7 @@
             te[10] = z.z;
             return this;
           };
-        })(),
+        }(),
         multiply: function(m, n) {
           if (n !== void 0) {
             console.warn("DEPRECATED: Matrix4's .multiply() now only accepts one argument. Use .multiplyMatrices( a, b ) instead.");
@@ -17366,7 +17321,7 @@
           console.warn("DEPRECATED: Matrix4's .multiplyVector4() has been removed. Use vector.applyMatrix4( matrix ) instead.");
           return vector.applyMatrix4(this);
         },
-        multiplyVector3Array: (function() {
+        multiplyVector3Array: function() {
           var v1 = new THREE.Vector3();
           return function(a) {
             for (var i = 0, il = a.length; i < il; i += 3) {
@@ -17380,7 +17335,7 @@
             }
             return a;
           };
-        })(),
+        }(),
         rotateAxis: function(v) {
           console.warn("DEPRECATED: Matrix4's .rotateAxis() has been removed. Use Vector3.transformDirection( matrix ) instead.");
           v.transformDirection(this);
@@ -17460,14 +17415,14 @@
           flat[offset + 15] = te[15];
           return flat;
         },
-        getPosition: (function() {
+        getPosition: function() {
           var v1 = new THREE.Vector3();
           return function() {
             console.warn("DEPRECATED: Matrix4's .getPosition() has been removed. Use Vector3.setFromMatrixPosition( matrix ) instead.");
             var te = this.elements;
             return v1.set(te[12], te[13], te[14]);
           };
-        })(),
+        }(),
         setPosition: function(v) {
           var te = this.elements;
           te[12] = v.x;
@@ -17691,7 +17646,7 @@
           this.setPosition(position);
           return this;
         },
-        decompose: (function() {
+        decompose: function() {
           var vector = new THREE.Vector3();
           var matrix = new THREE.Matrix4();
           return function(position, quaternion, scale) {
@@ -17725,7 +17680,7 @@
             scale.z = sz;
             return this;
           };
-        })(),
+        }(),
         makeFrustum: function(left, right, bottom, top, near, far) {
           var te = this.elements;
           var x = 2 * near / (right - left);
@@ -17852,13 +17807,13 @@
           var result = optionalTarget || new THREE.Vector3();
           return result.copy(this.direction).multiplyScalar(t).add(this.origin);
         },
-        recast: (function() {
+        recast: function() {
           var v1 = new THREE.Vector3();
           return function(t) {
             this.origin.copy(this.at(t, v1));
             return this;
           };
-        })(),
+        }(),
         closestPointToPoint: function(point, optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
           result.subVectors(point, this.origin);
@@ -17868,7 +17823,7 @@
           }
           return result.copy(this.direction).multiplyScalar(directionDistance).add(this.origin);
         },
-        distanceToPoint: (function() {
+        distanceToPoint: function() {
           var v1 = new THREE.Vector3();
           return function(point) {
             var directionDistance = v1.subVectors(point, this.origin).dot(this.direction);
@@ -17878,7 +17833,7 @@
             v1.copy(this.direction).multiplyScalar(directionDistance).add(this.origin);
             return v1.distanceTo(point);
           };
-        })(),
+        }(),
         distanceSqToSegment: function(v0, v1, optionalPointOnRay, optionalPointOnSegment) {
           var segCenter = v0.clone().add(v1).multiplyScalar(0.5);
           var segDir = v1.clone().sub(v0).normalize();
@@ -17971,12 +17926,12 @@
           }
           return this.at(t, optionalTarget);
         },
-        isIntersectionBox: (function() {
+        isIntersectionBox: function() {
           var v = new THREE.Vector3();
           return function(box) {
             return this.intersectBox(box, v) !== null;
           };
-        })(),
+        }(),
         intersectBox: function(box, optionalTarget) {
           var tmin, tmax, tymin, tymax, tzmin, tzmax;
           var invdirx = 1 / this.direction.x, invdiry = 1 / this.direction.y, invdirz = 1 / this.direction.z;
@@ -18011,7 +17966,7 @@
           if (tmax < 0) return null;
           return this.at(tmin >= 0 ? tmin : tmax, optionalTarget);
         },
-        intersectTriangle: (function() {
+        intersectTriangle: function() {
           var diff = new THREE.Vector3();
           var edge1 = new THREE.Vector3();
           var edge2 = new THREE.Vector3();
@@ -18049,7 +18004,7 @@
             }
             return this.at(QdN / DdN, optionalTarget);
           };
-        })(),
+        }(),
         applyMatrix4: function(matrix4) {
           this.direction.add(this.origin).applyMatrix4(matrix4);
           this.origin.applyMatrix4(matrix4);
@@ -18075,7 +18030,7 @@
           this.radius = radius;
           return this;
         },
-        setFromPoints: (function() {
+        setFromPoints: function() {
           var box = new THREE.Box3();
           return function(points, optionalCenter) {
             var center2 = this.center;
@@ -18091,7 +18046,7 @@
             this.radius = Math.sqrt(maxRadiusSq);
             return this;
           };
-        })(),
+        }(),
         copy: function(sphere) {
           this.center.copy(sphere.center);
           this.radius = sphere.radius;
@@ -18186,7 +18141,7 @@
           planes[5].setComponents(me3 + me2, me7 + me6, me11 + me10, me15 + me14).normalize();
           return this;
         },
-        intersectsObject: (function() {
+        intersectsObject: function() {
           var sphere = new THREE.Sphere();
           return function(object) {
             var geometry = object.geometry;
@@ -18195,7 +18150,7 @@
             sphere.applyMatrix4(object.matrixWorld);
             return this.intersectsSphere(sphere);
           };
-        })(),
+        }(),
         intersectsSphere: function(sphere) {
           var planes = this.planes;
           var center2 = sphere.center;
@@ -18208,7 +18163,7 @@
           }
           return true;
         },
-        intersectsBox: (function() {
+        intersectsBox: function() {
           var p1 = new THREE.Vector3(), p2 = new THREE.Vector3();
           return function(box) {
             var planes = this.planes;
@@ -18228,7 +18183,7 @@
             }
             return true;
           };
-        })(),
+        }(),
         containsPoint: function(point) {
           var planes = this.planes;
           for (var i = 0; i < 6; i++) {
@@ -18263,7 +18218,7 @@
           this.constant = -point.dot(this.normal);
           return this;
         },
-        setFromCoplanarPoints: (function() {
+        setFromCoplanarPoints: function() {
           var v1 = new THREE.Vector3();
           var v2 = new THREE.Vector3();
           return function(a, b, c2) {
@@ -18271,7 +18226,7 @@
             this.setFromNormalAndCoplanarPoint(normal, a);
             return this;
           };
-        })(),
+        }(),
         copy: function(plane) {
           this.normal.copy(plane.normal);
           this.constant = plane.constant;
@@ -18307,7 +18262,7 @@
           var endSign = this.distanceToPoint(line.end);
           return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
         },
-        intersectLine: (function() {
+        intersectLine: function() {
           var v1 = new THREE.Vector3();
           return function(line, optionalTarget) {
             var result = optionalTarget || new THREE.Vector3();
@@ -18325,12 +18280,12 @@
             }
             return result.copy(direction).multiplyScalar(t).add(line.start);
           };
-        })(),
+        }(),
         coplanarPoint: function(optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
           return result.copy(this.normal).multiplyScalar(-this.constant);
         },
-        applyMatrix4: (function() {
+        applyMatrix4: function() {
           var v1 = new THREE.Vector3();
           var v2 = new THREE.Vector3();
           var m1 = new THREE.Matrix3();
@@ -18342,7 +18297,7 @@
             this.setFromNormalAndCoplanarPoint(newNormal, newCoplanarPoint);
             return this;
           };
-        })(),
+        }(),
         translate: function(offset) {
           this.constant = this.constant - offset.dot(this.normal);
           return this;
@@ -18356,7 +18311,7 @@
       };
       THREE.Math = {
         PI2: Math.PI * 2,
-        generateUUID: (function() {
+        generateUUID: function() {
           var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");
           var uuid = new Array(36);
           var rnd = 0, r;
@@ -18375,7 +18330,7 @@
             }
             return uuid.join("");
           };
-        })(),
+        }(),
         // Clamp value to range <a, b>
         clamp: function(x, a, b) {
           return x < a ? a : x > b ? b : x;
@@ -18421,18 +18376,18 @@
         sign: function(x) {
           return x < 0 ? -1 : x > 0 ? 1 : 0;
         },
-        degToRad: (function() {
+        degToRad: function() {
           var degreeToRadiansFactor = Math.PI / 180;
           return function(degrees2) {
             return degrees2 * degreeToRadiansFactor;
           };
-        })(),
-        radToDeg: (function() {
+        }(),
+        radToDeg: function() {
           var radianToDegreesFactor = 180 / Math.PI;
           return function(radians) {
             return radians * radianToDegreesFactor;
           };
-        })(),
+        }(),
         isPowerOfTwo: function(value) {
           return (value & value - 1) === 0 && value !== 0;
         }
@@ -18523,7 +18478,7 @@
         this.b = b !== void 0 ? b : new THREE.Vector3();
         this.c = c2 !== void 0 ? c2 : new THREE.Vector3();
       };
-      THREE.Triangle.normal = (function() {
+      THREE.Triangle.normal = function() {
         var v0 = new THREE.Vector3();
         return function(a, b, c2, optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
@@ -18536,8 +18491,8 @@
           }
           return result.set(0, 0, 0);
         };
-      })();
-      THREE.Triangle.barycoordFromPoint = (function() {
+      }();
+      THREE.Triangle.barycoordFromPoint = function() {
         var v0 = new THREE.Vector3();
         var v1 = new THREE.Vector3();
         var v2 = new THREE.Vector3();
@@ -18560,14 +18515,14 @@
           var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
           return result.set(1 - u - v, v, u);
         };
-      })();
-      THREE.Triangle.containsPoint = (function() {
+      }();
+      THREE.Triangle.containsPoint = function() {
         var v1 = new THREE.Vector3();
         return function(point, a, b, c2) {
           var result = THREE.Triangle.barycoordFromPoint(point, a, b, c2, v1);
           return result.x >= 0 && result.y >= 0 && result.x + result.y <= 1;
         };
-      })();
+      }();
       THREE.Triangle.prototype = {
         constructor: THREE.Triangle,
         set: function(a, b, c2) {
@@ -18588,7 +18543,7 @@
           this.c.copy(triangle.c);
           return this;
         },
-        area: (function() {
+        area: function() {
           var v0 = new THREE.Vector3();
           var v1 = new THREE.Vector3();
           return function() {
@@ -18596,7 +18551,7 @@
             v1.subVectors(this.a, this.b);
             return v0.cross(v1).length() * 0.5;
           };
-        })(),
+        }(),
         midpoint: function(optionalTarget) {
           var result = optionalTarget || new THREE.Vector3();
           return result.addVectors(this.a, this.b).add(this.c).multiplyScalar(1 / 3);
@@ -18704,7 +18659,7 @@
             }
           }
         },
-        dispatchEvent: /* @__PURE__ */ (function() {
+        dispatchEvent: /* @__PURE__ */ function() {
           var array = [];
           return function(event) {
             if (this._listeners === void 0) return;
@@ -18721,7 +18676,7 @@
               }
             }
           };
-        })()
+        }()
       };
       (function(THREE2) {
         THREE2.Raycaster = function(origin, direction, near, far) {
@@ -19067,33 +19022,33 @@
         setRotationFromQuaternion: function(q) {
           this.quaternion.copy(q);
         },
-        rotateOnAxis: (function() {
+        rotateOnAxis: function() {
           var q1 = new THREE.Quaternion();
           return function(axis, angle) {
             q1.setFromAxisAngle(axis, angle);
             this.quaternion.multiply(q1);
             return this;
           };
-        })(),
-        rotateX: (function() {
+        }(),
+        rotateX: function() {
           var v1 = new THREE.Vector3(1, 0, 0);
           return function(angle) {
             return this.rotateOnAxis(v1, angle);
           };
-        })(),
-        rotateY: (function() {
+        }(),
+        rotateY: function() {
           var v1 = new THREE.Vector3(0, 1, 0);
           return function(angle) {
             return this.rotateOnAxis(v1, angle);
           };
-        })(),
-        rotateZ: (function() {
+        }(),
+        rotateZ: function() {
           var v1 = new THREE.Vector3(0, 0, 1);
           return function(angle) {
             return this.rotateOnAxis(v1, angle);
           };
-        })(),
-        translateOnAxis: (function() {
+        }(),
+        translateOnAxis: function() {
           var v1 = new THREE.Vector3();
           return function(axis, distance) {
             v1.copy(axis);
@@ -19101,45 +19056,45 @@
             this.position.add(v1.multiplyScalar(distance));
             return this;
           };
-        })(),
+        }(),
         translate: function(distance, axis) {
           console.warn("DEPRECATED: Object3D's .translate() has been removed. Use .translateOnAxis( axis, distance ) instead. Note args have been changed.");
           return this.translateOnAxis(axis, distance);
         },
-        translateX: (function() {
+        translateX: function() {
           var v1 = new THREE.Vector3(1, 0, 0);
           return function(distance) {
             return this.translateOnAxis(v1, distance);
           };
-        })(),
-        translateY: (function() {
+        }(),
+        translateY: function() {
           var v1 = new THREE.Vector3(0, 1, 0);
           return function(distance) {
             return this.translateOnAxis(v1, distance);
           };
-        })(),
-        translateZ: (function() {
+        }(),
+        translateZ: function() {
           var v1 = new THREE.Vector3(0, 0, 1);
           return function(distance) {
             return this.translateOnAxis(v1, distance);
           };
-        })(),
+        }(),
         localToWorld: function(vector) {
           return vector.applyMatrix4(this.matrixWorld);
         },
-        worldToLocal: (function() {
+        worldToLocal: function() {
           var m1 = new THREE.Matrix4();
           return function(vector) {
             return vector.applyMatrix4(m1.getInverse(this.matrixWorld));
           };
-        })(),
-        lookAt: (function() {
+        }(),
+        lookAt: function() {
           var m1 = new THREE.Matrix4();
           return function(vector) {
             m1.lookAt(vector, this.position, this.up);
             this.quaternion.setFromRotationMatrix(m1);
           };
-        })(),
+        }(),
         add: function(object) {
           if (object === this) {
             console.warn("THREE.Object3D.add: An object can't be added as a child of itself.");
@@ -19280,14 +19235,14 @@
           _viewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
           return vector.applyProjection(_viewProjectionMatrix);
         };
-        this.unprojectVector = (function() {
+        this.unprojectVector = function() {
           var projectionMatrixInverse = new THREE.Matrix4();
           return function(vector, camera) {
             projectionMatrixInverse.getInverse(camera.projectionMatrix);
             _viewProjectionMatrix.multiplyMatrices(camera.matrixWorld, projectionMatrixInverse);
             return vector.applyProjection(_viewProjectionMatrix);
           };
-        })();
+        }();
         this.pickingRay = function(vector, camera) {
           vector.z = -1;
           var end = new THREE.Vector3(vector.x, vector.y, 1);
@@ -19805,7 +19760,7 @@
             this.boundingBox.max.set(0, 0, 0);
           }
         },
-        computeBoundingSphere: (function() {
+        computeBoundingSphere: function() {
           var box = new THREE.Box3();
           var vector = new THREE.Vector3();
           return function() {
@@ -19829,7 +19784,7 @@
               this.boundingSphere.radius = Math.sqrt(maxRadiusSq);
             }
           };
-        })(),
+        }(),
         computeVertexNormals: function() {
           if (this.attributes["position"]) {
             var i, il;
@@ -20505,7 +20460,7 @@
           return diff;
         },
         // Geometry splitting
-        makeGroups: /* @__PURE__ */ (function() {
+        makeGroups: /* @__PURE__ */ function() {
           var geometryGroupCounter = 0;
           return function(usesFaceMaterial) {
             var f, fl, face, materialIndex, groupHash, hash_map = {};
@@ -20538,7 +20493,7 @@
               this.geometryGroupsList.push(this.geometryGroups[g]);
             }
           };
-        })(),
+        }(),
         clone: function() {
           var geometry = new THREE.Geometry();
           var vertices = this.vertices;
@@ -20580,13 +20535,13 @@
         this.projectionMatrix = new THREE.Matrix4();
       };
       THREE.Camera.prototype = Object.create(THREE.Object3D.prototype);
-      THREE.Camera.prototype.lookAt = (function() {
+      THREE.Camera.prototype.lookAt = function() {
         var m1 = new THREE.Matrix4();
         return function(vector) {
           m1.lookAt(this.position, vector, this.up);
           this.quaternion.setFromRotationMatrix(m1);
         };
-      })();
+      }();
       THREE.Camera.prototype.clone = function(camera) {
         if (camera === void 0) camera = new THREE.Camera();
         THREE.Object3D.prototype.clone.call(this, camera);
@@ -21659,7 +21614,7 @@
           }
           return materials;
         },
-        parseObject: (function() {
+        parseObject: function() {
           var matrix = new THREE.Matrix4();
           return function(data, geometries, materials) {
             var object;
@@ -21728,7 +21683,7 @@
             }
             return object;
           };
-        })()
+        }()
       };
       THREE.SceneLoader = function() {
         this.onLoadStart = function() {
@@ -23079,7 +23034,7 @@
         this.bones.push(bone);
         return bone;
       };
-      THREE.SkinnedMesh.prototype.updateMatrixWorld = (function() {
+      THREE.SkinnedMesh.prototype.updateMatrixWorld = function() {
         var offsetMatrix = new THREE.Matrix4();
         return function(force) {
           this.matrixAutoUpdate && this.updateMatrix();
@@ -23116,7 +23071,7 @@
             this.boneTexture.needsUpdate = true;
           }
         };
-      })();
+      }();
       THREE.SkinnedMesh.prototype.pose = function() {
         this.updateMatrixWorld(true);
         this.normalizeSkinWeights();
@@ -23271,7 +23226,7 @@
         }
         return this.objects[i - 1].object;
       };
-      THREE.LOD.prototype.update = (function() {
+      THREE.LOD.prototype.update = function() {
         var v1 = new THREE.Vector3();
         var v2 = new THREE.Vector3();
         return function(camera) {
@@ -23293,7 +23248,7 @@
             }
           }
         };
-      })();
+      }();
       THREE.LOD.prototype.clone = function(object) {
         if (object === void 0) object = new THREE.LOD();
         THREE.Object3D.prototype.clone.call(this, object);
@@ -23304,7 +23259,7 @@
         }
         return object;
       };
-      THREE.Sprite = (function() {
+      THREE.Sprite = function() {
         var geometry = new THREE.Geometry2(3);
         geometry.vertices.set([-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0]);
         return function(material) {
@@ -23312,7 +23267,7 @@
           this.geometry = geometry;
           this.material = material !== void 0 ? material : new THREE.SpriteMaterial();
         };
-      })();
+      }();
       THREE.Sprite.prototype = Object.create(THREE.Object3D.prototype);
       THREE.Sprite.prototype.updateMatrix = function() {
         this.matrix.compose(this.position, this.quaternion, this.scale);
@@ -29412,7 +29367,7 @@
         // Get random point in triangle (via barycentric coordinates)
         // 	(uniform distribution)
         // 	http://www.cgafaq.info/wiki/Random_Point_In_Triangle
-        randomPointInTriangle: (function() {
+        randomPointInTriangle: function() {
           var vector = new THREE.Vector3();
           return function(vectorA, vectorB, vectorC) {
             var point = new THREE.Vector3();
@@ -29433,7 +29388,7 @@
             point.add(vector);
             return point;
           };
-        })(),
+        }(),
         // Get random point in face (triangle / quad)
         // (uniform distribution)
         randomPointInFace: function(face, geometry, useCachedAreas) {
@@ -29491,7 +29446,7 @@
         },
         // Get triangle area (half of parallelogram)
         //	http://mathworld.wolfram.com/TriangleArea.html
-        triangleArea: (function() {
+        triangleArea: function() {
           var vector1 = new THREE.Vector3();
           var vector2 = new THREE.Vector3();
           return function(vectorA, vectorB, vectorC) {
@@ -29500,7 +29455,7 @@
             vector1.cross(vector2);
             return 0.5 * vector1.length();
           };
-        })(),
+        }(),
         // Center geometry so that 0,0,0 is in center of bounding box
         center: function(geometry) {
           geometry.computeBoundingBox();
@@ -31375,7 +31330,7 @@
           return v;
         }
       );
-      THREE.AnimationHandler = (function() {
+      THREE.AnimationHandler = function() {
         var playing = [];
         var library = {};
         var that = {};
@@ -31478,7 +31433,7 @@
         that.CATMULLROM = 1;
         that.CATMULLROM_FORWARD = 2;
         return that;
-      })();
+      }();
       THREE.Animation = function(root, name) {
         this.root = root;
         this.data = THREE.AnimationHandler.get(name);
@@ -31533,7 +31488,7 @@
           nextKey.scl = this.getNextKeyWith("scl", h, 1);
         }
       };
-      THREE.Animation.prototype.update = (function() {
+      THREE.Animation.prototype.update = function() {
         var points = [];
         var target = new THREE.Vector3();
         var interpolateCatmullRom = function(points2, scale) {
@@ -31635,7 +31590,7 @@
             }
           }
         };
-      })();
+      }();
       THREE.Animation.prototype.getNextKeyWith = function(type, h, key) {
         var keys = this.data.hierarchy[h].keys;
         if (this.interpolationType === THREE.AnimationHandler.CATMULLROM || this.interpolationType === THREE.AnimationHandler.CATMULLROM_FORWARD) {
@@ -31811,7 +31766,7 @@
         pause: function() {
           this.isPlaying = false;
         },
-        update: /* @__PURE__ */ (function() {
+        update: /* @__PURE__ */ function() {
           var lastFrame = 0;
           var currentFrame = 0;
           return function(delta) {
@@ -31833,7 +31788,7 @@
             this.mesh.morphTargetInfluences[frame] = this.currentTime % interpolation / interpolation;
             this.mesh.morphTargetInfluences[lastFrame] = 1 - this.mesh.morphTargetInfluences[frame];
           };
-        })()
+        }()
       };
       THREE.CubeCamera = function(near, far, cubeResolution) {
         THREE.Object3D.call(this);
@@ -33326,7 +33281,7 @@
         this.setLength(length, headLength, headWidth);
       };
       THREE.ArrowHelper.prototype = Object.create(THREE.Object3D.prototype);
-      THREE.ArrowHelper.prototype.setDirection = (function() {
+      THREE.ArrowHelper.prototype.setDirection = function() {
         var axis = new THREE.Vector3();
         var radians;
         return function(dir) {
@@ -33340,7 +33295,7 @@
             this.quaternion.setFromAxisAngle(axis, radians);
           }
         };
-      })();
+      }();
       THREE.ArrowHelper.prototype.setLength = function(length, headLength, headWidth) {
         if (headLength === void 0) headLength = 0.2 * length;
         if (headWidth === void 0) headWidth = 0.2 * headLength;
@@ -33486,7 +33441,7 @@
         this.update();
       };
       THREE.CameraHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.CameraHelper.prototype.update = (function() {
+      THREE.CameraHelper.prototype.update = function() {
         var vector = new THREE.Vector3();
         var camera = new THREE.Camera();
         var projector = new THREE.Projector();
@@ -33527,7 +33482,7 @@
           }
           this.geometry.verticesNeedUpdate = true;
         };
-      })();
+      }();
       THREE.DirectionalLightHelper = function(light, size) {
         THREE.Object3D.call(this);
         this.light = light;
@@ -33556,7 +33511,7 @@
         this.targetLine.geometry.dispose();
         this.targetLine.material.dispose();
       };
-      THREE.DirectionalLightHelper.prototype.update = (function() {
+      THREE.DirectionalLightHelper.prototype.update = function() {
         var v1 = new THREE.Vector3();
         var v2 = new THREE.Vector3();
         var v3 = new THREE.Vector3();
@@ -33570,7 +33525,7 @@
           this.targetLine.geometry.verticesNeedUpdate = true;
           this.targetLine.material.color.copy(this.lightPlane.material.color);
         };
-      })();
+      }();
       THREE.EdgesHelper = function(object, hex) {
         var color = hex !== void 0 ? hex : 16777215;
         var edge = [0, 0], hash = {};
@@ -33638,7 +33593,7 @@
         this.update();
       };
       THREE.FaceNormalsHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.FaceNormalsHelper.prototype.update = (function(object) {
+      THREE.FaceNormalsHelper.prototype.update = function(object) {
         var v1 = new THREE.Vector3();
         return function(object2) {
           this.object.updateMatrixWorld(true);
@@ -33656,7 +33611,7 @@
           this.geometry.verticesNeedUpdate = true;
           return this;
         };
-      })();
+      }();
       THREE.GridHelper = function(size, step) {
         var geometry = new THREE.Geometry();
         var material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors });
@@ -33702,7 +33657,7 @@
         this.lightSphere.geometry.dispose();
         this.lightSphere.material.dispose();
       };
-      THREE.HemisphereLightHelper.prototype.update = (function() {
+      THREE.HemisphereLightHelper.prototype.update = function() {
         var vector = new THREE.Vector3();
         return function() {
           this.colors[0].copy(this.light.color).multiplyScalar(this.light.intensity);
@@ -33710,7 +33665,7 @@
           this.lightSphere.lookAt(vector.setFromMatrixPosition(this.light.matrixWorld).negate());
           this.lightSphere.geometry.colorsNeedUpdate = true;
         };
-      })();
+      }();
       THREE.PointLightHelper = function(light, sphereSize) {
         this.light = light;
         this.light.updateMatrixWorld();
@@ -33748,7 +33703,7 @@
         this.cone.geometry.dispose();
         this.cone.material.dispose();
       };
-      THREE.SpotLightHelper.prototype.update = (function() {
+      THREE.SpotLightHelper.prototype.update = function() {
         var vector = new THREE.Vector3();
         var vector2 = new THREE.Vector3();
         return function() {
@@ -33760,7 +33715,7 @@
           this.cone.lookAt(vector2.sub(vector));
           this.cone.material.color.copy(this.light.color).multiplyScalar(this.light.intensity);
         };
-      })();
+      }();
       THREE.VertexNormalsHelper = function(object, size, hex, linewidth) {
         this.object = object;
         this.size = size !== void 0 ? size : 1;
@@ -33782,7 +33737,7 @@
         this.update();
       };
       THREE.VertexNormalsHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.VertexNormalsHelper.prototype.update = (function(object) {
+      THREE.VertexNormalsHelper.prototype.update = function(object) {
         var v1 = new THREE.Vector3();
         return function(object2) {
           var keys = ["a", "b", "c", "d"];
@@ -33810,7 +33765,7 @@
           this.geometry.verticesNeedUpdate = true;
           return this;
         };
-      })();
+      }();
       THREE.VertexTangentsHelper = function(object, size, hex, linewidth) {
         this.object = object;
         this.size = size !== void 0 ? size : 1;
@@ -33831,7 +33786,7 @@
         this.update();
       };
       THREE.VertexTangentsHelper.prototype = Object.create(THREE.Line.prototype);
-      THREE.VertexTangentsHelper.prototype.update = (function(object) {
+      THREE.VertexTangentsHelper.prototype.update = function(object) {
         var v1 = new THREE.Vector3();
         return function(object2) {
           var keys = ["a", "b", "c", "d"];
@@ -33858,7 +33813,7 @@
           this.geometry.verticesNeedUpdate = true;
           return this;
         };
-      })();
+      }();
       THREE.WireframeHelper = function(object, hex) {
         var color = hex !== void 0 ? hex : 16777215;
         var edge = [0, 0], hash = {};
@@ -35498,7 +35453,7 @@
         return null;
       }
       var webglTest;
-      var active5 = false;
+      var active6 = false;
       var initialized = false;
       var currentWidth = 0;
       var currentHeight = 0;
@@ -35552,10 +35507,10 @@
         if (typeof cb == "function") {
           setTimeout(cb, 500);
         }
-        active5 = true;
+        active6 = true;
       };
       LightTable2.hide = function(cb) {
-        active5 = false;
+        active6 = false;
         $2("#lt-mobile-readme").attr("style", "");
         $2("#k-32").attr("style", "");
         $2(".lt-header-animator-right").attr("style", "");
@@ -35575,7 +35530,7 @@
         }
       };
       LightTable2.animate = function() {
-        if (active5 && initialized) {
+        if (active6 && initialized) {
           webglTest.tick();
         }
       };
@@ -36270,7 +36225,7 @@
           return (/* @__PURE__ */ new Date()).valueOf();
         };
       }
-      var TWEEN = TWEEN || /* @__PURE__ */ (function() {
+      var TWEEN = TWEEN || /* @__PURE__ */ function() {
         var _tweens = [];
         return {
           REVISION: "13",
@@ -36303,7 +36258,7 @@
             return true;
           }
         };
-      })();
+      }();
       TWEEN.Tween = function(object) {
         var _object = object;
         var _valuesStart = {};
@@ -36670,7 +36625,7 @@
             var fc = TWEEN.Interpolation.Utils.Factorial;
             return fc(n) / fc(i) / fc(n - i);
           },
-          Factorial: /* @__PURE__ */ (function() {
+          Factorial: /* @__PURE__ */ function() {
             var a = [1];
             return function(n) {
               var s = 1, i;
@@ -36678,7 +36633,7 @@
               for (i = n; i > 1; i--) s *= i;
               return a[n] = s;
             };
-          })(),
+          }(),
           CatmullRom: function(p0, p1, p2, p3, t) {
             var v0 = (p2 - p0) * 0.5, v1 = (p3 - p1) * 0.5, t2 = t * t, t3 = t * t2;
             return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
@@ -36816,7 +36771,7 @@
       function pointingAwayFromOrigin(p, v) {
         return p.x * v.x >= 0 && p.y * v.y >= 0 && p.z * v.z >= 0;
       }
-      var Tile = function(centerPoint, hexSize) {
+      var Tile2 = function(centerPoint, hexSize) {
         if (hexSize == void 0) {
           hexSize = 1;
         }
@@ -36840,7 +36795,7 @@
           this.boundary.reverse();
         }
       };
-      Tile.prototype.getLatLon = function(radius, boundaryNum) {
+      Tile2.prototype.getLatLon = function(radius, boundaryNum) {
         var point = this.centerPoint;
         if (typeof boundaryNum == "number" && boundaryNum < this.boundary.length) {
           point = this.boundary[boundaryNum];
@@ -36852,7 +36807,7 @@
           lon: 180 * theta / Math.PI
         };
       };
-      Tile.prototype.scaledBoundary = function(scale) {
+      Tile2.prototype.scaledBoundary = function(scale) {
         scale = Math.max(0, Math.min(1, scale));
         var ret = [];
         for (var i = 0; i < this.boundary.length; i++) {
@@ -36860,7 +36815,7 @@
         }
         return ret;
       };
-      Tile.prototype.toJson = function() {
+      Tile2.prototype.toJson = function() {
         return {
           centerPoint: this.centerPoint.toJson(),
           boundary: this.boundary.map(function(point) {
@@ -36868,10 +36823,10 @@
           })
         };
       };
-      Tile.prototype.toString = function() {
+      Tile2.prototype.toString = function() {
         return this.centerPoint.toString();
       };
-      module.exports = Tile;
+      module.exports = Tile2;
     }
   });
 
@@ -36941,7 +36896,7 @@
   // node_modules/hexasphere.js/src/hexasphere.js
   var require_hexasphere = __commonJS({
     "node_modules/hexasphere.js/src/hexasphere.js"(exports, module) {
-      var Tile = require_tile();
+      var Tile2 = require_tile();
       var Face = require_face();
       var Point = require_point();
       var Hexasphere = function(radius, numDivisions, hexSize) {
@@ -37024,7 +36979,7 @@
         this.tiles = [];
         this.tileLookup = {};
         for (var p in points) {
-          var newTile = new Tile(points[p], hexSize);
+          var newTile = new Tile2(points[p], hexSize);
           this.tiles.push(newTile);
           this.tileLookup[newTile.toString()] = newTile;
         }
@@ -39650,7 +39605,7 @@
             this.scene.add(ball);
             this.trackerBalls.push(ball);
             this.trackers.push({
-              update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+              update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                 return function(time) {
                   var posTime = Math.max(time, 3e3);
                   geo.vertices[a - 2].x = Math.max(-w * rand3 / 2, Math.min(w * rand3 / 2, w * Math.cos(rand2 * (rand * w + posTime / 1e3)) / 2));
@@ -39660,7 +39615,7 @@
                   geo.verticesNeedUpdate = true;
                   balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                 };
-              })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+              }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
             });
             if (Math.random() < 0.3) {
               var vert2 = new THREE.Vector3(trackerX, this.boxHeight, this.boxDepth / 2);
@@ -39673,7 +39628,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].x = Math.max(-w * rand3 / 2, Math.min(w * rand3 / 2, w * Math.cos(rand2 * (rand * w + posTime / 1e3)) / 2));
@@ -39683,7 +39638,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                   };
-                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             } else if (Math.random() > 0.7) {
               var vert2 = new THREE.Vector3(trackerX, this.boxHeight, -this.boxDepth / 2);
@@ -39696,7 +39651,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].x = Math.max(-w * rand3 / 2, Math.min(w * rand3 / 2, w * Math.cos(rand2 * (rand * w + posTime / 1e3)) / 2));
@@ -39706,7 +39661,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, 0, geo.vertices[a - 2].z);
                   };
-                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             }
           } else {
@@ -39720,7 +39675,7 @@
             this.scene.add(ball);
             this.trackerBalls.push(ball);
             this.trackers.push({
-              update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+              update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                 return function(time) {
                   var posTime = Math.max(time, 3e3);
                   geo.vertices[a - 2].z = Math.max(-d * rand3 / 2, Math.min(d * rand3 / 2, d * Math.cos(rand2 * (rand * d + posTime / 1e3)) / 2));
@@ -39730,7 +39685,7 @@
                   geo.verticesNeedUpdate = true;
                   balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                 };
-              })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+              }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
             });
             if (Math.random() < 0.3) {
               var vert2 = new THREE.Vector3(this.boxWidth / 2, this.boxHeight, trackerZ);
@@ -39743,7 +39698,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].z = Math.max(-d * rand3 / 2, Math.min(d * rand3 / 2, d * Math.cos(rand2 * (rand * d + posTime / 1e3)) / 2));
@@ -39753,7 +39708,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                   };
-                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             } else if (Math.random() > 0.7) {
               var vert2 = new THREE.Vector3(-this.boxWidth / 2, this.boxHeight, trackerZ);
@@ -39766,7 +39721,7 @@
               this.scene.add(ball);
               this.trackerBalls.push(ball);
               this.trackers.push({
-                update: /* @__PURE__ */ (function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
+                update: /* @__PURE__ */ function(geo, a, balls, l, w, d, h, rand, rand2, rand3) {
                   return function(time) {
                     var posTime = Math.max(time, 3e3);
                     geo.vertices[a - 2].z = Math.max(-d * rand3 / 2, Math.min(d * rand3 / 2, d * Math.cos(rand2 * (rand * d + time / 1e3)) / 2));
@@ -39776,7 +39731,7 @@
                     geo.verticesNeedUpdate = true;
                     balls[l - 1].position.set(geo.vertices[a - 2].x, geo.vertices[a - 2].y, geo.vertices[a - 2].z);
                   };
-                })(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
+                }(this.trackerGeometry, this.trackerGeometry.vertices.length, this.trackerBalls, this.trackerBalls.length, this.boxWidth, this.boxDepth, this.boxHeight, randSeed, randSeed2, randSeed3)
               });
             }
           }
@@ -50373,8 +50328,8 @@
         return;
       }
       var ev = best.ev;
-      var ago = Math.max(0, Math.round((Date.now() - ev.at) / 1e3));
-      var when = ago < 60 ? ago + "s ago" : Math.round(ago / 60) + "m ago";
+      var ago2 = Math.max(0, Math.round((Date.now() - ev.at) / 1e3));
+      var when = ago2 < 60 ? ago2 + "s ago" : Math.round(ago2 / 60) + "m ago";
       var value = ev.state === null || ev.state === void 0 ? "" : " is " + ev.state + (ev.unit ? " " + ev.unit : "");
       tip.className = ev.severity === Severity.ALERT ? "alert" : ev.severity === Severity.MOTION ? "motion" : "";
       tip.innerHTML = "<b>" + (ev.location || "Unassigned") + "</b> " + ev.title + value + ", " + when;
@@ -51155,14 +51110,14 @@
         { label: "Heavy", dbz: 45, color: "#ff0000" },
         { label: "Extreme", dbz: 55, color: "#ff00ff" }
       ];
-      DBZ_BY_RGB = (function() {
+      DBZ_BY_RGB = function() {
         var map = {};
         for (var i = 0; i < RAMP_HEX.length; i += 6) {
           var idx = i / 6 + 1;
           map[parseInt(RAMP_HEX.substr(i, 6), 16)] = -32 + (idx - 1) * 0.5;
         }
         return map;
-      })();
+      }();
       Radar.prototype.mount = function() {
         if (this.map || !this.el || typeof window.L === "undefined") {
           return;
@@ -51329,12 +51284,12 @@
           ticks[i].className = "radar-tick" + (i === this.frame ? " on" : "") + (isNow ? " now" : "") + (i <= this.frame ? " past" : "");
           ticks[i].firstChild.textContent = isNow ? "Now" : i % 2 === 0 ? "-" + (OFFSETS.length - 1 - i) * 5 : "";
         }
-        var stamp2 = this.scrubEl.querySelector(".radar-stamp");
-        if (stamp2) {
+        var stamp3 = this.scrubEl.querySelector(".radar-stamp");
+        if (stamp3) {
           var at = new Date(Date.now() - (OFFSETS.length - 1 - this.frame) * 5 * 6e4);
           var h = at.getHours() % 12 || 12;
           var m = at.getMinutes();
-          stamp2.textContent = h + ":" + (m < 10 ? "0" + m : m) + (at.getHours() < 12 ? "am" : "pm");
+          stamp3.textContent = h + ":" + (m < 10 ? "0" + m : m) + (at.getHours() < 12 ? "am" : "pm");
         }
       };
       Radar.prototype.setWind = function(speedMph, bearingDegrees) {
@@ -52071,9 +52026,9 @@
   });
 
   // src/SecurityFeeds.js
-  function SecurityFeeds(ha2, areas3, onUpdate) {
+  function SecurityFeeds(ha2, areas4, onUpdate) {
     this.ha = ha2;
-    this.areas = areas3;
+    this.areas = areas4;
     this.onUpdate = onUpdate || function() {
     };
     this.log = [];
@@ -52744,13 +52699,13 @@
     var wet = feeds3.leaks().filter(function(l) {
       return l.wet;
     }).length;
-    var active5 = feeds3.motion().filter(function(m) {
+    var active6 = feeds3.motion().filter(function(m) {
       return m.active;
     }).length;
     var a = feeds3.alarm();
     stat("sc-stat-doors", open, open > 0);
     stat("sc-stat-leaks", wet, wet > 0);
-    stat("sc-stat-motion", active5, false);
+    stat("sc-stat-motion", active6, false);
     stat(
       "sc-stat-alarm",
       a.configured ? STATE_LABEL[a.state] || a.state : "NOT SET",
@@ -53182,6 +53137,1145 @@
     }
   });
 
+  // src/CameraFeeds.js
+  function allSensorIds() {
+    return Object.keys(SENSOR_INDEX);
+  }
+  function startOfToday() {
+    var d = /* @__PURE__ */ new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+  function CameraFeeds(ha2, areas4, onUpdate) {
+    this.ha = ha2;
+    this.areas = areas4;
+    this.onUpdate = onUpdate || function() {
+    };
+    this.log = [];
+    this._seeded = false;
+    this._timers = [];
+    this.flash = {};
+  }
+  function boxesFor(state2) {
+    var box = state2 && state2.attributes ? state2.attributes.box : null;
+    if (!box || !box.length) {
+      return [];
+    }
+    return [box];
+  }
+  function cameraMeta(id) {
+    for (var i = 0; i < CAMERAS.length; i++) {
+      if (CAMERAS[i].id === id) {
+        return CAMERAS[i];
+      }
+    }
+    return null;
+  }
+  var KIND_ORDER, KIND_LEVEL, KIND_LABEL, KIND_SHORT, CAMERAS, COLLAPSE_MS, MAX_LOG2, HISTORY_EVERY3, SENSOR_INDEX;
+  var init_CameraFeeds = __esm({
+    "src/CameraFeeds.js"() {
+      KIND_ORDER = ["person", "vehicle", "visitor", "pet", "object", "motion"];
+      KIND_LEVEL = {
+        person: "alert",
+        vehicle: "alert",
+        visitor: "alert",
+        pet: "motion",
+        object: "motion",
+        motion: "motion"
+      };
+      KIND_LABEL = {
+        person: "PERSON DETECTED",
+        vehicle: "VEHICLE DETECTED",
+        visitor: "DOORBELL PRESSED",
+        pet: "PET DETECTED",
+        object: "OBJECT DETECTED",
+        motion: "MOTION DETECTED"
+      };
+      KIND_SHORT = {
+        person: "person",
+        vehicle: "vehicle",
+        visitor: "doorbell",
+        pet: "pet",
+        object: "object",
+        motion: "motion"
+      };
+      CAMERAS = [
+        {
+          id: "camera.front_yard_cam",
+          num: "CAM 01",
+          label: "Front Yard",
+          view: "Driveway View",
+          recording: "switch.front_yard_cam_recordings",
+          detectSwitch: "switch.front_yard_cam_detect",
+          detect: {
+            person: [
+              "binary_sensor.front_yard_cam_person_occupancy",
+              "binary_sensor.driveway_person_occupancy",
+              "binary_sensor.front_yard_person_occupancy"
+            ],
+            object: [
+              "binary_sensor.front_yard_cam_all_occupancy",
+              "binary_sensor.driveway_all_occupancy",
+              "binary_sensor.front_yard_all_occupancy"
+            ],
+            motion: ["binary_sensor.front_yard_cam_motion"]
+          }
+        },
+        {
+          id: "camera.reolink_doorbell",
+          num: "CAM 02",
+          label: "Front Door",
+          view: "Doorbell",
+          recording: "switch.reolink_doorbell_recordings",
+          detectSwitch: "switch.reolink_doorbell_detect",
+          detect: {
+            person: [
+              "binary_sensor.reolink_doorbell_person_occupancy",
+              "binary_sensor.front_door_person"
+            ],
+            vehicle: ["binary_sensor.front_door_vehicle"],
+            pet: ["binary_sensor.front_door_pet"],
+            visitor: ["binary_sensor.front_door_visitor"],
+            object: ["binary_sensor.reolink_doorbell_all_occupancy"],
+            motion: [
+              "binary_sensor.reolink_doorbell_motion",
+              "binary_sensor.front_door_motion"
+            ]
+          }
+        },
+        {
+          id: "camera.garage_cam",
+          num: "CAM 03",
+          label: "Garage",
+          view: "Bay",
+          recording: "switch.garage_cam_recordings",
+          detectSwitch: "switch.garage_cam_detect",
+          detect: {
+            person: ["binary_sensor.garage_cam_person_occupancy"],
+            object: ["binary_sensor.garage_cam_all_occupancy"],
+            motion: ["binary_sensor.garage_cam_motion"]
+          }
+        },
+        {
+          id: "camera.back_door_cam",
+          num: "CAM 04",
+          label: "Back Yard",
+          view: "Back Door",
+          recording: "switch.back_door_cam_recordings",
+          detectSwitch: "switch.back_door_cam_detect",
+          detect: {
+            person: ["binary_sensor.back_door_cam_person_occupancy"],
+            object: ["binary_sensor.back_door_cam_all_occupancy"],
+            motion: ["binary_sensor.back_door_cam_motion"]
+          }
+        }
+      ];
+      COLLAPSE_MS = 60 * 1e3;
+      MAX_LOG2 = 250;
+      HISTORY_EVERY3 = 10 * 60 * 1e3;
+      SENSOR_INDEX = function() {
+        var index = {};
+        CAMERAS.forEach(function(cam) {
+          Object.keys(cam.detect).forEach(function(kind) {
+            cam.detect[kind].forEach(function(id) {
+              index[id] = { camera: cam.id, kind };
+            });
+          });
+        });
+        return index;
+      }();
+      CameraFeeds.prototype.start = function() {
+        var self = this;
+        this.refreshHistory();
+        this._timers.push(setInterval(function() {
+          self.refreshHistory();
+        }, HISTORY_EVERY3));
+      };
+      CameraFeeds.prototype.stop = function() {
+        this._timers.forEach(clearInterval);
+        this._timers = [];
+      };
+      CameraFeeds.prototype._state = function(id) {
+        return this.ha && this.ha.states ? this.ha.states.get(id) : null;
+      };
+      CameraFeeds.prototype._isOn = function(id) {
+        var s = this._state(id);
+        return !!s && s.state === "on";
+      };
+      CameraFeeds.prototype.cameras = function() {
+        var self = this;
+        return CAMERAS.map(function(cam) {
+          var s = self._state(cam.id);
+          var attrs = s && s.attributes || {};
+          var live = !!s && s.state !== "unavailable" && s.state !== "unknown";
+          var has = {};
+          var on = {};
+          var alert = null;
+          KIND_ORDER.forEach(function(kind) {
+            var ids = cam.detect[kind];
+            if (!ids || !ids.length) {
+              return;
+            }
+            var usable = ids.filter(function(id) {
+              var st = self._state(id);
+              return st && st.state !== "unavailable";
+            });
+            if (!usable.length) {
+              return;
+            }
+            has[kind] = true;
+            on[kind] = usable.some(function(id) {
+              return self._isOn(id);
+            });
+            if (on[kind] && !alert) {
+              alert = kind;
+            }
+          });
+          return {
+            id: cam.id,
+            num: cam.num,
+            label: cam.label,
+            view: cam.view,
+            state: s ? s.state : "missing",
+            live,
+            recording: self._isOn(cam.recording),
+            detecting: self._isOn(cam.detectSwitch),
+            area: self.areas ? self.areas.areaName(cam.id) || "" : "",
+            accessToken: attrs.access_token || null,
+            has,
+            on,
+            alert,
+            level: alert ? KIND_LEVEL[alert] : null,
+            alertLabel: alert ? KIND_LABEL[alert] : null,
+            /* An unavailable camera's last_changed is the moment it stopped
+               reporting, which is exactly the last time it was seen. */
+            lastSeen: live ? null : Date.parse(s ? s.last_changed || s.last_updated : "") || null,
+            /* No detection source on this house carries box coordinates, so
+               this is always empty and the frame draws no boxes. Frigate's
+               HA binary sensors publish occupancy only; the boxes live on its
+               MQTT event topic, which this dashboard does not read. Wired as a
+               list so real boxes drop straight in if that ever changes. */
+            boxes: boxesFor(s)
+          };
+        });
+      };
+      CameraFeeds.prototype.camera = function(id) {
+        var list = this.cameras();
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].id === id) {
+            return list[i];
+          }
+        }
+        return null;
+      };
+      CameraFeeds.prototype.origin = function() {
+        var config = window.HA_CONFIG || {};
+        return (config.httpUrl || "").replace(/\/+$/, "");
+      };
+      CameraFeeds.prototype.hlsUrl = function(cameraId) {
+        var self = this;
+        if (!this.ha) {
+          return Promise.reject(new Error("no connection"));
+        }
+        return this.ha.command({
+          type: "camera/stream",
+          entity_id: cameraId,
+          format: "hls"
+        }).then(function(result) {
+          if (!result || !result.url) {
+            throw new Error("no stream url");
+          }
+          return self.origin() + result.url;
+        });
+      };
+      CameraFeeds.prototype.mjpegUrl = function(cameraId) {
+        var s = this._state(cameraId);
+        var token = s && s.attributes ? s.attributes.access_token : null;
+        if (!token) {
+          return null;
+        }
+        return this.origin() + "/api/camera_proxy_stream/" + encodeURIComponent(cameraId) + "?token=" + encodeURIComponent(token);
+      };
+      CameraFeeds.prototype.stillUrl = function(cameraId) {
+        var s = this._state(cameraId);
+        var token = s && s.attributes ? s.attributes.access_token : null;
+        if (!token) {
+          return null;
+        }
+        return this.origin() + "/api/camera_proxy/" + encodeURIComponent(cameraId) + "?token=" + encodeURIComponent(token);
+      };
+      CameraFeeds.prototype._record = function(cameraId, kind, at) {
+        var meta = cameraMeta(cameraId);
+        if (!meta) {
+          return false;
+        }
+        for (var i = 0; i < this.log.length; i++) {
+          var row = this.log[i];
+          if (row.camera === cameraId && row.kind === kind && Math.abs(row.at - at) < COLLAPSE_MS) {
+            row.count += 1;
+            row.at = Math.max(row.at, at);
+            return true;
+          }
+          if (row.at < at - COLLAPSE_MS) {
+            break;
+          }
+        }
+        this.log.unshift({
+          at,
+          camera: cameraId,
+          num: meta.num,
+          where: meta.label,
+          kind,
+          short: KIND_SHORT[kind] || kind,
+          level: KIND_LEVEL[kind] || "motion",
+          count: 1
+        });
+        this.log.sort(function(a, b) {
+          return b.at - a.at;
+        });
+        while (this.log.length > MAX_LOG2) {
+          this.log.pop();
+        }
+        return true;
+      };
+      CameraFeeds.prototype.note = function(m) {
+        var id = m.entityId;
+        if (!id) {
+          return false;
+        }
+        if (cameraMeta(id)) {
+          return true;
+        }
+        var hit = SENSOR_INDEX[id];
+        if (!hit) {
+          return false;
+        }
+        if (m.state !== "on") {
+          return true;
+        }
+        var at = Date.now();
+        this.flash[hit.camera] = { kind: hit.kind, at };
+        this._record(hit.camera, hit.kind, at);
+        return true;
+      };
+      CameraFeeds.prototype.seedLog = function(raw) {
+        if (this._seeded) {
+          return;
+        }
+        this._seeded = true;
+        var self = this;
+        var rows2 = [];
+        Object.keys(raw).forEach(function(id) {
+          var hit = SENSOR_INDEX[id];
+          if (!hit) {
+            return;
+          }
+          var prev = null;
+          (raw[id] || []).forEach(function(row) {
+            var v = row.s !== void 0 ? row.s : row.state;
+            var at = row.lu !== void 0 ? row.lu * 1e3 : Date.parse(row.last_updated || row.last_changed);
+            if (isFinite(at) && v === "on" && prev !== "on") {
+              rows2.push({ at, camera: hit.camera, kind: hit.kind });
+            }
+            prev = v;
+          });
+        });
+        rows2.sort(function(a, b) {
+          return a.at - b.at;
+        });
+        rows2.forEach(function(r) {
+          self._record(r.camera, r.kind, r.at);
+        });
+      };
+      CameraFeeds.prototype.refreshHistory = function() {
+        var self = this;
+        var ids = allSensorIds();
+        if (!ids.length || !this.ha) {
+          return;
+        }
+        var end = Date.now();
+        var start2 = end - 24 * 3600 * 1e3;
+        this.ha.command({
+          type: "history/history_during_period",
+          start_time: new Date(start2).toISOString(),
+          end_time: new Date(end).toISOString(),
+          entity_ids: ids,
+          minimal_response: true,
+          no_attributes: true
+        }).then(function(raw) {
+          self.seedLog(raw || {});
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      CameraFeeds.prototype.stats = function() {
+        var list = this.cameras();
+        var online = list.filter(function(c2) {
+          return c2.live;
+        }).length;
+        var midnight = startOfToday();
+        var today = 0;
+        var lastPerson = null;
+        for (var i = 0; i < this.log.length; i++) {
+          var row = this.log[i];
+          if (row.at >= midnight) {
+            today += 1;
+          }
+          if (!lastPerson && (row.kind === "person" || row.kind === "visitor")) {
+            lastPerson = row;
+          }
+        }
+        return {
+          online,
+          total: list.length,
+          today,
+          lastPerson,
+          /* Loading until history has answered, so "0 detections today" is
+             never shown while the real number is still in flight. */
+          seeded: this._seeded
+        };
+      };
+    }
+  });
+
+  // src/CameraView.js
+  var CameraView_exports = {};
+  __export(CameraView_exports, {
+    CameraView: () => CameraView
+  });
+  function $id4(id) {
+    return document.getElementById(id);
+  }
+  function pad4(n) {
+    return String(n).length < 2 ? "0" + n : String(n);
+  }
+  function Tile(cam, index) {
+    this.id = cam.id;
+    this.num = cam.num;
+    this.index = index;
+    this.mode = "idle";
+    this.hls = null;
+    this.retries = 0;
+    this.startedAt = 0;
+    this.playingSince = 0;
+    this.offlineAt = 0;
+    this.wasLive = void 0;
+    this.bars = 0;
+    this.lastTc = "";
+    this.lastBadge = "";
+    this.flashUntil = 0;
+    this.flashKind = null;
+    this.el = buildTile(cam, index);
+    this.screen = this.el.querySelector(".cam-screen");
+    this.video = this.el.querySelector(".cam-video");
+    this.mjpeg = this.el.querySelector(".cam-mjpeg");
+    this.still = this.el.querySelector(".cam-still");
+    this.staticCanvas = this.el.querySelector(".cam-static");
+    this.staticCtx = this.staticCanvas.getContext("2d");
+    this.badge = this.el.querySelector(".cam-badge");
+    this.tc = this.el.querySelector(".cam-tc");
+    this.live = this.el.querySelector(".cam-live");
+    this.rec = this.el.querySelector(".cam-rec");
+    this.barEls = Array.prototype.slice.call(this.el.querySelectorAll(".cam-bars b"));
+    this.kinds = this.el.querySelector(".cam-kinds");
+    this.nosig = this.el.querySelector(".cam-nosig");
+    this.lastSeenEl = this.el.querySelector(".cam-lastseen");
+    this.boxLayer = this.el.querySelector(".cam-boxes");
+    var self = this;
+    var promote = function() {
+      self.onFirstFrame();
+    };
+    this.video.addEventListener("playing", promote);
+    this.video.addEventListener("loadeddata", promote);
+  }
+  function buildTile(cam, index) {
+    var el = document.createElement("div");
+    el.className = "cam-tile";
+    el.setAttribute("data-cam", cam.id);
+    el.setAttribute("tabindex", "0");
+    el.setAttribute("role", "button");
+    el.setAttribute("aria-label", cam.label + " camera feed");
+    el.innerHTML = '<div class="cam-frame"><div class="cam-head"><span class="cam-idno">' + cam.num + '</span><span class="cam-name">' + cam.label + '</span><span class="cam-view">' + cam.view + '</span><span class="cam-tc">--:--:--</span></div><div class="cam-screen"><img class="cam-still" alt=""><video class="cam-video" muted playsinline autoplay disablepictureinpicture></video><img class="cam-mjpeg" alt=""><canvas class="cam-static"></canvas><div class="cam-tint"></div><div class="cam-scan"></div><div class="cam-grain"></div><div class="cam-vig"></div><div class="cam-boxes"></div><div class="cam-nosig"><b>NO SIGNAL</b><span class="cam-lastseen"></span></div><div class="cam-badge"></div><div class="cam-foot"><span class="cam-rec"><i></i>REC</span><span class="cam-bars"><b></b><b></b><b></b><b></b></span><span class="cam-live">CONNECTING</span><span class="cam-kinds"></span></div><span class="cam-c tl"></span><span class="cam-c tr"></span><span class="cam-c bl"></span><span class="cam-c br"></span></div></div>';
+    return el;
+  }
+  function watchPanels4() {
+    if (observer4 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    observer4 = new ResizeObserver(function() {
+      CameraView.resizeDebounced();
+    });
+    var grid2 = $id4("cam-grid");
+    if (grid2) {
+      observer4.observe(grid2);
+    }
+  }
+  function buildGrid() {
+    var grid2 = $id4("cam-grid");
+    if (!grid2 || !feeds4) {
+      return;
+    }
+    tiles = feeds4.cameras().map(function(cam, i) {
+      var tile = new Tile(cam, i);
+      grid2.appendChild(tile.el);
+      return tile;
+    });
+  }
+  function openStreams() {
+    if (!feeds4) {
+      return;
+    }
+    var list = feeds4.cameras();
+    tiles.forEach(function(tile, i) {
+      tile.retries = 0;
+      tile.connect(list[i]);
+    });
+  }
+  function renderFrames(list, now) {
+    tiles.forEach(function(tile, i) {
+      var cam = list[i];
+      if (!cam) {
+        return;
+      }
+      var cameBack = cam.live && tile.wasLive === false;
+      tile.wasLive = cam.live;
+      if (!cam.live && tile.mode !== "offline") {
+        tile.goOffline();
+      } else if (cam.live && tile.mode === "offline" && (cameBack || now - (tile.offlineAt || 0) > OFFLINE_RETRY_MS)) {
+        tile.retries = 0;
+        tile.mode = "idle";
+        tile.connect(cam);
+      }
+      var flash = feeds4.flash[cam.id];
+      if (cam.alert) {
+        tile.flashKind = cam.alert;
+        tile.flashUntil = now + FLASH_HOLD_MS;
+      } else if (flash && now - flash.at < FLASH_HOLD_MS) {
+        tile.flashKind = flash.kind;
+        tile.flashUntil = flash.at + FLASH_HOLD_MS;
+      } else if (tile.flashUntil && now > tile.flashUntil) {
+        tile.flashKind = null;
+        tile.flashUntil = 0;
+      }
+      var kind = tile.flashKind;
+      var level = kind ? levelOf(cam, kind) : null;
+      tile.el.classList.toggle("det", !!kind && cam.live);
+      tile.el.classList.toggle("det-alert", level === "alert" && cam.live);
+      tile.el.classList.toggle("det-motion", level === "motion" && cam.live);
+      var badge = kind && cam.live ? labelOf(kind) : "";
+      if (badge !== tile.lastBadge) {
+        tile.lastBadge = badge;
+        tile.badge.textContent = badge;
+        if (badge) {
+          glitch(tile.el);
+        }
+      }
+      tile.rec.classList.toggle("on", cam.recording && cam.live);
+      tile.live.textContent = cam.live ? tile.mode === "hls" ? "LIVE" : tile.mode === "mjpeg" ? "LIVE MJPEG" : tile.mode === "offline" ? "NO SIGNAL" : "CONNECTING" : "NO SIGNAL";
+      tile.live.className = "cam-live" + (tile.mode === "offline" || !cam.live ? " bad" : "") + (tile.mode === "hls" || tile.mode === "mjpeg" ? " ok" : "");
+      tile.kinds.innerHTML = KIND_ORDER.filter(function(k) {
+        return cam.has[k];
+      }).map(function(k) {
+        return '<i class="' + (cam.on[k] ? "on " + levelOf(cam, k) : "") + '">' + k + "</i>";
+      }).join("");
+      tile.nosig.style.display = tile.mode === "offline" || !cam.live ? "flex" : "none";
+      tile.lastSeenEl.textContent = cam.lastSeen ? "LAST SEEN " + stamp2(cam.lastSeen) + ", " + ago(now - cam.lastSeen) + " AGO" : "NEVER REPORTED";
+      renderBoxes(tile, cam);
+    });
+  }
+  function renderBoxes(tile, cam) {
+    if (!cam.boxes.length) {
+      if (tile.boxLayer.childNodes.length) {
+        tile.boxLayer.innerHTML = "";
+      }
+      return;
+    }
+    tile.boxLayer.innerHTML = cam.boxes.map(function(b) {
+      return '<span style="left:' + b[0] * 100 + "%;top:" + b[1] * 100 + "%;width:" + b[2] * 100 + "%;height:" + b[3] * 100 + '%"></span>';
+    }).join("");
+  }
+  function levelOf(cam, kind) {
+    return kind === "person" || kind === "vehicle" || kind === "visitor" ? "alert" : "motion";
+  }
+  function labelOf(kind) {
+    return kind === "person" ? "PERSON DETECTED" : kind === "vehicle" ? "VEHICLE DETECTED" : kind === "visitor" ? "DOORBELL PRESSED" : kind === "pet" ? "PET DETECTED" : kind === "object" ? "OBJECT DETECTED" : "MOTION DETECTED";
+  }
+  function glitch(el) {
+    el.classList.remove("glitching");
+    void el.offsetWidth;
+    el.classList.add("glitching");
+    setTimeout(function() {
+      el.classList.remove("glitching");
+    }, 420);
+  }
+  function renderTimecodes(now) {
+    var d = new Date(now);
+    var tc = pad4(d.getHours()) + ":" + pad4(d.getMinutes()) + ":" + pad4(d.getSeconds());
+    tiles.forEach(function(tile) {
+      if (tile.lastTc !== tc) {
+        tile.lastTc = tc;
+        tile.tc.textContent = tc;
+      }
+    });
+  }
+  function renderStatic(list) {
+    tiles.forEach(function(tile, i) {
+      var cam = list[i];
+      if (tile.mode === "offline" || cam && !cam.live) {
+        tile.drawStatic();
+      }
+    });
+  }
+  function renderQuality() {
+    tiles.forEach(function(tile) {
+      var bars = tile.quality();
+      if (bars === tile.bars) {
+        return;
+      }
+      tile.bars = bars;
+      tile.barEls.forEach(function(b, i) {
+        b.classList.toggle("on", i < bars);
+      });
+    });
+  }
+  function setFocus(id) {
+    if (focused === id) {
+      return;
+    }
+    focused = id;
+    var grid2 = $id4("cam-grid");
+    grid2.classList.toggle("focus", !!id);
+    tiles.forEach(function(tile) {
+      tile.el.classList.toggle("is-focus", tile.id === id);
+    });
+    tiles.forEach(function(t) {
+      t.sizeStatic();
+    });
+    var head = $id4("cam-grid-head");
+    if (head) {
+      var cam = id && feeds4 ? feeds4.camera(id) : null;
+      head.innerHTML = cam ? "Feed <em>" + cam.num + " " + cam.label.toUpperCase() + ", ESC to return</em>" : "Feeds <em>Click a feed to enlarge</em>";
+    }
+  }
+  function wipeTo(id) {
+    var stage = $id4("cam-stage");
+    var wipe = $id4("cam-wipe");
+    if (!stage || !wipe) {
+      setFocus(id);
+      return;
+    }
+    clearTimeout(wipeTimer);
+    clearTimeout(swapTimer);
+    wipe.classList.remove("run");
+    void wipe.offsetWidth;
+    wipe.classList.add("run");
+    stage.classList.add("wiping");
+    swapTimer = setTimeout(function() {
+      setFocus(id);
+    }, WIPE_SWAP_MS);
+    wipeTimer = setTimeout(function() {
+      wipe.classList.remove("run");
+      stage.classList.remove("wiping");
+    }, WIPE_MS);
+  }
+  function stat2(id, value, bad) {
+    var el = $id4(id);
+    if (!el) {
+      return;
+    }
+    el.firstChild.textContent = value;
+    el.className = "cm-stat" + (bad ? " bad" : "");
+  }
+  function renderStatus2() {
+    if (!feeds4) {
+      return;
+    }
+    var s = feeds4.stats();
+    stat2("cm-stat-online", s.online + " / " + s.total, s.online < s.total);
+    stat2("cm-stat-today", s.seeded ? String(s.today) : "--", false);
+    var el = $id4("cm-stat-person");
+    if (el) {
+      if (s.lastPerson) {
+        el.firstChild.textContent = s.lastPerson.where;
+        el.querySelector("span").textContent = "Last person, " + stamp2(s.lastPerson.at);
+      } else {
+        el.firstChild.textContent = s.seeded ? "NONE" : "--";
+        el.querySelector("span").textContent = "Last person detected";
+      }
+      el.className = "cm-stat";
+    }
+    var list = feeds4.cameras();
+    var recording = list.filter(function(c2) {
+      return c2.recording && c2.live;
+    }).length;
+    stat2("cm-stat-rec", recording + " / " + list.length, false);
+  }
+  function renderLog2() {
+    var box = $id4("cam-log");
+    if (!box || !feeds4) {
+      return;
+    }
+    if (!feeds4.log.length) {
+      box.innerHTML = '<div class="cam-wait">' + (feeds4.stats().seeded ? "No detections in 24 hours" : "Loading history") + "</div>";
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < feeds4.log.length && i < 120; i++) {
+      var e = feeds4.log[i];
+      html += '<div class="cam-log-row ' + e.level + (e.camera === focused ? " on" : "") + '" data-cam="' + e.camera + '"><span class="t">' + stamp2(e.at) + '</span><span class="c">' + e.num + '</span><span class="w">' + e.where + '</span><span class="k">' + e.short + (e.count > 1 ? " <b>x" + e.count + "</b>" : "") + "</span></div>";
+    }
+    box.innerHTML = html;
+  }
+  function stamp2(ms) {
+    var t = new Date(ms);
+    return (t.getHours() % 12 || 12) + ":" + pad4(t.getMinutes()) + ":" + pad4(t.getSeconds()) + (t.getHours() < 12 ? "a" : "p");
+  }
+  function ago(ms) {
+    var s = Math.round(ms / 1e3);
+    if (s < 60) {
+      return s + " SEC";
+    }
+    var m = Math.round(s / 60);
+    if (m < 60) {
+      return m + " MIN";
+    }
+    var h = Math.floor(m / 60);
+    if (h < 48) {
+      return h + " HR";
+    }
+    return Math.floor(h / 24) + " DAYS";
+  }
+  function renderClock4(now) {
+    var el = $id4("cm-time");
+    if (!el) {
+      return;
+    }
+    var d = new Date(now);
+    var h = d.getHours();
+    var text = (h % 12 || 12) + ":" + pad4(d.getMinutes()) + ":" + pad4(d.getSeconds());
+    if (text === lastClock) {
+      return;
+    }
+    lastClock = text;
+    el.innerHTML = text + "<small>" + (h < 12 ? "AM" : "PM") + "</small>";
+    var dt = $id4("cm-date");
+    if (dt) {
+      dt.textContent = DAYS4[d.getDay()] + ", " + MONTHS4[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    }
+  }
+  function bindControls3() {
+    var root = $id4("cameras-screen");
+    root.addEventListener("click", function(e) {
+      var row = e.target.closest(".cam-log-row");
+      if (row) {
+        wipeTo(row.getAttribute("data-cam"));
+        dirty4 = true;
+        return;
+      }
+      var tile = e.target.closest(".cam-tile");
+      if (!tile) {
+        return;
+      }
+      var id = tile.getAttribute("data-cam");
+      wipeTo(focused === id ? null : id);
+      dirty4 = true;
+    });
+    root.addEventListener("keydown", function(e) {
+      var tile = e.target.closest(".cam-tile");
+      if (tile && (e.key === "Enter" || e.key === " ")) {
+        e.preventDefault();
+        var id = tile.getAttribute("data-cam");
+        wipeTo(focused === id ? null : id);
+        dirty4 = true;
+      }
+    });
+    window.addEventListener("keydown", function(e) {
+      if (!active4 || e.key !== "Escape" || !focused) {
+        return;
+      }
+      wipeTo(null);
+      dirty4 = true;
+    });
+  }
+  var HLS_FIRST_FRAME_MS, HLS_MAX_RETRIES, WIPE_MS, WIPE_SWAP_MS, FLASH_HOLD_MS, OFFLINE_RETRY_MS, CameraView, feeds4, areas2, active4, built3, dirty4, lastRender4, lastQuality, resizeTimer4, observer4, tiles, focused, wipeTimer, swapTimer, DAYS4, MONTHS4, lastClock;
+  var init_CameraView = __esm({
+    "src/CameraView.js"() {
+      init_CameraFeeds();
+      HLS_FIRST_FRAME_MS = 18e3;
+      HLS_MAX_RETRIES = 3;
+      WIPE_MS = 460;
+      WIPE_SWAP_MS = 150;
+      FLASH_HOLD_MS = 6e3;
+      OFFLINE_RETRY_MS = 2e4;
+      CameraView = {};
+      feeds4 = null;
+      areas2 = null;
+      active4 = false;
+      built3 = false;
+      dirty4 = true;
+      lastRender4 = 0;
+      lastQuality = 0;
+      resizeTimer4 = null;
+      observer4 = null;
+      tiles = [];
+      focused = null;
+      wipeTimer = null;
+      swapTimer = null;
+      Tile.prototype.onFirstFrame = function() {
+        if (this.mode !== "starting") {
+          return;
+        }
+        clearTimeout(this._frameTimer);
+        this.mode = "hls";
+        this.playingSince = Date.now();
+        this.video.classList.add("on");
+        this.still.classList.remove("on");
+        this.el.classList.remove("offline");
+        dirty4 = true;
+      };
+      Tile.prototype.connect = function(cam) {
+        if (this.mode !== "idle" && this.mode !== "offline") {
+          return;
+        }
+        if (!cam.live) {
+          this.goOffline();
+          return;
+        }
+        this.mode = "starting";
+        this.startedAt = Date.now();
+        this.el.classList.remove("offline");
+        var still = feeds4.stillUrl(cam.id);
+        if (still) {
+          this.still.src = still;
+          this.still.classList.add("on");
+        }
+        var self = this;
+        feeds4.hlsUrl(cam.id).then(function(url) {
+          if (self.mode !== "starting") {
+            return;
+          }
+          self.playHls(url);
+        }).catch(function() {
+          self.playMjpeg();
+        });
+      };
+      Tile.prototype.playHls = function(url) {
+        var self = this;
+        var video = this.video;
+        if (!window.Hls || !window.Hls.isSupported()) {
+          if (video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = url;
+            this.watchFirstFrame();
+            return;
+          }
+          this.playMjpeg();
+          return;
+        }
+        this.teardownHls();
+        var hls = new window.Hls({
+          /* A surveillance wall wants the newest frame, not a smooth buffer. */
+          lowLatencyMode: true,
+          liveSyncDurationCount: 1,
+          backBufferLength: 4,
+          /* Home Assistant answers 404 on the playlist until ffmpeg has
+             written a first segment, so the manifest needs real patience here.
+             Without it the slowest camera looked like a dead one. */
+          manifestLoadingTimeOut: 15e3,
+          manifestLoadingMaxRetry: 8,
+          manifestLoadingRetryDelay: 1e3,
+          manifestLoadingMaxRetryTimeout: 8e3,
+          levelLoadingTimeOut: 15e3,
+          levelLoadingMaxRetry: 6,
+          levelLoadingRetryDelay: 1e3,
+          fragLoadingTimeOut: 2e4,
+          enableWorker: true
+        });
+        this.hls = hls;
+        hls.on(window.Hls.Events.ERROR, function(evt, data) {
+          if (!data || !data.fatal) {
+            return;
+          }
+          if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR && self.retries < HLS_MAX_RETRIES) {
+            self.retries += 1;
+            self.teardownHls();
+            self.mode = "starting";
+            clearTimeout(self._retryTimer);
+            self._retryTimer = setTimeout(function() {
+              if (self.mode !== "starting") {
+                return;
+              }
+              feeds4.hlsUrl(self.id).then(function(fresh) {
+                if (self.mode === "starting") {
+                  self.playHls(fresh);
+                }
+              }).catch(function() {
+                self.playMjpeg();
+              });
+            }, 2e3);
+            return;
+          }
+          if (data.type === window.Hls.ErrorTypes.MEDIA_ERROR && self.retries < HLS_MAX_RETRIES) {
+            self.retries += 1;
+            hls.recoverMediaError();
+            return;
+          }
+          self.playMjpeg();
+        });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        video.play().catch(function() {
+        });
+        this.watchFirstFrame();
+      };
+      Tile.prototype.watchFirstFrame = function() {
+        var self = this;
+        clearTimeout(this._frameTimer);
+        this._frameTimer = setTimeout(function() {
+          if (self.mode === "starting") {
+            self.playMjpeg();
+          }
+        }, HLS_FIRST_FRAME_MS);
+      };
+      Tile.prototype.playMjpeg = function() {
+        this.teardownHls();
+        clearTimeout(this._frameTimer);
+        clearTimeout(this._retryTimer);
+        var url = feeds4.mjpegUrl(this.id);
+        if (!url) {
+          this.goOffline();
+          return;
+        }
+        var self = this;
+        this.mode = "starting";
+        this.video.classList.remove("on");
+        this.mjpeg.onload = function() {
+          self.mode = "mjpeg";
+          self.playingSince = Date.now();
+          self.mjpeg.classList.add("on");
+          self.still.classList.remove("on");
+          self.el.classList.remove("offline");
+          dirty4 = true;
+        };
+        this.mjpeg.onerror = function() {
+          self.mjpeg.classList.remove("on");
+          self.goOffline();
+        };
+        this.mjpeg.src = url;
+      };
+      Tile.prototype.goOffline = function() {
+        this.teardownHls();
+        clearTimeout(this._frameTimer);
+        this.mode = "offline";
+        this.offlineAt = Date.now();
+        this.video.classList.remove("on");
+        this.mjpeg.classList.remove("on");
+        this.mjpeg.removeAttribute("src");
+        this.still.classList.remove("on");
+        this.still.removeAttribute("src");
+        this.el.classList.add("offline");
+        dirty4 = true;
+      };
+      Tile.prototype.teardownHls = function() {
+        if (this.hls) {
+          try {
+            this.hls.destroy();
+          } catch (err) {
+          }
+          this.hls = null;
+        }
+        this.video.removeAttribute("src");
+      };
+      Tile.prototype.disconnect = function() {
+        this.teardownHls();
+        clearTimeout(this._frameTimer);
+        clearTimeout(this._retryTimer);
+        this.mjpeg.onload = null;
+        this.mjpeg.onerror = null;
+        this.mjpeg.removeAttribute("src");
+        this.still.removeAttribute("src");
+        this.video.classList.remove("on");
+        this.mjpeg.classList.remove("on");
+        this.still.classList.remove("on");
+        this.mode = "idle";
+        this.retries = 0;
+      };
+      Tile.prototype.quality = function() {
+        if (this.mode === "offline") {
+          return 0;
+        }
+        if (this.mode === "starting") {
+          return 1;
+        }
+        if (this.mode === "mjpeg") {
+          return 2;
+        }
+        var video = this.video;
+        var now = Date.now();
+        var time = video.currentTime;
+        if (this._qTime === void 0) {
+          this._qTime = time;
+          this._qAt = now;
+          this._stalled = false;
+        } else if (time > this._qTime + 0.01) {
+          this._qTime = time;
+          this._qAt = now;
+          this._stalled = false;
+        } else if (now - this._qAt > 1500) {
+          this._stalled = true;
+        }
+        if (this._stalled || video.readyState < 2) {
+          return 1;
+        }
+        if (video.getVideoPlaybackQuality) {
+          var q = video.getVideoPlaybackQuality();
+          var total = q.totalVideoFrames - (this._qTotal || 0);
+          var dropped = q.droppedVideoFrames - (this._qDropped || 0);
+          this._qTotal = q.totalVideoFrames;
+          this._qDropped = q.droppedVideoFrames;
+          if (total > 20 && dropped / total > 0.05) {
+            return 3;
+          }
+        }
+        return 4;
+      };
+      Tile.prototype.sizeStatic = function() {
+        var w = this.screen.clientWidth;
+        var h = this.screen.clientHeight;
+        if (!w || !h) {
+          return;
+        }
+        this.staticCanvas.width = Math.max(1, Math.floor(w / 3));
+        this.staticCanvas.height = Math.max(1, Math.floor(h / 3));
+      };
+      Tile.prototype.drawStatic = function() {
+        var c2 = this.staticCanvas;
+        var ctx = this.staticCtx;
+        if (!ctx || !c2.width || !c2.height) {
+          return;
+        }
+        var img = ctx.createImageData(c2.width, c2.height);
+        var data = img.data;
+        for (var i = 0; i < data.length; i += 4) {
+          var v = Math.random() * 255;
+          data[i] = v * 0.25;
+          data[i + 1] = v * 0.88;
+          data[i + 2] = v;
+          data[i + 3] = 255;
+        }
+        ctx.putImageData(img, 0, 0);
+      };
+      CameraView.init = function(ha2, areasRef) {
+        var root = $id4("cameras-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active4 = true;
+        areas2 = areasRef;
+        if (!feeds4 && ha2) {
+          feeds4 = new CameraFeeds(ha2, areas2, function() {
+            dirty4 = true;
+          });
+          feeds4.start();
+        }
+        if (!built3) {
+          built3 = true;
+          buildGrid();
+          bindControls3();
+        }
+        watchPanels4();
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            CameraView.resize();
+          });
+        });
+        dirty4 = true;
+      };
+      CameraView.show = function() {
+        active4 = true;
+        var root = $id4("cameras-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+        CameraView.resize();
+        openStreams();
+      };
+      CameraView.hide = function() {
+        active4 = false;
+        $id4("cameras-screen").style.display = "none";
+        tiles.forEach(function(t) {
+          t.disconnect();
+        });
+      };
+      CameraView.message = function(m) {
+        if (feeds4 && feeds4.note(m)) {
+          dirty4 = true;
+        }
+      };
+      CameraView.seed = function() {
+        dirty4 = true;
+      };
+      CameraView.animate = function() {
+        if (!active4 || !feeds4) {
+          return;
+        }
+        var now = Date.now();
+        var list = feeds4.cameras();
+        renderTimecodes(now);
+        renderStatic(list);
+        renderClock4(now);
+        if (now - lastQuality > 500) {
+          lastQuality = now;
+          renderQuality();
+        }
+        if (dirty4 && now - lastRender4 > 400) {
+          lastRender4 = now;
+          dirty4 = false;
+          renderFrames(list, now);
+          renderStatus2();
+          renderLog2();
+        } else {
+          for (var i = 0; i < tiles.length; i++) {
+            if (tiles[i].flashUntil && now > tiles[i].flashUntil) {
+              dirty4 = true;
+            }
+          }
+        }
+      };
+      CameraView.resize = function() {
+        if (!active4) {
+          return;
+        }
+        tiles.forEach(function(t) {
+          t.sizeStatic();
+        });
+        dirty4 = true;
+      };
+      CameraView.resizeDebounced = function() {
+        if (resizeTimer4) {
+          clearTimeout(resizeTimer4);
+        }
+        resizeTimer4 = setTimeout(function() {
+          resizeTimer4 = null;
+          CameraView.resize();
+        }, 150);
+      };
+      DAYS4 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS4 = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      lastClock = "";
+    }
+  });
+
   // src/Areas.js
   var Areas_exports = {};
   __export(Areas_exports, {
@@ -53260,9 +54354,9 @@
           this.ha.command({ type: "config/device_registry/list" }),
           this.ha.command({ type: "config/entity_registry/list" })
         ]).then(function(results) {
-          var areas3 = results[0], devices = results[1], entities = results[2];
+          var areas4 = results[0], devices = results[1], entities = results[2];
           self.areas = {};
-          areas3.forEach(function(a) {
+          areas4.forEach(function(a) {
             self.areas[a.area_id] = a;
           });
           var deviceArea = {};
@@ -53349,9 +54443,9 @@
   __export(LeakWatch_exports, {
     LeakWatch: () => LeakWatch
   });
-  function LeakWatch(ha2, areas3) {
+  function LeakWatch(ha2, areas4) {
     this.ha = ha2;
-    this.areas = areas3;
+    this.areas = areas4;
     this.wet = [];
     this._timer = null;
   }
@@ -53459,7 +54553,7 @@
           }
         });
         $2.fn.extend({
-          focus: /* @__PURE__ */ (function(orig) {
+          focus: /* @__PURE__ */ function(orig) {
             return function(delay, fn) {
               return typeof delay === "number" ? this.each(function() {
                 var elem = this;
@@ -53471,7 +54565,7 @@
                 }, delay);
               }) : orig.apply(this, arguments);
             };
-          })($2.fn.focus),
+          }($2.fn.focus),
           scrollParent: function() {
             var scrollParent;
             if ($2.ui.ie && /(static|relative)/.test(this.css("position")) || /absolute/.test(this.css("position"))) {
@@ -53603,7 +54697,7 @@
           };
         }
         if ($2("<a>").data("a-b", "a").removeData("a-b").data("a-b")) {
-          $2.fn.removeData = /* @__PURE__ */ (function(removeData) {
+          $2.fn.removeData = /* @__PURE__ */ function(removeData) {
             return function(key) {
               if (arguments.length) {
                 return removeData.call(this, $2.camelCase(key));
@@ -53611,7 +54705,7 @@
                 return removeData.call(this);
               }
             };
-          })($2.fn.removeData);
+          }($2.fn.removeData);
         }
         $2.ui.ie = !!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase());
         $2.support.selectstart = "onselectstart" in document.createElement("div");
@@ -53711,7 +54805,7 @@
               proxiedPrototype[prop] = value;
               return;
             }
-            proxiedPrototype[prop] = /* @__PURE__ */ (function() {
+            proxiedPrototype[prop] = /* @__PURE__ */ function() {
               var _super = function() {
                 return base.prototype[prop].apply(this, arguments);
               }, _superApply = function(args) {
@@ -53726,7 +54820,7 @@
                 this._superApply = __superApply;
                 return returnValue;
               };
-            })();
+            }();
           });
           constructor.prototype = $2.widget.extend(basePrototype, {
             // TODO: remove support for widgetEventPrefix
@@ -54971,7 +56065,6 @@
               x2 - draggable.helperProportions.width / 2 < r && // Left Half
               t < y1 + draggable.helperProportions.height / 2 && // Bottom Half
               y2 - draggable.helperProportions.height / 2 < b;
-            // Top Half
             case "pointer":
               draggableLeft = (draggable.positionAbs || draggable.position.absolute).left + (draggable.clickOffset || draggable.offset.click).left;
               draggableTop = (draggable.positionAbs || draggable.position.absolute).top + (draggable.clickOffset || draggable.offset.click).top;
@@ -56740,32 +57833,32 @@
                 delayedTriggers.push(function(event2) {
                   this._trigger("remove", event2, this._uiHash());
                 });
-                delayedTriggers.push((function(c2) {
+                delayedTriggers.push(function(c2) {
                   return function(event2) {
                     c2._trigger("receive", event2, this._uiHash(this));
                   };
-                }).call(this, this.currentContainer));
-                delayedTriggers.push((function(c2) {
+                }.call(this, this.currentContainer));
+                delayedTriggers.push(function(c2) {
                   return function(event2) {
                     c2._trigger("update", event2, this._uiHash(this));
                   };
-                }).call(this, this.currentContainer));
+                }.call(this, this.currentContainer));
               }
             }
             for (i = this.containers.length - 1; i >= 0; i--) {
               if (!noPropagation) {
-                delayedTriggers.push((function(c2) {
+                delayedTriggers.push(function(c2) {
                   return function(event2) {
                     c2._trigger("deactivate", event2, this._uiHash(this));
                   };
-                }).call(this, this.containers[i]));
+                }.call(this, this.containers[i]));
               }
               if (this.containers[i].containerCache.over) {
-                delayedTriggers.push((function(c2) {
+                delayedTriggers.push(function(c2) {
                   return function(event2) {
                     c2._trigger("out", event2, this._uiHash(this));
                   };
-                }).call(this, this.containers[i]));
+                }.call(this, this.containers[i]));
                 this.containers[i].containerCache.over = 0;
               }
             }
@@ -57407,7 +58500,7 @@
             });
           };
           $2.fn.extend({
-            addClass: /* @__PURE__ */ (function(orig) {
+            addClass: /* @__PURE__ */ function(orig) {
               return function(classNames, speed, easing, callback) {
                 return speed ? $2.effects.animateClass.call(
                   this,
@@ -57417,8 +58510,8 @@
                   callback
                 ) : orig.apply(this, arguments);
               };
-            })($2.fn.addClass),
-            removeClass: /* @__PURE__ */ (function(orig) {
+            }($2.fn.addClass),
+            removeClass: /* @__PURE__ */ function(orig) {
               return function(classNames, speed, easing, callback) {
                 return arguments.length > 1 ? $2.effects.animateClass.call(
                   this,
@@ -57428,8 +58521,8 @@
                   callback
                 ) : orig.apply(this, arguments);
               };
-            })($2.fn.removeClass),
-            toggleClass: /* @__PURE__ */ (function(orig) {
+            }($2.fn.removeClass),
+            toggleClass: /* @__PURE__ */ function(orig) {
               return function(classNames, force, speed, easing, callback) {
                 if (typeof force === "boolean" || force === undefined2) {
                   if (!speed) {
@@ -57453,7 +58546,7 @@
                   );
                 }
               };
-            })($2.fn.toggleClass),
+            }($2.fn.toggleClass),
             switchClass: function(remove, add, speed, easing, callback) {
               return $2.effects.animateClass.call(this, {
                 add,
@@ -57545,15 +58638,15 @@
               }), size = {
                 width: element.width(),
                 height: element.height()
-              }, active5 = document.activeElement;
+              }, active6 = document.activeElement;
               try {
-                active5.id;
+                active6.id;
               } catch (e) {
-                active5 = document.body;
+                active6 = document.body;
               }
               element.wrap(wrapper);
-              if (element[0] === active5 || $2.contains(element[0], active5)) {
-                $2(active5).focus();
+              if (element[0] === active6 || $2.contains(element[0], active6)) {
+                $2(active6).focus();
               }
               wrapper = element.parent();
               if (element.css("position") === "static") {
@@ -57582,11 +58675,11 @@
               return wrapper.css(props).show();
             },
             removeWrapper: function(element) {
-              var active5 = document.activeElement;
+              var active6 = document.activeElement;
               if (element.parent().is(".ui-effects-wrapper")) {
                 element.parent().replaceWith(element);
-                if (element[0] === active5 || $2.contains(element[0], active5)) {
-                  $2(active5).focus();
+                if (element[0] === active6 || $2.contains(element[0], active6)) {
+                  $2(active6).focus();
                 }
               }
               return element;
@@ -57681,7 +58774,7 @@
               }
               return queue === false ? this.each(run) : this.queue(queue || "fx", run);
             },
-            show: /* @__PURE__ */ (function(orig) {
+            show: /* @__PURE__ */ function(orig) {
               return function(option) {
                 if (standardAnimationOption(option)) {
                   return orig.apply(this, arguments);
@@ -57691,8 +58784,8 @@
                   return this.effect.call(this, args);
                 }
               };
-            })($2.fn.show),
-            hide: /* @__PURE__ */ (function(orig) {
+            }($2.fn.show),
+            hide: /* @__PURE__ */ function(orig) {
               return function(option) {
                 if (standardAnimationOption(option)) {
                   return orig.apply(this, arguments);
@@ -57702,8 +58795,8 @@
                   return this.effect.call(this, args);
                 }
               };
-            })($2.fn.hide),
-            toggle: /* @__PURE__ */ (function(orig) {
+            }($2.fn.hide),
+            toggle: /* @__PURE__ */ function(orig) {
               return function(option) {
                 if (standardAnimationOption(option) || typeof option === "boolean") {
                   return orig.apply(this, arguments);
@@ -57713,7 +58806,7 @@
                   return this.effect.call(this, args);
                 }
               };
-            })($2.fn.toggle),
+            }($2.fn.toggle),
             // helper functions
             cssUnit: function(key) {
               var style = this.css(key), val = [];
@@ -57981,14 +59074,14 @@
             }
           },
           _activate: function(index) {
-            var active5 = this._findActive(index)[0];
-            if (active5 === this.active[0]) {
+            var active6 = this._findActive(index)[0];
+            if (active6 === this.active[0]) {
               return;
             }
-            active5 = active5 || this.active[0];
+            active6 = active6 || this.active[0];
             this._eventHandler({
-              target: active5,
-              currentTarget: active5,
+              target: active6,
+              currentTarget: active6,
               preventDefault: $2.noop
             });
           },
@@ -58011,8 +59104,8 @@
             this._focusable(this.headers);
           },
           _eventHandler: function(event) {
-            var options = this.options, active5 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active5[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active5.next(), eventData = {
-              oldHeader: active5,
+            var options = this.options, active6 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active6[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active6.next(), eventData = {
+              oldHeader: active6,
               oldPanel: toHide,
               newHeader: collapsing ? $2() : clicked,
               newPanel: toShow
@@ -58028,9 +59121,9 @@
             options.active = collapsing ? false : this.headers.index(clicked);
             this.active = clickedIsActive ? $2() : clicked;
             this._toggle(eventData);
-            active5.removeClass("ui-accordion-header-active ui-state-active");
+            active6.removeClass("ui-accordion-header-active ui-state-active");
             if (options.icons) {
-              active5.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
+              active6.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
             }
             if (!clickedIsActive) {
               clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
@@ -59404,7 +60497,6 @@
                   $2.datepicker._hideDatepicker();
                   handled = false;
                   break;
-                // hide on tab out
                 case 13:
                   sel = $2("td." + $2.datepicker._dayOverClass + ":not(." + $2.datepicker._currentClass + ")", inst.dpDiv);
                   if (sel[0]) {
@@ -59418,33 +60510,27 @@
                     $2.datepicker._hideDatepicker();
                   }
                   return false;
-                // don't submit the form
                 case 27:
                   $2.datepicker._hideDatepicker();
                   break;
-                // hide on escape
                 case 33:
                   $2.datepicker._adjustDate(event.target, event.ctrlKey ? -$2.datepicker._get(inst, "stepBigMonths") : -$2.datepicker._get(inst, "stepMonths"), "M");
                   break;
-                // previous month/year on page up/+ ctrl
                 case 34:
                   $2.datepicker._adjustDate(event.target, event.ctrlKey ? +$2.datepicker._get(inst, "stepBigMonths") : +$2.datepicker._get(inst, "stepMonths"), "M");
                   break;
-                // next month/year on page down/+ ctrl
                 case 35:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._clearDate(event.target);
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
-                // clear on ctrl or command +end
                 case 36:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._gotoToday(event.target);
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
-                // current on ctrl or command +home
                 case 37:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._adjustDate(event.target, isRTL ? 1 : -1, "D");
@@ -59460,7 +60546,6 @@
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
-                // -1 week on ctrl or command +up
                 case 39:
                   if (event.ctrlKey || event.metaKey) {
                     $2.datepicker._adjustDate(event.target, isRTL ? -1 : 1, "D");
@@ -59476,7 +60561,6 @@
                   }
                   handled = event.ctrlKey || event.metaKey;
                   break;
-                // +1 week on ctrl or command +down
                 default:
                   handled = false;
               }
@@ -60094,7 +61178,6 @@
                   case "D":
                   case "M":
                     return null;
-                  // Accept anything
                   case "'":
                     if (lookAhead("'")) {
                       chars += "'";
@@ -62007,13 +63090,13 @@
             this._super(key, value);
           },
           focus: function(event, item2) {
-            var nested, focused;
+            var nested, focused2;
             this.blur(event, event && event.type === "focus");
             this._scrollIntoView(item2);
             this.active = item2.first();
-            focused = this.active.children("a").addClass("ui-state-focus");
+            focused2 = this.active.children("a").addClass("ui-state-focus");
             if (this.options.role) {
-              this.element.attr("aria-activedescendant", focused.attr("id"));
+              this.element.attr("aria-activedescendant", focused2.attr("id"));
             }
             this.active.parent().closest(".ui-menu-item").children("a:first").addClass("ui-state-active");
             if (event && event.type === "keydown") {
@@ -63501,33 +64584,33 @@
             }
           },
           _initialActive: function() {
-            var active5 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
-            if (active5 === null) {
+            var active6 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
+            if (active6 === null) {
               if (locationHash) {
                 this.tabs.each(function(i, tab) {
                   if ($2(tab).attr("aria-controls") === locationHash) {
-                    active5 = i;
+                    active6 = i;
                     return false;
                   }
                 });
               }
-              if (active5 === null) {
-                active5 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
+              if (active6 === null) {
+                active6 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
               }
-              if (active5 === null || active5 === -1) {
-                active5 = this.tabs.length ? 0 : false;
-              }
-            }
-            if (active5 !== false) {
-              active5 = this.tabs.index(this.tabs.eq(active5));
-              if (active5 === -1) {
-                active5 = collapsible ? false : 0;
+              if (active6 === null || active6 === -1) {
+                active6 = this.tabs.length ? 0 : false;
               }
             }
-            if (!collapsible && active5 === false && this.anchors.length) {
-              active5 = 0;
+            if (active6 !== false) {
+              active6 = this.tabs.index(this.tabs.eq(active6));
+              if (active6 === -1) {
+                active6 = collapsible ? false : 0;
+              }
             }
-            return active5;
+            if (!collapsible && active6 === false && this.anchors.length) {
+              active6 = 0;
+            }
+            return active6;
           },
           _getCreateEventData: function() {
             return {
@@ -63807,8 +64890,8 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active5 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active5[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active5.length ? $2() : this._getPanelForTab(active5), eventData = {
-              oldTab: active5,
+            var options = this.options, active6 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active6[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active6.length ? $2() : this._getPanelForTab(active6), eventData = {
+              oldTab: active6,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
               newPanel: toShow
@@ -63883,14 +64966,14 @@
             });
           },
           _activate: function(index) {
-            var anchor, active5 = this._findActive(index);
-            if (active5[0] === this.active[0]) {
+            var anchor, active6 = this._findActive(index);
+            if (active6[0] === this.active[0]) {
               return;
             }
-            if (!active5.length) {
-              active5 = this.active;
+            if (!active6.length) {
+              active6 = this.active;
             }
-            anchor = active5.find(".ui-tabs-anchor")[0];
+            anchor = active6.find(".ui-tabs-anchor")[0];
             this._eventHandler({
               target: anchor,
               currentTarget: anchor,
@@ -64307,9 +65390,10 @@
   var HouseView2 = (init_HouseView(), __toCommonJS(HouseView_exports)).HouseView;
   var ClimateView2 = (init_ClimateView(), __toCommonJS(ClimateView_exports)).ClimateView;
   var SecurityView2 = (init_SecurityView(), __toCommonJS(SecurityView_exports)).SecurityView;
+  var CameraView2 = (init_CameraView(), __toCommonJS(CameraView_exports)).CameraView;
   var Areas2 = (init_Areas(), __toCommonJS(Areas_exports)).Areas;
   var LeakWatch2 = (init_LeakWatch(), __toCommonJS(LeakWatch_exports)).LeakWatch;
-  var areas2 = null;
+  var areas3 = null;
   var leaks = null;
   var init = false;
   require_jquery_ui();
@@ -64358,16 +65442,18 @@
     this.css("left", left + "px");
     return this;
   };
-  var active4 = "lt";
+  var active5 = "lt";
   var ha = haSource.start(function(message) {
-    if (active4 === "lt") {
+    if (active5 === "lt") {
       LightTable.message(message);
-    } else if (active4 === "house") {
+    } else if (active5 === "house") {
       HouseView2.message(message);
-    } else if (active4 === "climate") {
+    } else if (active5 === "climate") {
       ClimateView2.message(message);
-    } else if (active4 === "security") {
+    } else if (active5 === "security") {
       SecurityView2.message(message);
+    } else if (active5 === "cameras") {
+      CameraView2.message(message);
     } else {
       setTimeout(function() {
         Boardroom.message(message);
@@ -64377,13 +65463,13 @@
     console.log("home assistant: " + state2.status + (state2.detail ? " (" + state2.detail + ")" : ""));
     $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state2.status).toUpperCase());
     LightTable.setLink(state2.status === "ready");
-    if (state2.status === "ready" && areas2) {
-      areas2.load();
+    if (state2.status === "ready" && areas3) {
+      areas3.load();
     }
   });
   LightTable.setHomeAssistant(ha);
-  areas2 = new Areas2(ha);
-  leaks = new LeakWatch2(ha, areas2);
+  areas3 = new Areas2(ha);
+  leaks = new LeakWatch2(ha, areas3);
   leaks.start();
   var onSwitch = function(view) {
     var screensaver = $("#screensaver");
@@ -64411,27 +65497,34 @@
       HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active4 = "house";
+        active5 = "house";
         HouseView2.show();
       }, 3e3);
     } else if (system.key === "climate") {
       ClimateView2.init(ha);
       ClimateView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active4 = "climate";
+        active5 = "climate";
         ClimateView2.show();
       }, 3e3);
     } else if (system.key === "security") {
-      SecurityView2.init(ha, areas2);
+      SecurityView2.init(ha, areas3);
       SecurityView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active4 = "security";
+        active5 = "security";
         SecurityView2.show();
+      }, 3e3);
+    } else if (system.key === "cameras") {
+      CameraView2.init(ha, areas3);
+      CameraView2.seed(haSource.getSeed());
+      setTimeout(function() {
+        active5 = "cameras";
+        CameraView2.show();
       }, 3e3);
     } else {
       Boardroom.init(system.key);
       setTimeout(function() {
-        active4 = "br";
+        active5 = "br";
         Boardroom.show();
       }, 3e3);
     }
@@ -64475,14 +65568,16 @@
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
-      if (active4 === "lt") {
+      if (active5 === "lt") {
         LightTable.animate();
-      } else if (active4 === "house") {
+      } else if (active5 === "house") {
         HouseView2.animate();
-      } else if (active4 === "climate") {
+      } else if (active5 === "climate") {
         ClimateView2.animate();
-      } else if (active4 === "security") {
+      } else if (active5 === "security") {
         SecurityView2.animate();
+      } else if (active5 === "cameras") {
+        CameraView2.animate();
       } else {
         Boardroom.animate();
       }
@@ -64491,15 +65586,17 @@
     animate();
     var timeout = 0;
     function onWindowResize2() {
-      if (active4 === "lt") {
+      if (active5 === "lt") {
         $("#light-table").fitLauncher();
         LightTable.resize();
-      } else if (active4 === "house") {
+      } else if (active5 === "house") {
         HouseView2.resizeDebounced();
-      } else if (active4 === "climate") {
+      } else if (active5 === "climate") {
         ClimateView2.resizeDebounced();
-      } else if (active4 === "security") {
+      } else if (active5 === "security") {
         SecurityView2.resizeDebounced();
+      } else if (active5 === "cameras") {
+        CameraView2.resizeDebounced();
       } else {
         Boardroom.resize();
       }

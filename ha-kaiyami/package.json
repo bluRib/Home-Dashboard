@@ -1,6 +1,6 @@
 {
   "name": "kaiyami",
-  "version": "0.10.7",
+  "version": "0.11.0",
   "description": "Kaiyami Systems home console, a fork of Encom Boardroom",
   "main": "index.html",
   "dependencies": {
