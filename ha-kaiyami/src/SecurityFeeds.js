@@ -22,15 +22,29 @@ var INTERIOR_DOORS_OFF_MAP = ["binary_sensor.loft_bathroom_door_intrusion"];
    knows the room but not the spot, so the doors and the cameras are placed by
    hand against the geometry in BUILD.md. Everything else is placed at the
    centre of the room its area resolves to. */
+/* Where each door actually is in the model, found by clustering the door and
+   frame triangles in models/model.json rather than by eye. halfW and halfD
+   are the box the door is lifted out of, so the whole leaf and its frame
+   light up rather than a marker beside them.
+ *
+ * The garage vehicle door is not in the model. Sweet Home 3D exported that
+ * bay as a plain opening with no leaf, so there is nothing to lift and it
+ * falls back to a panel the width of the opening, which is what "lights up
+ * its full width" has to mean when the door itself was never drawn.
+ */
 var DOOR_SPOTS = {
     "binary_sensor.hallway_front_door_intrusion":
-        { x: 835, z: -10, level: 0, label: "Front Door", axis: "x" },
+        { x: 930, z: 25, level: 0, label: "Front Door", axis: "z",
+          halfW: 45, halfD: 95, height: 245 },
     "binary_sensor.hallway_garage_door_intrusion":
-        { x: 695, z: -300, level: 0, label: "Hall to Garage", axis: "z" },
+        { x: 605, z: -588, level: 0, label: "Hall to Garage", axis: "x",
+          halfW: 80, halfD: 45, height: 245 },
     "binary_sensor.living_room_back_door_intrusion":
-        { x: 1010, z: -1400, level: 0, label: "Back Door", axis: "x" },
+        { x: 824, z: -1683, level: 0, label: "Back Door", axis: "x",
+          halfW: 135, halfD: 45, height: 245 },
     "binary_sensor.garage_garage_door_intrusion":
-        { x: 340, z: -8, level: 0, label: "Garage Door", axis: "x" }
+        { x: 340, z: -8, level: 0, label: "Garage Door", axis: "x",
+          halfW: 325, halfD: 35, height: 245 }
 };
 
 var CAMERA_SPOTS = {
@@ -55,6 +69,10 @@ var DOORBELL_EVENTS = [
     "binary_sensor.reolink_doorbell_person_occupancy",
     "binary_sensor.reolink_doorbell_all_occupancy"
 ];
+
+/* Sensor kinds this screen is responsible for keeping alive. */
+var HEALTH_CLASSES = ["door", "garage_door", "window", "opening",
+                      "moisture", "motion", "occupancy"];
 
 var HISTORY_EVERY = 10 * 60 * 1000;
 var MAX_LOG = 200;
@@ -231,6 +249,81 @@ SecurityFeeds.prototype.locks = function () {
     });
 };
 
+/* ---- system health ---------------------------------------------------------- */
+
+/* The devices this screen is responsible for, by the prefix their entities
+   share. Derived from the sensors already on screen, so a new door sensor is
+   covered without being added to a list anywhere. */
+SecurityFeeds.prototype._securityPrefixes = function () {
+    var prefixes = {};
+    var add = function (id) {
+        var tail = id.split(".")[1] || "";
+        tail = tail.replace(/_(intrusion|water_leak|occupancy|motion|motion_detection)$/, "");
+        if (tail) {
+            prefixes[tail] = true;
+        }
+    };
+    this.doors().forEach(function (d) { add(d.id); });
+    this.leaks().forEach(function (d) { add(d.id); });
+    this.motion().forEach(function (d) { add(d.id); });
+    add("hallway_alarm_keypad");
+    return prefixes;
+};
+
+SecurityFeeds.prototype.health = function () {
+    var out = { tamper: [], failure: [], offline: [], battery: [], ok: true, count: 0 };
+    if (!this.ha || !this.ha.states) {
+        return out;
+    }
+    var self = this;
+    var prefixes = this._securityPrefixes();
+
+    var mine = function (id) {
+        var tail = id.split(".")[1] || "";
+        for (var pfx in prefixes) {
+            if (prefixes.hasOwnProperty(pfx) && tail.indexOf(pfx) === 0) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    this.ha.states.forEach(function (state, id) {
+        if (EXCLUDE.indexOf(id) >= 0 || !mine(id)) {
+            return;
+        }
+        var cls = klass(state);
+        var name = nameOf(state);
+        var v = state.state;
+        var where = self.areas.areaName(id);
+
+        if (cls === "tamper" && v === "on") {
+            out.tamper.push({ id: id, name: name, area: where });
+        } else if (cls === "problem" && v === "on") {
+            out.failure.push({ id: id, name: name, area: where });
+        } else if (cls === "battery" && id.indexOf("binary_sensor.") === 0 && v === "on") {
+            out.battery.push({ id: id, name: name, area: where, level: null });
+        } else if (cls === "battery" && id.indexOf("sensor.") === 0) {
+            var pct = Number(v);
+            if (isFinite(pct) && pct <= 20) {
+                out.battery.push({ id: id, name: name, area: where, level: pct });
+            }
+        }
+
+        /* An unavailable door or leak sensor is a hole in the coverage and
+           worth saying out loud. Only the kinds this screen relies on are
+           checked, because buttons and events idle at unknown by design. */
+        if ((v === "unavailable" || v === "unknown") && HEALTH_CLASSES.indexOf(cls) >= 0) {
+            out.offline.push({ id: id, name: name, area: where });
+        }
+    });
+
+    out.count = out.tamper.length + out.failure.length +
+                out.offline.length + out.battery.length;
+    out.ok = out.count === 0;
+    return out;
+};
+
 /* ---- acting --------------------------------------------------------------- */
 
 SecurityFeeds.prototype.setAlarm = function (service, code, done) {
@@ -306,6 +399,51 @@ SecurityFeeds.prototype.note = function (m) {
     return true;
 };
 
+/* Build the log from the same 24 hours the chart uses, so the panel opens
+   with real history instead of sitting empty until something moves. Runs once;
+   live events are merged in ahead of it by timestamp. */
+SecurityFeeds.prototype.seedLog = function (raw, doorIds) {
+    if (this._seeded) {
+        return;
+    }
+    this._seeded = true;
+
+    var self = this;
+    var rows = [];
+
+    Object.keys(raw).forEach(function (id) {
+        var state = self.ha.states.get(id);
+        var name = state ? nameOf(state) : id;
+        var where = self.areas.areaName(id) || "";
+        var isDoor = !!doorIds[id];
+        var prev = null;
+
+        (raw[id] || []).forEach(function (row) {
+            var v = row.s !== undefined ? row.s : row.state;
+            var at = row.lu !== undefined ? row.lu * 1000
+                : Date.parse(row.last_updated || row.last_changed);
+            if (!isFinite(at) || v === prev) {
+                prev = v;
+                return;
+            }
+            if (isDoor && (v === "on" || v === "off")) {
+                rows.push({ at: at, id: id, name: name, where: where,
+                    kind: v === "on" ? "opened" : "closed",
+                    severity: v === "on" ? "alert" : "normal" });
+            } else if (!isDoor && v === "on") {
+                rows.push({ at: at, id: id, name: name, where: where,
+                    kind: "motion", severity: "motion" });
+            }
+            prev = v;
+        });
+    });
+
+    this.log = this.log.concat(rows).sort(function (a, b) { return b.at - a.at; });
+    while (this.log.length > MAX_LOG) {
+        this.log.pop();
+    }
+};
+
 function roomName(key) {
     for (var i = 0; i < ROOMS.length; i++) {
         if (ROOMS[i].key === key) {
@@ -370,6 +508,7 @@ SecurityFeeds.prototype.refreshActivity = function () {
         });
 
         self.activity = { start: start, end: end, doors: doorsBy, motion: motionBy };
+        self.seedLog(raw, doorIds);
         self.onUpdate();
     }).catch(function () {});
 };

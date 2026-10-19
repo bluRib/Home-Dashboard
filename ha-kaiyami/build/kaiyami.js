@@ -52107,7 +52107,7 @@
     }
     return null;
   }
-  var EXCLUDE, INTERIOR_DOORS_OFF_MAP, DOOR_SPOTS, CAMERA_SPOTS, DOORBELL_EVENTS, HISTORY_EVERY2, MAX_LOG;
+  var EXCLUDE, INTERIOR_DOORS_OFF_MAP, DOOR_SPOTS, CAMERA_SPOTS, DOORBELL_EVENTS, HEALTH_CLASSES, HISTORY_EVERY2, MAX_LOG;
   var init_SecurityFeeds = __esm({
     "src/SecurityFeeds.js"() {
       init_rooms();
@@ -52117,10 +52117,46 @@
       ];
       INTERIOR_DOORS_OFF_MAP = ["binary_sensor.loft_bathroom_door_intrusion"];
       DOOR_SPOTS = {
-        "binary_sensor.hallway_front_door_intrusion": { x: 835, z: -10, level: 0, label: "Front Door", axis: "x" },
-        "binary_sensor.hallway_garage_door_intrusion": { x: 695, z: -300, level: 0, label: "Hall to Garage", axis: "z" },
-        "binary_sensor.living_room_back_door_intrusion": { x: 1010, z: -1400, level: 0, label: "Back Door", axis: "x" },
-        "binary_sensor.garage_garage_door_intrusion": { x: 340, z: -8, level: 0, label: "Garage Door", axis: "x" }
+        "binary_sensor.hallway_front_door_intrusion": {
+          x: 930,
+          z: 25,
+          level: 0,
+          label: "Front Door",
+          axis: "z",
+          halfW: 45,
+          halfD: 95,
+          height: 245
+        },
+        "binary_sensor.hallway_garage_door_intrusion": {
+          x: 605,
+          z: -588,
+          level: 0,
+          label: "Hall to Garage",
+          axis: "x",
+          halfW: 80,
+          halfD: 45,
+          height: 245
+        },
+        "binary_sensor.living_room_back_door_intrusion": {
+          x: 824,
+          z: -1683,
+          level: 0,
+          label: "Back Door",
+          axis: "x",
+          halfW: 135,
+          halfD: 45,
+          height: 245
+        },
+        "binary_sensor.garage_garage_door_intrusion": {
+          x: 340,
+          z: -8,
+          level: 0,
+          label: "Garage Door",
+          axis: "x",
+          halfW: 325,
+          halfD: 35,
+          height: 245
+        }
       };
       CAMERA_SPOTS = {
         "camera.reolink_doorbell": { x: 815, z: 120, level: 0, heading: 0, label: "Doorbell" },
@@ -52136,6 +52172,15 @@
         "binary_sensor.reolink_doorbell_motion",
         "binary_sensor.reolink_doorbell_person_occupancy",
         "binary_sensor.reolink_doorbell_all_occupancy"
+      ];
+      HEALTH_CLASSES = [
+        "door",
+        "garage_door",
+        "window",
+        "opening",
+        "moisture",
+        "motion",
+        "occupancy"
       ];
       HISTORY_EVERY2 = 10 * 60 * 1e3;
       MAX_LOG = 200;
@@ -52275,6 +52320,71 @@
           return item2;
         });
       };
+      SecurityFeeds.prototype._securityPrefixes = function() {
+        var prefixes = {};
+        var add = function(id) {
+          var tail = id.split(".")[1] || "";
+          tail = tail.replace(/_(intrusion|water_leak|occupancy|motion|motion_detection)$/, "");
+          if (tail) {
+            prefixes[tail] = true;
+          }
+        };
+        this.doors().forEach(function(d) {
+          add(d.id);
+        });
+        this.leaks().forEach(function(d) {
+          add(d.id);
+        });
+        this.motion().forEach(function(d) {
+          add(d.id);
+        });
+        add("hallway_alarm_keypad");
+        return prefixes;
+      };
+      SecurityFeeds.prototype.health = function() {
+        var out = { tamper: [], failure: [], offline: [], battery: [], ok: true, count: 0 };
+        if (!this.ha || !this.ha.states) {
+          return out;
+        }
+        var self = this;
+        var prefixes = this._securityPrefixes();
+        var mine = function(id) {
+          var tail = id.split(".")[1] || "";
+          for (var pfx in prefixes) {
+            if (prefixes.hasOwnProperty(pfx) && tail.indexOf(pfx) === 0) {
+              return true;
+            }
+          }
+          return false;
+        };
+        this.ha.states.forEach(function(state2, id) {
+          if (EXCLUDE.indexOf(id) >= 0 || !mine(id)) {
+            return;
+          }
+          var cls = klass(state2);
+          var name = nameOf(state2);
+          var v = state2.state;
+          var where = self.areas.areaName(id);
+          if (cls === "tamper" && v === "on") {
+            out.tamper.push({ id, name, area: where });
+          } else if (cls === "problem" && v === "on") {
+            out.failure.push({ id, name, area: where });
+          } else if (cls === "battery" && id.indexOf("binary_sensor.") === 0 && v === "on") {
+            out.battery.push({ id, name, area: where, level: null });
+          } else if (cls === "battery" && id.indexOf("sensor.") === 0) {
+            var pct = Number(v);
+            if (isFinite(pct) && pct <= 20) {
+              out.battery.push({ id, name, area: where, level: pct });
+            }
+          }
+          if ((v === "unavailable" || v === "unknown") && HEALTH_CLASSES.indexOf(cls) >= 0) {
+            out.offline.push({ id, name, area: where });
+          }
+        });
+        out.count = out.tamper.length + out.failure.length + out.offline.length + out.battery.length;
+        out.ok = out.count === 0;
+        return out;
+      };
       SecurityFeeds.prototype.setAlarm = function(service, code, done) {
         var data = {};
         if (code) {
@@ -52341,6 +52451,55 @@
         }
         return true;
       };
+      SecurityFeeds.prototype.seedLog = function(raw, doorIds) {
+        if (this._seeded) {
+          return;
+        }
+        this._seeded = true;
+        var self = this;
+        var rows2 = [];
+        Object.keys(raw).forEach(function(id) {
+          var state2 = self.ha.states.get(id);
+          var name = state2 ? nameOf(state2) : id;
+          var where = self.areas.areaName(id) || "";
+          var isDoor = !!doorIds[id];
+          var prev = null;
+          (raw[id] || []).forEach(function(row) {
+            var v = row.s !== void 0 ? row.s : row.state;
+            var at = row.lu !== void 0 ? row.lu * 1e3 : Date.parse(row.last_updated || row.last_changed);
+            if (!isFinite(at) || v === prev) {
+              prev = v;
+              return;
+            }
+            if (isDoor && (v === "on" || v === "off")) {
+              rows2.push({
+                at,
+                id,
+                name,
+                where,
+                kind: v === "on" ? "opened" : "closed",
+                severity: v === "on" ? "alert" : "normal"
+              });
+            } else if (!isDoor && v === "on") {
+              rows2.push({
+                at,
+                id,
+                name,
+                where,
+                kind: "motion",
+                severity: "motion"
+              });
+            }
+            prev = v;
+          });
+        });
+        this.log = this.log.concat(rows2).sort(function(a, b) {
+          return b.at - a.at;
+        });
+        while (this.log.length > MAX_LOG) {
+          this.log.pop();
+        }
+      };
       SecurityFeeds.prototype.refreshActivity = function() {
         var self = this;
         var ids = this.doors().map(function(d) {
@@ -52393,6 +52552,7 @@
             });
           });
           self.activity = { start: start2, end, doors: doorsBy, motion: motionBy };
+          self.seedLog(raw, doorIds);
           self.onUpdate();
         }).catch(function() {
         });
@@ -52415,7 +52575,7 @@
     observer3 = new ResizeObserver(function() {
       SecurityView.resizeDebounced();
     });
-    ["sc-house", "sc-activity", "sc-camera"].forEach(function(id) {
+    ["sc-house", "sc-activity"].forEach(function(id) {
       var el = $id3(id);
       if (el) {
         observer3.observe(el);
@@ -52566,6 +52726,77 @@
     }
     return item2.state;
   }
+  function stat(id, value, bad) {
+    var el = $id3(id);
+    if (!el) {
+      return;
+    }
+    el.firstChild.textContent = value;
+    el.className = "sc-stat" + (bad ? " bad" : "");
+  }
+  function renderStatus() {
+    if (!feeds3) {
+      return;
+    }
+    var open = feeds3.doors().filter(function(d) {
+      return d.open;
+    }).length;
+    var wet = feeds3.leaks().filter(function(l) {
+      return l.wet;
+    }).length;
+    var active5 = feeds3.motion().filter(function(m) {
+      return m.active;
+    }).length;
+    var a = feeds3.alarm();
+    stat("sc-stat-doors", open, open > 0);
+    stat("sc-stat-leaks", wet, wet > 0);
+    stat("sc-stat-motion", active5, false);
+    stat(
+      "sc-stat-alarm",
+      a.configured ? STATE_LABEL[a.state] || a.state : "NOT SET",
+      !a.configured || a.state === "triggered"
+    );
+  }
+  function healthGroup(title, items, render) {
+    if (!items.length) {
+      return "";
+    }
+    var html = '<div class="sc-group"><div class="sc-group-head alert">' + title + " (" + items.length + ")</div>";
+    items.forEach(function(it) {
+      html += '<div class="sc-row bad"><span class="sc-row-name">' + it.name + '</span><span class="sc-row-state">' + render(it) + "</span></div>";
+    });
+    return html + "</div>";
+  }
+  function renderHealth() {
+    var box = $id3("sc-health-body");
+    var count2 = $id3("sc-health-count");
+    if (!box || !feeds3) {
+      return;
+    }
+    var h = feeds3.health();
+    if (count2) {
+      count2.textContent = h.ok ? "" : h.count + " to look at";
+      count2.className = h.ok ? "" : "alert";
+    }
+    if (h.ok) {
+      box.innerHTML = '<div class="sc-healthy">ALL SENSORS HEALTHY</div>';
+      return;
+    }
+    var html = "";
+    html += healthGroup("Tamper", h.tamper, function() {
+      return "TAMPER";
+    });
+    html += healthGroup("Faults", h.failure, function() {
+      return "FAULT";
+    });
+    html += healthGroup("Offline", h.offline, function() {
+      return "OFFLINE";
+    });
+    html += healthGroup("Battery", h.battery, function(it) {
+      return it.level === null ? "LOW" : Math.round(it.level) + "%";
+    });
+    box.innerHTML = html;
+  }
   function group(title, items, word) {
     if (!items.length) {
       return "";
@@ -52652,37 +52883,6 @@
     });
     $id3("sc-locks-body").innerHTML = html;
   }
-  function renderCamera() {
-    var box = $id3("sc-camera-body");
-    var head = $id3("sc-camera-name");
-    if (!box || !feeds3) {
-      return;
-    }
-    var cams = feeds3.cameras();
-    if (!cams.length) {
-      box.innerHTML = '<span class="sc-wait">No cameras</span>';
-      return;
-    }
-    var want = null;
-    if (feeds3.lastEvent) {
-      for (var i = 0; i < cams.length; i++) {
-        if (cams[i].room && cams[i].room === feeds3.lastEvent.room) {
-          want = cams[i];
-        }
-      }
-    }
-    if (!want) {
-      want = cams[0];
-    }
-    if (head) {
-      head.textContent = want.name + (feeds3.lastEvent ? "  " + since(Date.now() - feeds3.lastEvent.at) + " ago" : "");
-    }
-    if (lastCamera !== want.id) {
-      lastCamera = want.id;
-      var base = window.HA_CONFIG && window.HA_CONFIG.httpUrl || "";
-      box.innerHTML = want.picture ? '<img src="' + base + want.picture + '" alt="' + want.name + '">' : '<span class="sc-wait">No stream for ' + want.name + "</span>";
-    }
-  }
   function renderLog() {
     var box = $id3("sc-log");
     if (!box || !feeds3) {
@@ -52712,7 +52912,7 @@
     var ctx = activityCtx;
     ctx.clearRect(0, 0, w, h);
     var a = feeds3.activity;
-    var left = 24, right = 4, top = 8, bottom = 14;
+    var left = 30, right = 30, top = 6, bottom = 16;
     var pw = w - left - right, ph = h - top - bottom;
     var maxDoors = 1, maxMotion = 1, i;
     for (i = 0; i < 24; i++) {
@@ -52728,10 +52928,14 @@
       ctx.lineTo(w - right, y);
       ctx.stroke();
     }
+    ctx.textAlign = "right";
     ctx.fillStyle = "#3fe0ff";
-    ctx.fillText(String(maxDoors), 2, top + 8);
+    ctx.fillText(String(maxDoors), left - 3, top + 8);
+    ctx.fillText("0", left - 3, top + ph);
+    ctx.textAlign = "left";
     ctx.fillStyle = "#4dffb0";
-    ctx.fillText(String(maxMotion), 2, top + 19);
+    ctx.fillText(String(maxMotion), w - right + 3, top + 8);
+    ctx.fillText("0", w - right + 3, top + ph);
     var bw = pw / 24;
     var half = Math.max(1, (bw - 3) / 2);
     for (i = 0; i < 24; i++) {
@@ -52746,12 +52950,15 @@
         ctx.fillStyle = "#3fe0ff";
         ctx.fillRect(x + 1, top + ph - dh, half, dh);
       }
-      if (i % 6 === 0) {
-        var hr = new Date(a.start + i * 36e5).getHours() % 12 || 12;
-        ctx.fillStyle = "rgba(0,238,238,.5)";
-        ctx.fillText(String(hr), x, h - 3);
+      if (i % 3 === 0) {
+        var when = new Date(a.start + i * 36e5);
+        var hr = when.getHours() % 12 || 12;
+        ctx.fillStyle = "rgba(0,238,238,.55)";
+        ctx.textAlign = "center";
+        ctx.fillText(hr + (when.getHours() < 12 ? "a" : "p"), x + bw / 2, h - 4);
       }
     }
+    ctx.textAlign = "left";
   }
   function pad3(n) {
     return String(n).length < 2 ? "0" + n : String(n);
@@ -52823,7 +53030,7 @@
       }
     });
   }
-  var CYAN, ALERT, SecurityView, feeds3, areas, active3, dirty3, lastRender3, resizeTimer3, observer3, built2, selected2, keypad, activityCanvas, activityCtx, lastCamera, STATE_LABEL, DAYS3, MONTHS3;
+  var CYAN, ALERT, SecurityView, feeds3, areas, active3, dirty3, lastRender3, resizeTimer3, observer3, built2, selected2, keypad, activityCanvas, activityCtx, STATE_LABEL, DAYS3, MONTHS3;
   var init_SecurityView = __esm({
     "src/SecurityView.js"() {
       init_SecurityFeeds();
@@ -52842,7 +53049,6 @@
       keypad = { open: false, service: null, code: "" };
       activityCanvas = null;
       activityCtx = null;
-      lastCamera = null;
       SecurityView.init = function(ha2, areasRef) {
         var root = $id3("security-screen");
         root.style.display = "grid";
@@ -52912,10 +53118,11 @@
           lastRender3 = now;
           dirty3 = false;
           placeMarkers();
+          renderStatus();
           renderEntryList();
+          renderHealth();
           renderAlarm();
           renderLocks();
-          renderCamera();
           renderLog();
           renderDetail2();
           paintRooms();

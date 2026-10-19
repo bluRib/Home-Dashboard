@@ -263,5 +263,23 @@ window.HouseSecurity = {
         if (security) {
             security.resize();
         }
+    },
+
+    /* Reports what each marker is actually made of, so a door that silently
+       fell back to a placeholder box is visible instead of looking fine. */
+    __probe: function () {
+        if (!security || !security.markers) {
+            return [];
+        }
+        return security.markers.map(function (m) {
+            var pos = m.mesh.geometry.attributes.position;
+            return {
+                id: m.spec.id,
+                kind: m.spec.kind,
+                triangles: pos ? pos.count / 3 : 0,
+                lifted: !m.mesh.geometry.type || m.mesh.geometry.type === "BufferGeometry",
+                opacity: Number(m.mat.opacity.toFixed(2))
+            };
+        });
     }
 };

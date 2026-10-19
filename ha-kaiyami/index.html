@@ -850,36 +850,17 @@
 
         <div id="security-screen">
 
+            <div id="sc-status">
+                <div class="sc-stat" id="sc-stat-doors"><b>0</b><span>Doors open</span></div>
+                <div class="sc-stat" id="sc-stat-leaks"><b>0</b><span>Leaks</span></div>
+                <div class="sc-stat" id="sc-stat-motion"><b>0</b><span>Motion active</span></div>
+                <div class="sc-stat" id="sc-stat-alarm"><b>--</b><span>Alarm</span></div>
+            </div>
+
             <div class="sc-panel" id="sc-entry-panel">
                 <div class="hs-head">Entry Points <em>Live</em></div>
                 <div class="hs-body">
                     <div id="sc-entry"><span class="sc-wait">Waiting</span></div>
-                </div>
-            </div>
-
-            <div class="sc-panel" id="sc-house">
-                <div class="hs-head">Security Map <em>Click a marker</em></div>
-                <div class="hs-body">
-                    <canvas id="sc-house-canvas"></canvas>
-                    <div id="sc-detail"></div>
-                </div>
-            </div>
-
-            <div class="sc-panel" id="sc-camera">
-                <div class="hs-head">Latest Activity <em id="sc-camera-name"></em></div>
-                <div class="hs-body">
-                    <div id="sc-camera-body"><span class="sc-wait">Waiting</span></div>
-                </div>
-            </div>
-
-            <div class="sc-panel" id="sc-activity">
-                <div class="hs-head">Activity <em>Last 24 h</em></div>
-                <div class="hs-body">
-                    <canvas id="sc-activity-canvas"></canvas>
-                    <div id="sc-activity-legend">
-                        <span class="doors">Door opens</span>
-                        <span class="motion">Motion</span>
-                    </div>
                 </div>
             </div>
 
@@ -890,15 +871,41 @@
                 </div>
             </div>
 
+            <div class="sc-panel" id="sc-health">
+                <div class="hs-head">System Health <em id="sc-health-count"></em></div>
+                <div class="hs-body">
+                    <div id="sc-health-body"><span class="sc-wait">Waiting</span></div>
+                </div>
+            </div>
+
+            <div class="sc-panel" id="sc-house">
+                <div class="hs-head">Security Map <em>Click a door</em></div>
+                <div class="hs-body">
+                    <canvas id="sc-house-canvas"></canvas>
+                    <div id="sc-detail"></div>
+                </div>
+            </div>
+
             <div class="sc-panel" id="sc-locks">
                 <div class="hs-head">Locks</div>
                 <div class="hs-body"><div id="sc-locks-body"></div></div>
             </div>
 
+            <div class="sc-panel" id="sc-activity">
+                <div class="hs-head">Activity <em>Last 24 h</em></div>
+                <div class="hs-body">
+                    <div id="sc-activity-legend">
+                        <span class="doors">Door opens, left scale</span>
+                        <span class="motion">Motion, right scale</span>
+                    </div>
+                    <canvas id="sc-activity-canvas"></canvas>
+                </div>
+            </div>
+
             <div class="sc-panel" id="sc-strip">
                 <div class="hs-head">Event Log <em>Newest first</em></div>
                 <div class="hs-body">
-                    <div id="sc-log"><div class="sc-wait">No security events yet</div></div>
+                    <div id="sc-log"><div class="sc-wait">Loading history</div></div>
                     <div class="sc-cell" id="sc-clock">
                         <div id="sc-time">--:--:--</div>
                         <div id="sc-date"></div>

@@ -365,6 +365,10 @@ export class HouseScreen {
     }
 
     g.computeVertexNormals();
+    // Kept so setDoorHighlights can pull individual doors back out of the
+    // merged geometry. Nothing else reads these.
+    if (!this._geoms) this._geoms = {};
+    this._geoms[key] = g;
     this.G0.add(new THREE.Mesh(g, material));
 
     if (edgeMat) {
@@ -730,9 +734,13 @@ export class HouseScreen {
     const state = this._markerState || {};
     for (const m of this.markers) {
       const s = state[m.spec.id];
-      const base = m.spec.kind === 'camera' ? 0.16 : m.spec.kind === 'leak' ? 0.8 : 0.55;
+      // A door only shows when it is open. Closed, the model's own cyan door
+      // is already correct and a second surface on top of it only muddies it.
+      const base = m.spec.kind === 'camera' ? 0.16
+        : m.spec.kind === 'leak' ? 0.8
+        : 0;
       m.mat.color.setHex(s && s.color !== undefined ? s.color : C.line);
-      m.mat.opacity = s && s.blink ? 0.3 + 0.7 * pulse : base;
+      m.mat.opacity = s && s.blink ? 0.45 + 0.55 * pulse : base;
     }
   }
 
@@ -835,11 +843,27 @@ export class HouseScreen {
       const y = (m.level ? E1 : 0) + 6;
       let mesh;
       if (m.kind === 'door') {
-        // A slab standing in the doorway, so it reads as the door itself.
-        mesh = new THREE.Mesh(
-          new THREE.BoxGeometry(m.axis === 'z' ? 10 : 92, 198, m.axis === 'z' ? 92 : 10),
-          new THREE.MeshBasicMaterial({ color: C.line, transparent: true, opacity: 0.55 }));
-        mesh.position.set(m.x, y + 99, m.z);
+        // The door itself, lifted out of the merged door and frame geometry
+        // rather than a box standing near it. Falls back to a slab only if
+        // the model has nothing there.
+        const lifted = this._liftDoor(m);
+        if (lifted) {
+          mesh = lifted;
+        } else {
+          // Nothing in the model there, so stand a panel the size the caller
+          // asked for in the opening. The garage bay is an opening with no
+          // leaf, so this is the only way it can light across its width.
+          const hw = m.halfW || 46;
+          const hd = m.halfD || 46;
+          const hh = m.height || 210;
+          mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(hw * 2, hh, hd * 2),
+            new THREE.MeshBasicMaterial({
+              color: C.line, transparent: true, opacity: 0,
+              depthWrite: false,
+            }));
+          mesh.position.set(m.x, y + hh / 2, m.z);
+        }
       } else if (m.kind === 'leak') {
         // A drop, point down.
         mesh = new THREE.Mesh(
@@ -862,6 +886,46 @@ export class HouseScreen {
       this._markerGroup.add(mesh);
       this.markers.push({ spec: m, mesh, mat: mesh.material });
     }
+  }
+
+  // Copy every triangle of the door leaf and its frame that falls inside the
+  // marker's box into one mesh. Coordinates are already world space, so the
+  // copy sits exactly on top of the original and needs no transform.
+  // halfW and halfD default generously, and the garage door passes its own
+  // so the whole opening lights rather than a leaf-sized piece of it.
+  _liftDoor(m) {
+    if (!this._geoms) return null;
+    const hw = (m.halfW || 70);
+    const hd = (m.halfD || 70);
+    const y0 = (m.level ? E1 : 0) - 5;
+    const y1 = y0 + (m.height || 230);
+    const keep = [];
+
+    for (const key of ['door', 'doorx', 'frame', 'framex', 'glass', 'glassx']) {
+      const g = this._geoms[key];
+      if (!g) continue;
+      const a = g.attributes.position.array;
+      for (let i = 0; i < a.length; i += 9) {
+        const cx = (a[i] + a[i + 3] + a[i + 6]) / 3;
+        const cy = (a[i + 1] + a[i + 4] + a[i + 7]) / 3;
+        const cz = (a[i + 2] + a[i + 5] + a[i + 8]) / 3;
+        if (Math.abs(cx - m.x) > hw || Math.abs(cz - m.z) > hd) continue;
+        if (cy < y0 || cy > y1) continue;
+        for (let j = 0; j < 9; j++) keep.push(a[i + j]);
+      }
+    }
+
+    if (keep.length < 9) return null;
+
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(keep, 3));
+    g.computeVertexNormals();
+    // Drawn over the real door rather than fighting it for the same depth.
+    return new THREE.Mesh(g, new THREE.MeshBasicMaterial({
+      color: C.line, transparent: true, opacity: 0.0,
+      side: THREE.DoubleSide, depthWrite: false,
+      polygonOffset: true, polygonOffsetFactor: -4,
+    }));
   }
 
   // state: { id: { color, blink } }. Called every render, cheap.

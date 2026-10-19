@@ -10,16 +10,22 @@
     height: 100vh;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 10px;
+    /* 14px, not 10. At 10 the left column's first character sat on the very
+       edge of the screen and read as clipped. */
+    padding: 14px;
     gap: 10px;
     background: #000;
 
-    grid-template-columns: minmax(210px, 17vw) minmax(0, 1fr) minmax(220px, 19vw);
-    grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr) minmax(104px, 15vh);
+    /* Status first, then the useful lists, and the map last and small. The
+       map used to be the hero and took half the screen to say less than the
+       entry list says in a line. */
+    grid-template-columns: minmax(300px, 25vw) minmax(0, 1.3fr) minmax(0, 0.75fr);
+    grid-template-rows: auto minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.85fr);
     grid-template-areas:
-        "entry house  camera"
-        "entry house  alarm"
-        "strip strip  strip";
+        "status status   status"
+        "entry  alarm    house"
+        "entry  health   house"
+        "chart  chart    log";
 
     font-family: Menlo, Consolas, "Courier New", monospace;
     color: #9fe8e8;
@@ -28,16 +34,17 @@
 
 #security-screen * { box-sizing: border-box; }
 
-/* With no lock entities the panel is display:none, so its row would collapse
-   and leave a gap. The alarm takes the space instead. */
-#security-screen.has-locks {
-    grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 0.6fr) minmax(104px, 15vh);
-    grid-template-areas:
-        "entry house  camera"
-        "entry house  alarm"
-        "entry house  locks"
-        "strip strip  strip";
-}
+#sc-status      { grid-area: status; }
+#sc-entry-panel { grid-area: entry; }
+#sc-alarm-panel { grid-area: alarm; }
+#sc-health      { grid-area: health; }
+#sc-house       { grid-area: house; }
+#sc-activity    { grid-area: chart; }
+#sc-strip       { grid-area: log; }
+
+/* No lock entities exist, so the panel is display:none and never takes a
+   cell. If one is ever added it drops under the health panel. */
+#sc-locks { display: none; }
 
 .sc-panel {
     display: flex;
@@ -47,24 +54,62 @@
     overflow: hidden;
 }
 
-#sc-entry-panel { grid-area: entry; }
-#sc-house       { grid-area: house; }
-#sc-camera      { grid-area: camera; }
-#sc-activity    { grid-area: alarm; }
-#sc-alarm-panel { grid-area: alarm; }
-#sc-locks       { grid-area: locks; }
-#sc-strip       { grid-area: strip; }
-
-/* The activity chart shares the middle column under the house. */
-#security-screen {
-    grid-template-areas:
-        "entry house    camera"
-        "entry activity alarm"
-        "strip strip    strip";
-}
-#sc-activity { grid-area: activity; }
-
 .sc-wait { opacity: .45; }
+
+/* ---- status bar ---- */
+
+#sc-status {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    min-height: 0;
+}
+
+.sc-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4px 12px;
+    border: 1px solid rgba(0, 238, 238, .25);
+    border-left: 3px solid #00eeee;
+    min-width: 0;
+}
+
+.sc-stat b {
+    color: #fff;
+    font-weight: normal;
+    font-size: clamp(20px, 2.1vw, 42px);
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sc-stat span {
+    font-size: clamp(9px, 0.58vw, 12px);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: .65;
+    white-space: nowrap;
+}
+
+/* Orange only when it needs attention. */
+.sc-stat.bad { border-color: rgba(255, 138, 31, .5); border-left-color: #ff8a1f; }
+.sc-stat.bad b { color: #ff8a1f; }
+.sc-stat.bad span { opacity: .85; }
+
+/* ---- system health ---- */
+
+#sc-health .hs-body { overflow-y: auto; }
+
+.sc-healthy {
+    color: #4dffb0;
+    letter-spacing: .16em;
+    font-size: clamp(11px, 0.8vw, 16px);
+    padding-top: 4px;
+}
+
+.sc-group-head.alert { color: #ff8a1f; border-bottom-color: rgba(255, 138, 31, .35); }
 
 /* ---- the leak banner, above every screen ---- */
 
@@ -212,17 +257,20 @@
 
 #sc-activity .hs-body {
     border: 1px solid rgba(0, 238, 238, .18);
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
-#sc-activity-canvas { display: block; width: 100%; height: 100%; }
+#sc-activity-canvas { display: block; width: 100%; flex: 1 1 auto; min-height: 0; }
 
+/* Above the plot, not over it. It used to sit on top of the bars. */
 #sc-activity-legend {
-    position: absolute;
-    right: 6px;
-    top: 3px;
+    flex: none;
     display: flex;
-    gap: 10px;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 2px 4px 1px;
     font-size: clamp(8px, 0.52vw, 11px);
     letter-spacing: .1em;
     text-transform: uppercase;

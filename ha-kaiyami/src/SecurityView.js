@@ -31,7 +31,6 @@ var built = false;
 var selected = null;       // marker detail popover
 var keypad = { open: false, service: null, code: "" };
 var activityCanvas = null, activityCtx = null;
-var lastCamera = null;
 
 SecurityView.init = function (ha, areasRef) {
     var root = $id("security-screen");
@@ -110,10 +109,11 @@ SecurityView.animate = function () {
         lastRender = now;
         dirty = false;
         placeMarkers();
+        renderStatus();
         renderEntryList();
+        renderHealth();
         renderAlarm();
         renderLocks();
-        renderCamera();
         renderLog();
         renderDetail();
         paintRooms();
@@ -154,7 +154,7 @@ function watchPanels() {
         return;
     }
     observer = new ResizeObserver(function () { SecurityView.resizeDebounced(); });
-    ["sc-house", "sc-activity", "sc-camera"].forEach(function (id) {
+    ["sc-house", "sc-activity"].forEach(function (id) {
         var el = $id(id);
         if (el) { observer.observe(el); }
     });
@@ -291,6 +291,77 @@ function stateWord(item) {
     return item.state;
 }
 
+/* ---- status bar ------------------------------------------------------------- */
+
+function stat(id, value, bad) {
+    var el = $id(id);
+    if (!el) {
+        return;
+    }
+    el.firstChild.textContent = value;
+    el.className = "sc-stat" + (bad ? " bad" : "");
+}
+
+function renderStatus() {
+    if (!feeds) {
+        return;
+    }
+    var open = feeds.doors().filter(function (d) { return d.open; }).length;
+    var wet = feeds.leaks().filter(function (l) { return l.wet; }).length;
+    var active = feeds.motion().filter(function (m) { return m.active; }).length;
+    var a = feeds.alarm();
+
+    stat("sc-stat-doors", open, open > 0);
+    stat("sc-stat-leaks", wet, wet > 0);
+    stat("sc-stat-motion", active, false);
+    stat("sc-stat-alarm",
+         a.configured ? (STATE_LABEL[a.state] || a.state) : "NOT SET",
+         !a.configured || a.state === "triggered");
+}
+
+/* ---- system health ------------------------------------------------------------ */
+
+function healthGroup(title, items, render) {
+    if (!items.length) {
+        return "";
+    }
+    var html = '<div class="sc-group"><div class="sc-group-head alert">' +
+        title + " (" + items.length + ")</div>";
+    items.forEach(function (it) {
+        html += '<div class="sc-row bad"><span class="sc-row-name">' + it.name + '</span>' +
+            '<span class="sc-row-state">' + render(it) + '</span></div>';
+    });
+    return html + "</div>";
+}
+
+function renderHealth() {
+    var box = $id("sc-health-body");
+    var count = $id("sc-health-count");
+    if (!box || !feeds) {
+        return;
+    }
+    var h = feeds.health();
+
+    if (count) {
+        count.textContent = h.ok ? "" : h.count + " to look at";
+        count.className = h.ok ? "" : "alert";
+    }
+
+    if (h.ok) {
+        box.innerHTML = '<div class="sc-healthy">ALL SENSORS HEALTHY</div>';
+        return;
+    }
+
+    var html = "";
+    html += healthGroup("Tamper", h.tamper, function () { return "TAMPER"; });
+    html += healthGroup("Faults", h.failure, function () { return "FAULT"; });
+    html += healthGroup("Offline", h.offline, function () { return "OFFLINE"; });
+    html += healthGroup("Battery", h.battery, function (it) {
+        return it.level === null ? "LOW" : Math.round(it.level) + "%";
+    });
+    box.innerHTML = html;
+}
+
 /* ---- entry points list ------------------------------------------------------ */
 
 function group(title, items, word) {
@@ -407,54 +478,6 @@ function renderLocks() {
     $id("sc-locks-body").innerHTML = html;
 }
 
-/* ---- camera ------------------------------------------------------------------ */
-
-function renderCamera() {
-    var box = $id("sc-camera-body");
-    var head = $id("sc-camera-name");
-    if (!box || !feeds) {
-        return;
-    }
-    var cams = feeds.cameras();
-    if (!cams.length) {
-        box.innerHTML = '<span class="sc-wait">No cameras</span>';
-        return;
-    }
-
-    /* Follow the latest event: the camera in the same room, else the doorbell. */
-    var want = null;
-    if (feeds.lastEvent) {
-        for (var i = 0; i < cams.length; i++) {
-            if (cams[i].room && cams[i].room === feeds.lastEvent.room) {
-                want = cams[i];
-            }
-        }
-    }
-    if (!want) {
-        want = cams[0];
-    }
-
-    if (head) {
-        head.textContent = want.name +
-            (feeds.lastEvent ? "  " + since(Date.now() - feeds.lastEvent.at) + " ago" : "");
-    }
-
-    if (lastCamera !== want.id) {
-        lastCamera = want.id;
-        /* The camera proxy stream, which is what the Home Assistant frontend
-           uses. It needs no token in the page because the signed path is in
-           entity_picture. */
-        /* entity_picture is a path on the Home Assistant host, not on the
-           machine serving this page, so it needs the HA origin in front of
-           it. The signed token is already in the path, so no header is
-           needed and no token is held here. */
-        var base = (window.HA_CONFIG && window.HA_CONFIG.httpUrl) || "";
-        box.innerHTML = want.picture
-            ? '<img src="' + base + want.picture + '" alt="' + want.name + '">'
-            : '<span class="sc-wait">No stream for ' + want.name + '</span>';
-    }
-}
-
 /* ---- log ---------------------------------------------------------------------- */
 
 function renderLog() {
@@ -495,7 +518,9 @@ function drawActivity() {
     ctx.clearRect(0, 0, w, h);
 
     var a = feeds.activity;
-    var left = 24, right = 4, top = 8, bottom = 14;
+    /* Room on both sides for a scale, and under it for the hour labels. The
+       legend sits above the canvas in the markup, not over the bars. */
+    var left = 30, right = 30, top = 6, bottom = 16;
     var pw = w - left - right, ph = h - top - bottom;
 
     /* Doors open a handful of times an hour, motion fires hundreds. On one
@@ -513,10 +538,17 @@ function drawActivity() {
         var y = Math.floor(top + ph - ph * i / 2) + 0.5;
         ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(w - right, y); ctx.stroke();
     }
+
+    /* Doors read against the left edge, motion against the right, each with
+       its own maximum, because one scale buries the doors. */
+    ctx.textAlign = "right";
     ctx.fillStyle = "#3fe0ff";
-    ctx.fillText(String(maxDoors), 2, top + 8);
+    ctx.fillText(String(maxDoors), left - 3, top + 8);
+    ctx.fillText("0", left - 3, top + ph);
+    ctx.textAlign = "left";
     ctx.fillStyle = "#4dffb0";
-    ctx.fillText(String(maxMotion), 2, top + 19);
+    ctx.fillText(String(maxMotion), w - right + 3, top + 8);
+    ctx.fillText("0", w - right + 3, top + ph);
 
     var bw = pw / 24;
     var half = Math.max(1, (bw - 3) / 2);
@@ -532,12 +564,15 @@ function drawActivity() {
             ctx.fillStyle = "#3fe0ff";
             ctx.fillRect(x + 1, top + ph - dh, half, dh);
         }
-        if (i % 6 === 0) {
-            var hr = new Date(a.start + i * 3600000).getHours() % 12 || 12;
-            ctx.fillStyle = "rgba(0,238,238,.5)";
-            ctx.fillText(String(hr), x, h - 3);
+        if (i % 3 === 0) {
+            var when = new Date(a.start + i * 3600000);
+            var hr = when.getHours() % 12 || 12;
+            ctx.fillStyle = "rgba(0,238,238,.55)";
+            ctx.textAlign = "center";
+            ctx.fillText(hr + (when.getHours() < 12 ? "a" : "p"), x + bw / 2, h - 4);
         }
     }
+    ctx.textAlign = "left";
 }
 
 /* ---- clock ---------------------------------------------------------------------- */
