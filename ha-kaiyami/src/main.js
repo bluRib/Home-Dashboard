@@ -8,6 +8,7 @@ var $ = require("jquery"),
     ClimateView = require("./ClimateView.js").ClimateView,
     SecurityView = require("./SecurityView.js").SecurityView,
     CameraView = require("./CameraView.js").CameraView,
+    EnergyView = require("./EnergyView.js").EnergyView,
     Areas = require("./Areas.js").Areas,
     LeakWatch = require("./LeakWatch.js").LeakWatch,
     areas = null,
@@ -109,6 +110,8 @@ var ha = haSource.start(function(message){
         SecurityView.message(message);
     } else if(active === "cameras"){
         CameraView.message(message);
+    } else if(active === "energy"){
+        EnergyView.message(message);
     } else {
         /* Encom staggered incoming events so the widgets do not all fire on
            the same frame. A busy house is burstier than GitHub was, so keep it. */
@@ -213,6 +216,15 @@ var onSwitch = function(view){
             CameraView.show();
         }, 3000);
 
+    } else if(system.key === "energy"){
+        EnergyView.init(ha, areas);
+        EnergyView.seed(haSource.getSeed());
+
+        setTimeout(function(){
+            active = "energy";
+            EnergyView.show();
+        }, 3000);
+
     } else {
         Boardroom.init(system.key);
 
@@ -286,6 +298,8 @@ PleaseRotate.start({onHide: function(){
             SecurityView.animate();
         } else if(active === "cameras"){
             CameraView.animate();
+        } else if(active === "energy"){
+            EnergyView.animate();
         } else {
             Boardroom.animate()
         }
@@ -311,6 +325,8 @@ PleaseRotate.start({onHide: function(){
             SecurityView.resizeDebounced();
         } else if(active === "cameras"){
             CameraView.resizeDebounced();
+        } else if(active === "energy"){
+            EnergyView.resizeDebounced();
         } else {
             Boardroom.resize();
         }

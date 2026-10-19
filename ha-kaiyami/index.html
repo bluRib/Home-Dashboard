@@ -14,6 +14,7 @@
         <link href="css/climate-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/security-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/cameras-screen.css" rel="stylesheet" type="text/css" />
+        <link href="css/energy-screen.css" rel="stylesheet" type="text/css" />
         <!-- Leaflet, for the radar map on the Climate screen. Plain global,
              separate from the fork's three.js r66 and the house widget's r128. -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet" type="text/css" />
@@ -26,6 +27,14 @@
              DRM, none of which a security camera has, and it is the same build
              Home Assistant's own frontend uses against these streams. -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.16/hls.light.min.js"></script>
+
+        <!-- d3 and d3-sankey, for the energy flow diagram on the Energy
+             screen. Pinned, and plain globals like Leaflet and hls.js above.
+             d3-sankey's UMD build attaches to window.d3 and takes d3-array and
+             d3-shape from it, so d3 has to load first.
+             Neither touches the fork's bundled three.js r66. -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
 
         <script src="js/globe-grid.js"></script>
         <script src="js/github-2013.js"></script>
@@ -1038,6 +1047,91 @@
             <div id="cm-clock">
                 <div id="cm-time">--:--:--</div>
                 <div id="cm-date"></div>
+            </div>
+
+        </div>
+
+        <!-- The Energy screen. The flow diagram is drawn by EnergyView with
+             d3-sankey, so the markup here is the furniture around it. -->
+        <div id="energy-screen">
+
+            <div id="en-status">
+                <div class="en-stat" id="en-stat-now"><b>--</b><span>Now</span></div>
+                <div class="en-stat" id="en-stat-today"><b>--</b><span>Today</span></div>
+                <div class="en-stat" id="en-stat-month"><b>--</b><span>This month</span></div>
+                <div class="en-stat" id="en-stat-top"><b>--</b><span>Top consumer now</span></div>
+            </div>
+
+            <div class="en-panel" id="en-flow">
+                <div class="hs-head">
+                    <span id="en-crumb">MEASURED TOTAL</span>
+                    <em id="en-range">
+                        <button type="button" data-range="now" class="on">NOW</button>
+                        <button type="button" data-range="today">TODAY</button>
+                        <button type="button" data-range="week">WEEK</button>
+                        <button type="button" data-range="month">MONTH</button>
+                    </em>
+                </div>
+                <div class="hs-body">
+                    <div id="en-sankey">
+                        <svg id="en-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                        <canvas id="en-particles"></canvas>
+                    </div>
+                    <!-- Under the diagram, not over it: these used to float on
+                         top of the flow and collided with the device labels. -->
+                    <div id="en-notes">
+                        <div id="en-note"></div>
+                        <div id="en-rate-note">
+                            <b>COST HIDDEN</b>No energy price is set in Home
+                            Assistant's energy configuration, so no cost is shown
+                            rather than a guessed one.
+                        </div>
+                    </div>
+                    <div id="en-tip"></div>
+                    <div id="en-wipe"></div>
+                </div>
+            </div>
+
+            <div class="en-panel" id="en-chart">
+                <div class="hs-head">Total Power <em>Last 24 hours</em></div>
+                <div class="hs-body">
+                    <canvas id="en-chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="en-panel" id="en-top5">
+                <div class="hs-head">Top Consumers <em id="en-top5-range">Now</em></div>
+                <div class="hs-body">
+                    <div id="en-top5-body"><div class="en-wait">Loading</div></div>
+                </div>
+            </div>
+
+            <div id="en-clock">
+                <div id="en-time">--:--:--</div>
+                <div id="en-date"></div>
+            </div>
+
+            <div id="en-detail">
+                <div id="en-detail-head">
+                    <span id="en-detail-name">Device</span>
+                    <span id="en-detail-area"></span>
+                    <button type="button" id="en-detail-close">ESC</button>
+                </div>
+                <div id="en-detail-body">
+                    <div id="en-detail-big">
+                        <span id="en-detail-watts">--</span>
+                        <span class="en-detail-status" id="en-detail-status"></span>
+                    </div>
+                    <div id="en-detail-curve-wrap">
+                        <span class="en-sub">Power, last 24 hours</span>
+                        <canvas id="en-detail-curve"></canvas>
+                    </div>
+                    <div id="en-detail-bars-wrap">
+                        <span class="en-sub">Daily kWh, last 7 days</span>
+                        <canvas id="en-detail-bars"></canvas>
+                    </div>
+                    <div id="en-detail-rows"></div>
+                </div>
             </div>
 
         </div>

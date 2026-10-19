@@ -70,10 +70,10 @@
           },
           // Get the Nth element in the matched element set OR
           // Get the whole matched element set as a clean array
-          get: function(num2) {
-            return num2 != null ? (
+          get: function(num3) {
+            return num3 != null ? (
               // Return just the one element from the set
-              num2 < 0 ? this[num2 + this.length] : this[num2]
+              num3 < 0 ? this[num3 + this.length] : this[num3]
             ) : (
               // Return all the elements in a clean array
               slice.call(this)
@@ -3684,7 +3684,7 @@
             }
           },
           css: function(elem, name, extra, styles) {
-            var val, num2, hooks, origName = jQuery.camelCase(name);
+            var val, num3, hooks, origName = jQuery.camelCase(name);
             name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(elem.style, origName));
             hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
             if (hooks && "get" in hooks) {
@@ -3697,8 +3697,8 @@
               val = cssNormalTransform[name];
             }
             if (extra === "" || extra) {
-              num2 = parseFloat(val);
-              return extra === true || jQuery.isNumeric(num2) ? num2 || 0 : val;
+              num3 = parseFloat(val);
+              return extra === true || jQuery.isNumeric(num3) ? num3 || 0 : val;
             }
             return val;
           }
@@ -4747,7 +4747,7 @@
         function inspectPrefiltersOrTransports(structure, options, originalOptions, jqXHR) {
           var inspected = {}, seekingTransport = structure === transports;
           function inspect(dataType) {
-            var selected3;
+            var selected4;
             inspected[dataType] = true;
             jQuery.each(structure[dataType] || [], function(_, prefilterOrFactory) {
               var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
@@ -4756,10 +4756,10 @@
                 inspect(dataTypeOrTransport);
                 return false;
               } else if (seekingTransport) {
-                return !(selected3 = dataTypeOrTransport);
+                return !(selected4 = dataTypeOrTransport);
               }
             });
-            return selected3;
+            return selected4;
           }
           return inspect(options.dataTypes[0]) || !inspected["*"] && inspect("*");
         }
@@ -6596,11 +6596,11 @@
                 set.push(this.hue("+", h).saturation(s).value(v));
             return set;
           },
-          "hueRange": function(range, count2) {
+          "hueRange": function(range2, count2) {
             var base = this.hue();
             var set = [];
             for (var i = 0; i < count2; ++i) {
-              var h = base + 2 * (i / (count2 - 1) - 0.5) * range;
+              var h = base + 2 * (i / (count2 - 1) - 0.5) * range2;
               set.push(this.hue("=", h));
             }
             return set;
@@ -8995,30 +8995,30 @@
       })(function(moment) {
         var weekEndings = "vas\xE1rnap h\xE9tf\u0151n kedden szerd\xE1n cs\xFCt\xF6rt\xF6k\xF6n p\xE9nteken szombaton".split(" ");
         function translate(number, withoutSuffix, key, isFuture) {
-          var num2 = number, suffix;
+          var num3 = number, suffix;
           switch (key) {
             case "s":
               return isFuture || withoutSuffix ? "n\xE9h\xE1ny m\xE1sodperc" : "n\xE9h\xE1ny m\xE1sodperce";
             case "m":
               return "egy" + (isFuture || withoutSuffix ? " perc" : " perce");
             case "mm":
-              return num2 + (isFuture || withoutSuffix ? " perc" : " perce");
+              return num3 + (isFuture || withoutSuffix ? " perc" : " perce");
             case "h":
               return "egy" + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "hh":
-              return num2 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
+              return num3 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "d":
               return "egy" + (isFuture || withoutSuffix ? " nap" : " napja");
             case "dd":
-              return num2 + (isFuture || withoutSuffix ? " nap" : " napja");
+              return num3 + (isFuture || withoutSuffix ? " nap" : " napja");
             case "M":
               return "egy" + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "MM":
-              return num2 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
+              return num3 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "y":
               return "egy" + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
             case "yy":
-              return num2 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
+              return num3 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
           }
           return "";
         }
@@ -10975,9 +10975,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num2) {
+        function plural(word, num3) {
           var forms = word.split("_");
-          return num2 % 10 === 1 && num2 % 100 !== 11 ? forms[0] : num2 % 10 >= 2 && num2 % 10 <= 4 && (num2 % 100 < 10 || num2 % 100 >= 20) ? forms[1] : forms[2];
+          return num3 % 10 === 1 && num3 % 100 !== 11 ? forms[0] : num3 % 10 >= 2 && num3 % 10 <= 4 && (num3 % 100 < 10 || num3 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -12173,9 +12173,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num2) {
+        function plural(word, num3) {
           var forms = word.split("_");
-          return num2 % 10 === 1 && num2 % 100 !== 11 ? forms[0] : num2 % 10 >= 2 && num2 % 10 <= 4 && (num2 % 100 < 10 || num2 % 100 >= 20) ? forms[1] : forms[2];
+          return num3 % 10 === 1 && num3 % 100 !== 11 ? forms[0] : num3 % 10 >= 2 && num3 % 10 <= 4 && (num3 % 100 < 10 || num3 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -18370,8 +18370,8 @@
           return low + Math.random() * (high - low);
         },
         // Random float from <-range/2, range/2> interval
-        randFloatSpread: function(range) {
-          return range * (0.5 - Math.random());
+        randFloatSpread: function(range2) {
+          return range2 * (0.5 - Math.random());
         },
         sign: function(x) {
           return x < 0 ? -1 : x > 0 ? 1 : 0;
@@ -23132,7 +23132,7 @@
           var parts = morph.name.match(pattern);
           if (parts && parts.length > 1) {
             var label = parts[1];
-            var num2 = parts[2];
+            var num3 = parts[2];
             if (!animations[label]) animations[label] = { start: Infinity, end: -Infinity };
             var animation = animations[label];
             if (i < animation.start) animation.start = i;
@@ -31767,7 +31767,7 @@
           this.isPlaying = false;
         },
         update: /* @__PURE__ */ function() {
-          var lastFrame = 0;
+          var lastFrame2 = 0;
           var currentFrame = 0;
           return function(delta) {
             if (this.isPlaying === false) return;
@@ -31779,14 +31779,14 @@
             var interpolation = this.duration / this.frames;
             var frame = Math.floor(this.currentTime / interpolation);
             if (frame != currentFrame) {
-              this.mesh.morphTargetInfluences[lastFrame] = 0;
+              this.mesh.morphTargetInfluences[lastFrame2] = 0;
               this.mesh.morphTargetInfluences[currentFrame] = 1;
               this.mesh.morphTargetInfluences[frame] = 0;
-              lastFrame = currentFrame;
+              lastFrame2 = currentFrame;
               currentFrame = frame;
             }
             this.mesh.morphTargetInfluences[frame] = this.currentTime % interpolation / interpolation;
-            this.mesh.morphTargetInfluences[lastFrame] = 1 - this.mesh.morphTargetInfluences[frame];
+            this.mesh.morphTargetInfluences[lastFrame2] = 1 - this.mesh.morphTargetInfluences[frame];
           };
         }()
       };
@@ -34013,17 +34013,17 @@
           var chunks = morph.name.match(pattern);
           if (chunks && chunks.length > 1) {
             var name = chunks[1];
-            var num2 = chunks[2];
+            var num3 = chunks[2];
             if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: -Infinity };
-            var range = frameRanges[name];
-            if (i < range.start) range.start = i;
-            if (i > range.end) range.end = i;
+            var range2 = frameRanges[name];
+            if (i < range2.start) range2.start = i;
+            if (i > range2.end) range2.end = i;
             if (!firstAnimation) firstAnimation = name;
           }
         }
         for (var name in frameRanges) {
-          var range = frameRanges[name];
-          this.createAnimation(name, range.start, range.end, fps);
+          var range2 = frameRanges[name];
+          this.createAnimation(name, range2.start, range2.end, fps);
         }
         this.firstAnimation = firstAnimation;
       };
@@ -35262,8 +35262,8 @@
     if (value === "unavailable" || value === "unknown") return Severity.NORMAL;
     if (cls === "battery") {
       if (domain === "binary_sensor") return value === "on" ? Severity.ALERT : Severity.NORMAL;
-      const pct = Number(state2.state);
-      if (Number.isFinite(pct) && pct <= 20) return Severity.ALERT;
+      const pct2 = Number(state2.state);
+      if (Number.isFinite(pct2) && pct2 <= 20) return Severity.ALERT;
     }
     if (attrs.battery_level !== void 0 && attrs.battery_level !== null) {
       const level = Number(attrs.battery_level);
@@ -35453,7 +35453,7 @@
         return null;
       }
       var webglTest;
-      var active6 = false;
+      var active7 = false;
       var initialized = false;
       var currentWidth = 0;
       var currentHeight = 0;
@@ -35507,10 +35507,10 @@
         if (typeof cb == "function") {
           setTimeout(cb, 500);
         }
-        active6 = true;
+        active7 = true;
       };
       LightTable2.hide = function(cb) {
-        active6 = false;
+        active7 = false;
         $2("#lt-mobile-readme").attr("style", "");
         $2("#k-32").attr("style", "");
         $2(".lt-header-animator-right").attr("style", "");
@@ -35530,7 +35530,7 @@
         }
       };
       LightTable2.animate = function() {
-        if (active6 && initialized) {
+        if (active7 && initialized) {
           webglTest.tick();
         }
       };
@@ -35831,15 +35831,15 @@
         var scanBottom = fy(0) - 2;
         var scanTop = fy(TOP) + 2;
         var firstRun = null;
-        var lastFrame = Date.now();
+        var lastFrame2 = Date.now();
         return {
           tick: function() {
             var now = Date.now();
             if (firstRun === null) {
               firstRun = now;
             }
-            var dt = Math.min(now - lastFrame, 100);
-            lastFrame = now;
+            var dt = Math.min(now - lastFrame2, 100);
+            lastFrame2 = now;
             var age = now - firstRun;
             var fade = Math.min(1, age / 3e3);
             roomMaterial.opacity = fade;
@@ -39436,7 +39436,7 @@
         return 1 / (1 + Math.exp(-t * 12 + 6));
       };
       Utils.shadeColor = function(color, percent) {
-        var num2 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num2 >> 16) + amt, G = (num2 >> 8 & 255) + amt, B = (num2 & 255) + amt;
+        var num3 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num3 >> 16) + amt, G = (num3 >> 8 & 255) + amt, B = (num3 & 255) + amt;
         return "#" + (16777216 + (R < 255 ? R < 1 ? 0 : R : 255) * 65536 + (G < 255 ? G < 1 ? 0 : G : 255) * 256 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
       };
       Utils.drawCurvedRectangle = function(ctx, left, top, width, height, radius) {
@@ -49083,10 +49083,10 @@
           document.body.appendChild(backdrop);
         }
         function createPhoneSVG() {
-          var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-          svg.setAttribute("id", "pleaserotate-graphic");
-          svg.setAttribute("viewBox", "0 0 250 250");
+          var svg2 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg2.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+          svg2.setAttribute("id", "pleaserotate-graphic");
+          svg2.setAttribute("viewBox", "0 0 250 250");
           var group2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group2.setAttribute("id", "pleaserotate-graphic-path");
           if (options.forcePortrait) {
@@ -49094,9 +49094,9 @@
           }
           var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", "M190.5,221.3c0,8.3-6.8,15-15,15H80.2c-8.3,0-15-6.8-15-15V28.7c0-8.3,6.8-15,15-15h95.3c8.3,0,15,6.8,15,15V221.3zM74.4,33.5l-0.1,139.2c0,8.3,0,17.9,0,21.5c0,3.6,0,6.9,0,7.3c0,0.5,0.2,0.8,0.4,0.8s7.2,0,15.4,0h75.6c8.3,0,15.1,0,15.2,0s0.2-6.8,0.2-15V33.5c0-2.6-1-5-2.6-6.5c-1.3-1.3-3-2.1-4.9-2.1H81.9c-2.7,0-5,1.6-6.3,4C74.9,30.2,74.4,31.8,74.4,33.5zM127.7,207c-5.4,0-9.8,5.1-9.8,11.3s4.4,11.3,9.8,11.3s9.8-5.1,9.8-11.3S133.2,207,127.7,207z");
-          svg.appendChild(group2);
+          svg2.appendChild(group2);
           group2.appendChild(path);
-          return svg;
+          return svg2;
         }
         function setVisibility(visible) {
           var backdropElement = document.getElementById("pleaserotate-backdrop");
@@ -49800,11 +49800,11 @@
           return isFinite(single) ? single : null;
         }
         var ids = this._byClass("power", false);
-        var total = 0, seen = 0, i, watts;
+        var total = 0, seen = 0, i, watts2;
         for (i = 0; i < ids.length; i++) {
-          watts = toWatts(this.ha.states.get(ids[i]));
-          if (isFinite(watts)) {
-            total += watts;
+          watts2 = toWatts(this.ha.states.get(ids[i]));
+          if (isFinite(watts2)) {
+            total += watts2;
             seen++;
           }
         }
@@ -49864,11 +49864,11 @@
         });
       };
       HouseFeeds.prototype.samplePower = function() {
-        var watts = this.currentWatts();
-        this.energy.watts = watts;
+        var watts2 = this.currentWatts();
+        this.energy.watts = watts2;
         this.energy.whole = !!WHOLE_HOUSE_POWER;
-        if (watts !== null) {
-          this.energy.series.push(watts);
+        if (watts2 !== null) {
+          this.energy.series.push(watts2);
           while (this.energy.series.length > CHART_BUCKETS) {
             this.energy.series.shift();
           }
@@ -52026,9 +52026,9 @@
   });
 
   // src/SecurityFeeds.js
-  function SecurityFeeds(ha2, areas4, onUpdate) {
+  function SecurityFeeds(ha2, areas5, onUpdate) {
     this.ha = ha2;
-    this.areas = areas4;
+    this.areas = areas5;
     this.onUpdate = onUpdate || function() {
     };
     this.log = [];
@@ -52327,9 +52327,9 @@
           } else if (cls === "battery" && id.indexOf("binary_sensor.") === 0 && v === "on") {
             out.battery.push({ id, name, area: where, level: null });
           } else if (cls === "battery" && id.indexOf("sensor.") === 0) {
-            var pct = Number(v);
-            if (isFinite(pct) && pct <= 20) {
-              out.battery.push({ id, name, area: where, level: pct });
+            var pct2 = Number(v);
+            if (isFinite(pct2) && pct2 <= 20) {
+              out.battery.push({ id, name, area: where, level: pct2 });
             }
           }
           if ((v === "unavailable" || v === "unknown") && HEALTH_CLASSES.indexOf(cls) >= 0) {
@@ -52699,13 +52699,13 @@
     var wet = feeds3.leaks().filter(function(l) {
       return l.wet;
     }).length;
-    var active6 = feeds3.motion().filter(function(m) {
+    var active7 = feeds3.motion().filter(function(m) {
       return m.active;
     }).length;
     var a = feeds3.alarm();
     stat("sc-stat-doors", open, open > 0);
     stat("sc-stat-leaks", wet, wet > 0);
-    stat("sc-stat-motion", active6, false);
+    stat("sc-stat-motion", active7, false);
     stat(
       "sc-stat-alarm",
       a.configured ? STATE_LABEL[a.state] || a.state : "NOT SET",
@@ -53146,9 +53146,9 @@
     d.setHours(0, 0, 0, 0);
     return d.getTime();
   }
-  function CameraFeeds(ha2, areas4, onUpdate) {
+  function CameraFeeds(ha2, areas5, onUpdate) {
     this.ha = ha2;
-    this.areas = areas4;
+    this.areas = areas5;
     this.onUpdate = onUpdate || function() {
     };
     this.log = [];
@@ -53759,22 +53759,22 @@
   }
   function wipeTo(id) {
     var stage = $id4("cam-stage");
-    var wipe = $id4("cam-wipe");
-    if (!stage || !wipe) {
+    var wipe2 = $id4("cam-wipe");
+    if (!stage || !wipe2) {
       setFocus(id);
       return;
     }
     clearTimeout(wipeTimer);
     clearTimeout(swapTimer);
-    wipe.classList.remove("run");
-    void wipe.offsetWidth;
-    wipe.classList.add("run");
+    wipe2.classList.remove("run");
+    void wipe2.offsetWidth;
+    wipe2.classList.add("run");
     stage.classList.add("wiping");
     swapTimer = setTimeout(function() {
       setFocus(id);
     }, WIPE_SWAP_MS);
     wipeTimer = setTimeout(function() {
-      wipe.classList.remove("run");
+      wipe2.classList.remove("run");
       stage.classList.remove("wiping");
     }, WIPE_MS);
   }
@@ -54276,6 +54276,1799 @@
     }
   });
 
+  // src/EnergyFeeds.js
+  function startOfDay(ms) {
+    var d = new Date(ms === void 0 ? Date.now() : ms);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+  function startOfMonth() {
+    var d = /* @__PURE__ */ new Date();
+    d.setDate(1);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+  function num2(v) {
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function EnergyFeeds(ha2, areas5, onUpdate) {
+    this.ha = ha2;
+    this.areas = areas5;
+    this.onUpdate = onUpdate || function() {
+    };
+    this.rateCents = null;
+    this.ratePending = true;
+    this.prefs = null;
+    this.daily = {};
+    this.curves = {};
+    this.loaded = false;
+    this._timers = [];
+  }
+  function looksLikeDeviceId(s) {
+    return /[0-9a-f]{8,}/i.test(s.replace(/[\s\-_]/g, ""));
+  }
+  function cleanName(n) {
+    return n.replace(/\s+(Power|Energy)$/i, "").replace(/\s+Power\s+Monitoring$/i, "").replace(/\s+Power\s+Monitor$/i, "").replace(/\s+plug$/i, "").trim();
+  }
+  var HOUSE_METER, RATE_CENTS, CATEGORIES, DEVICES, UNUSUAL_RATIO, UNUSUAL_PERCENTILE, IDLE_W, STATS_EVERY, DAY_MS, SNAPSHOT_MS;
+  var init_EnergyFeeds = __esm({
+    "src/EnergyFeeds.js"() {
+      HOUSE_METER = null;
+      RATE_CENTS = null;
+      CATEGORIES = [
+        { key: "homelab", label: "Homelab" },
+        { key: "hvac", label: "HVAC" },
+        { key: "water", label: "Water Heater" },
+        { key: "kitchen", label: "Kitchen" },
+        { key: "lighting", label: "Lighting" },
+        { key: "other", label: "Other" }
+      ];
+      DEVICES = [
+        /* Homelab: servers, network gear and the UPS that backs them. */
+        {
+          key: "server",
+          cat: "homelab",
+          power: "sensor.server_power_monitoring_power",
+          energy: "sensor.server_power_monitoring_energy"
+        },
+        {
+          key: "mox",
+          cat: "homelab",
+          power: "sensor.mox_power_monitoring_power",
+          energy: "sensor.mox_power_monitoring_energy"
+        },
+        {
+          key: "network",
+          cat: "homelab",
+          power: "sensor.network_power_monitoring_power",
+          energy: "sensor.network_power_monitoring_energy"
+        },
+        {
+          key: "office_ups",
+          cat: "homelab",
+          power: "sensor.office_ups_power",
+          energy: "sensor.office_ups_energy"
+        },
+        {
+          key: "usw_switch",
+          cat: "homelab",
+          power: "sensor.attic_3d_printer_plug_power",
+          energy: "sensor.attic_3d_printer_plug_energy"
+        },
+        {
+          key: "linux_test",
+          cat: "homelab",
+          power: "sensor.starbase_rxdeg_server_monitor_power",
+          energy: "sensor.starbase_rxdeg_server_monitor_energy"
+        },
+        /* HVAC. The furnace and the air conditioner are not power monitored on
+           this house, so this category is the air treatment that is. The screen
+           says so rather than letting the category imply whole house HVAC. */
+        {
+          key: "air_loft",
+          cat: "hvac",
+          power: "sensor.air_purifier_power",
+          energy: "sensor.air_purifier_energy"
+        },
+        {
+          key: "air_living",
+          cat: "hvac",
+          power: "sensor.living_room_air_purifier_power",
+          energy: "sensor.living_room_air_purifier_energy"
+        },
+        {
+          key: "water_heater",
+          cat: "water",
+          power: "sensor.water_heater_power_monitoring_power",
+          energy: "sensor.water_heater_power_monitoring_energy"
+        },
+        /* Kitchen, read as food and refrigeration rather than by room: the deep
+           freezer is in the Garage and the test fridge is in the Loft. */
+        {
+          key: "deep_freezer",
+          cat: "kitchen",
+          power: "sensor.deep_freezer_power_monitor_power",
+          energy: "sensor.deep_freezer_power_monitor_energy"
+        },
+        {
+          key: "test_fridge",
+          cat: "kitchen",
+          power: "sensor.grillplats_plug_power",
+          energy: "sensor.grillplats_plug_energy"
+        },
+        {
+          key: "keurig",
+          cat: "kitchen",
+          power: "sensor.kitchen_keurig_coffee_power",
+          energy: "sensor.kitchen_keurig_coffee_energy"
+        },
+        {
+          key: "garage_light",
+          cat: "lighting",
+          power: "sensor.shelly1pmminig3_5432045494b4_power",
+          energy: "sensor.shelly1pmminig3_5432045494b4_energy"
+        },
+        {
+          key: "porch_lights",
+          cat: "lighting",
+          power: "sensor.back_porch_lights_power",
+          energy: "sensor.back_porch_lights_energy"
+        },
+        {
+          key: "led_sign",
+          cat: "lighting",
+          power: "sensor.led_sign_power",
+          energy: "sensor.led_sign_energy"
+        },
+        {
+          key: "printer_3d",
+          cat: "other",
+          power: "sensor.3d_printer_plug_power",
+          energy: "sensor.3d_printer_plug_energy"
+        },
+        {
+          key: "front_outlet",
+          cat: "other",
+          power: "sensor.front_door_outlet_power",
+          energy: "sensor.front_door_outlet_energy"
+        },
+        {
+          key: "stairway",
+          cat: "other",
+          power: "sensor.loft_stairway_outlet_power",
+          energy: "sensor.loft_stairway_outlet_energy"
+        },
+        {
+          key: "ak_speaker",
+          cat: "other",
+          power: "sensor.ak_s_speaker_power",
+          energy: "sensor.ak_s_speaker_energy"
+        }
+      ];
+      UNUSUAL_RATIO = 1.5;
+      UNUSUAL_PERCENTILE = 0.95;
+      IDLE_W = 1;
+      STATS_EVERY = 5 * 60 * 1e3;
+      DAY_MS = 24 * 3600 * 1e3;
+      EnergyFeeds.prototype.start = function() {
+        var self = this;
+        this.getPrefs();
+        this.refresh();
+        this._timers.push(setInterval(function() {
+          self.refresh();
+        }, STATS_EVERY));
+      };
+      EnergyFeeds.prototype.stop = function() {
+        this._timers.forEach(clearInterval);
+        this._timers = [];
+      };
+      EnergyFeeds.prototype.getPrefs = function() {
+        var self = this;
+        if (!this.ha) {
+          return;
+        }
+        this.ha.command({ type: "energy/get_prefs" }).then(function(prefs) {
+          self.prefs = prefs;
+          var cents = null;
+          (prefs && prefs.energy_sources ? prefs.energy_sources : []).forEach(function(s) {
+            if (cents === null && typeof s.number_energy_price === "number") {
+              cents = s.number_energy_price * 100;
+            }
+            if (cents === null && s.entity_energy_price) {
+              var st = self.ha.states.get(s.entity_energy_price);
+              var v = st ? num2(st.state) : null;
+              if (v !== null) {
+                cents = v * 100;
+              }
+            }
+          });
+          if (cents === null) {
+            var override = (window.HA_CONFIG || {}).energyRateCents;
+            cents = typeof override === "number" ? override : typeof RATE_CENTS === "number" ? RATE_CENTS : null;
+          }
+          self.rateCents = cents;
+          self.ratePending = false;
+          self.onUpdate();
+        }).catch(function() {
+          self.ratePending = false;
+          self.onUpdate();
+        });
+      };
+      EnergyFeeds.prototype.hasRate = function() {
+        return typeof this.rateCents === "number" && this.rateCents > 0;
+      };
+      EnergyFeeds.prototype.cost = function(kwh2) {
+        if (!this.hasRate() || kwh2 === null || kwh2 === void 0) {
+          return null;
+        }
+        return kwh2 * this.rateCents / 100;
+      };
+      EnergyFeeds.prototype._state = function(id) {
+        return this.ha && this.ha.states ? this.ha.states.get(id) : null;
+      };
+      EnergyFeeds.prototype.watts = function(device) {
+        var s = this._state(device.power);
+        if (!s || s.state === "unavailable" || s.state === "unknown") {
+          return null;
+        }
+        return num2(s.state);
+      };
+      EnergyFeeds.prototype.nameOf = function(device) {
+        var self = this;
+        var names = [device.power, device.energy].map(function(id) {
+          var st = self._state(id);
+          var n = st && st.attributes ? st.attributes.friendly_name : null;
+          return n ? cleanName(n) : null;
+        }).filter(Boolean);
+        for (var i = 0; i < names.length; i++) {
+          if (!looksLikeDeviceId(names[i])) {
+            return names[i];
+          }
+        }
+        return names[0] || device.key;
+      };
+      EnergyFeeds.prototype.areaOf = function(device) {
+        return this.areas ? this.areas.areaName(device.power) || this.areas.areaName(device.energy) || "" : "";
+      };
+      SNAPSHOT_MS = 1500;
+      EnergyFeeds.prototype.devices = function(range2) {
+        var self = this;
+        var now = Date.now();
+        if (this._snap && this._snap.range === range2 && now - this._snap.at < SNAPSHOT_MS) {
+          return this._snap.list;
+        }
+        var today = startOfDay();
+        var list = DEVICES.map(function(d) {
+          var w = self.watts(d);
+          var day = self.daily[d.key] || {};
+          var avgW = self.averageWatts(d.key);
+          var kwh2 = {
+            today: self._sumDays(day, today, today + DAY_MS),
+            week: self._sumDays(day, today - 6 * DAY_MS, today + DAY_MS),
+            month: self._sumDays(day, startOfMonth(), today + DAY_MS)
+          };
+          var available = w !== null;
+          var p95 = self.percentileWatts(d.key, UNUSUAL_PERCENTILE);
+          var unusual = available && w > 2 && avgW !== null && avgW > 1 && w > avgW * UNUSUAL_RATIO && p95 !== null && w > p95;
+          return {
+            key: d.key,
+            cat: d.cat,
+            powerId: d.power,
+            energyId: d.energy,
+            name: self.nameOf(d),
+            area: self.areaOf(d),
+            available,
+            watts: available ? w : 0,
+            status: !available ? "offline" : w < IDLE_W ? "off" : w < Math.max(IDLE_W, (avgW || 0) * 0.25) ? "standby" : "on",
+            avgWatts: avgW,
+            unusual,
+            kwh: kwh2,
+            value: range2 === "now" ? available ? w : 0 : kwh2[range2] || 0
+          };
+        });
+        this._snap = { range: range2, at: now, list };
+        return list;
+      };
+      EnergyFeeds.prototype._sumDays = function(dayMap, from, to) {
+        var total = 0;
+        for (var k in dayMap) {
+          if (dayMap.hasOwnProperty(k)) {
+            var t = Number(k);
+            if (t >= from && t < to) {
+              total += dayMap[k];
+            }
+          }
+        }
+        return total;
+      };
+      EnergyFeeds.prototype.averageWatts = function(key) {
+        var day = this.daily[key];
+        if (!day) {
+          return null;
+        }
+        var today = startOfDay();
+        var kwh2 = this._sumDays(day, today - 7 * DAY_MS, today);
+        var days = 0;
+        for (var k in day) {
+          if (day.hasOwnProperty(k)) {
+            var t = Number(k);
+            if (t >= today - 7 * DAY_MS && t < today) {
+              days += 1;
+            }
+          }
+        }
+        if (!days) {
+          return null;
+        }
+        return kwh2 * 1e3 / (days * 24);
+      };
+      EnergyFeeds.prototype.percentileWatts = function(key, q) {
+        var c2 = this.curves[key];
+        if (!c2 || c2.length < 12) {
+          return null;
+        }
+        var vals = c2.map(function(p) {
+          return p.max !== null ? p.max : p.mean;
+        }).filter(function(v) {
+          return v !== null && v !== void 0;
+        }).sort(function(a, b) {
+          return a - b;
+        });
+        if (!vals.length) {
+          return null;
+        }
+        return vals[Math.min(vals.length - 1, Math.floor(vals.length * q))];
+      };
+      EnergyFeeds.prototype.categories = function(range2) {
+        var devices = this.devices(range2);
+        return CATEGORIES.map(function(c2) {
+          var mine = devices.filter(function(d) {
+            return d.cat === c2.key;
+          });
+          return {
+            key: c2.key,
+            label: c2.label,
+            devices: mine,
+            value: mine.reduce(function(a, d) {
+              return a + d.value;
+            }, 0),
+            watts: mine.reduce(function(a, d) {
+              return a + d.watts;
+            }, 0),
+            unusual: mine.some(function(d) {
+              return d.unusual;
+            })
+          };
+        }).filter(function(c2) {
+          return c2.devices.length > 0;
+        });
+      };
+      EnergyFeeds.prototype.flow = function(range2, only) {
+        var cats = this.categories(range2);
+        if (only) {
+          cats = cats.filter(function(c2) {
+            return c2.key === only;
+          });
+        }
+        var total = cats.reduce(function(a, c2) {
+          return a + c2.value;
+        }, 0);
+        var nodes = [];
+        var links = [];
+        var index = {};
+        function node(id, label, kind, extra) {
+          if (index[id] === void 0) {
+            index[id] = nodes.length;
+            nodes.push(Object.assign({ id, label, kind }, extra || {}));
+          }
+          return index[id];
+        }
+        var rootLabel = only ? cats[0] ? cats[0].label : "" : HOUSE_METER ? "House total" : "Measured total";
+        var root = node("root", rootLabel, "root", { value: total });
+        cats.forEach(function(c2) {
+          var from = root;
+          if (!only) {
+            from = node(
+              "cat:" + c2.key,
+              c2.label,
+              "category",
+              { cat: c2.key, unusual: c2.unusual, value: c2.value }
+            );
+            links.push({
+              source: root,
+              target: from,
+              value: c2.value,
+              kind: "category",
+              cat: c2.key,
+              unusual: c2.unusual
+            });
+          }
+          c2.devices.forEach(function(d) {
+            var di = node(
+              "dev:" + d.key,
+              d.name,
+              "device",
+              { device: d, unusual: d.unusual }
+            );
+            links.push({
+              source: from,
+              target: di,
+              value: d.value,
+              kind: "device",
+              device: d,
+              unusual: d.unusual
+            });
+          });
+        });
+        if (HOUSE_METER && !only) {
+          var meter = this._meterValue(range2);
+          var gap = meter - total;
+          if (gap > 0) {
+            var ui = node(
+              "cat:unmeasured",
+              "Unmeasured",
+              "category",
+              { cat: "unmeasured" }
+            );
+            links.push({
+              source: root,
+              target: ui,
+              value: gap,
+              kind: "category",
+              cat: "unmeasured"
+            });
+            nodes[root].value = meter;
+          }
+        }
+        return { nodes, links, total, metered: !!HOUSE_METER };
+      };
+      EnergyFeeds.prototype.totalWatts = function() {
+        return this.devices("now").reduce(function(a, d) {
+          return a + d.watts;
+        }, 0);
+      };
+      EnergyFeeds.prototype.totalKwh = function(range2) {
+        return this.devices(range2).reduce(function(a, d) {
+          return a + d.value;
+        }, 0);
+      };
+      EnergyFeeds.prototype.stats = function() {
+        var devices = this.devices("now");
+        var now = this.totalWatts();
+        var top = null;
+        devices.forEach(function(d2) {
+          if (!top || d2.watts > top.watts) {
+            top = d2;
+          }
+        });
+        var today = this.totalKwh("today");
+        var month = this.totalKwh("month");
+        var d = /* @__PURE__ */ new Date();
+        var daysIn = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        var elapsed = d.getDate() - 1 + (Date.now() - startOfDay()) / DAY_MS;
+        var projected = elapsed > 0.2 ? month * (daysIn / elapsed) : null;
+        return {
+          now,
+          today,
+          month,
+          projected,
+          top,
+          loaded: this.loaded,
+          offline: devices.filter(function(x) {
+            return !x.available;
+          }).length
+        };
+      };
+      EnergyFeeds.prototype.top = function(range2, n) {
+        return this.devices(range2).filter(function(d) {
+          return d.value > 0;
+        }).sort(function(a, b) {
+          return b.value - a.value;
+        }).slice(0, n || 5);
+      };
+      EnergyFeeds.prototype.houseCurve = function() {
+        var buckets = {};
+        var key;
+        for (key in this.curves) {
+          if (!this.curves.hasOwnProperty(key)) {
+            continue;
+          }
+          this.curves[key].forEach(function(p) {
+            if (!buckets[p.t]) {
+              buckets[p.t] = 0;
+            }
+            buckets[p.t] += p.mean || 0;
+          });
+        }
+        var out = Object.keys(buckets).map(function(t) {
+          return { t: Number(t), w: buckets[t] };
+        }).sort(function(a, b) {
+          return a.t - b.t;
+        });
+        return out;
+      };
+      EnergyFeeds.prototype.switchOns = function(curve) {
+        var self = this;
+        var marks2 = [];
+        if (!curve || curve.length < 3) {
+          return marks2;
+        }
+        var step = Math.max(120, this.totalWatts() * 0.18);
+        for (var i = 1; i < curve.length; i++) {
+          var jump = curve[i].w - curve[i - 1].w;
+          if (jump < step) {
+            continue;
+          }
+          var who = null, best = 0;
+          DEVICES.forEach(function(d) {
+            var c2 = self.curves[d.key];
+            if (!c2) {
+              return;
+            }
+            var a = null, b = null;
+            for (var j = 0; j < c2.length; j++) {
+              if (c2[j].t === curve[i].t) {
+                b = c2[j].mean;
+              }
+              if (c2[j].t === curve[i - 1].t) {
+                a = c2[j].mean;
+              }
+            }
+            if (a !== null && b !== null && b - a > best) {
+              best = b - a;
+              who = d;
+            }
+          });
+          if (!who) {
+            continue;
+          }
+          var recent = marks2.length && marks2[marks2.length - 1];
+          if (recent && recent.key === who.key && curve[i].t - recent.t < 30 * 6e4) {
+            continue;
+          }
+          marks2.push({
+            t: curve[i].t,
+            w: curve[i].w,
+            key: who.key,
+            name: self.nameOf(who),
+            jump
+          });
+        }
+        return marks2;
+      };
+      EnergyFeeds.prototype.detail = function(key) {
+        var self = this;
+        var device = null;
+        this.devices("now").forEach(function(d) {
+          if (d.key === key) {
+            device = d;
+          }
+        });
+        if (!device) {
+          return null;
+        }
+        var curve = this.curves[key] || [];
+        var day = this.daily[key] || {};
+        var today = startOfDay();
+        var bars = [];
+        for (var i = 6; i >= 0; i--) {
+          var t = today - i * DAY_MS;
+          bars.push({ t, kwh: day[t] || 0 });
+        }
+        var peak = null;
+        curve.forEach(function(p) {
+          if (p.max !== null && (!peak || p.max > peak.w)) {
+            peak = { w: p.max, t: p.t };
+          }
+        });
+        var lows = curve.map(function(p) {
+          return p.min !== null ? p.min : p.mean;
+        }).filter(function(v) {
+          return v !== null && v !== void 0;
+        }).sort(function(a, b) {
+          return a - b;
+        });
+        var standby = lows.length ? lows[Math.floor(lows.length * 0.1)] : null;
+        var houseNow = this.totalWatts();
+        return {
+          device,
+          curve,
+          bars,
+          peak,
+          standby,
+          share: houseNow > 0 ? device.watts / houseNow * 100 : 0,
+          shareToday: function() {
+            var t2 = self.totalKwh("today");
+            return t2 > 0 ? device.kwh.today / t2 * 100 : 0;
+          }()
+        };
+      };
+      EnergyFeeds.prototype.refresh = function() {
+        this._loadDaily();
+        this._loadCurves();
+      };
+      EnergyFeeds.prototype._loadDaily = function() {
+        var self = this;
+        if (!this.ha) {
+          return;
+        }
+        var ids = DEVICES.map(function(d) {
+          return d.energy;
+        });
+        var start2 = Math.min(startOfMonth(), startOfDay() - 35 * DAY_MS);
+        this.ha.command({
+          type: "recorder/statistics_during_period",
+          start_time: new Date(start2).toISOString(),
+          end_time: new Date(Date.now() + 36e5).toISOString(),
+          statistic_ids: ids,
+          period: "day",
+          types: ["change"]
+        }).then(function(raw) {
+          var byId = {};
+          DEVICES.forEach(function(d) {
+            byId[d.energy] = d.key;
+          });
+          var next2 = {};
+          Object.keys(raw || {}).forEach(function(id) {
+            var key = byId[id];
+            if (!key) {
+              return;
+            }
+            next2[key] = {};
+            (raw[id] || []).forEach(function(row) {
+              var change = num2(row.change);
+              if (change === null || change < 0) {
+                return;
+              }
+              next2[key][startOfDay(row.start)] = change;
+            });
+          });
+          self.daily = next2;
+          self.loaded = true;
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      EnergyFeeds.prototype._loadCurves = function() {
+        var self = this;
+        if (!this.ha) {
+          return;
+        }
+        var ids = DEVICES.map(function(d) {
+          return d.power;
+        });
+        this.ha.command({
+          type: "recorder/statistics_during_period",
+          start_time: new Date(Date.now() - DAY_MS).toISOString(),
+          end_time: (/* @__PURE__ */ new Date()).toISOString(),
+          statistic_ids: ids,
+          period: "5minute",
+          types: ["mean", "max", "min"]
+        }).then(function(raw) {
+          var byId = {};
+          DEVICES.forEach(function(d) {
+            byId[d.power] = d.key;
+          });
+          var next2 = {};
+          Object.keys(raw || {}).forEach(function(id) {
+            var key = byId[id];
+            if (!key) {
+              return;
+            }
+            next2[key] = (raw[id] || []).map(function(row) {
+              return {
+                t: row.start,
+                mean: num2(row.mean),
+                max: num2(row.max),
+                min: num2(row.min)
+              };
+            });
+          });
+          self.curves = next2;
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      EnergyFeeds.prototype.note = function(m) {
+        var id = m.entityId;
+        if (!id) {
+          return false;
+        }
+        for (var i = 0; i < DEVICES.length; i++) {
+          if (DEVICES[i].power === id || DEVICES[i].energy === id) {
+            return true;
+          }
+        }
+        return false;
+      };
+      EnergyFeeds.prototype._meterValue = function(range2) {
+        var s = this._state(HOUSE_METER);
+        return s ? num2(s.state) || 0 : 0;
+      };
+    }
+  });
+
+  // src/EnergyView.js
+  var EnergyView_exports = {};
+  __export(EnergyView_exports, {
+    EnergyView: () => EnergyView
+  });
+  function $id5(id) {
+    return document.getElementById(id);
+  }
+  function pad5(n) {
+    return String(n).length < 2 ? "0" + n : String(n);
+  }
+  function watchPanels5() {
+    if (observer5 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    observer5 = new ResizeObserver(function() {
+      EnergyView.resizeDebounced();
+    });
+    ["en-sankey", "en-chart", "en-detail"].forEach(function(id) {
+      var el = $id5(id);
+      if (el) {
+        observer5.observe(el);
+      }
+    });
+  }
+  function sizeCanvas2(canvas, ctx) {
+    if (!canvas || !ctx) {
+      return;
+    }
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function watts(w) {
+    if (w === null || w === void 0) {
+      return "n/a";
+    }
+    if (w >= 1e3) {
+      return (w / 1e3).toFixed(2) + " kW";
+    }
+    return (w >= 100 ? Math.round(w) : w.toFixed(1)) + " W";
+  }
+  function kwh(v) {
+    if (v === null || v === void 0) {
+      return "n/a";
+    }
+    if (v >= 100) {
+      return Math.round(v) + " kWh";
+    }
+    return v.toFixed(v < 10 ? 2 : 1) + " kWh";
+  }
+  function money(v) {
+    return v === null || v === void 0 ? "" : "$" + v.toFixed(2);
+  }
+  function pct(v) {
+    return (v >= 10 ? Math.round(v) : v.toFixed(1)) + "%";
+  }
+  function valueText(v) {
+    return range === "now" ? watts(v) : kwh(v);
+  }
+  function clockTime(ms) {
+    var d = new Date(ms);
+    return (d.getHours() % 12 || 12) + ":" + pad5(d.getMinutes()) + (d.getHours() < 12 ? "a" : "p");
+  }
+  function buildLayout() {
+    var host = $id5("en-sankey");
+    if (!host || !svg || !feeds5 || !window.d3 || !window.d3.sankey) {
+      return;
+    }
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var graph = feeds5.flow(range, drill);
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg.setAttribute("width", w);
+    svg.setAttribute("height", h);
+    if (!graph.links.length || graph.total <= 0) {
+      svg.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="en-empty">' + (feeds5.loaded ? "NO MEASURED DRAW IN THIS PERIOD" : "LOADING STATISTICS") + "</text>";
+      layout = { links: [], nodes: [], total: 0, w, h };
+      particles = [];
+      return;
+    }
+    var nodes = graph.nodes.map(function(n) {
+      return Object.assign({}, n);
+    });
+    var links = graph.links.map(function(l) {
+      return Object.assign({}, l);
+    });
+    var fontPx = Math.max(8, Math.min(13, window.innerWidth * 58e-4));
+    var charW = fontPx * 0.62;
+    var longest = 0;
+    nodes.forEach(function(n) {
+      longest = Math.max(longest, String(n.label).length);
+    });
+    var labelRoom = Math.max(90, Math.min(w * 0.42, (longest + 12) * charW + 14));
+    var nodeW = Math.max(6, Math.min(13, w * 0.011));
+    var pad6 = Math.max(7, Math.min(15, h / (nodes.length + 2)));
+    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad6).extent([[2, 10], [w - labelRoom, h - 10]]);
+    var out;
+    try {
+      out = sankey({ nodes, links });
+    } catch (err) {
+      svg.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="en-empty">NO MEASURED DRAW</text>';
+      layout = { links: [], nodes: [], total: 0, w, h };
+      particles = [];
+      return;
+    }
+    var linkPath = window.d3.sankeyLinkHorizontal();
+    var max = 0;
+    out.links.forEach(function(l) {
+      max = Math.max(max, l.value);
+    });
+    var parts = [];
+    out.links.forEach(function(l, i) {
+      var share = max > 0 ? l.value / max : 0;
+      var opacity = 0.18 + 0.58 * Math.sqrt(share);
+      var colour = l.unusual ? ALERT2 : CYAN2;
+      var d = linkPath(l);
+      var sw = Math.max(1.1, l.width || 0);
+      parts.push('<path class="en-link' + (l.unusual ? " unusual" : "") + '" d="' + d + '" stroke="' + colour + '" stroke-width="' + sw + '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none" data-link="' + i + '"></path>');
+      l._d = d;
+      l._sw = sw;
+    });
+    out.nodes.forEach(function(n, i) {
+      var hgt = Math.max(2, n.y1 - n.y0);
+      var colour = n.unusual ? ALERT2 : n.kind === "root" ? ACCENT : CYAN2;
+      parts.push('<rect class="en-node en-node-' + n.kind + (n.unusual ? " unusual" : "") + '" x="' + n.x0 + '" y="' + n.y0 + '" width="' + (n.x1 - n.x0) + '" height="' + hgt + '" fill="' + colour + '" data-node="' + i + '"></rect>');
+      var tx = n.x1 + 6;
+      var ty = (n.y0 + n.y1) / 2;
+      var anchor = "start";
+      if (n.kind === "device" || drill && n.kind === "root") {
+        anchor = "start";
+      }
+      var cls = "en-label en-label-" + n.kind + (n.unusual ? " unusual" : "");
+      var nameRoom = Math.floor((w - tx - 14) / charW) - 11;
+      parts.push('<text class="' + cls + '" x="' + tx + '" y="' + ty + '" text-anchor="' + anchor + '" dominant-baseline="middle" data-node="' + i + '"><tspan class="en-label-name">' + escapeText(fit(n.label, nameRoom)) + '</tspan><tspan class="en-label-val" dx="6">' + /* A device Home Assistant cannot reach reads OFFLINE rather than
+         0.0 W, which would look like a device that is simply switched
+         off. */
+      (n.device && !n.device.available ? "OFFLINE" : valueText(n.value)) + "</tspan></text>");
+    });
+    svg.innerHTML = parts.join("");
+    layout = { links: out.links, nodes: out.nodes, total: graph.total, w, h };
+    refreshTip();
+    seedParticles(out.links, max);
+  }
+  function fit(text, chars) {
+    var t = String(text);
+    if (!isFinite(chars) || chars < 4 || t.length <= chars) {
+      return t;
+    }
+    return t.slice(0, chars - 1) + "\u2026";
+  }
+  function escapeText(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function samplePath(d, n) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    el.setAttribute("d", d);
+    var len = 0;
+    try {
+      len = el.getTotalLength();
+    } catch (err) {
+      return null;
+    }
+    if (!len || !isFinite(len)) {
+      return null;
+    }
+    var pts = [];
+    for (var i = 0; i <= n; i++) {
+      var p = el.getPointAtLength(i / n * len);
+      pts.push(p.x, p.y);
+    }
+    return { pts, len, n };
+  }
+  function seedParticles(links, max) {
+    particles = [];
+    if (!max) {
+      return;
+    }
+    links.forEach(function(l, i) {
+      var sampled = samplePath(l._d, 44);
+      if (!sampled) {
+        return;
+      }
+      l._path = sampled;
+      var share = l.value / max;
+      var count2 = Math.max(1, Math.round(1 + 15 * Math.sqrt(share)));
+      var speed = 26 + 130 * Math.sqrt(share);
+      for (var k = 0; k < count2; k++) {
+        particles.push({
+          link: i,
+          at: Math.random(),
+          speed: speed * (0.82 + Math.random() * 0.36),
+          /* Spread across the ribbon rather than all on the centreline. */
+          off: (Math.random() - 0.5) * Math.max(0, l._sw - 2) * 0.8,
+          size: 0.9 + Math.random() * 1.1,
+          unusual: !!l.unusual
+        });
+      }
+    });
+  }
+  function stepParticles(dt) {
+    if (!pctx || !particleCanvas) {
+      return;
+    }
+    var w = particleCanvas.clientWidth, h = particleCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    pctx.clearRect(0, 0, w, h);
+    if (!particles.length || !layout.links.length) {
+      return;
+    }
+    pctx.globalCompositeOperation = "lighter";
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      var l = layout.links[p.link];
+      if (!l || !l._path) {
+        continue;
+      }
+      p.at += p.speed * dt / l._path.len;
+      if (p.at > 1) {
+        p.at -= 1;
+      }
+      var pts = l._path.pts;
+      var f = p.at * l._path.n;
+      var i0 = Math.floor(f);
+      var t = f - i0;
+      if (i0 >= l._path.n) {
+        i0 = l._path.n - 1;
+        t = 1;
+      }
+      var x = pts[i0 * 2] + (pts[i0 * 2 + 2] - pts[i0 * 2]) * t;
+      var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
+      var edge = Math.min(p.at, 1 - p.at);
+      var alpha = Math.min(1, edge / 0.08) * 0.85;
+      pctx.beginPath();
+      pctx.arc(x, y + p.off, p.size, 0, Math.PI * 2);
+      pctx.fillStyle = p.unusual ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
+      pctx.fill();
+    }
+    pctx.globalCompositeOperation = "source-over";
+  }
+  function renderNote() {
+    var el = $id5("en-note");
+    if (!el || !feeds5) {
+      return;
+    }
+    if (HOUSE_METER) {
+      el.textContent = "";
+      el.style.display = "none";
+      return;
+    }
+    el.style.display = "block";
+    el.innerHTML = "<b>MEASURED TOTAL</b> There is no whole house meter on this home, so this is the sum of 19 monitored circuits and plugs. Unmonitored loads (furnace, air conditioner, oven, dryer, most lighting and outlets) are not included.";
+  }
+  function stat3(id, value, sub, bad) {
+    var el = $id5(id);
+    if (!el) {
+      return;
+    }
+    el.firstChild.textContent = value;
+    var span = el.querySelector("span");
+    if (span && sub !== null && sub !== void 0) {
+      span.textContent = sub;
+    }
+    el.className = "en-stat" + (bad ? " bad" : "");
+  }
+  function renderStatus3() {
+    if (!feeds5) {
+      return;
+    }
+    var s = feeds5.stats();
+    var showCost = feeds5.hasRate();
+    stat3(
+      "en-stat-now",
+      watts(s.now),
+      "Now, " + (19 - s.offline) + " of 19 reporting",
+      false
+    );
+    stat3(
+      "en-stat-today",
+      kwh(s.today),
+      showCost ? "Today, " + money(feeds5.cost(s.today)) : "Today",
+      false
+    );
+    var monthSub = "This month";
+    if (s.projected) {
+      monthSub += ", projected " + kwh(s.projected);
+    }
+    if (showCost) {
+      monthSub = "This month, " + money(feeds5.cost(s.month)) + (s.projected ? ", projected " + money(feeds5.cost(s.projected)) : "");
+    }
+    stat3("en-stat-month", kwh(s.month), monthSub, false);
+    if (s.top) {
+      stat3(
+        "en-stat-top",
+        s.top.name,
+        "Top consumer now, " + watts(s.top.watts),
+        s.top.unusual
+      );
+    } else {
+      stat3("en-stat-top", "--", "Top consumer now", false);
+    }
+    var ask = $id5("en-rate-note");
+    if (ask) {
+      ask.style.display = showCost || feeds5.ratePending ? "none" : "block";
+    }
+  }
+  function renderTop() {
+    var box = $id5("en-top5-body");
+    var head = $id5("en-top5-range");
+    if (!box || !feeds5) {
+      return;
+    }
+    var r = range === "now" ? "now" : range;
+    if (head) {
+      head.textContent = RANGE_LABEL[r];
+    }
+    var list = feeds5.top(r, 5);
+    if (!list.length) {
+      box.innerHTML = '<div class="en-wait">' + (feeds5.loaded ? "Nothing drawing" : "Loading") + "</div>";
+      return;
+    }
+    var max = list[0].value || 1;
+    var showCost = feeds5.hasRate();
+    box.innerHTML = list.map(function(d, i) {
+      var w = Math.max(2, d.value / max * 100);
+      return '<div class="en-bar-row' + (d.unusual ? " unusual" : "") + (d.key === selected3 ? " on" : "") + '" data-device="' + d.key + '"><span class="en-bar-rank">' + (i + 1) + '</span><span class="en-bar-name">' + escapeText(d.name) + '</span><span class="en-bar-val">' + valueText(d.value) + (showCost && r !== "now" ? " <i>" + money(feeds5.cost(d.value)) + "</i>" : "") + '</span><span class="en-bar-track"><i style="width:' + w.toFixed(1) + '%"></i></span></div>';
+    }).join("");
+  }
+  function drawHouseChart() {
+    if (!cctx || !chartCanvas || !feeds5) {
+      return;
+    }
+    var w = chartCanvas.clientWidth, h = chartCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = cctx;
+    ctx.clearRect(0, 0, w, h);
+    var curve = feeds5.houseCurve();
+    if (curve.length < 2) {
+      ctx.fillStyle = "rgba(191,244,255,.4)";
+      ctx.font = "11px Menlo, Consolas, monospace";
+      ctx.fillText(feeds5.loaded ? "No power history" : "Loading power history", 8, 18);
+      return;
+    }
+    var left = 42, right = 10, top = 10, bottom = 16;
+    var pw = w - left - right, ph = h - top - bottom;
+    var max = 0;
+    curve.forEach(function(p) {
+      max = Math.max(max, p.w);
+    });
+    max = Math.max(max * 1.12, 50);
+    var t0 = curve[0].t, t1 = curve[curve.length - 1].t;
+    var span = Math.max(1, t1 - t0);
+    var X = function(t2) {
+      return left + (t2 - t0) / span * pw;
+    };
+    var Y = function(v2) {
+      return top + ph - v2 / max * ph;
+    };
+    ctx.font = "10px Menlo, Consolas, monospace";
+    ctx.textAlign = "right";
+    for (var g = 0; g <= 2; g++) {
+      var v = max / 2 * g;
+      var y = Math.floor(Y(v)) + 0.5;
+      ctx.strokeStyle = "rgba(63,224,255,.12)";
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(191,244,255,.55)";
+      ctx.fillText(v >= 1e3 ? (v / 1e3).toFixed(1) + "k" : Math.round(v), left - 4, y + 3);
+    }
+    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
+    grad.addColorStop(0, "rgba(63,224,255,.42)");
+    grad.addColorStop(1, "rgba(63,224,255,.03)");
+    ctx.beginPath();
+    ctx.moveTo(X(curve[0].t), top + ph);
+    curve.forEach(function(p) {
+      ctx.lineTo(X(p.t), Y(p.w));
+    });
+    ctx.lineTo(X(curve[curve.length - 1].t), top + ph);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    curve.forEach(function(p, i2) {
+      if (i2) {
+        ctx.lineTo(X(p.t), Y(p.w));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.w));
+      }
+    });
+    ctx.strokeStyle = CYAN2;
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(191,244,255,.45)";
+    for (var i = 0; i <= 24; i += 4) {
+      var t = t0 + span * i / 24;
+      var d = new Date(t);
+      ctx.fillText(
+        (d.getHours() % 12 || 12) + (d.getHours() < 12 ? "a" : "p"),
+        X(t),
+        h - 4
+      );
+    }
+    var marks2 = feeds5.switchOns(curve);
+    ctx.textAlign = "left";
+    var lastLabelX = -1e9;
+    marks2.slice(-6).forEach(function(m) {
+      var x = X(m.t), y2 = Y(m.w);
+      ctx.strokeStyle = "rgba(77,255,176,.65)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, y2);
+      ctx.lineTo(x, top + 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y2, 2.4, 0, Math.PI * 2);
+      ctx.fillStyle = ACCENT;
+      ctx.fill();
+      ctx.font = "9px Menlo, Consolas, monospace";
+      var label = m.name;
+      var wide = ctx.measureText(label).width;
+      if (x - lastLabelX > wide + 10) {
+        ctx.fillStyle = "rgba(77,255,176,.9)";
+        var tx = x + 4;
+        if (tx + wide > w - right) {
+          ctx.textAlign = "right";
+          tx = x - 4;
+        }
+        ctx.fillText(label, tx, top + 10);
+        ctx.textAlign = "left";
+        lastLabelX = x;
+      }
+      ctx.font = "10px Menlo, Consolas, monospace";
+    });
+  }
+  function renderDetail3() {
+    var panel = $id5("en-detail");
+    if (!panel || !feeds5) {
+      return;
+    }
+    if (!selected3) {
+      panel.classList.remove("open");
+      return;
+    }
+    var d = feeds5.detail(selected3);
+    if (!d) {
+      panel.classList.remove("open");
+      return;
+    }
+    panel.classList.add("open");
+    var dev = d.device;
+    var showCost = feeds5.hasRate();
+    $id5("en-detail-name").textContent = dev.name;
+    $id5("en-detail-area").textContent = dev.area || "No area";
+    var big = $id5("en-detail-watts");
+    big.textContent = dev.available ? watts(dev.watts) : "OFFLINE";
+    big.className = dev.unusual ? "unusual" : dev.available ? "" : "bad";
+    var st = $id5("en-detail-status");
+    st.textContent = dev.status === "on" ? "ON" : dev.status === "standby" ? "STANDBY" : dev.status === "off" ? "IDLE" : "OFFLINE";
+    st.className = "en-detail-status " + dev.status + (dev.unusual ? " unusual" : "");
+    var rows2 = [
+      ["Today", kwh(dev.kwh.today), showCost ? money(feeds5.cost(dev.kwh.today)) : ""],
+      ["This week", kwh(dev.kwh.week), showCost ? money(feeds5.cost(dev.kwh.week)) : ""],
+      ["This month", kwh(dev.kwh.month), showCost ? money(feeds5.cost(dev.kwh.month)) : ""],
+      [
+        "Peak power",
+        d.peak ? watts(d.peak.w) : "n/a",
+        d.peak ? "at " + clockTime(d.peak.t) : ""
+      ],
+      [
+        "Standby draw",
+        d.standby !== null ? watts(d.standby) : "n/a",
+        "lowest steady, 24 h"
+      ],
+      [
+        "7 day average",
+        dev.avgWatts !== null ? watts(dev.avgWatts) : "n/a",
+        dev.unusual ? "DRAWING HIGH" : ""
+      ],
+      ["Share of house", pct(d.share), "now"],
+      ["Share today", pct(d.shareToday), "of measured total"]
+    ];
+    $id5("en-detail-rows").innerHTML = rows2.map(function(r) {
+      return '<div class="en-drow' + (r[2] === "DRAWING HIGH" ? " unusual" : "") + '"><span>' + r[0] + "</span><b>" + r[1] + "</b><i>" + escapeText(r[2] || "") + "</i></div>";
+    }).join("");
+    sizeCanvas2(curveCanvas, curveCtx);
+    sizeCanvas2(barsCanvas, barsCtx);
+    drawDeviceCurve(d);
+    drawDeviceBars(d);
+  }
+  function drawDeviceCurve(d) {
+    if (!curveCtx || !curveCanvas) {
+      return;
+    }
+    var w = curveCanvas.clientWidth, h = curveCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = curveCtx;
+    ctx.clearRect(0, 0, w, h);
+    var c2 = d.curve.filter(function(p) {
+      return p.mean !== null;
+    });
+    if (c2.length < 2) {
+      ctx.fillStyle = "rgba(191,244,255,.4)";
+      ctx.font = "10px Menlo, Consolas, monospace";
+      ctx.fillText("No power history", 6, 14);
+      return;
+    }
+    var left = 34, right = 6, top = 18, bottom = 13;
+    var pw = w - left - right, ph = h - top - bottom;
+    var max = 0;
+    c2.forEach(function(p) {
+      max = Math.max(max, p.max || p.mean);
+    });
+    max = Math.max(max * 1.12, 5);
+    var t0 = c2[0].t, t1 = c2[c2.length - 1].t;
+    var span = Math.max(1, t1 - t0);
+    var X = function(t2) {
+      return left + (t2 - t0) / span * pw;
+    };
+    var Y = function(v) {
+      return top + ph - v / max * ph;
+    };
+    ctx.font = "9px Menlo, Consolas, monospace";
+    ctx.textAlign = "right";
+    [0, max / 2, max].forEach(function(v) {
+      var y = Math.floor(Y(v)) + 0.5;
+      ctx.strokeStyle = "rgba(63,224,255,.1)";
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(191,244,255,.5)";
+      ctx.fillText(v >= 1e3 ? (v / 1e3).toFixed(1) + "k" : Math.round(v), left - 3, y + 3);
+    });
+    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
+    grad.addColorStop(0, "rgba(63,224,255,.38)");
+    grad.addColorStop(1, "rgba(63,224,255,.02)");
+    ctx.beginPath();
+    ctx.moveTo(X(c2[0].t), top + ph);
+    c2.forEach(function(p) {
+      ctx.lineTo(X(p.t), Y(p.mean));
+    });
+    ctx.lineTo(X(c2[c2.length - 1].t), top + ph);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    c2.forEach(function(p, i2) {
+      if (i2) {
+        ctx.lineTo(X(p.t), Y(p.mean));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.mean));
+      }
+    });
+    ctx.strokeStyle = CYAN2;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    if (d.peak) {
+      ctx.beginPath();
+      ctx.arc(X(d.peak.t), Y(d.peak.w), 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = ALERT2;
+      ctx.fill();
+    }
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(191,244,255,.45)";
+    for (var i = 0; i <= 24; i += 6) {
+      var t = t0 + span * i / 24;
+      var dt = new Date(t);
+      ctx.fillText(
+        (dt.getHours() % 12 || 12) + (dt.getHours() < 12 ? "a" : "p"),
+        X(t),
+        h - 3
+      );
+    }
+  }
+  function drawDeviceBars(d) {
+    if (!barsCtx || !barsCanvas) {
+      return;
+    }
+    var w = barsCanvas.clientWidth, h = barsCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = barsCtx;
+    ctx.clearRect(0, 0, w, h);
+    var bars = d.bars;
+    var max = 0;
+    bars.forEach(function(b) {
+      max = Math.max(max, b.kwh);
+    });
+    max = Math.max(max, 0.01);
+    var left = 34, right = 6, top = 18, bottom = 14;
+    var pw = w - left - right, ph = h - top - bottom;
+    var bw = pw / bars.length;
+    ctx.font = "9px Menlo, Consolas, monospace";
+    ctx.textAlign = "right";
+    ctx.fillStyle = "rgba(191,244,255,.5)";
+    ctx.fillText(max.toFixed(max < 10 ? 1 : 0), left - 3, top + 8);
+    ctx.fillText("0", left - 3, top + ph);
+    ctx.strokeStyle = "rgba(63,224,255,.1)";
+    ctx.beginPath();
+    ctx.moveTo(left, Math.floor(top + ph) + 0.5);
+    ctx.lineTo(w - right, Math.floor(top + ph) + 0.5);
+    ctx.stroke();
+    var DAYS6 = ["S", "M", "T", "W", "T", "F", "S"];
+    bars.forEach(function(b, i) {
+      var bh = b.kwh / max * ph;
+      var x = left + i * bw + bw * 0.18;
+      var bwid = bw * 0.64;
+      var isToday = i === bars.length - 1;
+      ctx.fillStyle = isToday ? "rgba(77,255,176,.85)" : CYAN2;
+      if (bh > 0) {
+        ctx.fillRect(x, top + ph - bh, bwid, bh);
+      }
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(191,244,255,.5)";
+      ctx.fillText(DAYS6[new Date(b.t).getDay()], x + bwid / 2, h - 3);
+    });
+  }
+  function renderCrumb() {
+    var el = $id5("en-crumb");
+    if (!el) {
+      return;
+    }
+    var root = HOUSE_METER ? "HOUSE" : "MEASURED TOTAL";
+    if (!drill) {
+      el.innerHTML = '<span class="en-crumb-here">' + root + "</span>";
+      return;
+    }
+    var label = "";
+    CATEGORIES.forEach(function(c2) {
+      if (c2.key === drill) {
+        label = c2.label.toUpperCase();
+      }
+    });
+    el.innerHTML = '<a href="#" class="en-crumb-up" data-up="1">' + root + '</a><span class="en-crumb-sep">&gt;</span><span class="en-crumb-here">' + label + "</span>";
+  }
+  function wipe(then) {
+    var host = $id5("en-flow");
+    var el = $id5("en-wipe");
+    if (!host || !el) {
+      then();
+      return;
+    }
+    clearTimeout(wipeTimer2);
+    clearTimeout(swapTimer2);
+    el.classList.remove("run");
+    void el.offsetWidth;
+    el.classList.add("run");
+    host.classList.add("wiping");
+    swapTimer2 = setTimeout(then, WIPE_SWAP_MS2);
+    wipeTimer2 = setTimeout(function() {
+      el.classList.remove("run");
+      host.classList.remove("wiping");
+    }, WIPE_MS2);
+  }
+  function setDrill(cat) {
+    wipe(function() {
+      drill = cat;
+      renderCrumb();
+      lastLayout = 0;
+      dirty5 = true;
+      buildLayout();
+    });
+  }
+  function setRange(r) {
+    if (r === range) {
+      return;
+    }
+    wipe(function() {
+      range = r;
+      Array.prototype.forEach.call(
+        document.querySelectorAll("#en-range button"),
+        function(b) {
+          b.classList.toggle("on", b.getAttribute("data-range") === r);
+        }
+      );
+      lastLayout = 0;
+      dirty5 = true;
+      buildLayout();
+      renderTop();
+    });
+  }
+  function openDevice(key) {
+    selected3 = key;
+    renderDetail3();
+    renderTop();
+  }
+  function closeDevice() {
+    selected3 = null;
+    renderDetail3();
+    renderTop();
+  }
+  function showTip(evt, html) {
+    var tip = $id5("en-tip");
+    var host = $id5("en-flow");
+    if (!tip || !host) {
+      return;
+    }
+    tip.innerHTML = html;
+    tip.style.display = "block";
+    var box = host.getBoundingClientRect();
+    var x = evt.clientX - box.left + 14;
+    var y = evt.clientY - box.top + 14;
+    if (x + tip.offsetWidth > box.width - 6) {
+      x = evt.clientX - box.left - tip.offsetWidth - 14;
+    }
+    if (y + tip.offsetHeight > box.height - 6) {
+      y = box.height - tip.offsetHeight - 6;
+    }
+    tip.style.left = Math.max(4, x) + "px";
+    tip.style.top = Math.max(4, y) + "px";
+  }
+  function hideTip() {
+    hoverKey = null;
+    var tip = $id5("en-tip");
+    if (tip) {
+      tip.style.display = "none";
+    }
+  }
+  function keyOf(item2) {
+    if (!item2) {
+      return null;
+    }
+    if (item2.id) {
+      return "node:" + item2.id;
+    }
+    return "link:" + (item2.target && item2.target.id || "");
+  }
+  function findByKey(key) {
+    var i;
+    for (i = 0; i < layout.nodes.length; i++) {
+      if (keyOf(layout.nodes[i]) === key) {
+        return layout.nodes[i];
+      }
+    }
+    for (i = 0; i < layout.links.length; i++) {
+      if (keyOf(layout.links[i]) === key) {
+        return layout.links[i];
+      }
+    }
+    return null;
+  }
+  function refreshTip() {
+    var tip = $id5("en-tip");
+    if (!tip || !hoverKey || tip.style.display === "none") {
+      return;
+    }
+    var item2 = findByKey(hoverKey);
+    if (!item2) {
+      hideTip();
+      return;
+    }
+    tip.innerHTML = tipFor(item2);
+  }
+  function tipFor(item2) {
+    if (!feeds5) {
+      return "";
+    }
+    var isDevice = !!item2.device;
+    var name = isDevice ? item2.device.name : item2.label || item2.target && item2.target.label || "";
+    var total = range === "now" ? feeds5.totalWatts() : feeds5.totalKwh(range);
+    var value = item2.value || 0;
+    var share = total > 0 ? value / total * 100 : 0;
+    var html = "<b>" + escapeText(name) + "</b>";
+    if (isDevice && item2.device.area) {
+      html += '<span class="en-tip-area">' + escapeText(item2.device.area) + "</span>";
+    }
+    var w = isDevice ? item2.device.watts : item2.cat ? catWatts(item2.cat) : feeds5.totalWatts();
+    html += "<div><i>Power now</i>" + watts(w) + "</div>";
+    ["today", "week", "month"].forEach(function(r) {
+      var v = isDevice ? item2.device.kwh[r] : catKwh(item2.cat, r);
+      html += "<div><i>" + RANGE_LABEL[r] + "</i>" + kwh(v) + (feeds5.hasRate() ? " <em>" + money(feeds5.cost(v)) + "</em>" : "") + "</div>";
+    });
+    html += "<div><i>Share of " + (range === "now" ? "load now" : RANGE_LABEL[range]) + "</i>" + pct(share) + "</div>";
+    if (isDevice && item2.device.unusual) {
+      html += '<div class="en-tip-alert">DRAWING HIGH, 7 day average ' + watts(item2.device.avgWatts) + "</div>";
+    }
+    var hint = isDevice ? "Click for detail" : item2.kind === "root" ? drill ? "Click to go back" : "" : drill ? "Click to go back" : "Click to drill in";
+    if (hint) {
+      html += '<div class="en-tip-hint">' + hint + "</div>";
+    }
+    return html;
+  }
+  function catWatts(key) {
+    if (!key || !feeds5) {
+      return feeds5 ? feeds5.totalWatts() : 0;
+    }
+    var out = 0;
+    feeds5.categories("now").forEach(function(c2) {
+      if (c2.key === key) {
+        out = c2.watts;
+      }
+    });
+    return out;
+  }
+  function catKwh(key, r) {
+    if (!feeds5) {
+      return 0;
+    }
+    if (!key) {
+      return feeds5.totalKwh(r);
+    }
+    var out = 0;
+    feeds5.categories(r).forEach(function(c2) {
+      if (c2.key === key) {
+        out = c2.value;
+      }
+    });
+    return out;
+  }
+  function renderClock5(now) {
+    var el = $id5("en-time");
+    if (!el) {
+      return;
+    }
+    var d = new Date(now);
+    var h = d.getHours();
+    var text = (h % 12 || 12) + ":" + pad5(d.getMinutes()) + ":" + pad5(d.getSeconds());
+    if (text === lastClock2) {
+      return;
+    }
+    lastClock2 = text;
+    el.innerHTML = text + "<small>" + (h < 12 ? "AM" : "PM") + "</small>";
+    var dt = $id5("en-date");
+    if (dt) {
+      dt.textContent = DAYS5[d.getDay()] + ", " + MONTHS5[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    }
+  }
+  function nodeAt(target) {
+    var i = target.getAttribute("data-node");
+    return i === null ? null : layout.nodes[Number(i)];
+  }
+  function linkAt(target) {
+    var i = target.getAttribute("data-link");
+    return i === null ? null : layout.links[Number(i)];
+  }
+  function bindControls4() {
+    var root = $id5("energy-screen");
+    root.addEventListener("click", function(e) {
+      var rangeBtn = e.target.closest("#en-range button");
+      if (rangeBtn) {
+        setRange(rangeBtn.getAttribute("data-range"));
+        return;
+      }
+      if (e.target.closest("[data-up]")) {
+        e.preventDefault();
+        setDrill(null);
+        return;
+      }
+      if (e.target.closest("#en-detail-close")) {
+        closeDevice();
+        return;
+      }
+      var bar = e.target.closest(".en-bar-row");
+      if (bar) {
+        openDevice(bar.getAttribute("data-device"));
+        return;
+      }
+      var hit = e.target.closest("[data-node], [data-link]");
+      if (!hit) {
+        return;
+      }
+      var node = hit.hasAttribute("data-node") ? nodeAt(hit) : null;
+      var link = hit.hasAttribute("data-link") ? linkAt(hit) : null;
+      var item2 = node || link;
+      if (!item2) {
+        return;
+      }
+      if (item2.kind === "device" || item2.device) {
+        openDevice((item2.device || {}).key);
+      } else if (item2.kind === "category" || item2.cat) {
+        if (item2.cat && item2.cat !== "unmeasured") {
+          setDrill(drill === item2.cat ? null : item2.cat);
+        }
+      } else if (item2.kind === "root" && drill) {
+        setDrill(null);
+      }
+    });
+    var sankeyHost = $id5("en-sankey");
+    sankeyHost.addEventListener("mousemove", function(e) {
+      var hit = e.target.closest("[data-node], [data-link]");
+      if (!hit) {
+        hideTip();
+        sankeyHost.classList.remove("hot");
+        return;
+      }
+      var item2 = hit.hasAttribute("data-node") ? nodeAt(hit) : linkAt(hit);
+      if (!item2) {
+        hideTip();
+        return;
+      }
+      sankeyHost.classList.add("hot");
+      hoverKey = keyOf(item2);
+      showTip(e, tipFor(item2));
+    });
+    sankeyHost.addEventListener("mouseleave", function() {
+      hideTip();
+      sankeyHost.classList.remove("hot");
+    });
+    window.addEventListener("keydown", function(e) {
+      if (!active5 || e.key !== "Escape") {
+        return;
+      }
+      if (selected3) {
+        closeDevice();
+      } else if (drill) {
+        setDrill(null);
+      }
+    });
+    renderCrumb();
+  }
+  var CYAN2, ALERT2, ACCENT, REFRESH_MS2, WIPE_MS2, WIPE_SWAP_MS2, RANGE_LABEL, EnergyView, feeds5, areas3, active5, built4, dirty5, range, drill, selected3, lastLayout, lastRender5, resizeTimer5, observer5, wipeTimer2, swapTimer2, hoverKey, svg, particleCanvas, pctx, chartCanvas, cctx, curveCanvas, curveCtx, barsCanvas, barsCtx, layout, particles, lastFrame, DAYS5, MONTHS5, lastClock2;
+  var init_EnergyView = __esm({
+    "src/EnergyView.js"() {
+      init_EnergyFeeds();
+      CYAN2 = "#3fe0ff";
+      ALERT2 = "#ff8a1f";
+      ACCENT = "#4dffb0";
+      REFRESH_MS2 = 2e3;
+      WIPE_MS2 = 460;
+      WIPE_SWAP_MS2 = 150;
+      RANGE_LABEL = { now: "Now", today: "Today", week: "This week", month: "This month" };
+      EnergyView = {};
+      feeds5 = null;
+      areas3 = null;
+      active5 = false;
+      built4 = false;
+      dirty5 = true;
+      range = "now";
+      drill = null;
+      selected3 = null;
+      lastLayout = 0;
+      lastRender5 = 0;
+      resizeTimer5 = null;
+      observer5 = null;
+      wipeTimer2 = null;
+      swapTimer2 = null;
+      hoverKey = null;
+      svg = null;
+      particleCanvas = null;
+      pctx = null;
+      chartCanvas = null;
+      cctx = null;
+      curveCanvas = null;
+      curveCtx = null;
+      barsCanvas = null;
+      barsCtx = null;
+      layout = { links: [], nodes: [], total: 0, w: 0, h: 0 };
+      particles = [];
+      lastFrame = 0;
+      EnergyView.init = function(ha2, areasRef) {
+        var root = $id5("energy-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active5 = true;
+        areas3 = areasRef;
+        svg = $id5("en-svg");
+        particleCanvas = $id5("en-particles");
+        pctx = particleCanvas ? particleCanvas.getContext("2d") : null;
+        chartCanvas = $id5("en-chart-canvas");
+        cctx = chartCanvas ? chartCanvas.getContext("2d") : null;
+        curveCanvas = $id5("en-detail-curve");
+        curveCtx = curveCanvas ? curveCanvas.getContext("2d") : null;
+        barsCanvas = $id5("en-detail-bars");
+        barsCtx = barsCanvas ? barsCanvas.getContext("2d") : null;
+        if (!feeds5 && ha2) {
+          feeds5 = new EnergyFeeds(ha2, areas3, function() {
+            dirty5 = true;
+          });
+          feeds5.start();
+        }
+        if (!built4) {
+          built4 = true;
+          bindControls4();
+        }
+        watchPanels5();
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            EnergyView.resize();
+          });
+        });
+        dirty5 = true;
+      };
+      EnergyView.show = function() {
+        active5 = true;
+        var root = $id5("energy-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+        EnergyView.resize();
+      };
+      EnergyView.hide = function() {
+        active5 = false;
+        $id5("energy-screen").style.display = "none";
+      };
+      EnergyView.message = function(m) {
+        if (feeds5 && feeds5.note(m)) {
+          dirty5 = true;
+        }
+      };
+      EnergyView.seed = function() {
+        dirty5 = true;
+      };
+      EnergyView.animate = function() {
+        if (!active5 || !feeds5) {
+          return;
+        }
+        var now = Date.now();
+        var dt = lastFrame ? Math.min((now - lastFrame) / 1e3, 0.1) : 0;
+        lastFrame = now;
+        renderClock5(now);
+        stepParticles(dt);
+        if (dirty5 && now - lastRender5 > REFRESH_MS2) {
+          lastRender5 = now;
+          lastLayout = now;
+          dirty5 = false;
+          buildLayout();
+          renderStatus3();
+          renderTop();
+          drawHouseChart();
+          renderDetail3();
+          renderNote();
+        }
+      };
+      EnergyView.resize = function() {
+        if (!active5) {
+          return;
+        }
+        sizeCanvas2(particleCanvas, pctx);
+        sizeCanvas2(chartCanvas, cctx);
+        sizeCanvas2(curveCanvas, curveCtx);
+        sizeCanvas2(barsCanvas, barsCtx);
+        lastLayout = 0;
+        dirty5 = true;
+        buildLayout();
+        drawHouseChart();
+      };
+      EnergyView.resizeDebounced = function() {
+        if (resizeTimer5) {
+          clearTimeout(resizeTimer5);
+        }
+        resizeTimer5 = setTimeout(function() {
+          resizeTimer5 = null;
+          EnergyView.resize();
+        }, 150);
+      };
+      DAYS5 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS5 = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      lastClock2 = "";
+    }
+  });
+
   // src/Areas.js
   var Areas_exports = {};
   __export(Areas_exports, {
@@ -54354,9 +56147,9 @@
           this.ha.command({ type: "config/device_registry/list" }),
           this.ha.command({ type: "config/entity_registry/list" })
         ]).then(function(results) {
-          var areas4 = results[0], devices = results[1], entities = results[2];
+          var areas5 = results[0], devices = results[1], entities = results[2];
           self.areas = {};
-          areas4.forEach(function(a) {
+          areas5.forEach(function(a) {
             self.areas[a.area_id] = a;
           });
           var deviceArea = {};
@@ -54443,9 +56236,9 @@
   __export(LeakWatch_exports, {
     LeakWatch: () => LeakWatch
   });
-  function LeakWatch(ha2, areas4) {
+  function LeakWatch(ha2, areas5) {
     this.ha = ha2;
-    this.areas = areas4;
+    this.areas = areas5;
     this.wet = [];
     this._timer = null;
   }
@@ -56175,7 +57968,7 @@
         };
       })(jQuery);
       (function($2, undefined2) {
-        function num2(v) {
+        function num3(v) {
           return parseInt(v, 10) || 0;
         }
         function isNumber(value) {
@@ -56351,8 +58144,8 @@
               el.css({ position: "absolute", top: iniPos.top, left: iniPos.left });
             }
             this._renderProxy();
-            curleft = num2(this.helper.css("left"));
-            curtop = num2(this.helper.css("top"));
+            curleft = num3(this.helper.css("left"));
+            curtop = num3(this.helper.css("top"));
             if (o.containment) {
               curleft += $2(o.containment).scrollLeft() || 0;
               curtop += $2(o.containment).scrollTop() || 0;
@@ -56657,7 +58450,7 @@
               element = $2(ce);
               p = [];
               $2(["Top", "Right", "Left", "Bottom"]).each(function(i, name) {
-                p[i] = num2(element.css("padding" + name));
+                p[i] = num3(element.css("padding" + name));
               });
               that.containerOffset = element.offset();
               that.containerPosition = element.position();
@@ -58638,15 +60431,15 @@
               }), size = {
                 width: element.width(),
                 height: element.height()
-              }, active6 = document.activeElement;
+              }, active7 = document.activeElement;
               try {
-                active6.id;
+                active7.id;
               } catch (e) {
-                active6 = document.body;
+                active7 = document.body;
               }
               element.wrap(wrapper);
-              if (element[0] === active6 || $2.contains(element[0], active6)) {
-                $2(active6).focus();
+              if (element[0] === active7 || $2.contains(element[0], active7)) {
+                $2(active7).focus();
               }
               wrapper = element.parent();
               if (element.css("position") === "static") {
@@ -58675,11 +60468,11 @@
               return wrapper.css(props).show();
             },
             removeWrapper: function(element) {
-              var active6 = document.activeElement;
+              var active7 = document.activeElement;
               if (element.parent().is(".ui-effects-wrapper")) {
                 element.parent().replaceWith(element);
-                if (element[0] === active6 || $2.contains(element[0], active6)) {
-                  $2(active6).focus();
+                if (element[0] === active7 || $2.contains(element[0], active7)) {
+                  $2(active7).focus();
                 }
               }
               return element;
@@ -59074,14 +60867,14 @@
             }
           },
           _activate: function(index) {
-            var active6 = this._findActive(index)[0];
-            if (active6 === this.active[0]) {
+            var active7 = this._findActive(index)[0];
+            if (active7 === this.active[0]) {
               return;
             }
-            active6 = active6 || this.active[0];
+            active7 = active7 || this.active[0];
             this._eventHandler({
-              target: active6,
-              currentTarget: active6,
+              target: active7,
+              currentTarget: active7,
               preventDefault: $2.noop
             });
           },
@@ -59104,8 +60897,8 @@
             this._focusable(this.headers);
           },
           _eventHandler: function(event) {
-            var options = this.options, active6 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active6[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active6.next(), eventData = {
-              oldHeader: active6,
+            var options = this.options, active7 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active7[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active7.next(), eventData = {
+              oldHeader: active7,
               oldPanel: toHide,
               newHeader: collapsing ? $2() : clicked,
               newPanel: toShow
@@ -59121,9 +60914,9 @@
             options.active = collapsing ? false : this.headers.index(clicked);
             this.active = clickedIsActive ? $2() : clicked;
             this._toggle(eventData);
-            active6.removeClass("ui-accordion-header-active ui-state-active");
+            active7.removeClass("ui-accordion-header-active ui-state-active");
             if (options.icons) {
-              active6.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
+              active7.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
             }
             if (!clickedIsActive) {
               clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
@@ -60921,12 +62714,12 @@
               }
               return matches;
             }, getNumber = function(match) {
-              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num2 = value.substring(iValue).match(digits);
-              if (!num2) {
+              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num3 = value.substring(iValue).match(digits);
+              if (!num3) {
                 throw "Missing number at position " + iValue;
               }
-              iValue += num2[0].length;
-              return parseInt(num2[0], 10);
+              iValue += num3[0].length;
+              return parseInt(num3[0], 10);
             }, getName = function(match, shortNames, longNames) {
               var index = -1, names = $2.map(lookAhead(match) ? longNames : shortNames, function(v, k) {
                 return [[k, v]];
@@ -61088,13 +62881,13 @@
               }
               return matches;
             }, formatNumber = function(match, value, len) {
-              var num2 = "" + value;
+              var num3 = "" + value;
               if (lookAhead(match)) {
-                while (num2.length < len) {
-                  num2 = "0" + num2;
+                while (num3.length < len) {
+                  num3 = "0" + num3;
                 }
               }
-              return num2;
+              return num3;
             }, formatName = function(match, value, shortNames, longNames) {
               return lookAhead(match) ? longNames[value] : shortNames[value];
             }, output = "", literal = false;
@@ -64394,8 +66187,8 @@
             }
             return precision;
           },
-          _precisionOf: function(num2) {
-            var str = num2.toString(), decimal = str.indexOf(".");
+          _precisionOf: function(num3) {
+            var str = num3.toString(), decimal = str.indexOf(".");
             return decimal === -1 ? 0 : str.length - decimal - 1;
           },
           _adjustValue: function(value) {
@@ -64584,33 +66377,33 @@
             }
           },
           _initialActive: function() {
-            var active6 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
-            if (active6 === null) {
+            var active7 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
+            if (active7 === null) {
               if (locationHash) {
                 this.tabs.each(function(i, tab) {
                   if ($2(tab).attr("aria-controls") === locationHash) {
-                    active6 = i;
+                    active7 = i;
                     return false;
                   }
                 });
               }
-              if (active6 === null) {
-                active6 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
+              if (active7 === null) {
+                active7 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
               }
-              if (active6 === null || active6 === -1) {
-                active6 = this.tabs.length ? 0 : false;
-              }
-            }
-            if (active6 !== false) {
-              active6 = this.tabs.index(this.tabs.eq(active6));
-              if (active6 === -1) {
-                active6 = collapsible ? false : 0;
+              if (active7 === null || active7 === -1) {
+                active7 = this.tabs.length ? 0 : false;
               }
             }
-            if (!collapsible && active6 === false && this.anchors.length) {
-              active6 = 0;
+            if (active7 !== false) {
+              active7 = this.tabs.index(this.tabs.eq(active7));
+              if (active7 === -1) {
+                active7 = collapsible ? false : 0;
+              }
             }
-            return active6;
+            if (!collapsible && active7 === false && this.anchors.length) {
+              active7 = 0;
+            }
+            return active7;
           },
           _getCreateEventData: function() {
             return {
@@ -64890,8 +66683,8 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active6 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active6[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active6.length ? $2() : this._getPanelForTab(active6), eventData = {
-              oldTab: active6,
+            var options = this.options, active7 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active7[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active7.length ? $2() : this._getPanelForTab(active7), eventData = {
+              oldTab: active7,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
               newPanel: toShow
@@ -64966,14 +66759,14 @@
             });
           },
           _activate: function(index) {
-            var anchor, active6 = this._findActive(index);
-            if (active6[0] === this.active[0]) {
+            var anchor, active7 = this._findActive(index);
+            if (active7[0] === this.active[0]) {
               return;
             }
-            if (!active6.length) {
-              active6 = this.active;
+            if (!active7.length) {
+              active7 = this.active;
             }
-            anchor = active6.find(".ui-tabs-anchor")[0];
+            anchor = active7.find(".ui-tabs-anchor")[0];
             this._eventHandler({
               target: anchor,
               currentTarget: anchor,
@@ -65026,12 +66819,12 @@
             } else {
               index = this._getIndex(index);
               if ($2.isArray(disabled)) {
-                disabled = $2.map(disabled, function(num2) {
-                  return num2 !== index ? num2 : null;
+                disabled = $2.map(disabled, function(num3) {
+                  return num3 !== index ? num3 : null;
                 });
               } else {
-                disabled = $2.map(this.tabs, function(li, num2) {
-                  return num2 !== index ? num2 : null;
+                disabled = $2.map(this.tabs, function(li, num3) {
+                  return num3 !== index ? num3 : null;
                 });
               }
             }
@@ -65391,9 +67184,10 @@
   var ClimateView2 = (init_ClimateView(), __toCommonJS(ClimateView_exports)).ClimateView;
   var SecurityView2 = (init_SecurityView(), __toCommonJS(SecurityView_exports)).SecurityView;
   var CameraView2 = (init_CameraView(), __toCommonJS(CameraView_exports)).CameraView;
+  var EnergyView2 = (init_EnergyView(), __toCommonJS(EnergyView_exports)).EnergyView;
   var Areas2 = (init_Areas(), __toCommonJS(Areas_exports)).Areas;
   var LeakWatch2 = (init_LeakWatch(), __toCommonJS(LeakWatch_exports)).LeakWatch;
-  var areas3 = null;
+  var areas4 = null;
   var leaks = null;
   var init = false;
   require_jquery_ui();
@@ -65442,18 +67236,20 @@
     this.css("left", left + "px");
     return this;
   };
-  var active5 = "lt";
+  var active6 = "lt";
   var ha = haSource.start(function(message) {
-    if (active5 === "lt") {
+    if (active6 === "lt") {
       LightTable.message(message);
-    } else if (active5 === "house") {
+    } else if (active6 === "house") {
       HouseView2.message(message);
-    } else if (active5 === "climate") {
+    } else if (active6 === "climate") {
       ClimateView2.message(message);
-    } else if (active5 === "security") {
+    } else if (active6 === "security") {
       SecurityView2.message(message);
-    } else if (active5 === "cameras") {
+    } else if (active6 === "cameras") {
       CameraView2.message(message);
+    } else if (active6 === "energy") {
+      EnergyView2.message(message);
     } else {
       setTimeout(function() {
         Boardroom.message(message);
@@ -65463,13 +67259,13 @@
     console.log("home assistant: " + state2.status + (state2.detail ? " (" + state2.detail + ")" : ""));
     $("#ha-link").text("MUTHER ... HOME ASSISTANT " + String(state2.status).toUpperCase());
     LightTable.setLink(state2.status === "ready");
-    if (state2.status === "ready" && areas3) {
-      areas3.load();
+    if (state2.status === "ready" && areas4) {
+      areas4.load();
     }
   });
   LightTable.setHomeAssistant(ha);
-  areas3 = new Areas2(ha);
-  leaks = new LeakWatch2(ha, areas3);
+  areas4 = new Areas2(ha);
+  leaks = new LeakWatch2(ha, areas4);
   leaks.start();
   var onSwitch = function(view) {
     var screensaver = $("#screensaver");
@@ -65497,34 +67293,41 @@
       HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active5 = "house";
+        active6 = "house";
         HouseView2.show();
       }, 3e3);
     } else if (system.key === "climate") {
       ClimateView2.init(ha);
       ClimateView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active5 = "climate";
+        active6 = "climate";
         ClimateView2.show();
       }, 3e3);
     } else if (system.key === "security") {
-      SecurityView2.init(ha, areas3);
+      SecurityView2.init(ha, areas4);
       SecurityView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active5 = "security";
+        active6 = "security";
         SecurityView2.show();
       }, 3e3);
     } else if (system.key === "cameras") {
-      CameraView2.init(ha, areas3);
+      CameraView2.init(ha, areas4);
       CameraView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active5 = "cameras";
+        active6 = "cameras";
         CameraView2.show();
+      }, 3e3);
+    } else if (system.key === "energy") {
+      EnergyView2.init(ha, areas4);
+      EnergyView2.seed(haSource.getSeed());
+      setTimeout(function() {
+        active6 = "energy";
+        EnergyView2.show();
       }, 3e3);
     } else {
       Boardroom.init(system.key);
       setTimeout(function() {
-        active5 = "br";
+        active6 = "br";
         Boardroom.show();
       }, 3e3);
     }
@@ -65568,16 +67371,18 @@
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
-      if (active5 === "lt") {
+      if (active6 === "lt") {
         LightTable.animate();
-      } else if (active5 === "house") {
+      } else if (active6 === "house") {
         HouseView2.animate();
-      } else if (active5 === "climate") {
+      } else if (active6 === "climate") {
         ClimateView2.animate();
-      } else if (active5 === "security") {
+      } else if (active6 === "security") {
         SecurityView2.animate();
-      } else if (active5 === "cameras") {
+      } else if (active6 === "cameras") {
         CameraView2.animate();
+      } else if (active6 === "energy") {
+        EnergyView2.animate();
       } else {
         Boardroom.animate();
       }
@@ -65586,17 +67391,19 @@
     animate();
     var timeout = 0;
     function onWindowResize2() {
-      if (active5 === "lt") {
+      if (active6 === "lt") {
         $("#light-table").fitLauncher();
         LightTable.resize();
-      } else if (active5 === "house") {
+      } else if (active6 === "house") {
         HouseView2.resizeDebounced();
-      } else if (active5 === "climate") {
+      } else if (active6 === "climate") {
         ClimateView2.resizeDebounced();
-      } else if (active5 === "security") {
+      } else if (active6 === "security") {
         SecurityView2.resizeDebounced();
-      } else if (active5 === "cameras") {
+      } else if (active6 === "cameras") {
         CameraView2.resizeDebounced();
+      } else if (active6 === "energy") {
+        EnergyView2.resizeDebounced();
       } else {
         Boardroom.resize();
       }
