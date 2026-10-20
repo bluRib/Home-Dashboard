@@ -20,6 +20,7 @@ module.exports = [
     { key: "cameras",  label: "Cameras",  splash: "CAMERAS",  size: "small" },
     { key: "energy",   label: "Energy",   splash: "ENERGY",   size: "small" },
     { key: "network",  label: "Network",  splash: "NETWORK",  size: "small" },
+    { key: "homelab",  label: "Homelab",  splash: "HOMELAB",  size: "small" },
 
     /* Kept for development without Home Assistant, per BUILD.md step 5.
        No folder, but "cd test" then "run test.exe" still works. */

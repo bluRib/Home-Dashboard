@@ -1,0 +1,120 @@
+/* Homelab screen: a placeholder until the real panels are built.
+ *
+ * It is a full viewport grid like the other screens, using the same palette
+ * and the same bottom right clock, so when the panels arrive they drop into a
+ * frame that already behaves correctly rather than one invented on the day.
+ *
+ * Palette: #3fe0ff primary, #bff4ff text, #ff8a1f alert, #4dffb0 accent.
+ */
+
+#homelab-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 12px var(--screen-pad-x);
+    gap: 10px;
+    background: #03060a;
+
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "body"
+        "clock";
+
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    color: #bff4ff;
+    font-size: clamp(11px, 0.75vw, 16px);
+}
+
+#homelab-screen * { box-sizing: border-box; }
+
+#hl-placeholder {
+    grid-area: body;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 0.8vh, 16px);
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid rgba(63, 224, 255, .25);
+    text-align: center;
+    padding: 20px;
+}
+
+#hl-title {
+    color: #3fe0ff;
+    font-size: clamp(28px, 4.4vw, 92px);
+    letter-spacing: .3em;
+    /* The letter spacing is applied to the right of the last glyph too, which
+       pushes the word off centre. This pulls it back. */
+    text-indent: .3em;
+    line-height: 1;
+    text-shadow: 0 0 clamp(10px, 1.4vw, 30px) rgba(63, 224, 255, .5);
+}
+
+#hl-await {
+    color: #bff4ff;
+    font-size: clamp(11px, 1.1vw, 22px);
+    letter-spacing: .42em;
+    text-indent: .42em;
+    opacity: .85;
+    animation: hl-wait 2.4s ease-in-out infinite;
+}
+
+@keyframes hl-wait {
+    0%, 100% { opacity: .85; }
+    50%      { opacity: .32; }
+}
+
+#hl-sub {
+    max-width: 52ch;
+    font-size: clamp(9px, 0.62vw, 13px);
+    line-height: 1.7;
+    letter-spacing: .08em;
+    color: rgba(191, 244, 255, .5);
+    text-transform: uppercase;
+}
+
+/* Bottom right clock, the same shape every other screen uses. */
+#hl-clock {
+    grid-area: clock;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 0;
+    padding: 2px clamp(4px, 0.5vw, 10px);
+    border-top: 1px solid rgba(63, 224, 255, .22);
+}
+
+#hl-time {
+    color: #e6fbff;
+    font-size: clamp(18px, 1.9vw, 38px);
+    line-height: 1.05;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+#hl-time small {
+    font-size: .45em;
+    letter-spacing: .12em;
+    margin-left: .35em;
+    color: #bff4ff;
+}
+
+#hl-date {
+    font-size: clamp(9px, 0.6vw, 13px);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .7;
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #hl-await { animation: none; }
+}

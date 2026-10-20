@@ -35017,6 +35017,7 @@
         { key: "cameras", label: "Cameras", splash: "CAMERAS", size: "small" },
         { key: "energy", label: "Energy", splash: "ENERGY", size: "small" },
         { key: "network", label: "Network", splash: "NETWORK", size: "small" },
+        { key: "homelab", label: "Homelab", splash: "HOMELAB", size: "small" },
         /* Kept for development without Home Assistant, per BUILD.md step 5.
            No folder, but "cd test" then "run test.exe" still works. */
         { key: "test", label: "Test", splash: "TEST DATA", size: "small", hidden: true }
@@ -35453,7 +35454,7 @@
         return null;
       }
       var webglTest;
-      var active7 = false;
+      var active8 = false;
       var initialized = false;
       var currentWidth = 0;
       var currentHeight = 0;
@@ -35507,10 +35508,10 @@
         if (typeof cb == "function") {
           setTimeout(cb, 500);
         }
-        active7 = true;
+        active8 = true;
       };
       LightTable2.hide = function(cb) {
-        active7 = false;
+        active8 = false;
         $2("#lt-mobile-readme").attr("style", "");
         $2("#k-32").attr("style", "");
         $2(".lt-header-animator-right").attr("style", "");
@@ -35530,7 +35531,7 @@
         }
       };
       LightTable2.animate = function() {
-        if (active7 && initialized) {
+        if (active8 && initialized) {
           webglTest.tick();
         }
       };
@@ -52699,13 +52700,13 @@
     var wet = feeds3.leaks().filter(function(l) {
       return l.wet;
     }).length;
-    var active7 = feeds3.motion().filter(function(m) {
+    var active8 = feeds3.motion().filter(function(m) {
       return m.active;
     }).length;
     var a = feeds3.alarm();
     stat("sc-stat-doors", open, open > 0);
     stat("sc-stat-leaks", wet, wet > 0);
-    stat("sc-stat-motion", active7, false);
+    stat("sc-stat-motion", active8, false);
     stat(
       "sc-stat-alarm",
       a.configured ? STATE_LABEL[a.state] || a.state : "NOT SET",
@@ -55249,9 +55250,9 @@
     });
     var labelRoom = Math.max(90, Math.min(w * 0.42, (longest + 12) * charW + 14));
     var nodeW = Math.max(6, Math.min(13, w * 0.011));
-    var pad6 = Math.max(7, Math.min(15, h / (nodes.length + 2)));
+    var pad7 = Math.max(7, Math.min(15, h / (nodes.length + 2)));
     var topRoom = Math.round(fontPx * 1.9);
-    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad6).extent([[2, topRoom], [w - labelRoom, h - 10]]);
+    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad7).extent([[2, topRoom], [w - labelRoom, h - 10]]);
     var out;
     try {
       out = sankey({ nodes, links });
@@ -55816,7 +55817,7 @@
     ctx.moveTo(left, Math.floor(top + ph) + 0.5);
     ctx.lineTo(w - right, Math.floor(top + ph) + 0.5);
     ctx.stroke();
-    var DAYS6 = ["S", "M", "T", "W", "T", "F", "S"];
+    var DAYS7 = ["S", "M", "T", "W", "T", "F", "S"];
     bars.forEach(function(b, i) {
       var bh = b.kwh / max * ph;
       var x = left + i * bw + bw * 0.18;
@@ -55828,7 +55829,7 @@
       }
       ctx.textAlign = "center";
       ctx.fillStyle = "rgba(191,244,255,.5)";
-      ctx.fillText(DAYS6[new Date(b.t).getDay()], x + bwid / 2, h - 3);
+      ctx.fillText(DAYS7[new Date(b.t).getDay()], x + bwid / 2, h - 3);
     });
   }
   function renderCrumb() {
@@ -56297,6 +56298,97 @@
         "December"
       ];
       lastClock2 = "";
+    }
+  });
+
+  // src/HomelabView.js
+  var HomelabView_exports = {};
+  __export(HomelabView_exports, {
+    HomelabView: () => HomelabView
+  });
+  function $id6(id) {
+    return document.getElementById(id);
+  }
+  function pad6(n) {
+    return String(n).length < 2 ? "0" + n : String(n);
+  }
+  function renderClock6() {
+    var el = $id6("hl-time");
+    if (!el) {
+      return;
+    }
+    var d = /* @__PURE__ */ new Date();
+    var h = d.getHours();
+    var text = (h % 12 || 12) + ":" + pad6(d.getMinutes()) + ":" + pad6(d.getSeconds());
+    if (text === lastClock3) {
+      return;
+    }
+    lastClock3 = text;
+    el.innerHTML = text + "<small>" + (h < 12 ? "AM" : "PM") + "</small>";
+    var dt = $id6("hl-date");
+    if (dt) {
+      dt.textContent = DAYS6[d.getDay()] + ", " + MONTHS6[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    }
+  }
+  var HomelabView, active6, resizeTimer6, lastClock3, DAYS6, MONTHS6;
+  var init_HomelabView = __esm({
+    "src/HomelabView.js"() {
+      HomelabView = {};
+      active6 = false;
+      resizeTimer6 = null;
+      lastClock3 = "";
+      DAYS6 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS6 = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      HomelabView.init = function() {
+        var root = $id6("homelab-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active6 = true;
+      };
+      HomelabView.show = function() {
+        active6 = true;
+        var root = $id6("homelab-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+      };
+      HomelabView.hide = function() {
+        active6 = false;
+        $id6("homelab-screen").style.display = "none";
+      };
+      HomelabView.message = function() {
+      };
+      HomelabView.seed = function() {
+      };
+      HomelabView.animate = function() {
+        if (!active6) {
+          return;
+        }
+        renderClock6();
+      };
+      HomelabView.resize = function() {
+      };
+      HomelabView.resizeDebounced = function() {
+        if (resizeTimer6) {
+          clearTimeout(resizeTimer6);
+        }
+        resizeTimer6 = setTimeout(function() {
+          resizeTimer6 = null;
+          HomelabView.resize();
+        }, 150);
+      };
     }
   });
 
@@ -60662,15 +60754,15 @@
               }), size = {
                 width: element.width(),
                 height: element.height()
-              }, active7 = document.activeElement;
+              }, active8 = document.activeElement;
               try {
-                active7.id;
+                active8.id;
               } catch (e) {
-                active7 = document.body;
+                active8 = document.body;
               }
               element.wrap(wrapper);
-              if (element[0] === active7 || $2.contains(element[0], active7)) {
-                $2(active7).focus();
+              if (element[0] === active8 || $2.contains(element[0], active8)) {
+                $2(active8).focus();
               }
               wrapper = element.parent();
               if (element.css("position") === "static") {
@@ -60699,11 +60791,11 @@
               return wrapper.css(props).show();
             },
             removeWrapper: function(element) {
-              var active7 = document.activeElement;
+              var active8 = document.activeElement;
               if (element.parent().is(".ui-effects-wrapper")) {
                 element.parent().replaceWith(element);
-                if (element[0] === active7 || $2.contains(element[0], active7)) {
-                  $2(active7).focus();
+                if (element[0] === active8 || $2.contains(element[0], active8)) {
+                  $2(active8).focus();
                 }
               }
               return element;
@@ -61098,14 +61190,14 @@
             }
           },
           _activate: function(index) {
-            var active7 = this._findActive(index)[0];
-            if (active7 === this.active[0]) {
+            var active8 = this._findActive(index)[0];
+            if (active8 === this.active[0]) {
               return;
             }
-            active7 = active7 || this.active[0];
+            active8 = active8 || this.active[0];
             this._eventHandler({
-              target: active7,
-              currentTarget: active7,
+              target: active8,
+              currentTarget: active8,
               preventDefault: $2.noop
             });
           },
@@ -61128,8 +61220,8 @@
             this._focusable(this.headers);
           },
           _eventHandler: function(event) {
-            var options = this.options, active7 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active7[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active7.next(), eventData = {
-              oldHeader: active7,
+            var options = this.options, active8 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active8[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active8.next(), eventData = {
+              oldHeader: active8,
               oldPanel: toHide,
               newHeader: collapsing ? $2() : clicked,
               newPanel: toShow
@@ -61145,9 +61237,9 @@
             options.active = collapsing ? false : this.headers.index(clicked);
             this.active = clickedIsActive ? $2() : clicked;
             this._toggle(eventData);
-            active7.removeClass("ui-accordion-header-active ui-state-active");
+            active8.removeClass("ui-accordion-header-active ui-state-active");
             if (options.icons) {
-              active7.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
+              active8.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
             }
             if (!clickedIsActive) {
               clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
@@ -66608,33 +66700,33 @@
             }
           },
           _initialActive: function() {
-            var active7 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
-            if (active7 === null) {
+            var active8 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
+            if (active8 === null) {
               if (locationHash) {
                 this.tabs.each(function(i, tab) {
                   if ($2(tab).attr("aria-controls") === locationHash) {
-                    active7 = i;
+                    active8 = i;
                     return false;
                   }
                 });
               }
-              if (active7 === null) {
-                active7 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
+              if (active8 === null) {
+                active8 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
               }
-              if (active7 === null || active7 === -1) {
-                active7 = this.tabs.length ? 0 : false;
-              }
-            }
-            if (active7 !== false) {
-              active7 = this.tabs.index(this.tabs.eq(active7));
-              if (active7 === -1) {
-                active7 = collapsible ? false : 0;
+              if (active8 === null || active8 === -1) {
+                active8 = this.tabs.length ? 0 : false;
               }
             }
-            if (!collapsible && active7 === false && this.anchors.length) {
-              active7 = 0;
+            if (active8 !== false) {
+              active8 = this.tabs.index(this.tabs.eq(active8));
+              if (active8 === -1) {
+                active8 = collapsible ? false : 0;
+              }
             }
-            return active7;
+            if (!collapsible && active8 === false && this.anchors.length) {
+              active8 = 0;
+            }
+            return active8;
           },
           _getCreateEventData: function() {
             return {
@@ -66914,8 +67006,8 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active7 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active7[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active7.length ? $2() : this._getPanelForTab(active7), eventData = {
-              oldTab: active7,
+            var options = this.options, active8 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active8[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active8.length ? $2() : this._getPanelForTab(active8), eventData = {
+              oldTab: active8,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
               newPanel: toShow
@@ -66990,14 +67082,14 @@
             });
           },
           _activate: function(index) {
-            var anchor, active7 = this._findActive(index);
-            if (active7[0] === this.active[0]) {
+            var anchor, active8 = this._findActive(index);
+            if (active8[0] === this.active[0]) {
               return;
             }
-            if (!active7.length) {
-              active7 = this.active;
+            if (!active8.length) {
+              active8 = this.active;
             }
-            anchor = active7.find(".ui-tabs-anchor")[0];
+            anchor = active8.find(".ui-tabs-anchor")[0];
             this._eventHandler({
               target: anchor,
               currentTarget: anchor,
@@ -67416,6 +67508,7 @@
   var SecurityView2 = (init_SecurityView(), __toCommonJS(SecurityView_exports)).SecurityView;
   var CameraView2 = (init_CameraView(), __toCommonJS(CameraView_exports)).CameraView;
   var EnergyView2 = (init_EnergyView(), __toCommonJS(EnergyView_exports)).EnergyView;
+  var HomelabView2 = (init_HomelabView(), __toCommonJS(HomelabView_exports)).HomelabView;
   var Areas2 = (init_Areas(), __toCommonJS(Areas_exports)).Areas;
   var LeakWatch2 = (init_LeakWatch(), __toCommonJS(LeakWatch_exports)).LeakWatch;
   var areas4 = null;
@@ -67467,20 +67560,22 @@
     this.css("left", left + "px");
     return this;
   };
-  var active6 = "lt";
+  var active7 = "lt";
   var ha = haSource.start(function(message) {
-    if (active6 === "lt") {
+    if (active7 === "lt") {
       LightTable.message(message);
-    } else if (active6 === "house") {
+    } else if (active7 === "house") {
       HouseView2.message(message);
-    } else if (active6 === "climate") {
+    } else if (active7 === "climate") {
       ClimateView2.message(message);
-    } else if (active6 === "security") {
+    } else if (active7 === "security") {
       SecurityView2.message(message);
-    } else if (active6 === "cameras") {
+    } else if (active7 === "cameras") {
       CameraView2.message(message);
-    } else if (active6 === "energy") {
+    } else if (active7 === "energy") {
       EnergyView2.message(message);
+    } else if (active7 === "homelab") {
+      HomelabView2.message(message);
     } else {
       setTimeout(function() {
         Boardroom.message(message);
@@ -67524,41 +67619,47 @@
       HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active6 = "house";
+        active7 = "house";
         HouseView2.show();
       }, 3e3);
     } else if (system.key === "climate") {
       ClimateView2.init(ha);
       ClimateView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active6 = "climate";
+        active7 = "climate";
         ClimateView2.show();
       }, 3e3);
     } else if (system.key === "security") {
       SecurityView2.init(ha, areas4);
       SecurityView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active6 = "security";
+        active7 = "security";
         SecurityView2.show();
       }, 3e3);
     } else if (system.key === "cameras") {
       CameraView2.init(ha, areas4);
       CameraView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active6 = "cameras";
+        active7 = "cameras";
         CameraView2.show();
       }, 3e3);
     } else if (system.key === "energy") {
       EnergyView2.init(ha, areas4);
       EnergyView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active6 = "energy";
+        active7 = "energy";
         EnergyView2.show();
+      }, 3e3);
+    } else if (system.key === "homelab") {
+      HomelabView2.init();
+      setTimeout(function() {
+        active7 = "homelab";
+        HomelabView2.show();
       }, 3e3);
     } else {
       Boardroom.init(system.key);
       setTimeout(function() {
-        active6 = "br";
+        active7 = "br";
         Boardroom.show();
       }, 3e3);
     }
@@ -67602,18 +67703,20 @@
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
-      if (active6 === "lt") {
+      if (active7 === "lt") {
         LightTable.animate();
-      } else if (active6 === "house") {
+      } else if (active7 === "house") {
         HouseView2.animate();
-      } else if (active6 === "climate") {
+      } else if (active7 === "climate") {
         ClimateView2.animate();
-      } else if (active6 === "security") {
+      } else if (active7 === "security") {
         SecurityView2.animate();
-      } else if (active6 === "cameras") {
+      } else if (active7 === "cameras") {
         CameraView2.animate();
-      } else if (active6 === "energy") {
+      } else if (active7 === "energy") {
         EnergyView2.animate();
+      } else if (active7 === "homelab") {
+        HomelabView2.animate();
       } else {
         Boardroom.animate();
       }
@@ -67622,19 +67725,21 @@
     animate();
     var timeout = 0;
     function onWindowResize2() {
-      if (active6 === "lt") {
+      if (active7 === "lt") {
         $("#light-table").fitLauncher();
         LightTable.resize();
-      } else if (active6 === "house") {
+      } else if (active7 === "house") {
         HouseView2.resizeDebounced();
-      } else if (active6 === "climate") {
+      } else if (active7 === "climate") {
         ClimateView2.resizeDebounced();
-      } else if (active6 === "security") {
+      } else if (active7 === "security") {
         SecurityView2.resizeDebounced();
-      } else if (active6 === "cameras") {
+      } else if (active7 === "cameras") {
         CameraView2.resizeDebounced();
-      } else if (active6 === "energy") {
+      } else if (active7 === "energy") {
         EnergyView2.resizeDebounced();
+      } else if (active7 === "homelab") {
+        HomelabView2.resizeDebounced();
       } else {
         Boardroom.resize();
       }

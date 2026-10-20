@@ -15,6 +15,7 @@
         <link href="css/security-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/cameras-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/energy-screen.css" rel="stylesheet" type="text/css" />
+        <link href="css/homelab-screen.css" rel="stylesheet" type="text/css" />
         <!-- Leaflet, for the radar map on the Climate screen. Plain global,
              separate from the fork's three.js r66 and the house widget's r128. -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet" type="text/css" />
@@ -110,7 +111,8 @@
                             in 3D. <span class="alt-1">CLIMATE</span> keeps the air right. <span class="alt-1">SECURITY</span>
                             watches the doors. <span class="alt-1">CAMERAS</span> see what we can't.
                             <span class="alt-1">ENERGY</span> tracks every watt. <span class="alt-1">NETWORK</span> keeps
-                            it all talking.
+                            it all talking. <span class="alt-1">HOMELAB</span> watches the
+                            machines that run it.
                             </p>
 
                             <p>
@@ -206,6 +208,12 @@
                                 </div>
                                 <div class="folder-small"></div>
                             </div>
+                            <div class="folder-container" id="lt-launch-homelab">
+                                <div class="folder-label">
+                                    Homelab
+                                </div>
+                                <div class="folder-small"></div>
+                            </div>
 
                         </div>
                     </div>
@@ -291,7 +299,8 @@
                             in 3D. <span class="alt-1">CLIMATE</span> keeps the air right. <span class="alt-1">SECURITY</span>
                             watches the doors. <span class="alt-1">CAMERAS</span> see what we can't.
                             <span class="alt-1">ENERGY</span> tracks every watt. <span class="alt-1">NETWORK</span> keeps
-                            it all talking.
+                            it all talking. <span class="alt-1">HOMELAB</span> watches the
+                            machines that run it.
                             </p>
 
                             <p>
@@ -1049,6 +1058,25 @@
                 <div id="cm-date"></div>
             </div>
 
+        </div>
+
+        <!-- HOMELAB, a placeholder until the screen is built. It is a real
+             screen in the switch so the folder, the terminal and the splash
+             can be verified end to end now rather than at the same time as
+             the panels that will fill it. -->
+        <div id="homelab-screen">
+            <div id="hl-placeholder">
+                <div id="hl-title">HOMELAB</div>
+                <div id="hl-await">AWAITING DATA</div>
+                <div id="hl-sub">
+                    Proxmox red, grey and blu. Virtual machines and containers.
+                    Frigate. Services. Backups. UPS.
+                </div>
+            </div>
+            <div id="hl-clock">
+                <div id="hl-time">--:--:--</div>
+                <div id="hl-date"></div>
+            </div>
         </div>
 
         <!-- The Energy screen. The flow diagram is drawn by EnergyView with

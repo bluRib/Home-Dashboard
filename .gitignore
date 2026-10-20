@@ -6,6 +6,12 @@ app/js/config.js
 ha-kaiyami/config.local.js
 !app/.env.example
 
+# Private configuration copied in from other systems. Holds API keys and
+# passwords (Homepage's services.yaml, and anything else like it), so the whole
+# folder is ignored rather than individual files, which is one fewer thing to
+# get wrong when the next file lands here.
+private/
+
 # Dependencies and the esbuild binary, restored by
 # ha-kaiyami/tools/install-deps.py
 ha-kaiyami/node_modules/

@@ -372,12 +372,19 @@ ul {
     cursor: pointer;
 }
 
-/* Six systems where Encom had five streams, so the five small folders have to
-   share one 470px row. 80px of folder plus 6px either side is 92px each,
-   460px for the row. Without this the last one wraps and the panel, which is
-   overflow: hidden at 260px, clips it. */
+/* Seven systems where Encom had five streams, so six small folders have to
+   share one 470px row. At the shipped 80px plus 6px either side that is 552px,
+   which wraps, and the panel is overflow: hidden so the sixth folder simply
+   disappears. The art is scaled to 74px and the gaps to 2px, giving 468px.
+   Scaled rather than cropped, so a folder still reads as the same icon. */
 #lt-globalization .folder-container {
-    margin: 8px 6px 0;
+    margin: 8px 2px 0;
+}
+
+#lt-globalization .folder-small {
+    width: 74px;
+    height: 45px;
+    background-size: 74px 45px;
 }
 
 
