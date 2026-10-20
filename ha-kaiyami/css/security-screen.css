@@ -10,9 +10,10 @@
     height: 100vh;
     overflow: hidden;
     box-sizing: border-box;
-    /* 14px, not 10. At 10 the left column's first character sat on the very
-       edge of the screen and read as clipped. */
-    padding: 14px;
+    /* The horizontal inset is shared with every other system screen, from
+       --screen-pad-x in global.css, so none of them can drift back to a
+       margin where the first character reads as clipped. */
+    padding: 12px var(--screen-pad-x);
     gap: 10px;
     background: #000;
 

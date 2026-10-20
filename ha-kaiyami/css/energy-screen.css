@@ -14,7 +14,9 @@
     height: 100vh;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 14px;
+    /* Vertical stays tight; horizontal is generous so no header, note or
+       label ever sits against the edge of the display. */
+    padding: 12px var(--screen-pad-x);
     gap: 10px;
     background: #03060a;
 
@@ -39,9 +41,10 @@
 #en-top5     { grid-area: top; }
 #en-clock    { grid-area: clock; }
 
-/* The detail panel covers the diagram, not the whole column, so the 24 hour
-   house chart underneath stays visible while a device is open. */
-#en-detail   { grid-column: 1; grid-row: 2; }
+/* The detail panel is a child of the flow panel's body, so it covers the
+   diagram and nothing else: the header above it keeps its breadcrumb, its
+   range buttons and the Homelab toggle live and clickable, and the 24 hour
+   house chart below stays visible. */
 
 #energy-screen .hs-head { color: #3fe0ff; border-bottom-color: #3fe0ff; }
 #energy-screen .hs-head::after { border-bottom-color: rgba(63, 224, 255, .35); }
@@ -140,6 +143,26 @@
 #en-range button:hover { background: rgba(63, 224, 255, .14); }
 #en-range button.on { background: #3fe0ff; color: #03060a; border-color: #3fe0ff; }
 
+/* A filter, not a range, so it is set apart from the four beside it. */
+#en-range button.en-wide {
+    margin-right: 10px;
+    border-color: rgba(63, 224, 255, .22);
+    color: rgba(191, 244, 255, .75);
+}
+
+#en-range button.en-wide:hover { color: #3fe0ff; }
+
+#en-range button.en-wide.on {
+    background: rgba(255, 138, 31, .16);
+    border-color: #ff8a1f;
+    color: #ff8a1f;
+}
+
+/* The folded Idle node. Dimmer than a real category, because it is a pile of
+   things that are doing nothing. */
+.en-label-category.en-idle .en-label-name { fill: rgba(191, 244, 255, .66); }
+.en-label-category.en-idle .en-label-val { fill: rgba(63, 224, 255, .6); }
+
 #en-sankey {
     flex: 1 1 auto;
     position: relative;
@@ -170,6 +193,13 @@
 .en-node { cursor: pointer; }
 .en-node-root { cursor: default; }
 .en-node:hover { filter: drop-shadow(0 0 6px rgba(63, 224, 255, .9)); }
+
+/* The plate behind a category label. It is clickable for the same reason the
+   label is: it is part of the same target. */
+.en-label-bg {
+    fill: rgba(3, 6, 10, .82);
+    cursor: pointer;
+}
 
 .en-label {
     font-family: Menlo, Consolas, "Courier New", monospace;
@@ -410,6 +440,8 @@
 /* ---- device detail panel ------------------------------------------------------------ */
 
 #en-detail {
+    position: absolute;
+    inset: 0;
     z-index: 30;
     display: flex;
     flex-direction: column;

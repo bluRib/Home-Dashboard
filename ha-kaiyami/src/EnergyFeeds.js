@@ -446,6 +446,35 @@ EnergyFeeds.prototype.percentileWatts = function (key, q) {
 
 /* ---- categories and the flow -------------------------------------------------- */
 
+/* Hours elapsed in the selected range, used to turn a kWh figure back into an
+ * average draw. "Under 1 W" then means the same thing in every mode. */
+EnergyFeeds.prototype.rangeHours = function (range) {
+    var now = Date.now();
+    if (range === "today") {
+        return Math.max(0.25, (now - startOfDay()) / 3600000);
+    }
+    if (range === "week") {
+        return Math.max(0.25, (now - (startOfDay() - 6 * DAY_MS)) / 3600000);
+    }
+    if (range === "month") {
+        return Math.max(0.25, (now - startOfMonth()) / 3600000);
+    }
+    return 1;
+};
+
+/* A device that is drawing less than a watt is not worth its own ribbon. In
+ * NOW that is just its current draw; over a period it is the average draw the
+ * period's energy works out to, so the same threshold means the same thing. */
+EnergyFeeds.prototype.isIdle = function (device, range) {
+    if (!device.available) {
+        return true;
+    }
+    if (range === "now") {
+        return device.watts < IDLE_W;
+    }
+    return (device.value * 1000) / this.rangeHours(range) < IDLE_W;
+};
+
 EnergyFeeds.prototype.categories = function (range) {
     var devices = this.devices(range);
     return CATEGORIES.map(function (c) {
@@ -467,14 +496,48 @@ EnergyFeeds.prototype.categories = function (range) {
 };
 
 /* The Sankey graph: total on the left, categories in the middle, devices on
- * the right. When only is set, the graph is that one category drilled into. */
-EnergyFeeds.prototype.flow = function (range, only) {
+ * the right. When only is set, the graph is that one category drilled into.
+ *
+ * opts.hideHomelab drops the Homelab category so the rest of the house has the
+ * whole picture to scale into. Homelab is most of this home's measured load,
+ * so with it in, everything else is a hairline.
+ * opts.idleOpen expands the folded Idle node back into its devices.
+ */
+EnergyFeeds.prototype.flow = function (range, only, opts) {
+    var self = this;
+    opts = opts || {};
     var cats = this.categories(range);
+
+    if (opts.hideHomelab && !only) {
+        cats = cats.filter(function (c) { return c.key !== "homelab"; });
+    }
     if (only) {
         cats = cats.filter(function (c) { return c.key === only; });
     }
 
-    var total = cats.reduce(function (a, c) { return a + c.value; }, 0);
+    /* Everything under a watt is pulled out of its category and folded into
+       one Idle node, so nineteen devices do not spend most of the diagram as
+       flat lines. Drilled into a single category this is off: that view exists
+       precisely to see everything in it. */
+    var idle = [];
+    if (!only) {
+        cats = cats.map(function (c) {
+            var live = c.devices.filter(function (d) {
+                if (self.isIdle(d, range)) {
+                    idle.push(d);
+                    return false;
+                }
+                return true;
+            });
+            return Object.assign({}, c, {
+                devices: live,
+                value: live.reduce(function (a, d) { return a + d.value; }, 0)
+            });
+        }).filter(function (c) { return c.devices.length > 0; });
+    }
+
+    var idleValue = idle.reduce(function (a, d) { return a + d.value; }, 0);
+    var total = cats.reduce(function (a, c) { return a + c.value; }, 0) + idleValue;
     var nodes = [];
     var links = [];
     var index = {};
@@ -490,6 +553,9 @@ EnergyFeeds.prototype.flow = function (range, only) {
     var rootLabel = only
         ? (cats[0] ? cats[0].label : "")
         : (HOUSE_METER ? "House total" : "Measured total");
+    if (!only && opts.hideHomelab) {
+        rootLabel += " less Homelab";
+    }
     var root = node("root", rootLabel, "root", { value: total });
 
     cats.forEach(function (c) {
@@ -512,6 +578,22 @@ EnergyFeeds.prototype.flow = function (range, only) {
         });
     });
 
+    if (idle.length) {
+        var ii = node("cat:idle", "Idle (" + idle.length + ")", "category",
+                      { cat: "idle", value: idleValue, idle: true,
+                        open: !!opts.idleOpen, count: idle.length });
+        links.push({ source: root, target: ii, value: idleValue,
+                     kind: "category", cat: "idle", idle: true });
+        if (opts.idleOpen) {
+            idle.forEach(function (d) {
+                var di = node("dev:" + d.key, d.name, "device",
+                              { device: d, unusual: d.unusual });
+                links.push({ source: ii, target: di, value: d.value,
+                             kind: "device", device: d, unusual: d.unusual });
+            });
+        }
+    }
+
     /* No whole house meter exists, so there is nothing to subtract and no
        Unmeasured node. If one is ever configured this is where the difference
        between it and the measured loads becomes its own flow. */
@@ -527,7 +609,38 @@ EnergyFeeds.prototype.flow = function (range, only) {
         }
     }
 
-    return { nodes: nodes, links: links, total: total, metered: !!HOUSE_METER };
+    return { nodes: nodes, links: links, total: total, metered: !!HOUSE_METER,
+             idle: idle, idleValue: idleValue };
+};
+
+/* Live draw of one category, including the two pseudo categories the diagram
+ * can show. Used by the tooltip, which must answer for whatever is hovered. */
+EnergyFeeds.prototype.categoryWatts = function (key, range) {
+    var self = this;
+    if (key === "idle") {
+        return this.devices("now").filter(function (d) {
+            return self.isIdle(d, range || "now");
+        }).reduce(function (a, d) { return a + d.watts; }, 0);
+    }
+    var out = 0;
+    this.categories("now").forEach(function (c) {
+        if (c.key === key) { out = c.watts; }
+    });
+    return out;
+};
+
+EnergyFeeds.prototype.categoryKwh = function (key, r, range) {
+    var self = this;
+    if (key === "idle") {
+        return this.devices(r).filter(function (d) {
+            return self.isIdle(d, range || r);
+        }).reduce(function (a, d) { return a + d.value; }, 0);
+    }
+    var out = 0;
+    this.categories(r).forEach(function (c) {
+        if (c.key === key) { out = c.value; }
+    });
+    return out;
 };
 
 EnergyFeeds.prototype.totalWatts = function () {

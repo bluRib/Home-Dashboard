@@ -1066,6 +1066,8 @@
                 <div class="hs-head">
                     <span id="en-crumb">MEASURED TOTAL</span>
                     <em id="en-range">
+                        <button type="button" id="en-hide-homelab"
+                                class="en-wide">HIDE HOMELAB</button>
                         <button type="button" data-range="now" class="on">NOW</button>
                         <button type="button" data-range="today">TODAY</button>
                         <button type="button" data-range="week">WEEK</button>
@@ -1081,6 +1083,32 @@
                         <svg id="en-svg" xmlns="http://www.w3.org/2000/svg"></svg>
                         <canvas id="en-particles"></canvas>
                     </div>
+                    <!-- Inside the flow body, not the screen grid. As a grid
+                         cell it covered the panel header too, which put the
+                         range buttons and the Homelab toggle behind it and
+                         made them unclickable while a device was open. -->
+                <div id="en-detail">
+                    <div id="en-detail-head">
+                        <span id="en-detail-name">Device</span>
+                        <span id="en-detail-area"></span>
+                        <button type="button" id="en-detail-close">ESC</button>
+                    </div>
+                    <div id="en-detail-body">
+                        <div id="en-detail-big">
+                            <span id="en-detail-watts">--</span>
+                            <span class="en-detail-status" id="en-detail-status"></span>
+                        </div>
+                        <div id="en-detail-curve-wrap">
+                            <span class="en-sub">Power, last 24 hours</span>
+                            <canvas id="en-detail-curve"></canvas>
+                        </div>
+                        <div id="en-detail-bars-wrap">
+                            <span class="en-sub">Daily kWh, last 7 days</span>
+                            <canvas id="en-detail-bars"></canvas>
+                        </div>
+                        <div id="en-detail-rows"></div>
+                    </div>
+                </div>
                     <div id="en-tip"></div>
                     <div id="en-wipe"></div>
                 </div>
@@ -1103,29 +1131,6 @@
             <div id="en-clock">
                 <div id="en-time">--:--:--</div>
                 <div id="en-date"></div>
-            </div>
-
-            <div id="en-detail">
-                <div id="en-detail-head">
-                    <span id="en-detail-name">Device</span>
-                    <span id="en-detail-area"></span>
-                    <button type="button" id="en-detail-close">ESC</button>
-                </div>
-                <div id="en-detail-body">
-                    <div id="en-detail-big">
-                        <span id="en-detail-watts">--</span>
-                        <span class="en-detail-status" id="en-detail-status"></span>
-                    </div>
-                    <div id="en-detail-curve-wrap">
-                        <span class="en-sub">Power, last 24 hours</span>
-                        <canvas id="en-detail-curve"></canvas>
-                    </div>
-                    <div id="en-detail-bars-wrap">
-                        <span class="en-sub">Daily kWh, last 7 days</span>
-                        <canvas id="en-detail-bars"></canvas>
-                    </div>
-                    <div id="en-detail-rows"></div>
-                </div>
             </div>
 
         </div>

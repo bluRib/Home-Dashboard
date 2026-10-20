@@ -22,7 +22,7 @@
     height: 100vh;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 14px;
+    padding: 12px var(--screen-pad-x);
     gap: 10px;
     background: #03060a;
 

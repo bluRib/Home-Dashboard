@@ -53,6 +53,8 @@ var built = false;
 var dirty = true;
 var range = "now";
 var drill = null;          // category key when drilled in, else null
+var idleOpen = false;      // the folded Idle node, expanded
+var hideHomelab = false;   // Homelab dropped so the rest can scale up
 var selected = null;       // device key when the detail panel is open
 var lastLayout = 0;
 var lastRender = 0;
@@ -259,7 +261,8 @@ function buildLayout() {
         return;
     }
 
-    var graph = feeds.flow(range, drill);
+    var graph = feeds.flow(range, drill, { idleOpen: idleOpen,
+                                           hideHomelab: hideHomelab });
 
     svg.setAttribute("viewBox", "0 0 " + w + " " + h);
     svg.setAttribute("width", w);
@@ -293,10 +296,14 @@ function buildLayout() {
     var nodeW = Math.max(6, Math.min(13, w * 0.011));
     var pad = Math.max(7, Math.min(15, h / (nodes.length + 2)));
 
+    /* Room at the top for the root label, which now sits above its bar rather
+       than on the ribbon leaving it. */
+    var topRoom = Math.round(fontPx * 1.9);
+
     var sankey = window.d3.sankey()
         .nodeWidth(nodeW)
         .nodePadding(pad)
-        .extent([[2, 10], [w - labelRoom, h - 10]]);
+        .extent([[2, topRoom], [w - labelRoom, h - 10]]);
 
     var out;
     try {
@@ -346,28 +353,49 @@ function buildLayout() {
     out.nodes.forEach(function (n, i) {
         var hgt = Math.max(2, (n.y1 - n.y0));
         var nodeHot = alertable(n);
-        var colour = nodeHot ? ALERT : (n.kind === "root" ? ACCENT : CYAN);
+        var colour = nodeHot ? ALERT
+            : n.kind === "root" ? ACCENT
+            : n.idle ? "#2aa3bb"
+            : CYAN;
         parts.push('<rect class="en-node en-node-' + n.kind +
             (nodeHot ? " unusual" : "") +
             '" x="' + n.x0 + '" y="' + n.y0 + '" width="' + (n.x1 - n.x0) +
             '" height="' + hgt + '" fill="' + colour +
             '" data-node="' + i + '"></rect>');
 
-        /* Root and categories label to the right of their bar, devices too,
-           because the layout reserves the right margin for exactly that. */
-        var tx = n.x1 + 6;
-        var ty = (n.y0 + n.y1) / 2;
-        var anchor = "start";
-        if (n.kind === "device" || (drill && n.kind === "root")) {
-            /* Nothing to the right of the last column but the reserved margin. */
-            anchor = "start";
-        }
-        var cls = "en-label en-label-" + n.kind + (nodeHot ? " unusual" : "");
+        /* Categories and devices label to the right of their bar, where the
+           layout reserves the margin. The root is the exception: its bar is
+           followed immediately by the brightest ribbon on the screen, so its
+           label goes above the bar where nothing is behind it. */
+        var isRoot = n.kind === "root";
+        var tx = isRoot ? n.x0 : n.x1 + 6;
+        var ty = isRoot ? Math.max(fontPx, n.y0 - fontPx * 0.55)
+                        : (n.y0 + n.y1) / 2;
+        var baseline = isRoot ? "auto" : "middle";
+        var cls = "en-label en-label-" + n.kind + (nodeHot ? " unusual" : "") +
+            (n.idle ? " en-idle" : "");
         /* How many characters of the name still fit once the value and the
            gap have taken their share of the reserved margin. */
-        var nameRoom = Math.floor((w - tx - 14) / charW) - 11;
+        var nameRoom = isRoot ? 60 : Math.floor((w - tx - 14) / charW) - 11;
+
+        /* A category label sits in the middle of the diagram, directly on top
+           of the ribbons leaving its bar. A dark outline on the glyphs is not
+           enough once those ribbons are bright, which is exactly what happens
+           when Homelab is hidden and everything else scales up, so the label
+           gets a real plate behind it. Device labels live in the reserved
+           right margin with nothing behind them and need none. */
+        if (n.kind === "category") {
+            var plateText = fit(n.label, nameRoom) + "  " +
+                valueText(n.value !== undefined ? n.value : 0);
+            var plateW = plateText.length * charW + 8;
+            parts.push('<rect class="en-label-bg" x="' + (tx - 4) +
+                '" y="' + (ty - fontPx * 0.78) + '" width="' + plateW.toFixed(1) +
+                '" height="' + (fontPx * 1.56).toFixed(1) +
+                '" data-node="' + i + '"></rect>');
+        }
+
         parts.push('<text class="' + cls + '" x="' + tx + '" y="' + ty +
-            '" text-anchor="' + anchor + '" dominant-baseline="middle"' +
+            '" text-anchor="start" dominant-baseline="' + baseline + '"' +
             ' data-node="' + i + '">' +
             '<tspan class="en-label-name">' + escapeText(fit(n.label, nameRoom)) + '</tspan>' +
             '<tspan class="en-label-val" dx="6">' +
@@ -539,6 +567,15 @@ function renderNote() {
         bits.push('<b>RATE</b><span>' +
             feeds.rateCents.toFixed(0) + ' cents per kWh</span>');
     }
+
+    /* Anything the diagram is deliberately not showing has to say so here, or
+       the total on screen looks like it has quietly changed on its own. */
+    if (hideHomelab) {
+        var hl = feeds.categoryWatts("homelab");
+        bits.push('<b class="warn">HOMELAB HIDDEN</b><span>' +
+            watts(hl) + ' excluded so the rest of the house scales up.</span>');
+    }
+
     el.innerHTML = bits.join('<i class="en-note-sep"></i>');
 }
 
@@ -1032,8 +1069,38 @@ function setDrill(cat) {
     });
 }
 
+function setIdleOpen(open) {
+    wipe(function () {
+        idleOpen = open;
+        lastLayout = 0;
+        dirty = true;
+        buildLayout();
+    });
+}
+
+function setHideHomelab(hide) {
+    wipe(function () {
+        hideHomelab = hide;
+        /* Drilled into Homelab and then hiding it would leave the diagram
+           looking at something that is no longer there. */
+        if (hide && drill === "homelab") {
+            drill = null;
+        }
+        var btn = $id("en-hide-homelab");
+        if (btn) {
+            btn.classList.toggle("on", hide);
+            btn.textContent = hide ? "SHOW HOMELAB" : "HIDE HOMELAB";
+        }
+        renderCrumb();
+        lastLayout = 0;
+        dirty = true;
+        buildLayout();
+        renderNote();
+    });
+}
+
 function setRange(r) {
-    if (r === range) {
+    if (r === range || !RANGE_LABEL.hasOwnProperty(r)) {
         return;
     }
     wipe(function () {
@@ -1177,6 +1244,7 @@ function tipFor(item) {
             watts(item.device.avgWatts) + '</div>';
     }
     var hint = isDevice ? "Click for detail"
+        : item.cat === "idle" ? (idleOpen ? "Click to fold up" : "Click to expand")
         : item.kind === "root" ? (drill ? "Click to go back" : "")
         : drill ? "Click to go back" : "Click to drill in";
     if (hint) {
@@ -1189,11 +1257,7 @@ function catWatts(key) {
     if (!key || !feeds) {
         return feeds ? feeds.totalWatts() : 0;
     }
-    var out = 0;
-    feeds.categories("now").forEach(function (c) {
-        if (c.key === key) { out = c.watts; }
-    });
-    return out;
+    return feeds.categoryWatts(key, range);
 }
 
 function catKwh(key, r) {
@@ -1203,11 +1267,7 @@ function catKwh(key, r) {
     if (!key) {
         return feeds.totalKwh(r);
     }
-    var out = 0;
-    feeds.categories(r).forEach(function (c) {
-        if (c.key === key) { out = c.value; }
-    });
-    return out;
+    return feeds.categoryKwh(key, r, range);
 }
 
 /* ---- clock ------------------------------------------------------------------------ */
@@ -1253,7 +1313,14 @@ function bindControls() {
     var root = $id("energy-screen");
 
     root.addEventListener("click", function (e) {
-        var rangeBtn = e.target.closest("#en-range button");
+        if (e.target.closest("#en-hide-homelab")) {
+            setHideHomelab(!hideHomelab);
+            return;
+        }
+
+        /* [data-range] matters: the Homelab toggle is a button in the same
+           header group, and a looser selector swallowed it. */
+        var rangeBtn = e.target.closest("#en-range button[data-range]");
         if (rangeBtn) {
             setRange(rangeBtn.getAttribute("data-range"));
             return;
@@ -1289,6 +1356,10 @@ function bindControls() {
 
         if (item.kind === "device" || item.device) {
             openDevice((item.device || {}).key);
+        } else if (item.cat === "idle") {
+            /* Idle is a fold, not a category, so it expands in place instead
+               of drilling. */
+            setIdleOpen(!idleOpen);
         } else if (item.kind === "category" || item.cat) {
             if (item.cat && item.cat !== "unmeasured") {
                 setDrill(drill === item.cat ? null : item.cat);

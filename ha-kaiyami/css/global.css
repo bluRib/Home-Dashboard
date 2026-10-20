@@ -8,6 +8,21 @@
     src: url('terminator.woff') format('woff');
 }
 
+/* One horizontal inset for every system screen.
+ *
+ * House, Climate, Security, Cameras and Energy are each a full viewport grid
+ * with their own padding, and they had settled on 10px or 14px. At that much,
+ * the first character of a panel header sits hard against the edge of the
+ * display and reads as clipped, which is exactly what it looked like on the
+ * Energy screen. This is the single value they all use, so the inset cannot
+ * drift apart again.
+ *
+ * Horizontal only. The vertical padding stays tight, because these screens are
+ * short of height long before they are short of width. */
+:root {
+    --screen-pad-x: clamp(18px, 1.4vw, 30px);
+}
+
 /* The launcher is scaled to fill the viewport by $.fn.fitScreen in main.js,
    so the page itself must never scroll or leave a margin around the frame. */
 html, body {

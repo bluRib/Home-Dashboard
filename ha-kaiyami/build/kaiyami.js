@@ -54635,6 +54635,28 @@
         }
         return vals[Math.min(vals.length - 1, Math.floor(vals.length * q))];
       };
+      EnergyFeeds.prototype.rangeHours = function(range2) {
+        var now = Date.now();
+        if (range2 === "today") {
+          return Math.max(0.25, (now - startOfDay()) / 36e5);
+        }
+        if (range2 === "week") {
+          return Math.max(0.25, (now - (startOfDay() - 6 * DAY_MS)) / 36e5);
+        }
+        if (range2 === "month") {
+          return Math.max(0.25, (now - startOfMonth()) / 36e5);
+        }
+        return 1;
+      };
+      EnergyFeeds.prototype.isIdle = function(device, range2) {
+        if (!device.available) {
+          return true;
+        }
+        if (range2 === "now") {
+          return device.watts < IDLE_W;
+        }
+        return device.value * 1e3 / this.rangeHours(range2) < IDLE_W;
+      };
       EnergyFeeds.prototype.categories = function(range2) {
         var devices = this.devices(range2);
         return CATEGORIES.map(function(c2) {
@@ -54664,16 +54686,46 @@
           return c2.devices.length > 0;
         });
       };
-      EnergyFeeds.prototype.flow = function(range2, only) {
+      EnergyFeeds.prototype.flow = function(range2, only, opts) {
+        var self = this;
+        opts = opts || {};
         var cats = this.categories(range2);
+        if (opts.hideHomelab && !only) {
+          cats = cats.filter(function(c2) {
+            return c2.key !== "homelab";
+          });
+        }
         if (only) {
           cats = cats.filter(function(c2) {
             return c2.key === only;
           });
         }
+        var idle = [];
+        if (!only) {
+          cats = cats.map(function(c2) {
+            var live = c2.devices.filter(function(d) {
+              if (self.isIdle(d, range2)) {
+                idle.push(d);
+                return false;
+              }
+              return true;
+            });
+            return Object.assign({}, c2, {
+              devices: live,
+              value: live.reduce(function(a, d) {
+                return a + d.value;
+              }, 0)
+            });
+          }).filter(function(c2) {
+            return c2.devices.length > 0;
+          });
+        }
+        var idleValue = idle.reduce(function(a, d) {
+          return a + d.value;
+        }, 0);
         var total = cats.reduce(function(a, c2) {
           return a + c2.value;
-        }, 0);
+        }, 0) + idleValue;
         var nodes = [];
         var links = [];
         var index = {};
@@ -54685,6 +54737,9 @@
           return index[id];
         }
         var rootLabel = only ? cats[0] ? cats[0].label : "" : HOUSE_METER ? "House total" : "Measured total";
+        if (!only && opts.hideHomelab) {
+          rootLabel += " less Homelab";
+        }
         var root = node("root", rootLabel, "root", { value: total });
         cats.forEach(function(c2) {
           var from = root;
@@ -54720,6 +54775,46 @@
             });
           });
         });
+        if (idle.length) {
+          var ii = node(
+            "cat:idle",
+            "Idle (" + idle.length + ")",
+            "category",
+            {
+              cat: "idle",
+              value: idleValue,
+              idle: true,
+              open: !!opts.idleOpen,
+              count: idle.length
+            }
+          );
+          links.push({
+            source: root,
+            target: ii,
+            value: idleValue,
+            kind: "category",
+            cat: "idle",
+            idle: true
+          });
+          if (opts.idleOpen) {
+            idle.forEach(function(d) {
+              var di = node(
+                "dev:" + d.key,
+                d.name,
+                "device",
+                { device: d, unusual: d.unusual }
+              );
+              links.push({
+                source: ii,
+                target: di,
+                value: d.value,
+                kind: "device",
+                device: d,
+                unusual: d.unusual
+              });
+            });
+          }
+        }
         if (HOUSE_METER && !only) {
           var meter = this._meterValue(range2);
           var gap = meter - total;
@@ -54740,7 +54835,48 @@
             nodes[root].value = meter;
           }
         }
-        return { nodes, links, total, metered: !!HOUSE_METER };
+        return {
+          nodes,
+          links,
+          total,
+          metered: !!HOUSE_METER,
+          idle,
+          idleValue
+        };
+      };
+      EnergyFeeds.prototype.categoryWatts = function(key, range2) {
+        var self = this;
+        if (key === "idle") {
+          return this.devices("now").filter(function(d) {
+            return self.isIdle(d, range2 || "now");
+          }).reduce(function(a, d) {
+            return a + d.watts;
+          }, 0);
+        }
+        var out = 0;
+        this.categories("now").forEach(function(c2) {
+          if (c2.key === key) {
+            out = c2.watts;
+          }
+        });
+        return out;
+      };
+      EnergyFeeds.prototype.categoryKwh = function(key, r, range2) {
+        var self = this;
+        if (key === "idle") {
+          return this.devices(r).filter(function(d) {
+            return self.isIdle(d, range2 || r);
+          }).reduce(function(a, d) {
+            return a + d.value;
+          }, 0);
+        }
+        var out = 0;
+        this.categories(r).forEach(function(c2) {
+          if (c2.key === key) {
+            out = c2.value;
+          }
+        });
+        return out;
       };
       EnergyFeeds.prototype.totalWatts = function() {
         return this.devices("now").reduce(function(a, d) {
@@ -55086,7 +55222,10 @@
     if (!w || !h) {
       return;
     }
-    var graph = feeds5.flow(range, drill);
+    var graph = feeds5.flow(range, drill, {
+      idleOpen,
+      hideHomelab
+    });
     svg.setAttribute("viewBox", "0 0 " + w + " " + h);
     svg.setAttribute("width", w);
     svg.setAttribute("height", h);
@@ -55111,7 +55250,8 @@
     var labelRoom = Math.max(90, Math.min(w * 0.42, (longest + 12) * charW + 14));
     var nodeW = Math.max(6, Math.min(13, w * 0.011));
     var pad6 = Math.max(7, Math.min(15, h / (nodes.length + 2)));
-    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad6).extent([[2, 10], [w - labelRoom, h - 10]]);
+    var topRoom = Math.round(fontPx * 1.9);
+    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad6).extent([[2, topRoom], [w - labelRoom, h - 10]]);
     var out;
     try {
       out = sankey({ nodes, links });
@@ -55144,17 +55284,20 @@
     out.nodes.forEach(function(n, i) {
       var hgt = Math.max(2, n.y1 - n.y0);
       var nodeHot = alertable(n);
-      var colour = nodeHot ? ALERT2 : n.kind === "root" ? ACCENT : CYAN2;
+      var colour = nodeHot ? ALERT2 : n.kind === "root" ? ACCENT : n.idle ? "#2aa3bb" : CYAN2;
       parts.push('<rect class="en-node en-node-' + n.kind + (nodeHot ? " unusual" : "") + '" x="' + n.x0 + '" y="' + n.y0 + '" width="' + (n.x1 - n.x0) + '" height="' + hgt + '" fill="' + colour + '" data-node="' + i + '"></rect>');
-      var tx = n.x1 + 6;
-      var ty = (n.y0 + n.y1) / 2;
-      var anchor = "start";
-      if (n.kind === "device" || drill && n.kind === "root") {
-        anchor = "start";
+      var isRoot = n.kind === "root";
+      var tx = isRoot ? n.x0 : n.x1 + 6;
+      var ty = isRoot ? Math.max(fontPx, n.y0 - fontPx * 0.55) : (n.y0 + n.y1) / 2;
+      var baseline = isRoot ? "auto" : "middle";
+      var cls = "en-label en-label-" + n.kind + (nodeHot ? " unusual" : "") + (n.idle ? " en-idle" : "");
+      var nameRoom = isRoot ? 60 : Math.floor((w - tx - 14) / charW) - 11;
+      if (n.kind === "category") {
+        var plateText = fit(n.label, nameRoom) + "  " + valueText(n.value !== void 0 ? n.value : 0);
+        var plateW = plateText.length * charW + 8;
+        parts.push('<rect class="en-label-bg" x="' + (tx - 4) + '" y="' + (ty - fontPx * 0.78) + '" width="' + plateW.toFixed(1) + '" height="' + (fontPx * 1.56).toFixed(1) + '" data-node="' + i + '"></rect>');
       }
-      var cls = "en-label en-label-" + n.kind + (nodeHot ? " unusual" : "");
-      var nameRoom = Math.floor((w - tx - 14) / charW) - 11;
-      parts.push('<text class="' + cls + '" x="' + tx + '" y="' + ty + '" text-anchor="' + anchor + '" dominant-baseline="middle" data-node="' + i + '"><tspan class="en-label-name">' + escapeText(fit(n.label, nameRoom)) + '</tspan><tspan class="en-label-val" dx="6">' + /* A device Home Assistant cannot reach reads OFFLINE rather than
+      parts.push('<text class="' + cls + '" x="' + tx + '" y="' + ty + '" text-anchor="start" dominant-baseline="' + baseline + '" data-node="' + i + '"><tspan class="en-label-name">' + escapeText(fit(n.label, nameRoom)) + '</tspan><tspan class="en-label-val" dx="6">' + /* A device Home Assistant cannot reach reads OFFLINE rather than
          0.0 W, which would look like a device that is simply switched
          off. */
       (n.device && !n.device.available ? "OFFLINE" : valueText(n.value)) + "</tspan></text>");
@@ -55279,6 +55422,10 @@
       bits.push('<b class="warn">COST HIDDEN</b><span>No energy price is set in Home Assistant.</span>');
     } else if (feeds5.hasRate()) {
       bits.push("<b>RATE</b><span>" + feeds5.rateCents.toFixed(0) + " cents per kWh</span>");
+    }
+    if (hideHomelab) {
+      var hl = feeds5.categoryWatts("homelab");
+      bits.push('<b class="warn">HOMELAB HIDDEN</b><span>' + watts(hl) + " excluded so the rest of the house scales up.</span>");
     }
     el.innerHTML = bits.join('<i class="en-note-sep"></i>');
   }
@@ -55730,8 +55877,34 @@
       buildLayout();
     });
   }
+  function setIdleOpen(open) {
+    wipe(function() {
+      idleOpen = open;
+      lastLayout = 0;
+      dirty5 = true;
+      buildLayout();
+    });
+  }
+  function setHideHomelab(hide) {
+    wipe(function() {
+      hideHomelab = hide;
+      if (hide && drill === "homelab") {
+        drill = null;
+      }
+      var btn = $id5("en-hide-homelab");
+      if (btn) {
+        btn.classList.toggle("on", hide);
+        btn.textContent = hide ? "SHOW HOMELAB" : "HIDE HOMELAB";
+      }
+      renderCrumb();
+      lastLayout = 0;
+      dirty5 = true;
+      buildLayout();
+      renderNote();
+    });
+  }
   function setRange(r) {
-    if (r === range) {
+    if (r === range || !RANGE_LABEL.hasOwnProperty(r)) {
       return;
     }
     wipe(function() {
@@ -55843,7 +56016,7 @@
     if (isDevice && item2.device.unusual) {
       html += '<div class="en-tip-alert">DRAWING HIGH, 7 day average ' + watts(item2.device.avgWatts) + "</div>";
     }
-    var hint = isDevice ? "Click for detail" : item2.kind === "root" ? drill ? "Click to go back" : "" : drill ? "Click to go back" : "Click to drill in";
+    var hint = isDevice ? "Click for detail" : item2.cat === "idle" ? idleOpen ? "Click to fold up" : "Click to expand" : item2.kind === "root" ? drill ? "Click to go back" : "" : drill ? "Click to go back" : "Click to drill in";
     if (hint) {
       html += '<div class="en-tip-hint">' + hint + "</div>";
     }
@@ -55853,13 +56026,7 @@
     if (!key || !feeds5) {
       return feeds5 ? feeds5.totalWatts() : 0;
     }
-    var out = 0;
-    feeds5.categories("now").forEach(function(c2) {
-      if (c2.key === key) {
-        out = c2.watts;
-      }
-    });
-    return out;
+    return feeds5.categoryWatts(key, range);
   }
   function catKwh(key, r) {
     if (!feeds5) {
@@ -55868,13 +56035,7 @@
     if (!key) {
       return feeds5.totalKwh(r);
     }
-    var out = 0;
-    feeds5.categories(r).forEach(function(c2) {
-      if (c2.key === key) {
-        out = c2.value;
-      }
-    });
-    return out;
+    return feeds5.categoryKwh(key, r, range);
   }
   function renderClock5(now) {
     var el = $id5("en-time");
@@ -55905,7 +56066,11 @@
   function bindControls4() {
     var root = $id5("energy-screen");
     root.addEventListener("click", function(e) {
-      var rangeBtn = e.target.closest("#en-range button");
+      if (e.target.closest("#en-hide-homelab")) {
+        setHideHomelab(!hideHomelab);
+        return;
+      }
+      var rangeBtn = e.target.closest("#en-range button[data-range]");
       if (rangeBtn) {
         setRange(rangeBtn.getAttribute("data-range"));
         return;
@@ -55936,6 +56101,8 @@
       }
       if (item2.kind === "device" || item2.device) {
         openDevice((item2.device || {}).key);
+      } else if (item2.cat === "idle") {
+        setIdleOpen(!idleOpen);
       } else if (item2.kind === "category" || item2.cat) {
         if (item2.cat && item2.cat !== "unmeasured") {
           setDrill(drill === item2.cat ? null : item2.cat);
@@ -55977,7 +56144,7 @@
     });
     renderCrumb();
   }
-  var CYAN2, ALERT2, ACCENT, REFRESH_MS2, WIPE_MS2, WIPE_SWAP_MS2, RANGE_LABEL, EnergyView, feeds5, areas3, active5, built4, dirty5, range, drill, selected3, lastLayout, lastRender5, resizeTimer5, observer5, wipeTimer2, swapTimer2, hoverKey, svg, particleCanvas, pctx, chartCanvas, cctx, curveCanvas, curveCtx, barsCanvas, barsCtx, layout, particles, lastFrame, TOP_N, DAYS5, MONTHS5, lastClock2;
+  var CYAN2, ALERT2, ACCENT, REFRESH_MS2, WIPE_MS2, WIPE_SWAP_MS2, RANGE_LABEL, EnergyView, feeds5, areas3, active5, built4, dirty5, range, drill, idleOpen, hideHomelab, selected3, lastLayout, lastRender5, resizeTimer5, observer5, wipeTimer2, swapTimer2, hoverKey, svg, particleCanvas, pctx, chartCanvas, cctx, curveCanvas, curveCtx, barsCanvas, barsCtx, layout, particles, lastFrame, TOP_N, DAYS5, MONTHS5, lastClock2;
   var init_EnergyView = __esm({
     "src/EnergyView.js"() {
       init_EnergyFeeds();
@@ -55996,6 +56163,8 @@
       dirty5 = true;
       range = "now";
       drill = null;
+      idleOpen = false;
+      hideHomelab = false;
       selected3 = null;
       lastLayout = 0;
       lastRender5 = 0;
