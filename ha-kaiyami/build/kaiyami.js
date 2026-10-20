@@ -54315,7 +54315,7 @@
   var init_EnergyFeeds = __esm({
     "src/EnergyFeeds.js"() {
       HOUSE_METER = null;
-      RATE_CENTS = null;
+      RATE_CENTS = 12;
       CATEGORIES = [
         { key: "homelab", label: "Homelab" },
         { key: "hvac", label: "HVAC" },
@@ -54507,12 +54507,27 @@
       EnergyFeeds.prototype._state = function(id) {
         return this.ha && this.ha.states ? this.ha.states.get(id) : null;
       };
-      EnergyFeeds.prototype.watts = function(device) {
+      EnergyFeeds.prototype._readWatts = function(device) {
         var s = this._state(device.power);
         if (!s || s.state === "unavailable" || s.state === "unknown") {
           return null;
         }
         return num2(s.state);
+      };
+      EnergyFeeds.prototype._window = function() {
+        var self = this;
+        var now = Date.now();
+        if (!this._win || now - this._win.at > SNAPSHOT_MS) {
+          var watts2 = {};
+          DEVICES.forEach(function(d) {
+            watts2[d.key] = self._readWatts(d);
+          });
+          this._win = { at: now, watts: watts2, byRange: {} };
+        }
+        return this._win;
+      };
+      EnergyFeeds.prototype.watts = function(device) {
+        return this._window().watts[device.key];
       };
       EnergyFeeds.prototype.nameOf = function(device) {
         var self = this;
@@ -54534,13 +54549,13 @@
       SNAPSHOT_MS = 1500;
       EnergyFeeds.prototype.devices = function(range2) {
         var self = this;
-        var now = Date.now();
-        if (this._snap && this._snap.range === range2 && now - this._snap.at < SNAPSHOT_MS) {
-          return this._snap.list;
+        var win = this._window();
+        if (win.byRange[range2]) {
+          return win.byRange[range2];
         }
         var today = startOfDay();
         var list = DEVICES.map(function(d) {
-          var w = self.watts(d);
+          var w = win.watts[d.key];
           var day = self.daily[d.key] || {};
           var avgW = self.averageWatts(d.key);
           var kwh2 = {
@@ -54567,7 +54582,7 @@
             value: range2 === "now" ? available ? w : 0 : kwh2[range2] || 0
           };
         });
-        this._snap = { range: range2, at: now, list };
+        win.byRange[range2] = list;
         return list;
       };
       EnergyFeeds.prototype._sumDays = function(dayMap, from, to) {
@@ -54636,9 +54651,14 @@
             watts: mine.reduce(function(a, d) {
               return a + d.watts;
             }, 0),
-            unusual: mine.some(function(d) {
+            /* Deliberately not "any of my devices is unusual". A category is a
+               sum, and a sum is never the thing drawing too much. Rolling it
+               up turned Kitchen orange whenever the freezer cycled, and with
+               it the ribbon out of the root, so the whole house read as an
+               alarm. Orange stays on the one device and its own link. */
+            unusualCount: mine.filter(function(d) {
               return d.unusual;
-            })
+            }).length
           };
         }).filter(function(c2) {
           return c2.devices.length > 0;
@@ -54673,15 +54693,14 @@
               "cat:" + c2.key,
               c2.label,
               "category",
-              { cat: c2.key, unusual: c2.unusual, value: c2.value }
+              { cat: c2.key, value: c2.value }
             );
             links.push({
               source: root,
               target: from,
               value: c2.value,
               kind: "category",
-              cat: c2.key,
-              unusual: c2.unusual
+              cat: c2.key
             });
           }
           c2.devices.forEach(function(d) {
@@ -55108,27 +55127,32 @@
       max = Math.max(max, l.value);
     });
     var parts = [];
+    var alertable = function(d) {
+      return !!d.unusual && (d.kind === "device" || !!d.device);
+    };
     out.links.forEach(function(l, i) {
       var share = max > 0 ? l.value / max : 0;
       var opacity = 0.18 + 0.58 * Math.sqrt(share);
-      var colour = l.unusual ? ALERT2 : CYAN2;
+      var hot = alertable(l);
+      var colour = hot ? ALERT2 : CYAN2;
       var d = linkPath(l);
       var sw = Math.max(1.1, l.width || 0);
-      parts.push('<path class="en-link' + (l.unusual ? " unusual" : "") + '" d="' + d + '" stroke="' + colour + '" stroke-width="' + sw + '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none" data-link="' + i + '"></path>');
+      parts.push('<path class="en-link' + (hot ? " unusual" : "") + '" d="' + d + '" stroke="' + colour + '" stroke-width="' + sw + '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none" data-link="' + i + '"></path>');
       l._d = d;
       l._sw = sw;
     });
     out.nodes.forEach(function(n, i) {
       var hgt = Math.max(2, n.y1 - n.y0);
-      var colour = n.unusual ? ALERT2 : n.kind === "root" ? ACCENT : CYAN2;
-      parts.push('<rect class="en-node en-node-' + n.kind + (n.unusual ? " unusual" : "") + '" x="' + n.x0 + '" y="' + n.y0 + '" width="' + (n.x1 - n.x0) + '" height="' + hgt + '" fill="' + colour + '" data-node="' + i + '"></rect>');
+      var nodeHot = alertable(n);
+      var colour = nodeHot ? ALERT2 : n.kind === "root" ? ACCENT : CYAN2;
+      parts.push('<rect class="en-node en-node-' + n.kind + (nodeHot ? " unusual" : "") + '" x="' + n.x0 + '" y="' + n.y0 + '" width="' + (n.x1 - n.x0) + '" height="' + hgt + '" fill="' + colour + '" data-node="' + i + '"></rect>');
       var tx = n.x1 + 6;
       var ty = (n.y0 + n.y1) / 2;
       var anchor = "start";
       if (n.kind === "device" || drill && n.kind === "root") {
         anchor = "start";
       }
-      var cls = "en-label en-label-" + n.kind + (n.unusual ? " unusual" : "");
+      var cls = "en-label en-label-" + n.kind + (nodeHot ? " unusual" : "");
       var nameRoom = Math.floor((w - tx - 14) / charW) - 11;
       parts.push('<text class="' + cls + '" x="' + tx + '" y="' + ty + '" text-anchor="' + anchor + '" dominant-baseline="middle" data-node="' + i + '"><tspan class="en-label-name">' + escapeText(fit(n.label, nameRoom)) + '</tspan><tspan class="en-label-val" dx="6">' + /* A device Home Assistant cannot reach reads OFFLINE rather than
          0.0 W, which would look like a device that is simply switched
@@ -55174,6 +55198,9 @@
     if (!max) {
       return;
     }
+    var alertable = function(d) {
+      return !!d.unusual && (d.kind === "device" || !!d.device);
+    };
     links.forEach(function(l, i) {
       var sampled = samplePath(l._d, 44);
       if (!sampled) {
@@ -55183,6 +55210,7 @@
       var share = l.value / max;
       var count2 = Math.max(1, Math.round(1 + 15 * Math.sqrt(share)));
       var speed = 26 + 130 * Math.sqrt(share);
+      var hot = alertable(l);
       for (var k = 0; k < count2; k++) {
         particles.push({
           link: i,
@@ -55191,7 +55219,7 @@
           /* Spread across the ribbon rather than all on the centreline. */
           off: (Math.random() - 0.5) * Math.max(0, l._sw - 2) * 0.8,
           size: 0.9 + Math.random() * 1.1,
-          unusual: !!l.unusual
+          unusual: hot
         });
       }
     });
@@ -55243,13 +55271,16 @@
     if (!el || !feeds5) {
       return;
     }
-    if (HOUSE_METER) {
-      el.textContent = "";
-      el.style.display = "none";
-      return;
+    var bits = [];
+    if (!HOUSE_METER) {
+      bits.push("<b>NO WHOLE HOUSE METER</b><span>Sum of 19 monitored circuits and plugs. Furnace, air conditioner, oven, dryer and most lighting and outlets are not included.</span>");
     }
-    el.style.display = "block";
-    el.innerHTML = "<b>MEASURED TOTAL</b> There is no whole house meter on this home, so this is the sum of 19 monitored circuits and plugs. Unmonitored loads (furnace, air conditioner, oven, dryer, most lighting and outlets) are not included.";
+    if (!feeds5.hasRate() && !feeds5.ratePending) {
+      bits.push('<b class="warn">COST HIDDEN</b><span>No energy price is set in Home Assistant.</span>');
+    } else if (feeds5.hasRate()) {
+      bits.push("<b>RATE</b><span>" + feeds5.rateCents.toFixed(0) + " cents per kWh</span>");
+    }
+    el.innerHTML = bits.join('<i class="en-note-sep"></i>');
   }
   function stat3(id, value, sub, bad) {
     var el = $id5(id);
@@ -55299,10 +55330,32 @@
     } else {
       stat3("en-stat-top", "--", "Top consumer now", false);
     }
-    var ask = $id5("en-rate-note");
-    if (ask) {
-      ask.style.display = showCost || feeds5.ratePending ? "none" : "block";
+  }
+  function sparkline(key, hot) {
+    var c2 = feeds5.curves[key] || [];
+    var pts = c2.filter(function(p) {
+      return p.mean !== null;
+    });
+    if (pts.length < 4) {
+      return '<span class="en-spark empty"></span>';
     }
+    var step = Math.max(1, Math.floor(pts.length / 48));
+    var use = [];
+    for (var i = 0; i < pts.length; i += step) {
+      use.push(pts[i]);
+    }
+    var max = 0;
+    use.forEach(function(p) {
+      max = Math.max(max, p.mean);
+    });
+    max = Math.max(max, 1e-3);
+    var W = 100, H = 22;
+    var d = use.map(function(p, i2) {
+      var x = i2 / (use.length - 1) * W;
+      var y = H - p.mean / max * (H - 2) - 1;
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+    return '<svg class="en-spark' + (hot ? " unusual" : "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none"><polyline points="' + d + '"></polyline></svg>';
   }
   function renderTop() {
     var box = $id5("en-top5-body");
@@ -55314,7 +55367,7 @@
     if (head) {
       head.textContent = RANGE_LABEL[r];
     }
-    var list = feeds5.top(r, 5);
+    var list = feeds5.top(r, TOP_N);
     if (!list.length) {
       box.innerHTML = '<div class="en-wait">' + (feeds5.loaded ? "Nothing drawing" : "Loading") + "</div>";
       return;
@@ -55323,7 +55376,8 @@
     var showCost = feeds5.hasRate();
     box.innerHTML = list.map(function(d, i) {
       var w = Math.max(2, d.value / max * 100);
-      return '<div class="en-bar-row' + (d.unusual ? " unusual" : "") + (d.key === selected3 ? " on" : "") + '" data-device="' + d.key + '"><span class="en-bar-rank">' + (i + 1) + '</span><span class="en-bar-name">' + escapeText(d.name) + '</span><span class="en-bar-val">' + valueText(d.value) + (showCost && r !== "now" ? " <i>" + money(feeds5.cost(d.value)) + "</i>" : "") + '</span><span class="en-bar-track"><i style="width:' + w.toFixed(1) + '%"></i></span></div>';
+      var cost = showCost ? r === "now" ? feeds5.cost(d.value * 24 / 1e3) : feeds5.cost(d.value) : null;
+      return '<div class="en-bar-row' + (d.unusual ? " unusual" : "") + (d.key === selected3 ? " on" : "") + '" data-device="' + d.key + '"><span class="en-bar-rank">' + (i + 1) + '</span><span class="en-bar-name">' + escapeText(d.name) + '</span><span class="en-bar-val">' + valueText(d.value) + "</span>" + (cost !== null ? '<span class="en-bar-cost">' + money(cost) + (r === "now" ? "<em>/day</em>" : "") + "</span>" : '<span class="en-bar-cost"></span>') + sparkline(d.key, d.unusual) + '<span class="en-bar-track"><i style="width:' + w.toFixed(1) + '%"></i></span></div>';
     }).join("");
   }
   function drawHouseChart() {
@@ -55407,32 +55461,39 @@
     }
     var marks2 = feeds5.switchOns(curve);
     ctx.textAlign = "left";
-    var lastLabelX = -1e9;
+    var rowEnd = [-1e9, -1e9, -1e9];
+    var rowY = [top + 10, top + 21, top + 32];
     marks2.slice(-6).forEach(function(m) {
       var x = X(m.t), y2 = Y(m.w);
+      ctx.font = "9px Menlo, Consolas, monospace";
+      var label = m.name;
+      var wide = ctx.measureText(label).width;
+      var rightAligned = x + 4 + wide > w - right;
+      var x0 = rightAligned ? x - 4 - wide : x + 4;
+      var x1 = x0 + wide;
+      var row = -1;
+      for (var r = 0; r < rowEnd.length; r++) {
+        if (x0 > rowEnd[r] + 8) {
+          row = r;
+          break;
+        }
+      }
       ctx.strokeStyle = "rgba(77,255,176,.65)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, y2);
-      ctx.lineTo(x, top + 2);
+      ctx.lineTo(x, row >= 0 ? rowY[row] + 3 : top + 2);
       ctx.stroke();
       ctx.beginPath();
       ctx.arc(x, y2, 2.4, 0, Math.PI * 2);
       ctx.fillStyle = ACCENT;
       ctx.fill();
-      ctx.font = "9px Menlo, Consolas, monospace";
-      var label = m.name;
-      var wide = ctx.measureText(label).width;
-      if (x - lastLabelX > wide + 10) {
+      if (row >= 0) {
         ctx.fillStyle = "rgba(77,255,176,.9)";
-        var tx = x + 4;
-        if (tx + wide > w - right) {
-          ctx.textAlign = "right";
-          tx = x - 4;
-        }
-        ctx.fillText(label, tx, top + 10);
+        ctx.textAlign = rightAligned ? "right" : "left";
+        ctx.fillText(label, rightAligned ? x - 4 : x + 4, rowY[row]);
         ctx.textAlign = "left";
-        lastLabelX = x;
+        rowEnd[row] = x1;
       }
       ctx.font = "10px Menlo, Consolas, monospace";
     });
@@ -55916,7 +55977,7 @@
     });
     renderCrumb();
   }
-  var CYAN2, ALERT2, ACCENT, REFRESH_MS2, WIPE_MS2, WIPE_SWAP_MS2, RANGE_LABEL, EnergyView, feeds5, areas3, active5, built4, dirty5, range, drill, selected3, lastLayout, lastRender5, resizeTimer5, observer5, wipeTimer2, swapTimer2, hoverKey, svg, particleCanvas, pctx, chartCanvas, cctx, curveCanvas, curveCtx, barsCanvas, barsCtx, layout, particles, lastFrame, DAYS5, MONTHS5, lastClock2;
+  var CYAN2, ALERT2, ACCENT, REFRESH_MS2, WIPE_MS2, WIPE_SWAP_MS2, RANGE_LABEL, EnergyView, feeds5, areas3, active5, built4, dirty5, range, drill, selected3, lastLayout, lastRender5, resizeTimer5, observer5, wipeTimer2, swapTimer2, hoverKey, svg, particleCanvas, pctx, chartCanvas, cctx, curveCanvas, curveCtx, barsCanvas, barsCtx, layout, particles, lastFrame, TOP_N, DAYS5, MONTHS5, lastClock2;
   var init_EnergyView = __esm({
     "src/EnergyView.js"() {
       init_EnergyFeeds();
@@ -56050,6 +56111,7 @@
           EnergyView.resize();
         }, 150);
       };
+      TOP_N = 10;
       DAYS5 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       MONTHS5 = [
         "January",

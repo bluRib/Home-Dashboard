@@ -207,33 +207,47 @@
 /* The note about what the measured total does and does not include. It sits
    bottom left inside the flow panel, where there is always space because the
    root node is a single bar. */
-#en-notes {
+/* One compact line between the panel header and the diagram. Nothing here is
+   positioned over the flows, so it can never sit on a device label, and it
+   cannot be clipped at the left edge because it is a normal block in the
+   panel's own padding. */
+#en-note {
     flex: none;
     display: flex;
-    gap: 10px;
-    align-items: stretch;
-    margin-top: 6px;
-}
-
-#en-note {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 5px 8px;
+    align-items: baseline;
+    gap: 8px;
+    margin: 3px 0 5px;
+    padding: 2px 0;
     font-size: clamp(8px, 0.52vw, 11px);
-    line-height: 1.45;
+    line-height: 1.4;
     letter-spacing: .02em;
-    color: rgba(191, 244, 255, .62);
-    background: rgba(63, 224, 255, .05);
-    border-left: 2px solid rgba(63, 224, 255, .5);
-    pointer-events: none;
+    color: rgba(191, 244, 255, .6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #en-note b {
-    display: block;
+    flex: none;
     color: #3fe0ff;
     font-weight: normal;
-    letter-spacing: .18em;
-    margin-bottom: 2px;
+    letter-spacing: .16em;
+}
+
+#en-note b.warn { color: #ff8a1f; }
+
+#en-note span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.en-note-sep {
+    flex: none;
+    width: 1px;
+    height: 1em;
+    background: rgba(63, 224, 255, .3);
+    margin: 0 4px;
 }
 
 /* ---- tooltip ------------------------------------------------------------------- */
@@ -284,23 +298,83 @@
 
 /* ---- top consumers --------------------------------------------------------------- */
 
-#en-top5 .hs-body { overflow-y: auto; }
+#en-top5 .hs-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#en-top5-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
 
 .en-bar-row {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: "rank name val" "track track track";
-    gap: 2px 8px;
-    padding: 5px 2px 7px;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+        "rank name  val  val"
+        "rank spark cost cost"
+        "track track track track";
+    /* The middle row takes whatever height is going, so ten rows fill the
+       column instead of stacking at the top and leaving it half empty. */
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    flex: 1 1 0;
+    min-height: 0;
+    align-items: center;
+    gap: 1px 8px;
+    padding: 4px 2px 5px;
     border-bottom: 1px solid rgba(63, 224, 255, .1);
     cursor: pointer;
     font-size: clamp(9px, 0.58vw, 13px);
 }
 
+/* 24 hour shape for this device, from the same five minute means the big
+   chart uses. */
+.en-spark {
+    grid-area: spark;
+    width: 100%;
+    height: 100%;
+    min-height: 10px;
+    align-self: stretch;
+    display: block;
+    overflow: visible;
+}
+
+.en-spark polyline {
+    fill: none;
+    stroke: rgba(63, 224, 255, .75);
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+}
+
+.en-spark.unusual polyline { stroke: #ff8a1f; }
+.en-spark.empty { min-height: 10px; }
+
+.en-bar-cost {
+    grid-area: cost;
+    align-self: end;
+    color: #4dffb0;
+    opacity: .85;
+    white-space: nowrap;
+    text-align: right;
+    font-size: .92em;
+}
+
+.en-bar-cost em { font-style: normal; opacity: .55; }
+
 .en-bar-row:hover { background: rgba(63, 224, 255, .08); }
 .en-bar-row.on { background: rgba(63, 224, 255, .14); }
 
-.en-bar-rank { grid-area: rank; color: #3fe0ff; opacity: .55; }
+.en-bar-rank {
+    grid-area: rank;
+    color: #3fe0ff;
+    opacity: .55;
+    align-self: start;
+    min-width: 1.4em;
+}
 .en-bar-name {
     grid-area: name;
     overflow: hidden;
@@ -325,6 +399,7 @@
 
 .en-bar-row.unusual .en-bar-name,
 .en-bar-row.unusual .en-bar-val { color: #ff8a1f; }
+.en-bar-row.unusual .en-bar-cost { color: #ff8a1f; }
 .en-bar-row.unusual .en-bar-track i { background: #ff8a1f; }
 
 /* ---- 24 hour chart ---------------------------------------------------------------- */
@@ -512,32 +587,6 @@
 }
 
 .en-drow.unusual b, .en-drow.unusual i { color: #ff8a1f; opacity: 1; }
-
-/* ---- the rate prompt ---------------------------------------------------------------- */
-
-/* Cost is hidden until there is a real rate, and this says why rather than
-   leaving blanks where the money should be. */
-#en-rate-note {
-    flex: 0 1 38%;
-    min-width: 0;
-    display: none;
-    padding: 5px 8px;
-    font-size: clamp(8px, 0.52vw, 11px);
-    line-height: 1.45;
-    color: rgba(191, 244, 255, .62);
-    background: rgba(255, 138, 31, .06);
-    border-left: 2px solid rgba(255, 138, 31, .6);
-    pointer-events: none;
-    text-align: left;
-}
-
-#en-rate-note b {
-    display: block;
-    color: #ff8a1f;
-    font-weight: normal;
-    letter-spacing: .16em;
-    margin-bottom: 2px;
-}
 
 /* ---- the scanline wipe, matching the Cameras screen ---------------------------------- */
 

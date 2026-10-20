@@ -316,17 +316,26 @@ function buildLayout() {
 
     var parts = [];
 
+    /* Orange belongs to one device drawing unusually, and to nothing else. A
+       category and the total are sums, and a sum cannot itself be drawing too
+       much. This is the gate: whatever the data says, only a device link and a
+       device node are allowed the alert colour. */
+    var alertable = function (d) {
+        return !!d.unusual && (d.kind === "device" || !!d.device);
+    };
+
     /* Links first so the node bars and the labels sit over them. */
     out.links.forEach(function (l, i) {
         var share = max > 0 ? l.value / max : 0;
         /* Brighter for bigger flows, which is the whole point of the picture. */
         var opacity = 0.18 + 0.58 * Math.sqrt(share);
-        var colour = l.unusual ? ALERT : CYAN;
+        var hot = alertable(l);
+        var colour = hot ? ALERT : CYAN;
         var d = linkPath(l);
         /* d3 gives the true width. A hairline floor keeps a small load visible
            without inflating its value anywhere a number is shown. */
         var sw = Math.max(1.1, l.width || 0);
-        parts.push('<path class="en-link' + (l.unusual ? " unusual" : "") +
+        parts.push('<path class="en-link' + (hot ? " unusual" : "") +
             '" d="' + d + '" stroke="' + colour + '" stroke-width="' + sw +
             '" stroke-opacity="' + opacity.toFixed(3) +
             '" fill="none" data-link="' + i + '"></path>');
@@ -336,9 +345,10 @@ function buildLayout() {
 
     out.nodes.forEach(function (n, i) {
         var hgt = Math.max(2, (n.y1 - n.y0));
-        var colour = n.unusual ? ALERT : (n.kind === "root" ? ACCENT : CYAN);
+        var nodeHot = alertable(n);
+        var colour = nodeHot ? ALERT : (n.kind === "root" ? ACCENT : CYAN);
         parts.push('<rect class="en-node en-node-' + n.kind +
-            (n.unusual ? " unusual" : "") +
+            (nodeHot ? " unusual" : "") +
             '" x="' + n.x0 + '" y="' + n.y0 + '" width="' + (n.x1 - n.x0) +
             '" height="' + hgt + '" fill="' + colour +
             '" data-node="' + i + '"></rect>');
@@ -352,7 +362,7 @@ function buildLayout() {
             /* Nothing to the right of the last column but the reserved margin. */
             anchor = "start";
         }
-        var cls = "en-label en-label-" + n.kind + (n.unusual ? " unusual" : "");
+        var cls = "en-label en-label-" + n.kind + (nodeHot ? " unusual" : "");
         /* How many characters of the name still fit once the value and the
            gap have taken their share of the reserved margin. */
         var nameRoom = Math.floor((w - tx - 14) / charW) - 11;
@@ -422,6 +432,9 @@ function seedParticles(links, max) {
     if (!max) {
         return;
     }
+    var alertable = function (d) {
+        return !!d.unusual && (d.kind === "device" || !!d.device);
+    };
     links.forEach(function (l, i) {
         var sampled = samplePath(l._d, 44);
         if (!sampled) {
@@ -434,6 +447,7 @@ function seedParticles(links, max) {
            thick fast stream and a trickle is a few slow dots. */
         var count = Math.max(1, Math.round(1 + 15 * Math.sqrt(share)));
         var speed = 26 + 130 * Math.sqrt(share);
+        var hot = alertable(l);
 
         for (var k = 0; k < count; k++) {
             particles.push({
@@ -443,7 +457,7 @@ function seedParticles(links, max) {
                 /* Spread across the ribbon rather than all on the centreline. */
                 off: (Math.random() - 0.5) * Math.max(0, l._sw - 2) * 0.8,
                 size: 0.9 + Math.random() * 1.1,
-                unusual: !!l.unusual
+                unusual: hot
             });
         }
     });
@@ -504,21 +518,28 @@ function stepParticles(dt) {
 
 /* ---- the note about what is and is not measured ------------------------------- */
 
+/* A single line directly under the panel header. It used to be a block
+ * floating inside the diagram, where it sat on top of the device labels. */
 function renderNote() {
     var el = $id("en-note");
     if (!el || !feeds) {
         return;
     }
-    if (HOUSE_METER) {
-        el.textContent = "";
-        el.style.display = "none";
-        return;
+    var bits = [];
+    if (!HOUSE_METER) {
+        bits.push('<b>NO WHOLE HOUSE METER</b>' +
+            '<span>Sum of 19 monitored circuits and plugs. Furnace, air ' +
+            'conditioner, oven, dryer and most lighting and outlets are not ' +
+            'included.</span>');
     }
-    el.style.display = "block";
-    el.innerHTML = '<b>MEASURED TOTAL</b> There is no whole house meter on this ' +
-        'home, so this is the sum of 19 monitored circuits and plugs. ' +
-        'Unmonitored loads (furnace, air conditioner, oven, dryer, most ' +
-        'lighting and outlets) are not included.';
+    if (!feeds.hasRate() && !feeds.ratePending) {
+        bits.push('<b class="warn">COST HIDDEN</b>' +
+            '<span>No energy price is set in Home Assistant.</span>');
+    } else if (feeds.hasRate()) {
+        bits.push('<b>RATE</b><span>' +
+            feeds.rateCents.toFixed(0) + ' cents per kWh</span>');
+    }
+    el.innerHTML = bits.join('<i class="en-note-sep"></i>');
 }
 
 /* ---- status row ------------------------------------------------------------------ */
@@ -567,15 +588,40 @@ function renderStatus() {
         stat("en-stat-top", "--", "Top consumer now", false);
     }
 
-    /* Cost is hidden entirely until there is a real rate, rather than shown
-       as a zero or a guess. */
-    var ask = $id("en-rate-note");
-    if (ask) {
-        ask.style.display = showCost || feeds.ratePending ? "none" : "block";
-    }
 }
 
 /* ---- top consumers ---------------------------------------------------------------- */
+
+var TOP_N = 10;
+
+/* A device's last 24 hours as a tiny inline polyline. Drawn from the same five
+ * minute means the big chart uses, thinned to keep the markup small. */
+function sparkline(key, hot) {
+    var c = feeds.curves[key] || [];
+    var pts = c.filter(function (p) { return p.mean !== null; });
+    if (pts.length < 4) {
+        return '<span class="en-spark empty"></span>';
+    }
+    var step = Math.max(1, Math.floor(pts.length / 48));
+    var use = [];
+    for (var i = 0; i < pts.length; i += step) {
+        use.push(pts[i]);
+    }
+    var max = 0;
+    use.forEach(function (p) { max = Math.max(max, p.mean); });
+    max = Math.max(max, 0.001);
+
+    var W = 100, H = 22;
+    var d = use.map(function (p, i) {
+        var x = (i / (use.length - 1)) * W;
+        var y = H - (p.mean / max) * (H - 2) - 1;
+        return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+
+    return '<svg class="en-spark' + (hot ? " unusual" : "") +
+        '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+        '<polyline points="' + d + '"></polyline></svg>';
+}
 
 function renderTop() {
     var box = $id("en-top5-body");
@@ -588,7 +634,7 @@ function renderTop() {
         head.textContent = RANGE_LABEL[r];
     }
 
-    var list = feeds.top(r, 5);
+    var list = feeds.top(r, TOP_N);
     if (!list.length) {
         box.innerHTML = '<div class="en-wait">' +
             (feeds.loaded ? "Nothing drawing" : "Loading") + '</div>';
@@ -599,14 +645,22 @@ function renderTop() {
 
     box.innerHTML = list.map(function (d, i) {
         var w = Math.max(2, (d.value / max) * 100);
+        /* Cost for a period is the energy times the rate. In NOW mode the
+           figure is watts, so the useful money number is what it costs to run
+           at this draw for a day rather than a cost for an instant. */
+        var cost = showCost
+            ? (r === "now" ? feeds.cost((d.value * 24) / 1000) : feeds.cost(d.value))
+            : null;
         return '<div class="en-bar-row' + (d.unusual ? " unusual" : "") +
             (d.key === selected ? " on" : "") + '" data-device="' + d.key + '">' +
             '<span class="en-bar-rank">' + (i + 1) + '</span>' +
             '<span class="en-bar-name">' + escapeText(d.name) + '</span>' +
-            '<span class="en-bar-val">' + valueText(d.value) +
-            (showCost && r !== "now"
-                ? ' <i>' + money(feeds.cost(d.value)) + '</i>' : '') +
-            '</span>' +
+            '<span class="en-bar-val">' + valueText(d.value) + '</span>' +
+            (cost !== null
+                ? '<span class="en-bar-cost">' + money(cost) +
+                  (r === "now" ? '<em>/day</em>' : '') + '</span>'
+                : '<span class="en-bar-cost"></span>') +
+            sparkline(d.key, d.unusual) +
             '<span class="en-bar-track"><i style="width:' + w.toFixed(1) +
             '%"></i></span>' +
             '</div>';
@@ -690,31 +744,46 @@ function drawHouseChart() {
     }
 
     /* Where a big load came on. */
+    /* Switch on markers. Two loads coming on minutes apart used to print their
+       labels on top of each other, so the labels take the first of three rows
+       that is clear at this x rather than all sharing one. */
     var marks = feeds.switchOns(curve);
     ctx.textAlign = "left";
-    var lastLabelX = -1e9;
+    var rowEnd = [-1e9, -1e9, -1e9];
+    var rowY = [top + 10, top + 21, top + 32];
     marks.slice(-6).forEach(function (m) {
         var x = X(m.t), y = Y(m.w);
-        ctx.strokeStyle = "rgba(77,255,176,.65)";
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, top + 2); ctx.stroke();
-        ctx.beginPath(); ctx.arc(x, y, 2.4, 0, Math.PI * 2);
-        ctx.fillStyle = ACCENT; ctx.fill();
         ctx.font = "9px Menlo, Consolas, monospace";
         var label = m.name;
         var wide = ctx.measureText(label).width;
-        /* Two loads coming on close together stacked their labels on top of
-           one another. The tick still shows, the second label does not. */
-        if (x - lastLabelX > wide + 10) {
+
+        /* Right align the label when it would run off the end of the chart. */
+        var rightAligned = x + 4 + wide > w - right;
+        var x0 = rightAligned ? x - 4 - wide : x + 4;
+        var x1 = x0 + wide;
+
+        var row = -1;
+        for (var r = 0; r < rowEnd.length; r++) {
+            if (x0 > rowEnd[r] + 8) { row = r; break; }
+        }
+
+        ctx.strokeStyle = "rgba(77,255,176,.65)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        /* The leader stops just under whichever row the label landed in, so
+           the tick and its name read as one mark. */
+        ctx.lineTo(x, row >= 0 ? rowY[row] + 3 : top + 2);
+        ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = ACCENT; ctx.fill();
+
+        if (row >= 0) {
             ctx.fillStyle = "rgba(77,255,176,.9)";
-            var tx = x + 4;
-            if (tx + wide > w - right) {
-                ctx.textAlign = "right";
-                tx = x - 4;
-            }
-            ctx.fillText(label, tx, top + 10);
+            ctx.textAlign = rightAligned ? "right" : "left";
+            ctx.fillText(label, rightAligned ? x - 4 : x + 4, rowY[row]);
             ctx.textAlign = "left";
-            lastLabelX = x;
+            rowEnd[row] = x1;
         }
         ctx.font = "10px Menlo, Consolas, monospace";
     });

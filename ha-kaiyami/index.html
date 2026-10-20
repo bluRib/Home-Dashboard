@@ -1073,19 +1073,13 @@
                     </em>
                 </div>
                 <div class="hs-body">
+                    <!-- One line, directly under the header and above the
+                         diagram. It used to float inside the flows, where it
+                         sat on top of the device labels. -->
+                    <div id="en-note"></div>
                     <div id="en-sankey">
                         <svg id="en-svg" xmlns="http://www.w3.org/2000/svg"></svg>
                         <canvas id="en-particles"></canvas>
-                    </div>
-                    <!-- Under the diagram, not over it: these used to float on
-                         top of the flow and collided with the device labels. -->
-                    <div id="en-notes">
-                        <div id="en-note"></div>
-                        <div id="en-rate-note">
-                            <b>COST HIDDEN</b>No energy price is set in Home
-                            Assistant's energy configuration, so no cost is shown
-                            rather than a guessed one.
-                        </div>
                     </div>
                     <div id="en-tip"></div>
                     <div id="en-wipe"></div>

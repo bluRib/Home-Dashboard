@@ -31,9 +31,10 @@ var HOUSE_METER = null;
  * energy/info reports no cost sensors. getPrefs() below still reads the price
  * and prefers it if one is ever configured.
  *
- * Until a rate exists, cost is hidden rather than guessed. window.HA_CONFIG
- * can supply one as energyRateCents without a rebuild. */
-var RATE_CENTS = null;
+ * Jovan's rate is 12 cents per kWh. Home Assistant's own price still wins if
+ * one is ever configured there, and window.HA_CONFIG can override this as
+ * energyRateCents without a rebuild. Set it back to null to hide cost. */
+var RATE_CENTS = 12;
 
 var CATEGORIES = [
     { key: "homelab",  label: "Homelab" },
@@ -264,12 +265,31 @@ EnergyFeeds.prototype._state = function (id) {
     return (this.ha && this.ha.states) ? this.ha.states.get(id) : null;
 };
 
-EnergyFeeds.prototype.watts = function (device) {
+/* The live reading, straight off the entity. Only _window uses this. */
+EnergyFeeds.prototype._readWatts = function (device) {
     var s = this._state(device.power);
     if (!s || s.state === "unavailable" || s.state === "unknown") {
         return null;
     }
     return num(s.state);
+};
+
+/* One sampling of every power sensor, plus a cache of the ranges derived from
+ * it. Everything a render pass asks for comes out of the same window, so the
+ * status row, the diagram and the lists cannot disagree about a number. */
+EnergyFeeds.prototype._window = function () {
+    var self = this;
+    var now = Date.now();
+    if (!this._win || now - this._win.at > SNAPSHOT_MS) {
+        var watts = {};
+        DEVICES.forEach(function (d) { watts[d.key] = self._readWatts(d); });
+        this._win = { at: now, watts: watts, byRange: {} };
+    }
+    return this._win;
+};
+
+EnergyFeeds.prototype.watts = function (device) {
+    return this._window().watts[device.key];
 };
 
 /* A name like "shelly1pmminig3-5432045494b4" is the factory device id, not
@@ -315,26 +335,22 @@ EnergyFeeds.prototype.areaOf = function (device) {
 
 /* ---- the devices, assembled --------------------------------------------------- */
 
-/* Shorter than EnergyView's refresh tick, so each pass recomputes once and
- * every panel inside that pass shares the one result. */
+/* Shorter than EnergyView's refresh tick, so each pass opens a fresh window
+ * and every panel inside that pass reads the same one. */
 var SNAPSHOT_MS = 1500;
 
 /* range is "now", "today", "week" or "month". */
 EnergyFeeds.prototype.devices = function (range) {
     var self = this;
 
-    /* Every panel on this screen asks for the same list within a few
-       milliseconds of the others. Without this they each sampled the live
-       power sensors at a slightly different instant and one server appeared
-       as three different numbers on one screen. */
-    var now = Date.now();
-    if (this._snap && this._snap.range === range && now - this._snap.at < SNAPSHOT_MS) {
-        return this._snap.list;
+    var win = this._window();
+    if (win.byRange[range]) {
+        return win.byRange[range];
     }
     var today = startOfDay();
 
     var list = DEVICES.map(function (d) {
-        var w = self.watts(d);
+        var w = win.watts[d.key];
         var day = self.daily[d.key] || {};
         var avgW = self.averageWatts(d.key);
 
@@ -370,7 +386,7 @@ EnergyFeeds.prototype.devices = function (range) {
         };
     });
 
-    this._snap = { range: range, at: now, list: list };
+    win.byRange[range] = list;
     return list;
 };
 
@@ -440,7 +456,12 @@ EnergyFeeds.prototype.categories = function (range) {
             devices: mine,
             value: mine.reduce(function (a, d) { return a + d.value; }, 0),
             watts: mine.reduce(function (a, d) { return a + d.watts; }, 0),
-            unusual: mine.some(function (d) { return d.unusual; })
+            /* Deliberately not "any of my devices is unusual". A category is a
+               sum, and a sum is never the thing drawing too much. Rolling it
+               up turned Kitchen orange whenever the freezer cycled, and with
+               it the ribbon out of the root, so the whole house read as an
+               alarm. Orange stays on the one device and its own link. */
+            unusualCount: mine.filter(function (d) { return d.unusual; }).length
         };
     }).filter(function (c) { return c.devices.length > 0; });
 };
@@ -476,10 +497,12 @@ EnergyFeeds.prototype.flow = function (range, only) {
            a node of its own with nothing flowing through it. */
         var from = root;
         if (!only) {
+            /* No unusual flag on a category node or a category link: see
+               categories() above. */
             from = node("cat:" + c.key, c.label, "category",
-                        { cat: c.key, unusual: c.unusual, value: c.value });
+                        { cat: c.key, value: c.value });
             links.push({ source: root, target: from, value: c.value,
-                         kind: "category", cat: c.key, unusual: c.unusual });
+                         kind: "category", cat: c.key });
         }
         c.devices.forEach(function (d) {
             var di = node("dev:" + d.key, d.name, "device",
