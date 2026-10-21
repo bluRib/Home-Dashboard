@@ -240,11 +240,7 @@ var onSwitch = function(view){
         }, 3000);
 
     } else if(system.key === "homelab"){
-        /* A placeholder screen for now: nothing scrapes Proxmox or the
-           services yet, so there is no data to draw. It still goes through
-           init then show so the splash covers the same three seconds the
-           other systems take. */
-        HomelabView.init();
+        HomelabView.init(ha);
 
         setTimeout(function(){
             active = "homelab";

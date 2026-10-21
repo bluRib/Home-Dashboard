@@ -367,10 +367,14 @@ function nodeMarkup(n, i, fontPx, charW, room) {
     }
 
     /* Labels sit left of the last column and right of everything else, so
-       nothing runs off either edge. */
+       nothing runs off either edge. The gateway is the exception: the heaviest
+       link on the diagram leaves it horizontally at exactly the height of its
+       own label, which buried the name inside the ribbon, so it goes above the
+       dot where nothing is behind it. */
+    var above = n.kind === "gateway";
     var right = n.col >= 5;
-    var tx = right ? n.x - r - 5 : n.x + r + 5;
-    var anchor = right ? "end" : "start";
+    var tx = above ? n.x : (right ? n.x - r - 5 : n.x + r + 5);
+    var anchor = above ? "middle" : (right ? "end" : "start");
     var maxChars = Math.floor(room / charW);
     if (label.length > maxChars && maxChars > 4) {
         label = label.slice(0, maxChars - 1) + "…";
@@ -409,10 +413,14 @@ function nodeMarkup(n, i, fontPx, charW, room) {
     /* Name on one line, its reading on the next. Side by side they were twice
        as wide and ran into the neighbouring column. */
     var y1 = sub ? n.y - fontPx * 0.52 : n.y;
+    if (above) {
+        y1 = n.y - r - fontPx * 0.7;
+    }
     return shape +
         '<text class="nw-label nw-label-' + n.kind + (bad ? " bad" : "") +
         '" x="' + tx + '" y="' + y1 + '" text-anchor="' + anchor +
-        '" dominant-baseline="middle" data-node="' + i + '">' +
+        '" dominant-baseline="' + (above ? "auto" : "middle") +
+        '" data-node="' + i + '">' +
         '<tspan class="nw-label-name" x="' + tx + '">' + escapeText(label) + '</tspan>' +
         (sub ? '<tspan class="nw-label-sub" x="' + tx + '" dy="' +
                (fontPx * 1.06).toFixed(1) + '">' + escapeText(sub) + '</tspan>' : '') +
@@ -615,7 +623,8 @@ function renderWan() {
                 '<span><i>SPEEDTEST</i>' +
                     (w.latency ? Math.round(w.latency) + " ms" : "n/a") + '</span>' +
                 '<span><i>UPTIME</i>' +
-                    (w.uptimePercent >= 0 ? w.uptimePercent + "%" : "n/a") + '</span>' +
+                    (w.uptimePercent >= 0
+                        ? w.uptimePercent.toFixed(2) + "%" : "n/a") + '</span>' +
             '</div>' +
             '<div class="nw-wan-sub">' + escapeText(provider) +
                 ', priority ' + (w.priority || "n/a") + '</div>' +

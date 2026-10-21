@@ -1129,23 +1129,76 @@
 
         </div>
 
-        <!-- HOMELAB, a placeholder until the screen is built. It is a real
-             screen in the switch so the folder, the terminal and the splash
-             can be verified end to end now rather than at the same time as
-             the panels that will fill it. -->
+        <!-- The Homelab screen. The map is drawn by HomelabView; panels
+             whose source is not standing up yet say what they are waiting on
+             rather than showing a zero. -->
         <div id="homelab-screen">
-            <div id="hl-placeholder">
-                <div id="hl-title">HOMELAB</div>
-                <div id="hl-await">AWAITING DATA</div>
-                <div id="hl-sub">
-                    Proxmox red, grey and blu. Virtual machines and containers.
-                    Frigate. Services. Backups. UPS.
+
+            <div id="hl-status">
+                <div class="hl-stat" id="hl-stat-nodes"><b>--</b><span>Hosts seen</span></div>
+                <div class="hl-stat" id="hl-stat-guests"><b>--</b><span>Guests running</span></div>
+                <div class="hl-stat" id="hl-stat-services"><b>--</b><span>Services up</span></div>
+                <div class="hl-stat" id="hl-stat-alerts"><b>--</b><span>Active alerts</span></div>
+            </div>
+
+            <div class="hl-panel" id="hl-map">
+                <div class="hs-head">Homelab Map <em>Click a host, open the singles cluster</em></div>
+                <div class="hs-body">
+                    <div id="hl-map-body">
+                        <svg id="hl-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                        <canvas id="hl-pulses"></canvas>
+
+                        <div id="hl-detail">
+                            <div id="hl-detail-head">
+                                <span id="hl-detail-name">Host</span>
+                                <span id="hl-detail-sub"></span>
+                                <button type="button" id="hl-detail-close">ESC</button>
+                            </div>
+                            <div id="hl-detail-body">
+                                <div id="hl-detail-rows"></div>
+                                <div id="hl-detail-chart">
+                                    <canvas id="hl-detail-canvas"></canvas>
+                                </div>
+                                <div id="hl-detail-services"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="hl-panel" id="hl-power">
+                <div class="hs-head">Power and UPS <em>Live</em></div>
+                <div class="hs-body">
+                    <div id="hl-power-body"></div>
+                </div>
+            </div>
+
+            <div class="hl-panel" id="hl-services">
+                <div class="hs-head">Services <em id="hl-services-note"></em></div>
+                <div class="hs-body">
+                    <div id="hl-services-body"></div>
+                </div>
+            </div>
+
+            <div class="hl-panel" id="hl-ha">
+                <div class="hs-head">Home Assistant <em>Live</em></div>
+                <div class="hs-body">
+                    <div id="hl-ha-body"></div>
+                </div>
+            </div>
+
+            <div class="hl-panel" id="hl-storage">
+                <div class="hs-head">Storage and Backups</div>
+                <div class="hs-body">
+                    <div id="hl-storage-body"></div>
+                </div>
+            </div>
+
             <div id="hl-clock">
                 <div id="hl-time">--:--:--</div>
                 <div id="hl-date"></div>
             </div>
+
         </div>
 
         <!-- The Energy screen. The flow diagram is drawn by EnergyView with

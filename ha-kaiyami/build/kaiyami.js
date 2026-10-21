@@ -70,10 +70,10 @@
           },
           // Get the Nth element in the matched element set OR
           // Get the whole matched element set as a clean array
-          get: function(num4) {
-            return num4 != null ? (
+          get: function(num5) {
+            return num5 != null ? (
               // Return just the one element from the set
-              num4 < 0 ? this[num4 + this.length] : this[num4]
+              num5 < 0 ? this[num5 + this.length] : this[num5]
             ) : (
               // Return all the elements in a clean array
               slice.call(this)
@@ -3684,7 +3684,7 @@
             }
           },
           css: function(elem, name, extra, styles) {
-            var val, num4, hooks, origName = jQuery.camelCase(name);
+            var val, num5, hooks, origName = jQuery.camelCase(name);
             name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(elem.style, origName));
             hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
             if (hooks && "get" in hooks) {
@@ -3697,8 +3697,8 @@
               val = cssNormalTransform[name];
             }
             if (extra === "" || extra) {
-              num4 = parseFloat(val);
-              return extra === true || jQuery.isNumeric(num4) ? num4 || 0 : val;
+              num5 = parseFloat(val);
+              return extra === true || jQuery.isNumeric(num5) ? num5 || 0 : val;
             }
             return val;
           }
@@ -3748,11 +3748,11 @@
         }, function(prefix, suffix) {
           jQuery.cssHooks[prefix + suffix] = {
             expand: function(value) {
-              var i = 0, expanded2 = {}, parts = typeof value === "string" ? value.split(" ") : [value];
+              var i = 0, expanded3 = {}, parts = typeof value === "string" ? value.split(" ") : [value];
               for (; i < 4; i++) {
-                expanded2[prefix + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
+                expanded3[prefix + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
               }
-              return expanded2;
+              return expanded3;
             }
           };
           if (!rmargin.test(prefix)) {
@@ -4747,7 +4747,7 @@
         function inspectPrefiltersOrTransports(structure, options, originalOptions, jqXHR) {
           var inspected = {}, seekingTransport = structure === transports;
           function inspect(dataType) {
-            var selected5;
+            var selected6;
             inspected[dataType] = true;
             jQuery.each(structure[dataType] || [], function(_, prefilterOrFactory) {
               var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
@@ -4756,10 +4756,10 @@
                 inspect(dataTypeOrTransport);
                 return false;
               } else if (seekingTransport) {
-                return !(selected5 = dataTypeOrTransport);
+                return !(selected6 = dataTypeOrTransport);
               }
             });
-            return selected5;
+            return selected6;
           }
           return inspect(options.dataTypes[0]) || !inspected["*"] && inspect("*");
         }
@@ -8995,30 +8995,30 @@
       })(function(moment) {
         var weekEndings = "vas\xE1rnap h\xE9tf\u0151n kedden szerd\xE1n cs\xFCt\xF6rt\xF6k\xF6n p\xE9nteken szombaton".split(" ");
         function translate(number, withoutSuffix, key, isFuture) {
-          var num4 = number, suffix;
+          var num5 = number, suffix;
           switch (key) {
             case "s":
               return isFuture || withoutSuffix ? "n\xE9h\xE1ny m\xE1sodperc" : "n\xE9h\xE1ny m\xE1sodperce";
             case "m":
               return "egy" + (isFuture || withoutSuffix ? " perc" : " perce");
             case "mm":
-              return num4 + (isFuture || withoutSuffix ? " perc" : " perce");
+              return num5 + (isFuture || withoutSuffix ? " perc" : " perce");
             case "h":
               return "egy" + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "hh":
-              return num4 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
+              return num5 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "d":
               return "egy" + (isFuture || withoutSuffix ? " nap" : " napja");
             case "dd":
-              return num4 + (isFuture || withoutSuffix ? " nap" : " napja");
+              return num5 + (isFuture || withoutSuffix ? " nap" : " napja");
             case "M":
               return "egy" + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "MM":
-              return num4 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
+              return num5 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "y":
               return "egy" + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
             case "yy":
-              return num4 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
+              return num5 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
           }
           return "";
         }
@@ -10975,9 +10975,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num4) {
+        function plural(word, num5) {
           var forms = word.split("_");
-          return num4 % 10 === 1 && num4 % 100 !== 11 ? forms[0] : num4 % 10 >= 2 && num4 % 10 <= 4 && (num4 % 100 < 10 || num4 % 100 >= 20) ? forms[1] : forms[2];
+          return num5 % 10 === 1 && num5 % 100 !== 11 ? forms[0] : num5 % 10 >= 2 && num5 % 10 <= 4 && (num5 % 100 < 10 || num5 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -12173,9 +12173,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num4) {
+        function plural(word, num5) {
           var forms = word.split("_");
-          return num4 % 10 === 1 && num4 % 100 !== 11 ? forms[0] : num4 % 10 >= 2 && num4 % 10 <= 4 && (num4 % 100 < 10 || num4 % 100 >= 20) ? forms[1] : forms[2];
+          return num5 % 10 === 1 && num5 % 100 !== 11 ? forms[0] : num5 % 10 >= 2 && num5 % 10 <= 4 && (num5 % 100 < 10 || num5 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -12942,8 +12942,8 @@
           checkOverflow(config);
           extend(this, config);
         }
-        function Duration(duration2) {
-          var normalizedInput = normalizeObjectUnits(duration2), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
+        function Duration(duration3) {
+          var normalizedInput = normalizeObjectUnits(duration3), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
           this._milliseconds = +milliseconds + seconds * 1e3 + // 1000
           minutes * 6e4 + // 1000 * 60
           hours * 36e5;
@@ -12989,8 +12989,8 @@
           }
           return (sign ? forceSign ? "+" : "" : "-") + output;
         }
-        function addOrSubtractDurationFromMoment(mom, duration2, isAdding, updateOffset) {
-          var milliseconds = duration2._milliseconds, days = duration2._days, months = duration2._months;
+        function addOrSubtractDurationFromMoment(mom, duration3, isAdding, updateOffset) {
+          var milliseconds = duration3._milliseconds, days = duration3._days, months = duration3._months;
           updateOffset = updateOffset == null ? true : updateOffset;
           if (milliseconds) {
             mom._d.setTime(+mom._d + milliseconds * isAdding);
@@ -13877,23 +13877,23 @@
           return moment(input * 1e3);
         };
         moment.duration = function(input, key) {
-          var duration2 = input, match = null, sign, ret, parseIso;
+          var duration3 = input, match = null, sign, ret, parseIso;
           if (moment.isDuration(input)) {
-            duration2 = {
+            duration3 = {
               ms: input._milliseconds,
               d: input._days,
               M: input._months
             };
           } else if (typeof input === "number") {
-            duration2 = {};
+            duration3 = {};
             if (key) {
-              duration2[key] = input;
+              duration3[key] = input;
             } else {
-              duration2.milliseconds = input;
+              duration3.milliseconds = input;
             }
           } else if (!!(match = aspNetTimeSpanJsonRegex.exec(input))) {
             sign = match[1] === "-" ? -1 : 1;
-            duration2 = {
+            duration3 = {
               y: 0,
               d: toInt(match[DATE]) * sign,
               h: toInt(match[HOUR]) * sign,
@@ -13907,7 +13907,7 @@
               var res = inp && parseFloat(inp.replace(",", "."));
               return (isNaN(res) ? 0 : res) * sign;
             };
-            duration2 = {
+            duration3 = {
               y: parseIso(match[2]),
               M: parseIso(match[3]),
               d: parseIso(match[4]),
@@ -13917,7 +13917,7 @@
               w: parseIso(match[8])
             };
           }
-          ret = new Duration(duration2);
+          ret = new Duration(duration3);
           if (moment.isDuration(input) && input.hasOwnProperty("_lang")) {
             ret._lang = input._lang;
           }
@@ -23132,7 +23132,7 @@
           var parts = morph.name.match(pattern);
           if (parts && parts.length > 1) {
             var label = parts[1];
-            var num4 = parts[2];
+            var num5 = parts[2];
             if (!animations[label]) animations[label] = { start: Infinity, end: -Infinity };
             var animation = animations[label];
             if (i < animation.start) animation.start = i;
@@ -31520,15 +31520,15 @@
           this.currentTime += delta * this.timeScale;
           var vector;
           var types = ["pos", "rot", "scl"];
-          var duration2 = this.data.length;
-          if (this.loop === true && this.currentTime > duration2) {
-            this.currentTime %= duration2;
+          var duration3 = this.data.length;
+          if (this.loop === true && this.currentTime > duration3) {
+            this.currentTime %= duration3;
             this.reset();
-          } else if (this.loop === false && this.currentTime > duration2) {
+          } else if (this.loop === false && this.currentTime > duration3) {
             this.stop();
             return;
           }
-          this.currentTime = Math.min(this.currentTime, duration2);
+          this.currentTime = Math.min(this.currentTime, duration3);
           for (var h = 0, hl = this.hierarchy.length; h < hl; h++) {
             var object = this.hierarchy[h];
             var animationCache = object.animationCache;
@@ -31701,11 +31701,11 @@
       THREE.KeyFrameAnimation.prototype.update = function(delta) {
         if (this.isPlaying === false) return;
         this.currentTime += delta * this.timeScale;
-        var duration2 = this.data.length;
-        if (this.loop === true && this.currentTime > duration2) {
-          this.currentTime %= duration2;
+        var duration3 = this.data.length;
+        if (this.loop === true && this.currentTime > duration3) {
+          this.currentTime %= duration3;
         }
-        this.currentTime = Math.min(this.currentTime, duration2);
+        this.currentTime = Math.min(this.currentTime, duration3);
         for (var h = 0, hl = this.hierarchy.length; h < hl; h++) {
           var object = this.hierarchy[h];
           var node = this.data.hierarchy[h];
@@ -31767,7 +31767,7 @@
           this.isPlaying = false;
         },
         update: /* @__PURE__ */ function() {
-          var lastFrame3 = 0;
+          var lastFrame4 = 0;
           var currentFrame = 0;
           return function(delta) {
             if (this.isPlaying === false) return;
@@ -31779,14 +31779,14 @@
             var interpolation = this.duration / this.frames;
             var frame = Math.floor(this.currentTime / interpolation);
             if (frame != currentFrame) {
-              this.mesh.morphTargetInfluences[lastFrame3] = 0;
+              this.mesh.morphTargetInfluences[lastFrame4] = 0;
               this.mesh.morphTargetInfluences[currentFrame] = 1;
               this.mesh.morphTargetInfluences[frame] = 0;
-              lastFrame3 = currentFrame;
+              lastFrame4 = currentFrame;
               currentFrame = frame;
             }
             this.mesh.morphTargetInfluences[frame] = this.currentTime % interpolation / interpolation;
-            this.mesh.morphTargetInfluences[lastFrame3] = 1 - this.mesh.morphTargetInfluences[frame];
+            this.mesh.morphTargetInfluences[lastFrame4] = 1 - this.mesh.morphTargetInfluences[frame];
           };
         }()
       };
@@ -34013,7 +34013,7 @@
           var chunks = morph.name.match(pattern);
           if (chunks && chunks.length > 1) {
             var name = chunks[1];
-            var num4 = chunks[2];
+            var num5 = chunks[2];
             if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: -Infinity };
             var range3 = frameRanges[name];
             if (i < range3.start) range3.start = i;
@@ -34048,10 +34048,10 @@
           animation.duration = (animation.end - animation.start) / animation.fps;
         }
       };
-      THREE.MorphBlendMesh.prototype.setAnimationDuration = function(name, duration2) {
+      THREE.MorphBlendMesh.prototype.setAnimationDuration = function(name, duration3) {
         var animation = this.animationsMap[name];
         if (animation) {
-          animation.duration = duration2;
+          animation.duration = duration3;
           animation.fps = (animation.end - animation.start) / animation.duration;
         }
       };
@@ -34076,12 +34076,12 @@
         return time;
       };
       THREE.MorphBlendMesh.prototype.getAnimationDuration = function(name) {
-        var duration2 = -1;
+        var duration3 = -1;
         var animation = this.animationsMap[name];
         if (animation) {
-          duration2 = animation.duration;
+          duration3 = animation.duration;
         }
-        return duration2;
+        return duration3;
       };
       THREE.MorphBlendMesh.prototype.playAnimation = function(name) {
         var animation = this.animationsMap[name];
@@ -35832,15 +35832,15 @@
         var scanBottom = fy(0) - 2;
         var scanTop = fy(TOP) + 2;
         var firstRun = null;
-        var lastFrame3 = Date.now();
+        var lastFrame4 = Date.now();
         return {
           tick: function() {
             var now = Date.now();
             if (firstRun === null) {
               firstRun = now;
             }
-            var dt = Math.min(now - lastFrame3, 100);
-            lastFrame3 = now;
+            var dt = Math.min(now - lastFrame4, 100);
+            lastFrame4 = now;
             var age = now - firstRun;
             var fade = Math.min(1, age / 3e3);
             roomMaterial.opacity = fade;
@@ -36283,9 +36283,9 @@
         for (var field in object) {
           _valuesStart[field] = parseFloat(object[field], 10);
         }
-        this.to = function(properties, duration2) {
-          if (duration2 !== void 0) {
-            _duration = duration2;
+        this.to = function(properties, duration3) {
+          if (duration3 !== void 0) {
+            _duration = duration3;
           }
           _valuesEnd = properties;
           return this;
@@ -39437,7 +39437,7 @@
         return 1 / (1 + Math.exp(-t * 12 + 6));
       };
       Utils.shadeColor = function(color, percent) {
-        var num4 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num4 >> 16) + amt, G = (num4 >> 8 & 255) + amt, B = (num4 & 255) + amt;
+        var num5 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num5 >> 16) + amt, G = (num5 >> 8 & 255) + amt, B = (num5 & 255) + amt;
         return "#" + (16777216 + (R < 255 ? R < 1 ? 0 : R : 255) * 65536 + (G < 255 ? G < 1 ? 0 : G : 255) * 256 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
       };
       Utils.drawCurvedRectangle = function(ctx, left, top, width, height, radius) {
@@ -49084,10 +49084,10 @@
           document.body.appendChild(backdrop);
         }
         function createPhoneSVG() {
-          var svg3 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg3.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-          svg3.setAttribute("id", "pleaserotate-graphic");
-          svg3.setAttribute("viewBox", "0 0 250 250");
+          var svg4 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg4.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+          svg4.setAttribute("id", "pleaserotate-graphic");
+          svg4.setAttribute("viewBox", "0 0 250 250");
           var group2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group2.setAttribute("id", "pleaserotate-graphic-path");
           if (options.forcePortrait) {
@@ -49095,9 +49095,9 @@
           }
           var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", "M190.5,221.3c0,8.3-6.8,15-15,15H80.2c-8.3,0-15-6.8-15-15V28.7c0-8.3,6.8-15,15-15h95.3c8.3,0,15,6.8,15,15V221.3zM74.4,33.5l-0.1,139.2c0,8.3,0,17.9,0,21.5c0,3.6,0,6.9,0,7.3c0,0.5,0.2,0.8,0.4,0.8s7.2,0,15.4,0h75.6c8.3,0,15.1,0,15.2,0s0.2-6.8,0.2-15V33.5c0-2.6-1-5-2.6-6.5c-1.3-1.3-3-2.1-4.9-2.1H81.9c-2.7,0-5,1.6-6.3,4C74.9,30.2,74.4,31.8,74.4,33.5zM127.7,207c-5.4,0-9.8,5.1-9.8,11.3s4.4,11.3,9.8,11.3s9.8-5.1,9.8-11.3S133.2,207,127.7,207z");
-          svg3.appendChild(group2);
+          svg4.appendChild(group2);
           group2.appendChild(path);
-          return svg3;
+          return svg4;
         }
         function setVisibility(visible) {
           var backdropElement = document.getElementById("pleaserotate-backdrop");
@@ -56301,6 +56301,622 @@
     }
   });
 
+  // src/HomelabFeeds.js
+  function beszelConfig() {
+    var c2 = window.HA_CONFIG || {};
+    return {
+      url: c2.beszelUrl || "http://10.69.2.18:8090",
+      user: c2.beszelUser || null,
+      pass: c2.beszelPass || null
+    };
+  }
+  function num3(v) {
+    if (v === null || v === void 0 || v === "" || v === "unknown" || v === "unavailable") {
+      return null;
+    }
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function promBase() {
+    var c2 = window.HA_CONFIG || {};
+    return (c2.prometheusUrl || PROM).replace(/\/+$/, "");
+  }
+  function instant(expr) {
+    return fetch(
+      promBase() + "/api/v1/query?query=" + encodeURIComponent(expr),
+      { mode: "cors" }
+    ).then(function(r) {
+      if (!r.ok) {
+        throw new Error("prometheus " + r.status);
+      }
+      return r.json();
+    }).then(function(j) {
+      if (j.status !== "success") {
+        throw new Error("query failed");
+      }
+      return j.data.result || [];
+    });
+  }
+  function rangeQuery(expr, startMs, endMs, stepSec) {
+    var url = promBase() + "/api/v1/query_range?query=" + encodeURIComponent(expr) + "&start=" + Math.floor(startMs / 1e3) + "&end=" + Math.floor(endMs / 1e3) + "&step=" + stepSec;
+    return fetch(url, { mode: "cors" }).then(function(r) {
+      if (!r.ok) {
+        throw new Error("prometheus " + r.status);
+      }
+      return r.json();
+    }).then(function(j) {
+      return j.data && j.data.result || [];
+    });
+  }
+  function HomelabFeeds(ha2, onUpdate) {
+    this.ha = ha2;
+    this.onUpdate = onUpdate || function() {
+    };
+    this.sources = JSON.parse(JSON.stringify(SOURCES));
+    this.unifi = {};
+    this.pve = null;
+    this.kuma = null;
+    this.hostStats = null;
+    this.beszelToken = null;
+    this.error = null;
+    this._timers = [];
+    this._history = {};
+  }
+  var PROM, SOURCES, HOSTS, SERVICES, HA_ENTITIES, UPS, POWER, POLL_MS, DAY_MS2, BACKUP_STALE_HOURS;
+  var init_HomelabFeeds = __esm({
+    "src/HomelabFeeds.js"() {
+      PROM = "http://10.69.2.134:9090";
+      SOURCES = {
+        ha: { label: "Home Assistant", live: false },
+        unifi: { label: "Prometheus, unpoller", live: false },
+        pve: { label: "prometheus-pve-exporter", live: false },
+        host: { label: "node_exporter or Beszel", live: false },
+        kuma: { label: "Uptime Kuma", live: false },
+        storage: { label: "TrueNAS and PBS exporters", live: false }
+      };
+      HOSTS = [
+        { ip: "10.69.2.40", name: "Proxmox red", kind: "pve" },
+        { ip: "10.69.2.50", name: "Proxmox blu", kind: "pve" },
+        { ip: "10.69.2.60", name: "Proxmox grey", kind: "pve" },
+        { ip: "10.69.2.134", name: "Frigate", kind: "docker" },
+        { ip: "10.69.2.222", name: "Media", kind: "docker" },
+        { ip: "10.69.2.5", name: "Trusted", kind: "docker" },
+        { ip: "10.69.2.184", name: "Paperless", kind: "docker" },
+        { ip: "10.69.2.18", name: "Newt", kind: "docker" },
+        { ip: "10.69.2.41", name: "PBS", kind: "single" },
+        { ip: "10.69.2.180", name: "TrueNAS", kind: "single" },
+        { ip: "10.69.2.70", name: "Immich", kind: "single" },
+        { ip: "10.69.2.3", name: "Pi-hole", kind: "single" },
+        { ip: "10.69.2.10", name: "Zigbee2MQTT", kind: "single" },
+        { ip: "10.69.2.29", name: "Z-Wave JS", kind: "single" },
+        { ip: "10.69.2.140", name: "SLZB-06", kind: "single" },
+        { ip: "10.69.2.133", name: "Node-RED", kind: "single" },
+        { ip: "10.69.2.112", name: "PostgreSQL", kind: "single" },
+        { ip: "10.69.2.167", name: "Semaphore", kind: "single" },
+        { ip: "10.69.2.163", name: "LoRa", kind: "single" },
+        { ip: "10.69.2.77", name: "PeaNut", kind: "single" },
+        { ip: "10.69.2.151", name: "Home Assistant", kind: "single" }
+      ];
+      SERVICES = [
+        { host: "10.69.2.40", name: "Proxmox Red", group: "System", port: 8006, https: true },
+        { host: "10.69.2.50", name: "Proxmox Blue", group: "System", port: 8006, https: true },
+        { host: "10.69.2.60", name: "Proxmox Grey", group: "System", port: 8006, https: true },
+        { host: "10.69.2.41", name: "Proxmox Backup Server", group: "System", port: 8007, https: true },
+        { host: "10.69.2.167", name: "Semaphore", group: "System", port: 3e3 },
+        { host: "10.69.2.222", name: "Arcane Media", group: "Docker", port: 3552 },
+        { host: "10.69.2.5", name: "Arcane Trusted", group: "Docker", port: 3552 },
+        { host: "10.69.2.134", name: "Arcane Frigate", group: "Docker", port: 3552 },
+        { host: "10.69.2.184", name: "Arcane Paperless", group: "Docker", port: 3552 },
+        { host: "10.69.2.18", name: "Arcane Newt", group: "Docker", port: 3552 },
+        { host: "10.69.2.151", name: "Home Assistant", group: "Home Automation", port: 8123 },
+        { host: "10.69.2.10", name: "Zigbee2MQTT", group: "Home Automation", port: 8080 },
+        { host: "10.69.2.29", name: "Z-Wave JS", group: "Home Automation", port: 8091 },
+        { host: "10.69.2.133", name: "Node-RED", group: "Home Automation", port: 1880 },
+        { host: "10.69.2.163", name: "LoRa-the-Explorer", group: "Home Automation", port: 80 },
+        { host: "10.69.2.134", name: "n8n", group: "Home Automation", port: 5678 },
+        { host: "10.69.2.140", name: "SLZB-06", group: "Home Automation", port: 80 },
+        { host: "10.69.1.1", name: "UniFi", group: "Network Management", port: 443, https: true },
+        { host: "10.69.2.3", name: "Pi-hole", group: "Network Management", port: 443, https: true, path: "/admin" },
+        { host: "10.69.2.222", name: "Jellyfin", group: "Media Processing", port: 8096 },
+        { host: "10.69.2.222", name: "SABnzbd", group: "Media Processing", port: 8080 },
+        { host: "10.69.2.222", name: "Prowlarr", group: "Media Processing", port: 9696 },
+        { host: "10.69.2.222", name: "Sonarr", group: "Media Processing", port: 8989 },
+        { host: "10.69.2.222", name: "Radarr", group: "Media Processing", port: 7878 },
+        { host: "10.69.2.222", name: "Jellyseerr", group: "Media Processing", port: 5055 },
+        { host: "10.69.2.18", name: "Beszel", group: "System Monitoring", port: 8090 },
+        { host: "10.69.2.77", name: "PeaNut", group: "System Monitoring", port: 8080 },
+        { host: "10.69.2.5", name: "Uptime Kuma", group: "System Monitoring", port: 3001 },
+        { host: "10.69.2.5", name: "Gotify", group: "System Monitoring", port: 8088 },
+        { host: "10.69.2.134", name: "InfluxDB", group: "Database", port: 8086 },
+        { host: "10.69.2.112", name: "PostgreSQL", group: "Database", port: 80, path: "/adminer/" },
+        { host: "10.69.2.134", name: "Prometheus", group: "Database", port: 9090 },
+        { host: "10.69.2.134", name: "Frigate", group: "Security", port: 5e3 },
+        { host: "10.69.4.160", name: "Reolink Doorbell", group: "Security", port: 80 },
+        { host: "10.69.1.27", name: "Front Yard Camera", group: "Security", port: 80 },
+        { host: "10.69.1.19", name: "Garage Camera", group: "Security", port: 80 },
+        { host: "10.69.1.16", name: "Back Yard Camera", group: "Security", port: 80 },
+        { host: "10.69.2.180", name: "TrueNAS", group: "Storage", port: 443, https: true },
+        { host: "10.69.2.134", name: "Garage S3", group: "Storage", port: 3909 },
+        { host: "10.69.2.5", name: "Gitea", group: "Apps", port: 8080 },
+        { host: "10.69.2.70", name: "Immich", group: "Apps", port: 2283 },
+        { host: "10.69.2.5", name: "Mealie", group: "Apps", port: 9091 },
+        { host: "10.69.2.18", name: "Securo", group: "Apps", port: 3e3 },
+        { host: "10.69.2.184", name: "Paperless-ngx", group: "Documents", port: 8e3 },
+        { host: "10.69.2.184", name: "Paperless-AI", group: "Documents", port: 3e3 },
+        { host: "10.69.2.184", name: "Paperless-GPT", group: "Documents", port: 3002 }
+      ];
+      HA_ENTITIES = {
+        coreUpdate: "update.home_assistant_core_update",
+        osUpdate: "update.home_assistant_operating_system_update",
+        supervisorUpdate: "update.home_assistant_supervisor_update",
+        backupsStale: "binary_sensor.backups_stale",
+        backupState: "sensor.backup_state",
+        backupLast: "sensor.backup_last_successful_automatic_backup",
+        backupNext: "sensor.backup_next_scheduled_automatic_backup",
+        zigbeeEth: "binary_sensor.slzb_06_ethernet",
+        zigbeeNet: "binary_sensor.slzb_06_internet",
+        zigbeeChip: "sensor.slzb_06_zigbee_chip_temp",
+        zigbeeCore: "sensor.slzb_06_core_chip_temp",
+        z2mState: "binary_sensor.zigbee2mqtt_bridge_connection_state",
+        z2mVersion: "sensor.zigbee2mqtt_bridge_version"
+      };
+      UPS = [
+        {
+          key: "servers",
+          label: "Servers UPS",
+          charge: "sensor.servers_battery_charge",
+          load: "sensor.servers_load",
+          volts: "sensor.servers_input_voltage"
+        },
+        {
+          key: "network",
+          label: "Network UPS",
+          charge: "sensor.network_battery_charge",
+          load: "sensor.network_load",
+          volts: "sensor.network_input_voltage"
+        }
+      ];
+      POWER = [
+        { entity: "sensor.server_power_monitoring_power", label: "Server" },
+        { entity: "sensor.mox_power_monitoring_power", label: "Mox" },
+        { entity: "sensor.network_power_monitoring_power", label: "Network" },
+        { entity: "sensor.office_ups_power", label: "Office UPS" },
+        { entity: "sensor.attic_3d_printer_plug_power", label: "USW Switch" }
+      ];
+      POLL_MS = 6e3;
+      DAY_MS2 = 24 * 3600 * 1e3;
+      BACKUP_STALE_HOURS = 26;
+      HomelabFeeds.prototype.start = function() {
+        var self = this;
+        this.poll();
+        this._timers.push(setInterval(function() {
+          self.poll();
+        }, POLL_MS));
+      };
+      HomelabFeeds.prototype.stop = function() {
+        this._timers.forEach(clearInterval);
+        this._timers = [];
+      };
+      HomelabFeeds.prototype.poll = function() {
+        var self = this;
+        this.sources.ha.live = !!(this.ha && this.ha.states && this.ha.states.size > 0);
+        Promise.all([
+          /* Every homelab host is a UniFi client, so this one query gives link
+             state, switch and port, uptime and throughput for all of them. */
+          instant('{__name__=~"unpoller_client_(uptime_seconds|receive_rate_bytes|transmit_rate_bytes)"}').catch(function() {
+            return null;
+          }),
+          /* These two stay empty until the exporters exist. Asking anyway means
+             the screen lights up on its own the moment they do. */
+          instant('{__name__=~"pve_(up|node_info|cpu_usage_ratio|memory_usage_bytes|memory_size_bytes|disk_usage_bytes|disk_size_bytes|uptime_seconds|guest_info)"}').catch(function() {
+            return null;
+          }),
+          instant('{__name__=~"monitor_(status|response_time|cert_days_remaining)"}').catch(function() {
+            return null;
+          })
+        ]).then(function(res) {
+          if (res[0]) {
+            self.sources.unifi.live = res[0].length > 0;
+            var by = {};
+            res[0].forEach(function(s) {
+              var ip = s.metric.ip;
+              if (!ip) {
+                return;
+              }
+              if (!by[ip]) {
+                by[ip] = { m: s.metric };
+              }
+              var n = s.metric.__name__;
+              if (n === "unpoller_client_uptime_seconds") {
+                by[ip].uptime = num3(s.value[1]);
+              }
+              if (n === "unpoller_client_receive_rate_bytes") {
+                by[ip].rx = num3(s.value[1]);
+              }
+              if (n === "unpoller_client_transmit_rate_bytes") {
+                by[ip].tx = num3(s.value[1]);
+              }
+            });
+            self.unifi = by;
+          }
+          self.sources.pve.live = !!(res[1] && res[1].length > 0);
+          self.pve = self.sources.pve.live ? res[1] : null;
+          self.sources.kuma.live = !!(res[2] && res[2].length > 0);
+          self.kuma = self.sources.kuma.live ? res[2] : null;
+          self.onUpdate();
+        });
+        this.pollBeszel();
+      };
+      HomelabFeeds.prototype.pollBeszel = function() {
+        var self = this;
+        var c2 = beszelConfig();
+        if (!c2.user || !c2.pass) {
+          return;
+        }
+        var fetchSystems = function(token) {
+          return fetch(c2.url + "/api/collections/systems/records?perPage=100", {
+            mode: "cors",
+            headers: token ? { Authorization: token } : {}
+          }).then(function(r) {
+            return r.json();
+          });
+        };
+        var go = this.beszelToken ? fetchSystems(this.beszelToken) : fetch(c2.url + "/api/collections/users/auth-with-password", {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identity: c2.user, password: c2.pass })
+        }).then(function(r) {
+          return r.json();
+        }).then(function(j) {
+          self.beszelToken = j.token || null;
+          return fetchSystems(self.beszelToken);
+        });
+        go.then(function(j) {
+          if (j && j.items && j.items.length) {
+            var by = {};
+            j.items.forEach(function(it) {
+              var info = it.info || {};
+              by[it.name] = {
+                name: it.name,
+                host: it.host,
+                status: it.status,
+                cpu: info.cpu !== void 0 ? info.cpu : null,
+                memPct: info.mp !== void 0 ? info.mp : null,
+                diskPct: info.dp !== void 0 ? info.dp : null,
+                uptime: info.u !== void 0 ? info.u : null,
+                temp: info.dt !== void 0 ? info.dt : null
+              };
+            });
+            self.hostStats = by;
+            self.sources.host.live = true;
+          } else {
+            self.sources.host.live = false;
+          }
+          self.onUpdate();
+        }).catch(function() {
+          self.beszelToken = null;
+          self.sources.host.live = false;
+        });
+      };
+      HomelabFeeds.prototype.state = function(id) {
+        var s = this.ha && this.ha.states ? this.ha.states.get(id) : null;
+        return s ? s.state : null;
+      };
+      HomelabFeeds.prototype.numState = function(id) {
+        return num3(this.state(id));
+      };
+      HomelabFeeds.prototype.attr = function(id, key) {
+        var s = this.ha && this.ha.states ? this.ha.states.get(id) : null;
+        return s && s.attributes ? s.attributes[key] : null;
+      };
+      HomelabFeeds.prototype.hosts = function() {
+        var self = this;
+        return HOSTS.map(function(h) {
+          var c2 = self.unifi[h.ip];
+          var stats = self.hostStats ? self.hostStats[h.name] || self.hostStats[h.ip] || null : null;
+          var services = SERVICES.filter(function(s) {
+            return s.host === h.ip;
+          });
+          return {
+            ip: h.ip,
+            name: h.name,
+            kind: h.kind,
+            /* Seen by the controller means the link is up. Not seen is a real
+               state worth showing, not a blank. */
+            seen: !!c2,
+            uptime: c2 ? c2.uptime : null,
+            rx: c2 ? c2.rx || 0 : 0,
+            tx: c2 ? c2.tx || 0 : 0,
+            via: c2 ? c2.m.sw_name || c2.m.ap_name || "" : "",
+            port: c2 ? c2.m.sw_port || "" : "",
+            mac: c2 ? c2.m.mac : "",
+            stats,
+            services,
+            serviceCount: services.length
+          };
+        });
+      };
+      HomelabFeeds.prototype.guests = function() {
+        if (!this.sources.pve.live || !this.pve) {
+          return [];
+        }
+        var by = {};
+        this.pve.forEach(function(s) {
+          var id = s.metric.id;
+          if (!id || id.indexOf("node/") === 0) {
+            return;
+          }
+          if (!by[id]) {
+            by[id] = {
+              id,
+              node: s.metric.node || "",
+              name: s.metric.name || id,
+              type: id.indexOf("qemu/") === 0 ? "VM" : "LXC"
+            };
+          }
+          var n = s.metric.__name__;
+          if (n === "pve_up") {
+            by[id].up = num3(s.value[1]) === 1;
+          }
+          if (n === "pve_cpu_usage_ratio") {
+            by[id].cpu = num3(s.value[1]);
+          }
+          if (n === "pve_memory_usage_bytes") {
+            by[id].mem = num3(s.value[1]);
+          }
+        });
+        return Object.keys(by).map(function(k) {
+          return by[k];
+        });
+      };
+      HomelabFeeds.prototype.homeAssistant = function() {
+        var self = this;
+        if (!this.sources.ha.live) {
+          return { live: false };
+        }
+        var updates = [];
+        this.ha.states.forEach(function(s, id) {
+          if (id.indexOf("update.") === 0 && s.state === "on") {
+            updates.push({
+              id,
+              name: s.attributes && s.attributes.friendly_name || id,
+              installed: s.attributes ? s.attributes.installed_version : null,
+              latest: s.attributes ? s.attributes.latest_version : null
+            });
+          }
+        });
+        var dead = [], failing = [];
+        this.ha.states.forEach(function(s, id) {
+          if (/_node_status$/.test(id) && s.state === "dead") {
+            dead.push(s.attributes && s.attributes.friendly_name || id);
+          }
+          if (/system_software_failure/.test(id) && s.state === "on") {
+            failing.push((s.attributes && s.attributes.friendly_name || id).replace(/\s*System software failure.*$/i, ""));
+          }
+        });
+        var lastBackup = this.state(HA_ENTITIES.backupLast);
+        var backupAgeH = null;
+        if (lastBackup) {
+          var t = Date.parse(lastBackup);
+          if (isFinite(t)) {
+            backupAgeH = (Date.now() - t) / 36e5;
+          }
+        }
+        return {
+          live: true,
+          version: this.attr(HA_ENTITIES.coreUpdate, "installed_version"),
+          latest: this.attr(HA_ENTITIES.coreUpdate, "latest_version"),
+          coreUpdate: this.state(HA_ENTITIES.coreUpdate) === "on",
+          osUpdate: this.state(HA_ENTITIES.osUpdate) === "on",
+          supervisorUpdate: this.state(HA_ENTITIES.supervisorUpdate) === "on",
+          updates: updates.sort(function(a, b) {
+            return a.name.localeCompare(b.name);
+          }),
+          /* No processor or memory entity exists on this instance. The System
+             Monitor integration would add them; until then this says so. */
+          cpu: this.numState("sensor.processor_use"),
+          memory: this.numState("sensor.memory_use_percent"),
+          dbSize: this.numState("sensor.home_assistant_v2_db_size"),
+          zigbee: {
+            eth: this.state(HA_ENTITIES.zigbeeEth) === "on",
+            net: this.state(HA_ENTITIES.zigbeeNet) === "on",
+            chipTemp: this.numState(HA_ENTITIES.zigbeeChip),
+            coreTemp: this.numState(HA_ENTITIES.zigbeeCore),
+            z2m: this.state(HA_ENTITIES.z2mState) === "on",
+            z2mVersion: this.state(HA_ENTITIES.z2mVersion)
+          },
+          zwave: { dead, failing },
+          backups: {
+            stale: this.state(HA_ENTITIES.backupsStale) === "on",
+            state: this.state(HA_ENTITIES.backupState),
+            last: lastBackup,
+            ageHours: backupAgeH,
+            next: this.state(HA_ENTITIES.backupNext)
+          }
+        };
+      };
+      HomelabFeeds.prototype.power = function() {
+        var self = this;
+        if (!this.sources.ha.live) {
+          return { live: false, items: [], total: 0 };
+        }
+        var items = POWER.map(function(p) {
+          return { label: p.label, watts: self.numState(p.entity) };
+        }).filter(function(p) {
+          return p.watts !== null;
+        });
+        return {
+          live: items.length > 0,
+          items,
+          total: items.reduce(function(a, p) {
+            return a + p.watts;
+          }, 0)
+        };
+      };
+      HomelabFeeds.prototype.ups = function() {
+        var self = this;
+        if (!this.sources.ha.live) {
+          return { live: false, units: [] };
+        }
+        var units = UPS.map(function(u) {
+          return {
+            label: u.label,
+            charge: self.numState(u.charge),
+            load: self.numState(u.load),
+            volts: self.numState(u.volts),
+            /* NUT exposes no runtime sensor through this integration. */
+            runtime: null
+          };
+        }).filter(function(u) {
+          return u.charge !== null;
+        });
+        return { live: units.length > 0, units };
+      };
+      HomelabFeeds.prototype.services = function() {
+        var self = this;
+        var hostSeen = {};
+        this.hosts().forEach(function(h) {
+          hostSeen[h.ip] = h.seen;
+        });
+        var kumaBy = {};
+        if (this.sources.kuma.live && this.kuma) {
+          this.kuma.forEach(function(s) {
+            var n = (s.metric.monitor_name || "").toLowerCase();
+            if (!kumaBy[n]) {
+              kumaBy[n] = {};
+            }
+            if (s.metric.__name__ === "monitor_status") {
+              kumaBy[n].status = num3(s.value[1]);
+            }
+            if (s.metric.__name__ === "monitor_response_time") {
+              kumaBy[n].ms = num3(s.value[1]);
+            }
+          });
+        }
+        var groups = {};
+        SERVICES.forEach(function(s) {
+          if (!groups[s.group]) {
+            groups[s.group] = [];
+          }
+          var k = kumaBy[s.name.toLowerCase()] || null;
+          groups[s.group].push({
+            name: s.name,
+            group: s.group,
+            host: s.host,
+            url: (s.https ? "https://" : "http://") + s.host + (s.port === 80 || s.port === 443 ? "" : ":" + s.port) + (s.path || ""),
+            /* The host's link state is known from the controller. Whether the
+               service itself answers is not, until Uptime Kuma is scraped, and
+               the board labels the difference rather than implying one from
+               the other. */
+            hostSeen: hostSeen[s.host] !== false,
+            hostKnown: hostSeen[s.host] !== void 0,
+            status: k ? k.status : null,
+            ms: k ? k.ms : null
+          });
+        });
+        return Object.keys(groups).sort().map(function(g) {
+          return { group: g, items: groups[g] };
+        });
+      };
+      HomelabFeeds.prototype.storage = function() {
+        return { live: this.sources.storage.live, pools: [], datastores: [], backups: [] };
+      };
+      HomelabFeeds.prototype.status = function() {
+        var hosts = this.hosts();
+        var pve = hosts.filter(function(h) {
+          return h.kind === "pve";
+        });
+        var guests = this.guests();
+        var ha2 = this.homeAssistant();
+        var services = this.services();
+        var totalServices = 0, upServices = 0, knownServices = 0;
+        services.forEach(function(g) {
+          g.items.forEach(function(s) {
+            totalServices += 1;
+            if (s.status !== null) {
+              knownServices += 1;
+              if (s.status === 1) {
+                upServices += 1;
+              }
+            }
+          });
+        });
+        var alerts = [];
+        hosts.forEach(function(h) {
+          if (!h.seen) {
+            alerts.push({ kind: "host", text: h.name + " not seen by the controller" });
+          }
+        });
+        if (ha2.live) {
+          if (ha2.backups.stale) {
+            alerts.push({ kind: "backup", text: "Home Assistant backups are stale" });
+          }
+          if (ha2.zwave.failing.length) {
+            alerts.push({
+              kind: "zwave",
+              text: ha2.zwave.failing.length + " Z-Wave devices report a software failure"
+            });
+          }
+          if (ha2.zwave.dead.length) {
+            alerts.push({ kind: "zwave", text: ha2.zwave.dead.length + " dead Z-Wave nodes" });
+          }
+          if (!ha2.zigbee.eth || !ha2.zigbee.net) {
+            alerts.push({ kind: "zigbee", text: "Zigbee coordinator link is down" });
+          }
+          if (ha2.updates.length) {
+            alerts.push({ kind: "update", text: ha2.updates.length + " updates available" });
+          }
+        }
+        return {
+          nodesUp: pve.filter(function(h) {
+            return h.seen;
+          }).length,
+          nodesTotal: pve.length,
+          hostsUp: hosts.filter(function(h) {
+            return h.seen;
+          }).length,
+          hostsTotal: hosts.length,
+          guestsRunning: guests.filter(function(g) {
+            return g.up;
+          }).length,
+          guestsTotal: guests.length,
+          guestsKnown: this.sources.pve.live,
+          servicesUp: upServices,
+          servicesKnown: knownServices,
+          servicesTotal: totalServices,
+          alerts
+        };
+      };
+      HomelabFeeds.prototype.hostHistory = function(ip) {
+        var self = this;
+        var cached = this._history[ip];
+        if (cached && Date.now() - cached.at < 5 * 60 * 1e3) {
+          return Promise.resolve(cached.points);
+        }
+        var end = Date.now(), start2 = end - DAY_MS2;
+        var sel = '{ip="' + ip + '"}';
+        return Promise.all([
+          rangeQuery("unpoller_client_receive_rate_bytes" + sel, start2, end, 300),
+          rangeQuery("unpoller_client_transmit_rate_bytes" + sel, start2, end, 300)
+        ]).then(function(res) {
+          var rx = res[0][0], tx = res[1][0];
+          var points = rx ? rx.values.map(function(p, i) {
+            return {
+              t: p[0] * 1e3,
+              rx: num3(p[1]) || 0,
+              tx: tx && tx.values[i] ? num3(tx.values[i][1]) || 0 : 0
+            };
+          }) : [];
+          self._history[ip] = { at: Date.now(), points };
+          return points;
+        }).catch(function() {
+          return [];
+        });
+      };
+    }
+  });
+
   // src/HomelabView.js
   var HomelabView_exports = {};
   __export(HomelabView_exports, {
@@ -56312,12 +56928,690 @@
   function pad6(n) {
     return String(n).length < 2 ? "0" + n : String(n);
   }
-  function renderClock6() {
+  function watchPanels6() {
+    if (observer6 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    observer6 = new ResizeObserver(function() {
+      HomelabView.resizeDebounced();
+    });
+    ["hl-map-body", "hl-detail"].forEach(function(id) {
+      var el = $id6(id);
+      if (el) {
+        observer6.observe(el);
+      }
+    });
+  }
+  function sizeCanvas3(canvas, ctx) {
+    if (!canvas || !ctx) {
+      return;
+    }
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function rate(bps) {
+    if (bps === null || bps === void 0) {
+      return "n/a";
+    }
+    var bits = bps * 8;
+    if (bits >= 1e9) {
+      return (bits / 1e9).toFixed(2) + " Gb/s";
+    }
+    if (bits >= 1e6) {
+      return (bits / 1e6).toFixed(1) + " Mb/s";
+    }
+    if (bits >= 1e3) {
+      return (bits / 1e3).toFixed(0) + " kb/s";
+    }
+    return Math.round(bits) + " b/s";
+  }
+  function duration(sec) {
+    if (sec === null || sec === void 0) {
+      return "n/a";
+    }
+    var d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600);
+    var m = Math.floor(sec % 3600 / 60);
+    if (d > 0) {
+      return d + "d " + h + "h";
+    }
+    if (h > 0) {
+      return h + "h " + m + "m";
+    }
+    return m + "m";
+  }
+  function escapeText2(s) {
+    return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function awaiting(source) {
+    return '<div class="hl-awaiting"><b>AWAITING DATA</b><span>' + escapeText2(source) + "</span></div>";
+  }
+  function buildMap() {
+    var host = $id6("hl-map-body");
+    if (!host || !svg2 || !feeds6) {
+      return;
+    }
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    svg2.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg2.setAttribute("width", w);
+    svg2.setAttribute("height", h);
+    var hosts = feeds6.hosts();
+    if (!hosts.length) {
+      svg2.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="hl-empty">LOADING</text>';
+      layout2 = { nodes: [], links: [] };
+      pulses = [];
+      return;
+    }
+    var fontPx = Math.max(8, Math.min(12, w * 62e-4));
+    var charW = fontPx * 0.62;
+    var padX = Math.max(40, Math.min(70, w * 0.05));
+    var padY = 18;
+    var nodes = [], links = [];
+    var pve = hosts.filter(function(x) {
+      return x.kind === "pve";
+    });
+    var docker = hosts.filter(function(x) {
+      return x.kind === "docker";
+    });
+    var singles = hosts.filter(function(x) {
+      return x.kind === "single";
+    });
+    var bandY = [h * 0.17, h * 0.52, h * 0.86];
+    var spineX = padX * 0.42;
+    var bandNameW = 7 * charW * 1.35;
+    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 22);
+    function place(list, y) {
+      var n = list.length;
+      var span = w - bandLeft - padX;
+      var gap = n > 1 ? span / (n - 1) : 0;
+      list.forEach(function(hst, i) {
+        nodes.push({
+          kind: hst.kind,
+          host: hst,
+          x: n > 1 ? bandLeft + gap * i : (bandLeft + w - padX) / 2,
+          y,
+          r: hst.kind === "pve" ? 13 : 11
+        });
+      });
+    }
+    place(pve, bandY[0]);
+    place(docker, bandY[1]);
+    if (expanded) {
+      place(singles, bandY[2]);
+    } else {
+      var seenCount = singles.filter(function(x) {
+        return x.seen;
+      }).length;
+      nodes.push({
+        kind: "cluster",
+        x: (bandLeft + w - padX) / 2,
+        y: bandY[2],
+        r: 13,
+        label: "Singles",
+        count: singles.length,
+        seen: seenCount,
+        singles
+      });
+    }
+    nodes.slice().forEach(function(n, ni) {
+      if (n.kind !== "docker" || !n.host.services.length) {
+        return;
+      }
+      var svcs = n.host.services;
+      var spread = Math.min(1.5, 0.42 + svcs.length * 0.14);
+      var radius = Math.max(34, Math.min(60, w * 0.035));
+      svcs.forEach(function(s, i) {
+        var t = svcs.length === 1 ? 0 : (i / (svcs.length - 1) - 0.5) * spread;
+        nodes.push({
+          kind: "service",
+          service: s,
+          parent: ni,
+          x: n.x + Math.sin(t) * radius,
+          y: n.y + Math.cos(t) * radius * 0.78 + 8,
+          r: 3
+        });
+        links.push({
+          source: ni,
+          target: nodes.length - 1,
+          kind: "service",
+          rate: 0,
+          down: !n.host.seen
+        });
+      });
+    });
+    [0, 1, 2].forEach(function(b) {
+      nodes.push({
+        kind: "spine",
+        x: spineX,
+        y: bandY[b],
+        r: 4,
+        label: ["PROXMOX", "DOCKER", "SINGLES"][b]
+      });
+    });
+    var spineIdx = {};
+    nodes.forEach(function(n, i) {
+      if (n.kind === "spine") {
+        spineIdx[Math.round(n.y)] = i;
+      }
+    });
+    nodes.forEach(function(n, i) {
+      if (n.kind === "pve" || n.kind === "docker" || n.kind === "cluster" || n.kind === "single" && expanded) {
+        var si = spineIdx[Math.round(n.y)];
+        if (si !== void 0 && si !== i) {
+          links.push({
+            source: si,
+            target: i,
+            kind: "host",
+            rate: n.host ? n.host.rx + n.host.tx : 0,
+            down: n.host ? !n.host.seen : false
+          });
+        }
+      }
+    });
+    var maxRate = 1;
+    links.forEach(function(l) {
+      maxRate = Math.max(maxRate, l.rate || 0);
+    });
+    var parts = [];
+    links.forEach(function(l, i) {
+      var a = nodes[l.source], b = nodes[l.target];
+      if (!a || !b) {
+        return;
+      }
+      var share = (l.rate || 0) / maxRate;
+      var colour = l.down ? ALERT3 : l.kind === "service" ? DIM : CYAN3;
+      var width = l.kind === "service" ? 1 : Math.max(1.2, 1.2 + Math.sqrt(share) * 4.5);
+      var opacity = l.kind === "service" ? 0.28 : 0.3 + 0.5 * Math.sqrt(share);
+      var d = "M" + a.x + "," + a.y + "C" + (a.x + b.x) / 2 + "," + a.y + " " + (a.x + b.x) / 2 + "," + b.y + " " + b.x + "," + b.y;
+      l._d = d;
+      l._w = width;
+      l._down = l.down;
+      parts.push('<path class="hl-link' + (l.down ? " down" : "") + '" d="' + d + '" stroke="' + colour + '" stroke-width="' + width.toFixed(2) + '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none"></path>');
+    });
+    nodes.forEach(function(n, i) {
+      parts.push(nodeMarkup(n, i, fontPx, charW, w));
+    });
+    svg2.innerHTML = parts.join("");
+    layout2 = { nodes, links };
+    seedPulses(links, maxRate);
+  }
+  function nodeMarkup(n, i, fontPx, charW, w) {
+    if (n.kind === "spine") {
+      return '<circle class="hl-node hl-node-spine" cx="' + n.x + '" cy="' + n.y + '" r="3" fill="' + DIM + '"></circle><text class="hl-label hl-label-spine" x="' + n.x + '" y="' + (n.y - 10) + '" text-anchor="middle">' + escapeText2(n.label) + "</text>";
+    }
+    if (n.kind === "service") {
+      var s = n.service;
+      var ok = s.status === null ? null : s.status === 1;
+      var col = ok === false ? ALERT3 : DIM;
+      return '<circle class="hl-node hl-node-service" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + col + '" data-node="' + i + '"></circle>';
+    }
+    var bad = false, colour = CYAN3;
+    var label = "", sub = "";
+    if (n.kind === "cluster") {
+      label = n.label + " (" + n.count + ")";
+      sub = n.seen + " of " + n.count + " up";
+      bad = n.seen < n.count;
+      colour = bad ? ALERT3 : CYAN3;
+    } else {
+      var hst = n.host;
+      label = hst.name;
+      bad = !hst.seen;
+      colour = bad ? ALERT3 : hst.kind === "pve" ? ACCENT2 : CYAN3;
+      if (!hst.seen) {
+        sub = "NOT SEEN";
+      } else if (hst.stats) {
+        sub = Math.round(hst.stats.cpu) + "% cpu";
+      } else {
+        sub = rate(hst.rx + hst.tx);
+      }
+    }
+    var maxChars = Math.floor(w * 0.13 / charW);
+    if (label.length > maxChars && maxChars > 4) {
+      label = label.slice(0, maxChars - 1) + "\u2026";
+    }
+    var shape = n.kind === "cluster" ? '<rect class="hl-node hl-node-cluster' + (bad ? " bad" : "") + '" x="' + (n.x - n.r) + '" y="' + (n.y - n.r) + '" width="' + n.r * 2 + '" height="' + n.r * 2 + '" fill="' + colour + '" data-node="' + i + '"></rect>' : '<circle class="hl-node hl-node-' + n.kind + (bad ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + colour + '" data-node="' + i + '"></circle>';
+    return shape + '<text class="hl-label hl-label-' + n.kind + (bad ? " bad" : "") + '" x="' + n.x + '" y="' + (n.y - n.r - fontPx * 0.8) + '" text-anchor="middle" data-node="' + i + '"><tspan class="hl-label-name" x="' + n.x + '">' + escapeText2(label) + "</tspan>" + (sub ? '<tspan class="hl-label-sub" x="' + n.x + '" dy="' + (-fontPx * 1.05).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
+  }
+  function samplePath2(d, n) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    el.setAttribute("d", d);
+    var len = 0;
+    try {
+      len = el.getTotalLength();
+    } catch (err) {
+      return null;
+    }
+    if (!len || !isFinite(len)) {
+      return null;
+    }
+    var pts = [];
+    for (var i = 0; i <= n; i++) {
+      var p = el.getPointAtLength(i / n * len);
+      pts.push(p.x, p.y);
+    }
+    return { pts, len, n };
+  }
+  function seedPulses(links, maxRate) {
+    pulses = [];
+    links.forEach(function(l, i) {
+      if (l.kind === "service" || !(l.rate > 0)) {
+        return;
+      }
+      var sampled = samplePath2(l._d, 24);
+      if (!sampled) {
+        return;
+      }
+      l._path = sampled;
+      var share = l.rate / maxRate;
+      var count2 = Math.max(1, Math.round(1 + 5 * Math.sqrt(share)));
+      var speed = 26 + 120 * Math.sqrt(share);
+      for (var k = 0; k < count2; k++) {
+        pulses.push({
+          link: i,
+          at: Math.random(),
+          speed: speed * (0.85 + Math.random() * 0.3),
+          size: Math.max(1, l._w * 0.4),
+          down: !!l._down
+        });
+      }
+    });
+  }
+  function stepPulses(dt) {
+    if (!pctx2 || !pulseCanvas) {
+      return;
+    }
+    var w = pulseCanvas.clientWidth, h = pulseCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    pctx2.clearRect(0, 0, w, h);
+    if (!pulses.length || !layout2.links.length) {
+      return;
+    }
+    pctx2.globalCompositeOperation = "lighter";
+    for (var i = 0; i < pulses.length; i++) {
+      var p = pulses[i];
+      var l = layout2.links[p.link];
+      if (!l || !l._path) {
+        continue;
+      }
+      p.at += p.speed * dt / l._path.len;
+      if (p.at > 1) {
+        p.at -= 1;
+      }
+      var pts = l._path.pts;
+      var f = p.at * l._path.n;
+      var i0 = Math.floor(f), t = f - i0;
+      if (i0 >= l._path.n) {
+        i0 = l._path.n - 1;
+        t = 1;
+      }
+      var x = pts[i0 * 2] + (pts[i0 * 2 + 2] - pts[i0 * 2]) * t;
+      var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
+      var edge = Math.min(p.at, 1 - p.at);
+      var alpha = Math.min(1, edge / 0.08) * 0.8;
+      pctx2.beginPath();
+      pctx2.arc(x, y, p.size, 0, Math.PI * 2);
+      pctx2.fillStyle = p.down ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
+      pctx2.fill();
+    }
+    pctx2.globalCompositeOperation = "source-over";
+  }
+  function stat4(id, value, sub, bad) {
+    var el = $id6(id);
+    if (!el) {
+      return;
+    }
+    el.firstChild.textContent = value;
+    var span = el.querySelector("span");
+    if (span && sub !== void 0 && sub !== null) {
+      span.textContent = sub;
+    }
+    el.className = "hl-stat" + (bad ? " bad" : "");
+  }
+  function renderStatus4() {
+    if (!feeds6) {
+      return;
+    }
+    var s = feeds6.status();
+    stat4(
+      "hl-stat-nodes",
+      s.hostsUp + " / " + s.hostsTotal,
+      "Hosts seen, " + s.nodesUp + " of " + s.nodesTotal + " Proxmox",
+      s.hostsUp < s.hostsTotal
+    );
+    stat4(
+      "hl-stat-guests",
+      s.guestsKnown ? s.guestsRunning + " / " + s.guestsTotal : "--",
+      s.guestsKnown ? "Guests running" : "Guests, awaiting pve-exporter",
+      false
+    );
+    stat4(
+      "hl-stat-services",
+      s.servicesKnown ? s.servicesUp + " / " + s.servicesTotal : "-- / " + s.servicesTotal,
+      s.servicesKnown ? "Services up" : "Services, awaiting Uptime Kuma",
+      false
+    );
+    stat4(
+      "hl-stat-alerts",
+      String(s.alerts.length),
+      s.alerts.length ? s.alerts[0].text : "No active alerts",
+      s.alerts.length > 0
+    );
+  }
+  function renderServices() {
+    var box = $id6("hl-services-body");
+    var head = $id6("hl-services-note");
+    if (!box || !feeds6) {
+      return;
+    }
+    var groups = feeds6.services();
+    var kumaLive = feeds6.sources.kuma.live;
+    if (head) {
+      head.textContent = kumaLive ? "Live" : "Host link only";
+      head.className = kumaLive ? "" : "warn";
+    }
+    var html = "";
+    if (!kumaLive) {
+      html += `<div class="hl-note"><b>AWAITING Uptime Kuma</b>Per service checks and response times need Uptime Kuma scraped by Prometheus. What is shown below is whether each service's HOST is seen by the UniFi controller, which is not the same thing.</div>`;
+    }
+    groups.forEach(function(g) {
+      var items = g.items.slice().sort(function(a, b) {
+        var ad = a.status === 0 ? 0 : a.hostSeen ? 2 : 1;
+        var bd = b.status === 0 ? 0 : b.hostSeen ? 2 : 1;
+        return ad - bd || a.name.localeCompare(b.name);
+      });
+      html += '<div class="hl-sgroup">' + escapeText2(g.group) + "</div>";
+      items.forEach(function(s) {
+        var down = s.status === 0 || !kumaLive && !s.hostSeen;
+        var stateText = s.status === 1 ? "UP" : s.status === 0 ? "DOWN" : s.hostSeen ? "host up" : "HOST DOWN";
+        html += '<div class="hl-srow' + (down ? " bad" : "") + '" data-url="' + escapeText2(s.url) + '"><span class="hl-sname">' + escapeText2(s.name) + '</span><span class="hl-sstate">' + stateText + '</span><span class="hl-sms">' + (s.ms !== null && s.ms !== void 0 ? Math.round(s.ms) + " ms" : "") + "</span></div>";
+      });
+    });
+    box.innerHTML = html;
+  }
+  function renderHa() {
+    var box = $id6("hl-ha-body");
+    if (!box || !feeds6) {
+      return;
+    }
+    var ha2 = feeds6.homeAssistant();
+    if (!ha2.live) {
+      box.innerHTML = awaiting("Home Assistant WebSocket");
+      return;
+    }
+    var row = function(label, value, note, bad) {
+      return '<div class="hl-row' + (bad ? " bad" : "") + '"><span>' + escapeText2(label) + "</span><b>" + escapeText2(value) + "</b>" + (note ? "<i>" + escapeText2(note) + "</i>" : "") + "</div>";
+    };
+    var html = "";
+    html += row(
+      "Core version",
+      ha2.version || "n/a",
+      ha2.coreUpdate ? "update to " + ha2.latest : "up to date",
+      ha2.coreUpdate
+    );
+    html += row(
+      "Updates available",
+      String(ha2.updates.length),
+      ha2.updates.length ? ha2.updates.slice(0, 2).map(function(u) {
+        return u.name;
+      }).join(", ") : "none",
+      ha2.updates.length > 0
+    );
+    html += ha2.cpu !== null ? row("CPU", Math.round(ha2.cpu) + "%", "", ha2.cpu > 85) : row("CPU and RAM", "AWAITING", "add the System Monitor integration", false);
+    html += ha2.dbSize !== null ? row("Database", ha2.dbSize.toFixed(1) + " MB", "", false) : row("Database size", "AWAITING", "enable the recorder size sensor", false);
+    html += row(
+      "Zigbee coordinator",
+      ha2.zigbee.eth && ha2.zigbee.net ? "ONLINE" : "LINK DOWN",
+      "SLZB-06 " + (ha2.zigbee.chipTemp !== null ? Math.round(ha2.zigbee.chipTemp) + " C" : "") + (ha2.zigbee.z2m ? ", Z2M " + (ha2.zigbee.z2mVersion || "connected") : ", Z2M down"),
+      !(ha2.zigbee.eth && ha2.zigbee.net) || !ha2.zigbee.z2m
+    );
+    html += row(
+      "Z-Wave dead nodes",
+      String(ha2.zwave.dead.length),
+      ha2.zwave.dead.length ? ha2.zwave.dead.slice(0, 2).join(", ") : "none",
+      ha2.zwave.dead.length > 0
+    );
+    html += row(
+      "Z-Wave faults",
+      String(ha2.zwave.failing.length),
+      ha2.zwave.failing.length ? ha2.zwave.failing.slice(0, 2).join(", ") + (ha2.zwave.failing.length > 2 ? " and " + (ha2.zwave.failing.length - 2) + " more" : "") : "none",
+      ha2.zwave.failing.length > 0
+    );
+    var age = ha2.backups.ageHours;
+    html += row(
+      "Backups",
+      ha2.backups.stale ? "STALE" : ha2.backups.state || "n/a",
+      age !== null ? Math.round(age) + " h ago" : "",
+      ha2.backups.stale || age !== null && age > BACKUP_STALE_HOURS
+    );
+    box.innerHTML = html;
+  }
+  function renderStorage() {
+    var box = $id6("hl-storage-body");
+    if (!box || !feeds6) {
+      return;
+    }
+    var st = feeds6.storage();
+    if (!st.live) {
+      box.innerHTML = awaiting("TrueNAS and PBS exporters") + '<div class="hl-note">Both answer on the network but send no CORS headers, so the browser cannot read them whatever credentials it has. They need an exporter in front of Prometheus.</div>';
+      return;
+    }
+    box.innerHTML = "";
+  }
+  function renderPower() {
+    var box = $id6("hl-power-body");
+    if (!box || !feeds6) {
+      return;
+    }
+    var p = feeds6.power();
+    var u = feeds6.ups();
+    if (!p.live && !u.live) {
+      box.innerHTML = awaiting("Home Assistant");
+      return;
+    }
+    var html = '<div class="hl-pgrid">';
+    html += '<div class="hl-pcol"><div class="hl-sub">Homelab draw</div>';
+    html += '<div class="hl-ptotal">' + Math.round(p.total) + "<small>W</small></div>";
+    var max = p.items.reduce(function(a, x) {
+      return Math.max(a, x.watts);
+    }, 1);
+    p.items.forEach(function(x) {
+      html += '<div class="hl-prow"><span>' + escapeText2(x.label) + "</span><b>" + x.watts.toFixed(1) + ' W</b><i style="width:' + Math.max(2, x.watts / max * 100).toFixed(1) + '%"></i></div>';
+    });
+    html += "</div>";
+    html += '<div class="hl-pcol"><div class="hl-sub">UPS</div>';
+    if (!u.live) {
+      html += awaiting("Home Assistant NUT");
+    } else {
+      u.units.forEach(function(x) {
+        var low = x.charge !== null && x.charge < 95;
+        html += '<div class="hl-ups' + (low ? " bad" : "") + '"><div class="hl-ups-head"><b>' + escapeText2(x.label) + "</b><span>" + (x.charge !== null ? Math.round(x.charge) + "%" : "n/a") + '</span></div><div class="hl-ups-bar"><i style="width:' + (x.charge !== null ? Math.max(2, x.charge) : 0) + '%"></i></div><div class="hl-ups-sub">load ' + (x.load !== null ? Math.round(x.load) + "%" : "n/a") + ", in " + (x.volts !== null ? Math.round(x.volts) + " V" : "n/a") + ", runtime not reported</div></div>";
+      });
+    }
+    html += "</div></div>";
+    box.innerHTML = html;
+  }
+  function openHost(ip) {
+    selected4 = ip;
+    selectedHistory = null;
+    feeds6.hostHistory(ip).then(function(points) {
+      if (selected4 === ip) {
+        selectedHistory = points;
+        dirty6 = true;
+      }
+    });
+    dirty6 = true;
+    renderDetail4();
+  }
+  function closeDetail() {
+    selected4 = null;
+    selectedHistory = null;
+    var panel = $id6("hl-detail");
+    if (panel) {
+      panel.classList.remove("open");
+    }
+    dirty6 = true;
+  }
+  function renderDetail4() {
+    var panel = $id6("hl-detail");
+    if (!panel || !feeds6) {
+      return;
+    }
+    if (!selected4) {
+      panel.classList.remove("open");
+      return;
+    }
+    var host = null;
+    feeds6.hosts().forEach(function(h) {
+      if (h.ip === selected4) {
+        host = h;
+      }
+    });
+    if (!host) {
+      panel.classList.remove("open");
+      return;
+    }
+    panel.classList.add("open");
+    $id6("hl-detail-name").textContent = host.name;
+    $id6("hl-detail-name").className = host.seen ? "" : "bad";
+    $id6("hl-detail-sub").textContent = host.ip;
+    var rows2 = [
+      [
+        "Link",
+        host.seen ? "UP" : "NOT SEEN",
+        host.seen ? host.via + (host.port ? " port " + host.port : "") : "",
+        !host.seen
+      ],
+      ["Uptime", duration(host.uptime), "association", false],
+      ["Down now", rate(host.rx), "", false],
+      ["Up now", rate(host.tx), "", false],
+      ["MAC", host.mac || "n/a", "", false],
+      ["Role", host.kind === "pve" ? "Proxmox node" : host.kind === "docker" ? "Docker host" : "Single service host", "", false]
+    ];
+    if (host.stats) {
+      rows2.push(["CPU", Math.round(host.stats.cpu) + "%", "", host.stats.cpu > 85]);
+      rows2.push(["Memory", Math.round(host.stats.memPct) + "%", "", host.stats.memPct > 90]);
+      rows2.push(["Disk", Math.round(host.stats.diskPct) + "%", "", host.stats.diskPct > 90]);
+    } else {
+      rows2.push([
+        "CPU, RAM, disk",
+        "AWAITING",
+        host.kind === "pve" ? "prometheus-pve-exporter" : "node_exporter or Beszel",
+        false
+      ]);
+    }
+    $id6("hl-detail-rows").innerHTML = rows2.map(function(r) {
+      return '<div class="hl-drow' + (r[3] ? " bad" : "") + '"><span>' + escapeText2(r[0]) + "</span><b>" + escapeText2(r[1]) + "</b><i>" + escapeText2(r[2] || "") + "</i></div>";
+    }).join("");
+    var svcBox = $id6("hl-detail-services");
+    if (svcBox) {
+      svcBox.innerHTML = host.services.length ? '<div class="hl-sub">Services on this host</div>' + host.services.map(function(s) {
+        return '<span class="hl-chip">' + escapeText2(s.name) + "</span>";
+      }).join("") : '<div class="hl-sub">No Homepage services on this host</div>';
+    }
+    sizeCanvas3(detailCanvas, dctx);
+    drawDetailChart();
+  }
+  function drawDetailChart() {
+    if (!dctx || !detailCanvas) {
+      return;
+    }
+    var w = detailCanvas.clientWidth, h = detailCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = dctx;
+    ctx.clearRect(0, 0, w, h);
+    var pts = selectedHistory;
+    if (!pts || pts.length < 2) {
+      ctx.fillStyle = "rgba(191,244,255,.4)";
+      ctx.font = "10px Menlo, Consolas, monospace";
+      ctx.fillText(pts ? "No throughput history" : "Loading history", 6, 16);
+      return;
+    }
+    var left = 44, right = 8, top = 16, bottom = 14;
+    var pw = w - left - right, ph = h - top - bottom;
+    var max = 1;
+    pts.forEach(function(p) {
+      max = Math.max(max, p.rx, p.tx);
+    });
+    max *= 1.15;
+    var t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+    var span = Math.max(1, t1 - t0);
+    var X = function(t) {
+      return left + (t - t0) / span * pw;
+    };
+    var Y = function(v) {
+      return top + ph - v / max * ph;
+    };
+    ctx.font = "9px Menlo, Consolas, monospace";
+    ctx.textAlign = "right";
+    [0, max].forEach(function(v) {
+      var y = Math.floor(Y(v)) + 0.5;
+      ctx.strokeStyle = "rgba(63,224,255,.1)";
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(191,244,255,.5)";
+      var bits = v * 8;
+      ctx.fillText(bits >= 1e6 ? (bits / 1e6).toFixed(1) + "M" : (bits / 1e3).toFixed(0) + "k", left - 3, y + 3);
+    });
+    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
+    grad.addColorStop(0, "rgba(63,224,255,.38)");
+    grad.addColorStop(1, "rgba(63,224,255,.02)");
+    ctx.beginPath();
+    ctx.moveTo(X(pts[0].t), top + ph);
+    pts.forEach(function(p) {
+      ctx.lineTo(X(p.t), Y(p.rx));
+    });
+    ctx.lineTo(X(pts[pts.length - 1].t), top + ph);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    pts.forEach(function(p, i) {
+      if (i) {
+        ctx.lineTo(X(p.t), Y(p.rx));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.rx));
+      }
+    });
+    ctx.strokeStyle = CYAN3;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.beginPath();
+    pts.forEach(function(p, i) {
+      if (i) {
+        ctx.lineTo(X(p.t), Y(p.tx));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.tx));
+      }
+    });
+    ctx.strokeStyle = ACCENT2;
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+    ctx.textAlign = "left";
+    ctx.fillStyle = CYAN3;
+    ctx.fillText("DOWN", left + 2, top - 5);
+    ctx.fillStyle = ACCENT2;
+    ctx.fillText("UP", left + 42, top - 5);
+  }
+  function renderClock6(now) {
     var el = $id6("hl-time");
     if (!el) {
       return;
     }
-    var d = /* @__PURE__ */ new Date();
+    var d = new Date(now);
     var h = d.getHours();
     var text = (h % 12 || 12) + ":" + pad6(d.getMinutes()) + ":" + pad6(d.getSeconds());
     if (text === lastClock3) {
@@ -56330,13 +57624,164 @@
       dt.textContent = DAYS6[d.getDay()] + ", " + MONTHS6[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
     }
   }
-  var HomelabView, active6, resizeTimer6, lastClock3, DAYS6, MONTHS6;
+  function bindControls5() {
+    var root = $id6("homelab-screen");
+    root.addEventListener("click", function(e) {
+      if (e.target.closest("#hl-detail-close")) {
+        closeDetail();
+        return;
+      }
+      var srow = e.target.closest("[data-url]");
+      if (srow) {
+        window.open(srow.getAttribute("data-url"), "_blank", "noopener");
+        return;
+      }
+      var hit = e.target.closest("[data-node]");
+      if (!hit) {
+        return;
+      }
+      var n = layout2.nodes[Number(hit.getAttribute("data-node"))];
+      if (!n) {
+        return;
+      }
+      if (n.kind === "cluster") {
+        expanded = !expanded;
+        dirty6 = true;
+        lastRender6 = 0;
+        buildMap();
+      } else if (n.kind === "service") {
+        window.open(n.service.url, "_blank", "noopener");
+      } else if (n.host) {
+        openHost(n.host.ip);
+      }
+    });
+    window.addEventListener("keydown", function(e) {
+      if (!active6 || e.key !== "Escape") {
+        return;
+      }
+      if (selected4) {
+        closeDetail();
+      } else if (expanded) {
+        expanded = false;
+        dirty6 = true;
+        lastRender6 = 0;
+        buildMap();
+      }
+    });
+  }
+  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS3, HomelabView, feeds6, active6, built5, dirty6, lastRender6, lastFrame2, resizeTimer6, observer6, svg2, pulseCanvas, pctx2, detailCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, DAYS6, MONTHS6, lastClock3;
   var init_HomelabView = __esm({
     "src/HomelabView.js"() {
+      init_HomelabFeeds();
+      CYAN3 = "#3fe0ff";
+      ALERT3 = "#ff8a1f";
+      ACCENT2 = "#4dffb0";
+      DIM = "#2aa3bb";
+      REFRESH_MS3 = 2500;
       HomelabView = {};
+      feeds6 = null;
       active6 = false;
+      built5 = false;
+      dirty6 = true;
+      lastRender6 = 0;
+      lastFrame2 = 0;
       resizeTimer6 = null;
-      lastClock3 = "";
+      observer6 = null;
+      svg2 = null;
+      pulseCanvas = null;
+      pctx2 = null;
+      detailCanvas = null;
+      dctx = null;
+      expanded = false;
+      selected4 = null;
+      selectedHistory = null;
+      layout2 = { nodes: [], links: [] };
+      pulses = [];
+      HomelabView.init = function(ha2) {
+        var root = $id6("homelab-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active6 = true;
+        svg2 = $id6("hl-svg");
+        pulseCanvas = $id6("hl-pulses");
+        pctx2 = pulseCanvas ? pulseCanvas.getContext("2d") : null;
+        detailCanvas = $id6("hl-detail-canvas");
+        dctx = detailCanvas ? detailCanvas.getContext("2d") : null;
+        if (!feeds6) {
+          feeds6 = new HomelabFeeds(ha2, function() {
+            dirty6 = true;
+          });
+          feeds6.start();
+        }
+        if (!built5) {
+          built5 = true;
+          bindControls5();
+        }
+        watchPanels6();
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            HomelabView.resize();
+          });
+        });
+        dirty6 = true;
+      };
+      HomelabView.show = function() {
+        active6 = true;
+        var root = $id6("homelab-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+        HomelabView.resize();
+      };
+      HomelabView.hide = function() {
+        active6 = false;
+        $id6("homelab-screen").style.display = "none";
+      };
+      HomelabView.message = function() {
+        dirty6 = true;
+      };
+      HomelabView.seed = function() {
+        dirty6 = true;
+      };
+      HomelabView.animate = function() {
+        if (!active6 || !feeds6) {
+          return;
+        }
+        var now = Date.now();
+        var dt = lastFrame2 ? Math.min((now - lastFrame2) / 1e3, 0.1) : 0;
+        lastFrame2 = now;
+        renderClock6(now);
+        stepPulses(dt);
+        if (dirty6 && now - lastRender6 > REFRESH_MS3) {
+          lastRender6 = now;
+          dirty6 = false;
+          buildMap();
+          renderStatus4();
+          renderServices();
+          renderHa();
+          renderStorage();
+          renderPower();
+          renderDetail4();
+        }
+      };
+      HomelabView.resize = function() {
+        if (!active6) {
+          return;
+        }
+        sizeCanvas3(pulseCanvas, pctx2);
+        sizeCanvas3(detailCanvas, dctx);
+        dirty6 = true;
+        lastRender6 = 0;
+        buildMap();
+      };
+      HomelabView.resizeDebounced = function() {
+        if (resizeTimer6) {
+          clearTimeout(resizeTimer6);
+        }
+        resizeTimer6 = setTimeout(function() {
+          resizeTimer6 = null;
+          HomelabView.resize();
+        }, 150);
+      };
       DAYS6 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       MONTHS6 = [
         "January",
@@ -56352,56 +57797,20 @@
         "November",
         "December"
       ];
-      HomelabView.init = function() {
-        var root = $id6("homelab-screen");
-        root.style.display = "grid";
-        root.style.visibility = "hidden";
-        active6 = true;
-      };
-      HomelabView.show = function() {
-        active6 = true;
-        var root = $id6("homelab-screen");
-        root.style.display = "grid";
-        root.style.visibility = "visible";
-      };
-      HomelabView.hide = function() {
-        active6 = false;
-        $id6("homelab-screen").style.display = "none";
-      };
-      HomelabView.message = function() {
-      };
-      HomelabView.seed = function() {
-      };
-      HomelabView.animate = function() {
-        if (!active6) {
-          return;
-        }
-        renderClock6();
-      };
-      HomelabView.resize = function() {
-      };
-      HomelabView.resizeDebounced = function() {
-        if (resizeTimer6) {
-          clearTimeout(resizeTimer6);
-        }
-        resizeTimer6 = setTimeout(function() {
-          resizeTimer6 = null;
-          HomelabView.resize();
-        }, 150);
-      };
+      lastClock3 = "";
     }
   });
 
   // src/NetworkFeeds.js
-  function num3(v) {
+  function num4(v) {
     var n = Number(v);
     return isFinite(n) ? n : null;
   }
   function base() {
     var config = window.HA_CONFIG || {};
-    return (config.prometheusUrl || PROM).replace(/\/+$/, "");
+    return (config.prometheusUrl || PROM2).replace(/\/+$/, "");
   }
-  function instant(expr) {
+  function instant2(expr) {
     var url = base() + "/api/v1/query?query=" + encodeURIComponent(expr);
     return fetch(url, { mode: "cors" }).then(function(r) {
       if (!r.ok) {
@@ -56436,7 +57845,7 @@
       if (!out[n]) {
         out[n] = [];
       }
-      out[n].push({ m: s.metric, v: num3(s.value[1]) });
+      out[n].push({ m: s.metric, v: num4(s.value[1]) });
     });
     return out;
   }
@@ -56492,10 +57901,10 @@
     this._timers = [];
     this._deviceHistory = {};
   }
-  var PROM, GROUPS, POLL_MS, RANGE_MS, DAY_MS2, NEW_CLIENT_MS, LATENCY_WARN_MS, HOST_NAMES, SUBNETS, MODEL_PORTS;
+  var PROM2, GROUPS, POLL_MS2, RANGE_MS, DAY_MS3, NEW_CLIENT_MS, LATENCY_WARN_MS, HOST_NAMES, SUBNETS, MODEL_PORTS;
   var init_NetworkFeeds = __esm({
     "src/NetworkFeeds.js"() {
-      PROM = "http://10.69.2.134:9090";
+      PROM2 = "http://10.69.2.134:9090";
       GROUPS = {
         devices: "unpoller_device_(info|uptime_seconds|temperature_celsius|cpu_utilization_ratio|memory_utilization_ratio|upgradable|max_power_total|rate_bytes|stations)",
         ports: "unpoller_device_port_(port_speed_bps|poe_watts|receive_rate_bytes|transmit_rate_bytes|receive_errors_total|transmit_errors_total)",
@@ -56507,10 +57916,10 @@
         radios: "unpoller_device_radio_(stations|channel|channel_utilization_total_ratio|transmit_power)",
         wan: "unpoller_(wan_[a-z_]+|site_[a-z_]+|speedtest_[a-z_]+|device_wan_[a-z_]+|topology_[a-z_]+)"
       };
-      POLL_MS = 5e3;
+      POLL_MS2 = 5e3;
       RANGE_MS = 5 * 60 * 1e3;
-      DAY_MS2 = 24 * 3600 * 1e3;
-      NEW_CLIENT_MS = DAY_MS2;
+      DAY_MS3 = 24 * 3600 * 1e3;
+      NEW_CLIENT_MS = DAY_MS3;
       LATENCY_WARN_MS = 60;
       HOST_NAMES = {
         "10.69.1.1": "UDM Pro",
@@ -56560,7 +57969,7 @@
         this.refreshRange();
         this._timers.push(setInterval(function() {
           self.poll();
-        }, POLL_MS));
+        }, POLL_MS2));
         this._timers.push(setInterval(function() {
           self.refreshRange();
         }, RANGE_MS));
@@ -56573,7 +57982,7 @@
         var self = this;
         var keys = Object.keys(GROUPS);
         Promise.all(keys.map(function(k) {
-          return instant('{__name__=~"' + GROUPS[k] + '"}').catch(function(e) {
+          return instant2('{__name__=~"' + GROUPS[k] + '"}').catch(function(e) {
             self.error = e.message;
             return null;
           });
@@ -56596,7 +58005,7 @@
       NetworkFeeds.prototype.refreshRange = function() {
         var self = this;
         var end = Date.now();
-        var start2 = end - DAY_MS2;
+        var start2 = end - DAY_MS3;
         Promise.all([
           range2("unpoller_device_wan_receive_rate_bytes", start2, end, 300),
           range2("unpoller_device_wan_transmit_rate_bytes", start2, end, 300)
@@ -56608,8 +58017,8 @@
           var points = rx.values.map(function(p, i) {
             return {
               t: p[0] * 1e3,
-              rx: num3(p[1]) || 0,
-              tx: tx && tx.values[i] ? num3(tx.values[i][1]) || 0 : 0
+              rx: num4(p[1]) || 0,
+              tx: tx && tx.values[i] ? num4(tx.values[i][1]) || 0 : 0
             };
           });
           self.wanHistory = points;
@@ -56624,7 +58033,7 @@
           return Promise.resolve(cached.points);
         }
         var end = Date.now();
-        var start2 = end - DAY_MS2;
+        var start2 = end - DAY_MS3;
         var sel = '{mac="' + mac + '"}';
         return Promise.all([
           range2("unpoller_client_receive_rate_bytes" + sel, start2, end, 300),
@@ -56634,8 +58043,8 @@
           var points = rx ? rx.values.map(function(p, i) {
             return {
               t: p[0] * 1e3,
-              rx: num3(p[1]) || 0,
-              tx: tx && tx.values[i] ? num3(tx.values[i][1]) || 0 : 0
+              rx: num4(p[1]) || 0,
+              tx: tx && tx.values[i] ? num4(tx.values[i][1]) || 0 : 0
             };
           }) : [];
           self._deviceHistory[mac] = { at: Date.now(), points };
@@ -56966,14 +58375,14 @@
           wireless: g("unpoller_topology_connections_wireless")
         };
       };
-      NetworkFeeds.prototype.topology = function(expanded2) {
+      NetworkFeeds.prototype.topology = function(expanded3) {
         var devices = this.devices();
         var clients = this.clients();
         var wans = this.wans();
         var nodes = [];
         var links = [];
         var index = {};
-        expanded2 = expanded2 || {};
+        expanded3 = expanded3 || {};
         function node(id, label, kind, col, extra) {
           if (index[id] === void 0) {
             index[id] = nodes.length;
@@ -57005,10 +58414,10 @@
         });
         switches.forEach(function(sw) {
           var si = node("dev:" + sw.name, sw.name, "switch", 3, { device: sw });
-          var rate2 = sw.ports.reduce(function(a, p) {
+          var rate3 = sw.ports.reduce(function(a, p) {
             return a + (p.rx || 0) + (p.tx || 0);
           }, 0);
-          link(gw, si, { kind: "infra", rate: rate2 });
+          link(gw, si, { kind: "infra", rate: rate3 });
         });
         var aps = devices.filter(function(d) {
           return d.type === "uap";
@@ -57027,7 +58436,7 @@
           link(from === void 0 ? gw : from, ai, { kind: "infra", rate: 0 });
         });
         this.subnets().forEach(function(g) {
-          var open = !!expanded2[g.key];
+          var open = !!expanded3[g.key];
           if (!open) {
             var ci = node(
               "sub:" + g.key,
@@ -57107,21 +58516,21 @@
   function pad7(n) {
     return String(n).length < 2 ? "0" + n : String(n);
   }
-  function watchPanels6() {
-    if (observer6 || typeof ResizeObserver === "undefined") {
+  function watchPanels7() {
+    if (observer7 || typeof ResizeObserver === "undefined") {
       return;
     }
-    observer6 = new ResizeObserver(function() {
+    observer7 = new ResizeObserver(function() {
       NetworkView.resizeDebounced();
     });
     ["nw-map", "nw-wan", "nw-detail"].forEach(function(id) {
       var el = $id7(id);
       if (el) {
-        observer6.observe(el);
+        observer7.observe(el);
       }
     });
   }
-  function sizeCanvas3(canvas, ctx) {
+  function sizeCanvas4(canvas, ctx) {
     if (!canvas || !ctx) {
       return;
     }
@@ -57134,7 +58543,7 @@
     canvas.height = Math.floor(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  function rate(bytesPerSec) {
+  function rate2(bytesPerSec) {
     if (bytesPerSec === null || bytesPerSec === void 0) {
       return "n/a";
     }
@@ -57150,7 +58559,7 @@
     }
     return Math.round(bits) + " b/s";
   }
-  function duration(sec) {
+  function duration2(sec) {
     if (!sec && sec !== 0) {
       return "n/a";
     }
@@ -57165,28 +58574,28 @@
     }
     return m + "m";
   }
-  function escapeText2(s) {
+  function escapeText3(s) {
     return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
   function buildTopology() {
     var host = $id7("nw-map-body");
-    if (!host || !svg2 || !feeds6) {
+    if (!host || !svg3 || !feeds7) {
       return;
     }
     var w = host.clientWidth, h = host.clientHeight;
     if (!w || !h) {
       return;
     }
-    svg2.setAttribute("viewBox", "0 0 " + w + " " + h);
-    svg2.setAttribute("width", w);
-    svg2.setAttribute("height", h);
-    if (!feeds6.ready) {
-      svg2.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="nw-empty">' + (feeds6.error ? "PROMETHEUS UNREACHABLE" : "QUERYING PROMETHEUS") + "</text>";
-      layout2 = { nodes: [], links: [], w, h };
-      pulses = [];
+    svg3.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg3.setAttribute("width", w);
+    svg3.setAttribute("height", h);
+    if (!feeds7.ready) {
+      svg3.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="nw-empty">' + (feeds7.error ? "PROMETHEUS UNREACHABLE" : "QUERYING PROMETHEUS") + "</text>";
+      layout3 = { nodes: [], links: [], w, h };
+      pulses2 = [];
       return;
     }
-    var graph = feeds6.topology(expanded);
+    var graph = feeds7.topology(expanded2);
     var nodes = graph.nodes;
     var links = graph.links;
     var padX = Math.max(46, Math.min(84, w * 0.055));
@@ -57225,7 +58634,7 @@
       var share = (l.rate || 0) / maxRate;
       var isStandbyWan = l.kind === "wan" && !l.active;
       var hot = l.kind === "wan" && l.active && l.wan && l.wan.group !== "WAN" || l.isNew;
-      var colour = hot ? ALERT3 : isStandbyWan ? DIM : CYAN3;
+      var colour = hot ? ALERT4 : isStandbyWan ? DIM2 : CYAN4;
       var width = isStandbyWan ? 1 : Math.max(1.2, 1.2 + Math.sqrt(share) * 5.5);
       var opacity = isStandbyWan ? 0.3 : 0.3 + 0.55 * Math.sqrt(share);
       if (isStandbyWan) {
@@ -57243,46 +58652,47 @@
       var gapLeft = ci > 0 ? (COL_AT[ci] - COL_AT[ci - 1]) * usable : padX;
       var gapRight = ci < COL_AT.length - 1 ? (COL_AT[ci + 1] - COL_AT[ci]) * usable : w - n.x;
       var room2 = (ci >= 5 ? gapLeft : gapRight) * 0.5 - 26;
-      parts.push(nodeMarkup(n, i, fontPx, charW, Math.max(36, room2)));
+      parts.push(nodeMarkup2(n, i, fontPx, charW, Math.max(36, room2)));
     });
-    svg2.innerHTML = parts.join("");
-    layout2 = { nodes, links, w, h };
-    seedPulses(links, maxRate);
+    svg3.innerHTML = parts.join("");
+    layout3 = { nodes, links, w, h };
+    seedPulses2(links, maxRate);
     renderFailoverBanner();
   }
   function curve(a, b) {
     var mx = (a.x + b.x) / 2;
     return "M" + a.x + "," + a.y + "C" + mx + "," + a.y + " " + mx + "," + b.y + " " + b.x + "," + b.y;
   }
-  function nodeMarkup(n, i, fontPx, charW, room2) {
+  function nodeMarkup2(n, i, fontPx, charW, room2) {
     var r = n.kind === "internet" ? 7 : n.kind === "gateway" ? 9 : n.kind === "cluster" ? 10 : n.kind === "client" ? 3.4 : 6.5;
     var bad = false;
-    var colour = CYAN3;
+    var colour = CYAN4;
     if (n.kind === "internet") {
-      colour = ACCENT2;
+      colour = ACCENT3;
     }
     if (n.kind === "wan") {
-      colour = n.wan && n.wan.active ? n.wan.group === "WAN" ? ACCENT2 : ALERT3 : DIM;
+      colour = n.wan && n.wan.active ? n.wan.group === "WAN" ? ACCENT3 : ALERT4 : DIM2;
     }
     if (n.kind === "cluster" && n.isNew > 0) {
-      colour = ALERT3;
+      colour = ALERT4;
       bad = true;
     }
     if (n.kind === "client" && n.client && n.client.isNew) {
-      colour = ALERT3;
+      colour = ALERT4;
       bad = true;
     }
     if (n.device && n.device.type === "usw" && n.device.portsUp === 0) {
-      colour = ALERT3;
+      colour = ALERT4;
       bad = true;
     }
     var label = n.label;
     if (n.kind === "cluster") {
       label = n.label + " (" + n.count + ")";
     }
+    var above = n.kind === "gateway";
     var right = n.col >= 5;
-    var tx = right ? n.x - r - 5 : n.x + r + 5;
-    var anchor = right ? "end" : "start";
+    var tx = above ? n.x : right ? n.x - r - 5 : n.x + r + 5;
+    var anchor = above ? "middle" : right ? "end" : "start";
     var maxChars = Math.floor(room2 / charW);
     if (label.length > maxChars && maxChars > 4) {
       label = label.slice(0, maxChars - 1) + "\u2026";
@@ -57296,7 +58706,7 @@
     } else if (n.device && n.device.type === "uap") {
       sub = (n.device.stations || 0) + " clients";
     } else if (n.kind === "client" && n.client && n.client.total > 0) {
-      sub = rate(n.client.total);
+      sub = rate2(n.client.total);
     }
     if (sub && n.gapY !== void 0 && n.gapY < fontPx * 2.6) {
       sub = "";
@@ -57308,9 +58718,12 @@
       }
     }
     var y1 = sub ? n.y - fontPx * 0.52 : n.y;
-    return shape + '<text class="nw-label nw-label-' + n.kind + (bad ? " bad" : "") + '" x="' + tx + '" y="' + y1 + '" text-anchor="' + anchor + '" dominant-baseline="middle" data-node="' + i + '"><tspan class="nw-label-name" x="' + tx + '">' + escapeText2(label) + "</tspan>" + (sub ? '<tspan class="nw-label-sub" x="' + tx + '" dy="' + (fontPx * 1.06).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
+    if (above) {
+      y1 = n.y - r - fontPx * 0.7;
+    }
+    return shape + '<text class="nw-label nw-label-' + n.kind + (bad ? " bad" : "") + '" x="' + tx + '" y="' + y1 + '" text-anchor="' + anchor + '" dominant-baseline="' + (above ? "auto" : "middle") + '" data-node="' + i + '"><tspan class="nw-label-name" x="' + tx + '">' + escapeText3(label) + "</tspan>" + (sub ? '<tspan class="nw-label-sub" x="' + tx + '" dy="' + (fontPx * 1.06).toFixed(1) + '">' + escapeText3(sub) + "</tspan>" : "") + "</text>";
   }
-  function samplePath2(d, n) {
+  function samplePath3(d, n) {
     var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
     el.setAttribute("d", d);
     var len = 0;
@@ -57329,13 +58742,13 @@
     }
     return { pts, len, n };
   }
-  function seedPulses(links, maxRate) {
-    pulses = [];
+  function seedPulses2(links, maxRate) {
+    pulses2 = [];
     links.forEach(function(l, i) {
       if (l._standby) {
         return;
       }
-      var sampled = samplePath2(l._d, 30);
+      var sampled = samplePath3(l._d, 30);
       if (!sampled) {
         return;
       }
@@ -57347,7 +58760,7 @@
       var count2 = Math.max(1, Math.round(1 + 7 * Math.sqrt(share)));
       var speed = 30 + 150 * Math.sqrt(share);
       for (var k = 0; k < count2; k++) {
-        pulses.push({
+        pulses2.push({
           link: i,
           at: Math.random(),
           speed: speed * (0.85 + Math.random() * 0.3),
@@ -57357,22 +58770,22 @@
       }
     });
   }
-  function stepPulses(dt) {
-    if (!pctx2 || !pulseCanvas) {
+  function stepPulses2(dt) {
+    if (!pctx3 || !pulseCanvas2) {
       return;
     }
-    var w = pulseCanvas.clientWidth, h = pulseCanvas.clientHeight;
+    var w = pulseCanvas2.clientWidth, h = pulseCanvas2.clientHeight;
     if (!w || !h) {
       return;
     }
-    pctx2.clearRect(0, 0, w, h);
-    if (!pulses.length || !layout2.links.length) {
+    pctx3.clearRect(0, 0, w, h);
+    if (!pulses2.length || !layout3.links.length) {
       return;
     }
-    pctx2.globalCompositeOperation = "lighter";
-    for (var i = 0; i < pulses.length; i++) {
-      var p = pulses[i];
-      var l = layout2.links[p.link];
+    pctx3.globalCompositeOperation = "lighter";
+    for (var i = 0; i < pulses2.length; i++) {
+      var p = pulses2[i];
+      var l = layout3.links[p.link];
       if (!l || !l._path) {
         continue;
       }
@@ -57392,27 +58805,27 @@
       var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
       var edge = Math.min(p.at, 1 - p.at);
       var alpha = Math.min(1, edge / 0.07) * 0.85;
-      pctx2.beginPath();
-      pctx2.arc(x, y, p.size, 0, Math.PI * 2);
-      pctx2.fillStyle = p.hot ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
-      pctx2.fill();
+      pctx3.beginPath();
+      pctx3.arc(x, y, p.size, 0, Math.PI * 2);
+      pctx3.fillStyle = p.hot ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
+      pctx3.fill();
     }
-    pctx2.globalCompositeOperation = "source-over";
+    pctx3.globalCompositeOperation = "source-over";
   }
   function renderFailoverBanner() {
     var el = $id7("nw-failover");
-    if (!el || !feeds6) {
+    if (!el || !feeds7) {
       return;
     }
-    var f = feeds6.failover();
+    var f = feeds7.failover();
     if (!f.active) {
       el.style.display = "none";
       return;
     }
     el.style.display = "flex";
-    el.innerHTML = "<b>FAILOVER ACTIVE</b><span>Running on " + escapeText2(f.on ? f.on.name : "the backup line") + ". " + escapeText2(f.primary ? f.primary.name : "The primary") + " is not carrying traffic.</span>";
+    el.innerHTML = "<b>FAILOVER ACTIVE</b><span>Running on " + escapeText3(f.on ? f.on.name : "the backup line") + ". " + escapeText3(f.primary ? f.primary.name : "The primary") + " is not carrying traffic.</span>";
   }
-  function stat4(id, value, sub, bad) {
+  function stat5(id, value, sub, bad) {
     var el = $id7(id);
     if (!el) {
       return;
@@ -57424,36 +58837,36 @@
     }
     el.className = "nw-stat" + (bad ? " bad" : "");
   }
-  function renderStatus4() {
-    if (!feeds6) {
+  function renderStatus5() {
+    if (!feeds7) {
       return;
     }
-    var site = feeds6.site();
-    var counts = feeds6.counts();
-    var wans = feeds6.wans();
+    var site = feeds7.site();
+    var counts = feeds7.counts();
+    var wans = feeds7.wans();
     var activeWan = wans.filter(function(w) {
       return w.active;
     })[0];
-    var f = feeds6.failover();
-    stat4(
+    var f = feeds7.failover();
+    stat5(
       "nw-stat-wan",
       activeWan ? activeWan.short : "--",
       activeWan ? activeWan.name.replace(/^(Primary|Secondary)\s*\([^)]*\)\s*/, "") : "No active line",
       f.active
     );
-    stat4(
+    stat5(
       "nw-stat-down",
-      activeWan ? rate(activeWan.rx) : "--",
-      "Down, up " + (activeWan ? rate(activeWan.tx) : "n/a"),
+      activeWan ? rate2(activeWan.rx) : "--",
+      "Down, up " + (activeWan ? rate2(activeWan.tx) : "n/a"),
       false
     );
-    stat4(
+    stat5(
       "nw-stat-latency",
       site.latencyMs === null || site.latencyMs === void 0 ? "--" : Math.round(site.latencyMs) + " ms",
       "Latency" + (site.loss !== null && site.loss !== void 0 ? ", loss " + site.loss.toFixed(2) + "%" : ""),
       !!site.latencyHigh
     );
-    stat4(
+    stat5(
       "nw-stat-clients",
       String(counts.total),
       counts.wired + " wired, " + counts.wireless + " wireless" + (counts.isNew ? ", " + counts.isNew + " new" : ""),
@@ -57462,19 +58875,19 @@
   }
   function renderWan() {
     var box = $id7("nw-wan-lines");
-    if (!box || !feeds6) {
+    if (!box || !feeds7) {
       return;
     }
-    var wans = feeds6.wans();
-    var site = feeds6.site();
+    var wans = feeds7.wans();
+    var site = feeds7.site();
     if (!wans.length) {
-      box.innerHTML = '<div class="nw-wait">' + (feeds6.ready ? "No WAN data" : "Loading") + "</div>";
+      box.innerHTML = '<div class="nw-wait">' + (feeds7.ready ? "No WAN data" : "Loading") + "</div>";
       return;
     }
     box.innerHTML = wans.map(function(w) {
       var cls = w.active ? w.group === "WAN" ? "on" : "on failover" : "standby";
       var provider = w.providerDown ? (w.providerDown / 1e3).toFixed(0) + " / " + (w.providerUp / 1e3).toFixed(0) + " Mb/s provisioned" : "No provisioned rate";
-      return '<div class="nw-wan-line ' + cls + '"><div class="nw-wan-head"><b>' + escapeText2(w.short) + '</b><span class="nw-wan-name">' + escapeText2(w.name) + '</span><i class="nw-wan-state">' + escapeText2(w.state) + '</i></div><div class="nw-wan-rates"><span><i>DOWN</i>' + (w.active ? rate(w.rx) : "idle") + "</span><span><i>UP</i>" + (w.active ? rate(w.tx) : "idle") + "</span><span><i>SPEEDTEST</i>" + (w.latency ? Math.round(w.latency) + " ms" : "n/a") + "</span><span><i>UPTIME</i>" + (w.uptimePercent >= 0 ? w.uptimePercent + "%" : "n/a") + '</span></div><div class="nw-wan-sub">' + escapeText2(provider) + ", priority " + (w.priority || "n/a") + "</div></div>";
+      return '<div class="nw-wan-line ' + cls + '"><div class="nw-wan-head"><b>' + escapeText3(w.short) + '</b><span class="nw-wan-name">' + escapeText3(w.name) + '</span><i class="nw-wan-state">' + escapeText3(w.state) + '</i></div><div class="nw-wan-rates"><span><i>DOWN</i>' + (w.active ? rate2(w.rx) : "idle") + "</span><span><i>UP</i>" + (w.active ? rate2(w.tx) : "idle") + "</span><span><i>SPEEDTEST</i>" + (w.latency ? Math.round(w.latency) + " ms" : "n/a") + "</span><span><i>UPTIME</i>" + (w.uptimePercent >= 0 ? w.uptimePercent.toFixed(2) + "%" : "n/a") + '</span></div><div class="nw-wan-sub">' + escapeText3(provider) + ", priority " + (w.priority || "n/a") + "</div></div>";
     }).join("");
     var loss = $id7("nw-wan-loss");
     if (loss) {
@@ -57493,7 +58906,7 @@
     drawWanChart();
   }
   function drawWanChart() {
-    if (!wctx || !wanCanvas || !feeds6) {
+    if (!wctx || !wanCanvas || !feeds7) {
       return;
     }
     var w = wanCanvas.clientWidth, h = wanCanvas.clientHeight;
@@ -57502,11 +58915,11 @@
     }
     var ctx = wctx;
     ctx.clearRect(0, 0, w, h);
-    var pts = feeds6.wanHistory;
+    var pts = feeds7.wanHistory;
     if (!pts || pts.length < 2) {
       ctx.fillStyle = "rgba(191,244,255,.4)";
       ctx.font = "10px Menlo, Consolas, monospace";
-      ctx.fillText(feeds6.ready ? "No WAN history yet" : "Loading history", 6, 16);
+      ctx.fillText(feeds7.ready ? "No WAN history yet" : "Loading history", 6, 16);
       return;
     }
     var left = 44, right = 8, top = 16, bottom = 14;
@@ -57561,7 +58974,7 @@
         ctx.moveTo(X(p.t), Y(p.rx));
       }
     });
-    ctx.strokeStyle = CYAN3;
+    ctx.strokeStyle = CYAN4;
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.beginPath();
@@ -57572,13 +58985,13 @@
         ctx.moveTo(X(p.t), Y(p.tx));
       }
     });
-    ctx.strokeStyle = ACCENT2;
+    ctx.strokeStyle = ACCENT3;
     ctx.lineWidth = 1.1;
     ctx.stroke();
     ctx.textAlign = "left";
-    ctx.fillStyle = CYAN3;
+    ctx.fillStyle = CYAN4;
     ctx.fillText("DOWN", left + 2, top - 5);
-    ctx.fillStyle = ACCENT2;
+    ctx.fillStyle = ACCENT3;
     ctx.fillText("UP", left + 42, top - 5);
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(191,244,255,.45)";
@@ -57594,12 +59007,12 @@
   }
   function renderClients() {
     var box = $id7("nw-clients-body");
-    if (!box || !feeds6) {
+    if (!box || !feeds7) {
       return;
     }
-    var counts = feeds6.counts();
-    var fresh = feeds6.newClients();
-    var top = feeds6.topTalkers(5);
+    var counts = feeds7.counts();
+    var fresh = feeds7.newClients();
+    var top = feeds7.topTalkers(5);
     var html = '<div class="nw-counts"><span><b>' + counts.total + "</b>online</span><span><b>" + counts.wired + "</b>wired</span><span><b>" + counts.wireless + '</b>wireless</span><span class="' + (counts.isNew ? "bad" : "") + '"><b>' + counts.isNew + "</b>new 24h</span></div>";
     html += '<div class="nw-sub-head">Top talkers now</div>';
     if (!top.length) {
@@ -57608,7 +59021,7 @@
       var max = top[0].total || 1;
       html += top.map(function(c2) {
         var pc = Math.max(2, c2.total / max * 100);
-        return '<div class="nw-row' + (c2.isNew ? " bad" : "") + '" data-client="' + escapeText2(c2.mac) + '"><span class="nw-row-name">' + escapeText2(c2.name) + '</span><span class="nw-row-val">' + rate(c2.total) + '</span><span class="nw-row-sub">' + escapeText2(c2.ip) + " " + (c2.wired ? "wired" : c2.band || "wireless") + '</span><span class="nw-row-track"><i style="width:' + pc.toFixed(1) + '%"></i></span></div>';
+        return '<div class="nw-row' + (c2.isNew ? " bad" : "") + '" data-client="' + escapeText3(c2.mac) + '"><span class="nw-row-name">' + escapeText3(c2.name) + '</span><span class="nw-row-val">' + rate2(c2.total) + '</span><span class="nw-row-sub">' + escapeText3(c2.ip) + " " + (c2.wired ? "wired" : c2.band || "wireless") + '</span><span class="nw-row-track"><i style="width:' + pc.toFixed(1) + '%"></i></span></div>';
       }).join("");
     }
     html += '<div class="nw-sub-head' + (fresh.length ? " bad" : "") + '">New in the last 24 hours' + (fresh.length ? " (" + fresh.length + ")" : "") + "</div>";
@@ -57616,19 +59029,19 @@
       html += '<div class="nw-wait">None</div>';
     } else {
       html += fresh.slice(0, 8).map(function(c2) {
-        return '<div class="nw-row bad" data-client="' + escapeText2(c2.mac) + '"><span class="nw-row-name">' + escapeText2(c2.name) + '</span><span class="nw-row-val">' + duration(c2.uptime) + '</span><span class="nw-row-sub">' + escapeText2(c2.ip) + " " + escapeText2(c2.oui || (c2.wired ? "wired" : "wireless")) + "</span></div>";
+        return '<div class="nw-row bad" data-client="' + escapeText3(c2.mac) + '"><span class="nw-row-name">' + escapeText3(c2.name) + '</span><span class="nw-row-val">' + duration2(c2.uptime) + '</span><span class="nw-row-sub">' + escapeText3(c2.ip) + " " + escapeText3(c2.oui || (c2.wired ? "wired" : "wireless")) + "</span></div>";
       }).join("");
     }
     box.innerHTML = html;
   }
   function renderInfra() {
     var box = $id7("nw-infra-body");
-    if (!box || !feeds6) {
+    if (!box || !feeds7) {
       return;
     }
-    var devices = feeds6.devices();
+    var devices = feeds7.devices();
     if (!devices.length) {
-      box.innerHTML = '<div class="nw-wait">' + (feeds6.ready ? "No devices" : "Loading") + "</div>";
+      box.innerHTML = '<div class="nw-wait">' + (feeds7.ready ? "No devices" : "Loading") + "</div>";
       return;
     }
     var html = "";
@@ -57637,7 +59050,7 @@
     }).forEach(function(sw) {
       var budget = sw.poeBudget || 0;
       var pc = budget > 0 ? sw.poeUsed / budget * 100 : 0;
-      html += '<div class="nw-dev" data-device="' + escapeText2(sw.name) + '"><div class="nw-dev-head"><b>' + escapeText2(sw.name) + "</b><span>" + escapeText2(sw.model) + "</span><i>" + sw.portsUp + (sw.portsTotal ? " / " + sw.portsTotal : "") + " ports up</i></div>";
+      html += '<div class="nw-dev" data-device="' + escapeText3(sw.name) + '"><div class="nw-dev-head"><b>' + escapeText3(sw.name) + "</b><span>" + escapeText3(sw.model) + "</span><i>" + sw.portsUp + (sw.portsTotal ? " / " + sw.portsTotal : "") + " ports up</i></div>";
       if (budget > 0) {
         html += '<div class="nw-poe"><span>PoE ' + sw.poeUsed.toFixed(1) + " of " + budget + ' W</span><span class="nw-poe-track"><i style="width:' + Math.min(100, pc).toFixed(1) + '%"></i></span></div>';
       } else {
@@ -57654,21 +59067,21 @@
         var cls = !port ? "off" : port.poe > 0 ? "poe" : "up";
         var speed = port ? port.speed >= 1e9 ? port.speed / 1e9 + "G" : Math.round(port.speed / 1e6) + "M" : "down";
         var title = "Port " + i + ": " + (port ? speed + (port.poe > 0 ? ", PoE " + port.poe.toFixed(1) + " W" : "") : "no link");
-        html += '<i class="nw-port ' + cls + '" title="' + escapeText2(title) + '">' + i + "</i>";
+        html += '<i class="nw-port ' + cls + '" title="' + escapeText3(title) + '">' + i + "</i>";
       }
       html += "</div></div>";
     });
     devices.filter(function(d) {
       return d.type === "uap";
     }).forEach(function(ap) {
-      html += '<div class="nw-dev" data-device="' + escapeText2(ap.name) + '"><div class="nw-dev-head"><b>' + escapeText2(ap.name) + "</b><span>" + escapeText2(ap.model) + "</span><i>" + (ap.stations || 0) + " clients</i></div>";
+      html += '<div class="nw-dev" data-device="' + escapeText3(ap.name) + '"><div class="nw-dev-head"><b>' + escapeText3(ap.name) + "</b><span>" + escapeText3(ap.model) + "</span><i>" + (ap.stations || 0) + " clients</i></div>";
       if (!ap.radios.length) {
         html += '<div class="nw-wait">No radio data</div>';
       } else {
         html += '<div class="nw-radios">' + ap.radios.map(function(r) {
           var util = r.utilization !== void 0 && r.utilization !== null ? Math.round(r.utilization * 100) + "%" : "n/a";
           var high = r.utilization > 0.7;
-          return '<span class="nw-radio' + (high ? " bad" : "") + '"><b>' + escapeText2(r.band) + "</b>ch " + (r.channel || "n/a") + ", " + (r.stations || 0) + " cl, util " + util + "</span>";
+          return '<span class="nw-radio' + (high ? " bad" : "") + '"><b>' + escapeText3(r.band) + "</b>ch " + (r.channel || "n/a") + ", " + (r.stations || 0) + " cl, util " + util + "</span>";
         }).join("") + "</div>";
       }
       html += "</div>";
@@ -57676,7 +59089,7 @@
     box.innerHTML = html;
   }
   function openClient(mac) {
-    var list = feeds6.clients();
+    var list = feeds7.clients();
     var found = null;
     list.forEach(function(c2) {
       if (c2.mac === mac) {
@@ -57686,47 +59099,47 @@
     if (!found) {
       return;
     }
-    selected4 = { kind: "client", id: mac };
-    selectedHistory = null;
-    feeds6.clientHistory(mac).then(function(points) {
-      if (selected4 && selected4.id === mac) {
-        selectedHistory = points;
-        dirty6 = true;
+    selected5 = { kind: "client", id: mac };
+    selectedHistory2 = null;
+    feeds7.clientHistory(mac).then(function(points) {
+      if (selected5 && selected5.id === mac) {
+        selectedHistory2 = points;
+        dirty7 = true;
       }
     });
-    dirty6 = true;
-    renderDetail4();
+    dirty7 = true;
+    renderDetail5();
   }
   function openDevice2(name) {
-    selected4 = { kind: "device", id: name };
-    selectedHistory = null;
-    dirty6 = true;
-    renderDetail4();
+    selected5 = { kind: "device", id: name };
+    selectedHistory2 = null;
+    dirty7 = true;
+    renderDetail5();
   }
-  function closeDetail() {
-    selected4 = null;
-    selectedHistory = null;
+  function closeDetail2() {
+    selected5 = null;
+    selectedHistory2 = null;
     var panel = $id7("nw-detail");
     if (panel) {
       panel.classList.remove("open");
     }
-    dirty6 = true;
+    dirty7 = true;
   }
-  function renderDetail4() {
+  function renderDetail5() {
     var panel = $id7("nw-detail");
-    if (!panel || !feeds6) {
+    if (!panel || !feeds7) {
       return;
     }
-    if (!selected4) {
+    if (!selected5) {
       panel.classList.remove("open");
       return;
     }
     var rows2 = [];
     var title = "", sub = "", bad = false;
-    if (selected4.kind === "client") {
+    if (selected5.kind === "client") {
       var c2 = null;
-      feeds6.clients().forEach(function(x) {
-        if (x.mac === selected4.id) {
+      feeds7.clients().forEach(function(x) {
+        if (x.mac === selected5.id) {
           c2 = x;
         }
       });
@@ -57754,15 +59167,15 @@
           c2.wired ? "n/a" : c2.signal !== void 0 && c2.signal !== null ? Math.round(c2.signal) + " dBm" : "n/a",
           c2.wired ? "" : c2.band + (c2.channel ? ", ch " + c2.channel : "") + (c2.snr !== null ? ", SNR " + Math.round(c2.snr) + " dB" : "")
         ],
-        ["Down now", rate(c2.rx), ""],
-        ["Up now", rate(c2.tx), ""],
-        ["Connected", duration(c2.uptime), c2.isNew ? "NEW IN LAST 24 H" : ""],
+        ["Down now", rate2(c2.rx), ""],
+        ["Up now", rate2(c2.tx), ""],
+        ["Connected", duration2(c2.uptime), c2.isNew ? "NEW IN LAST 24 H" : ""],
         ["Experience", c2.satisfaction !== void 0 && c2.satisfaction !== null ? Math.round(c2.satisfaction * 100) + "%" : "n/a", ""]
       ];
     } else {
       var d = null;
-      feeds6.devices().forEach(function(x) {
-        if (x.name === selected4.id) {
+      feeds7.devices().forEach(function(x) {
+        if (x.name === selected5.id) {
           d = x;
         }
       });
@@ -57777,7 +59190,7 @@
         ["Model", d.model, d.type.toUpperCase()],
         ["Address", d.ip, d.mac],
         ["Firmware", d.version, d.upgradable ? "UPDATE AVAILABLE" : "up to date"],
-        ["Uptime", duration(d.uptime), ""],
+        ["Uptime", duration2(d.uptime), ""],
         ["CPU", d.cpu !== null ? Math.round(d.cpu * 100) + "%" : "n/a", ""],
         ["Memory", d.memory !== null ? Math.round(d.memory * 100) + "%" : "n/a", ""],
         ["Temperature", d.temperature !== null ? Math.round(d.temperature) + " C" : "n/a", ""],
@@ -57792,26 +59205,26 @@
     $id7("nw-detail-rows").innerHTML = rows2.map(function(r) {
       var note = r[2] || "";
       var hot = /NEW IN|UPDATE AVAILABLE/.test(note);
-      return '<div class="nw-drow' + (hot ? " bad" : "") + '"><span>' + escapeText2(r[0]) + "</span><b>" + escapeText2(r[1]) + "</b><i>" + escapeText2(note) + "</i></div>";
+      return '<div class="nw-drow' + (hot ? " bad" : "") + '"><span>' + escapeText3(r[0]) + "</span><b>" + escapeText3(r[1]) + "</b><i>" + escapeText3(note) + "</i></div>";
     }).join("");
-    sizeCanvas3(devCanvas, dctx);
-    drawDetailChart();
+    sizeCanvas4(devCanvas, dctx2);
+    drawDetailChart2();
   }
-  function drawDetailChart() {
-    if (!dctx || !devCanvas) {
+  function drawDetailChart2() {
+    if (!dctx2 || !devCanvas) {
       return;
     }
     var w = devCanvas.clientWidth, h = devCanvas.clientHeight;
     if (!w || !h) {
       return;
     }
-    var ctx = dctx;
+    var ctx = dctx2;
     ctx.clearRect(0, 0, w, h);
-    var pts = selectedHistory;
+    var pts = selectedHistory2;
     if (!pts || pts.length < 2) {
       ctx.fillStyle = "rgba(191,244,255,.4)";
       ctx.font = "10px Menlo, Consolas, monospace";
-      ctx.fillText(selected4 && selected4.kind === "device" ? "Per device history is not collected" : pts ? "No traffic history" : "Loading history", 6, 16);
+      ctx.fillText(selected5 && selected5.kind === "device" ? "Per device history is not collected" : pts ? "No traffic history" : "Loading history", 6, 16);
       return;
     }
     var left = 44, right = 8, top = 16, bottom = 14;
@@ -57862,7 +59275,7 @@
         ctx.moveTo(X(p.t), Y(p.rx));
       }
     });
-    ctx.strokeStyle = CYAN3;
+    ctx.strokeStyle = CYAN4;
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.beginPath();
@@ -57873,13 +59286,13 @@
         ctx.moveTo(X(p.t), Y(p.tx));
       }
     });
-    ctx.strokeStyle = ACCENT2;
+    ctx.strokeStyle = ACCENT3;
     ctx.lineWidth = 1.1;
     ctx.stroke();
     ctx.textAlign = "left";
-    ctx.fillStyle = CYAN3;
+    ctx.fillStyle = CYAN4;
     ctx.fillText("DOWN", left + 2, top - 5);
-    ctx.fillStyle = ACCENT2;
+    ctx.fillStyle = ACCENT3;
     ctx.fillText("UP", left + 42, top - 5);
   }
   function renderClock7(now) {
@@ -57902,13 +59315,13 @@
   }
   function nodeAt2(target) {
     var i = target.getAttribute("data-node");
-    return i === null ? null : layout2.nodes[Number(i)];
+    return i === null ? null : layout3.nodes[Number(i)];
   }
-  function bindControls5() {
+  function bindControls6() {
     var root = $id7("network-screen");
     root.addEventListener("click", function(e) {
       if (e.target.closest("#nw-detail-close")) {
-        closeDetail();
+        closeDetail2();
         return;
       }
       var row = e.target.closest("[data-client]");
@@ -57930,9 +59343,9 @@
         return;
       }
       if (n.kind === "cluster") {
-        expanded[n.subnet.key] = !expanded[n.subnet.key];
-        dirty6 = true;
-        lastRender6 = 0;
+        expanded2[n.subnet.key] = !expanded2[n.subnet.key];
+        dirty7 = true;
+        lastRender7 = 0;
         buildTopology();
       } else if (n.kind === "client") {
         openClient(n.client.mac);
@@ -57944,80 +59357,80 @@
       if (!active7 || e.key !== "Escape") {
         return;
       }
-      if (selected4) {
-        closeDetail();
+      if (selected5) {
+        closeDetail2();
       } else {
-        var any = Object.keys(expanded).some(function(k) {
-          return expanded[k];
+        var any = Object.keys(expanded2).some(function(k) {
+          return expanded2[k];
         });
         if (any) {
-          expanded = {};
-          dirty6 = true;
-          lastRender6 = 0;
+          expanded2 = {};
+          dirty7 = true;
+          lastRender7 = 0;
           buildTopology();
         }
       }
     });
   }
-  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS3, NetworkView, feeds6, active7, built5, dirty6, lastRender6, lastFrame2, resizeTimer7, observer6, svg2, pulseCanvas, pctx2, wanCanvas, wctx, devCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, DAYS7, MONTHS7, lastClock4;
+  var CYAN4, ALERT4, ACCENT3, DIM2, REFRESH_MS4, NetworkView, feeds7, active7, built6, dirty7, lastRender7, lastFrame3, resizeTimer7, observer7, svg3, pulseCanvas2, pctx3, wanCanvas, wctx, devCanvas, dctx2, expanded2, selected5, selectedHistory2, layout3, pulses2, DAYS7, MONTHS7, lastClock4;
   var init_NetworkView = __esm({
     "src/NetworkView.js"() {
       init_NetworkFeeds();
-      CYAN3 = "#3fe0ff";
-      ALERT3 = "#ff8a1f";
-      ACCENT2 = "#4dffb0";
-      DIM = "#2aa3bb";
-      REFRESH_MS3 = 2e3;
+      CYAN4 = "#3fe0ff";
+      ALERT4 = "#ff8a1f";
+      ACCENT3 = "#4dffb0";
+      DIM2 = "#2aa3bb";
+      REFRESH_MS4 = 2e3;
       NetworkView = {};
-      feeds6 = null;
+      feeds7 = null;
       active7 = false;
-      built5 = false;
-      dirty6 = true;
-      lastRender6 = 0;
-      lastFrame2 = 0;
+      built6 = false;
+      dirty7 = true;
+      lastRender7 = 0;
+      lastFrame3 = 0;
       resizeTimer7 = null;
-      observer6 = null;
-      svg2 = null;
-      pulseCanvas = null;
-      pctx2 = null;
+      observer7 = null;
+      svg3 = null;
+      pulseCanvas2 = null;
+      pctx3 = null;
       wanCanvas = null;
       wctx = null;
       devCanvas = null;
-      dctx = null;
-      expanded = {};
-      selected4 = null;
-      selectedHistory = null;
-      layout2 = { nodes: [], links: [], w: 0, h: 0 };
-      pulses = [];
+      dctx2 = null;
+      expanded2 = {};
+      selected5 = null;
+      selectedHistory2 = null;
+      layout3 = { nodes: [], links: [], w: 0, h: 0 };
+      pulses2 = [];
       NetworkView.init = function() {
         var root = $id7("network-screen");
         root.style.display = "grid";
         root.style.visibility = "hidden";
         active7 = true;
-        svg2 = $id7("nw-svg");
-        pulseCanvas = $id7("nw-pulses");
-        pctx2 = pulseCanvas ? pulseCanvas.getContext("2d") : null;
+        svg3 = $id7("nw-svg");
+        pulseCanvas2 = $id7("nw-pulses");
+        pctx3 = pulseCanvas2 ? pulseCanvas2.getContext("2d") : null;
         wanCanvas = $id7("nw-wan-canvas");
         wctx = wanCanvas ? wanCanvas.getContext("2d") : null;
         devCanvas = $id7("nw-detail-canvas");
-        dctx = devCanvas ? devCanvas.getContext("2d") : null;
-        if (!feeds6) {
-          feeds6 = new NetworkFeeds(function() {
-            dirty6 = true;
+        dctx2 = devCanvas ? devCanvas.getContext("2d") : null;
+        if (!feeds7) {
+          feeds7 = new NetworkFeeds(function() {
+            dirty7 = true;
           });
-          feeds6.start();
+          feeds7.start();
         }
-        if (!built5) {
-          built5 = true;
-          bindControls5();
+        if (!built6) {
+          built6 = true;
+          bindControls6();
         }
-        watchPanels6();
+        watchPanels7();
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
             NetworkView.resize();
           });
         });
-        dirty6 = true;
+        dirty7 = true;
       };
       NetworkView.show = function() {
         active7 = true;
@@ -58033,37 +59446,37 @@
       NetworkView.message = function() {
       };
       NetworkView.seed = function() {
-        dirty6 = true;
+        dirty7 = true;
       };
       NetworkView.animate = function() {
-        if (!active7 || !feeds6) {
+        if (!active7 || !feeds7) {
           return;
         }
         var now = Date.now();
-        var dt = lastFrame2 ? Math.min((now - lastFrame2) / 1e3, 0.1) : 0;
-        lastFrame2 = now;
+        var dt = lastFrame3 ? Math.min((now - lastFrame3) / 1e3, 0.1) : 0;
+        lastFrame3 = now;
         renderClock7(now);
-        stepPulses(dt);
-        if (dirty6 && now - lastRender6 > REFRESH_MS3) {
-          lastRender6 = now;
-          dirty6 = false;
+        stepPulses2(dt);
+        if (dirty7 && now - lastRender7 > REFRESH_MS4) {
+          lastRender7 = now;
+          dirty7 = false;
           buildTopology();
-          renderStatus4();
+          renderStatus5();
           renderWan();
           renderClients();
           renderInfra();
-          renderDetail4();
+          renderDetail5();
         }
       };
       NetworkView.resize = function() {
         if (!active7) {
           return;
         }
-        sizeCanvas3(pulseCanvas, pctx2);
-        sizeCanvas3(wanCanvas, wctx);
-        sizeCanvas3(devCanvas, dctx);
-        dirty6 = true;
-        lastRender6 = 0;
+        sizeCanvas4(pulseCanvas2, pctx3);
+        sizeCanvas4(wanCanvas, wctx);
+        sizeCanvas4(devCanvas, dctx2);
+        dirty7 = true;
+        lastRender7 = 0;
         buildTopology();
         drawWanChart();
       };
@@ -59994,7 +61407,7 @@
         };
       })(jQuery);
       (function($2, undefined2) {
-        function num4(v) {
+        function num5(v) {
           return parseInt(v, 10) || 0;
         }
         function isNumber(value) {
@@ -60170,8 +61583,8 @@
               el.css({ position: "absolute", top: iniPos.top, left: iniPos.left });
             }
             this._renderProxy();
-            curleft = num4(this.helper.css("left"));
-            curtop = num4(this.helper.css("top"));
+            curleft = num5(this.helper.css("left"));
+            curtop = num5(this.helper.css("top"));
             if (o.containment) {
               curleft += $2(o.containment).scrollLeft() || 0;
               curtop += $2(o.containment).scrollTop() || 0;
@@ -60476,7 +61889,7 @@
               element = $2(ce);
               p = [];
               $2(["Top", "Right", "Left", "Bottom"]).each(function(i, name) {
-                p[i] = num4(element.css("padding" + name));
+                p[i] = num5(element.css("padding" + name));
               });
               that.containerOffset = element.offset();
               that.containerPosition = element.position();
@@ -62181,11 +63594,11 @@
           color.hook(stepHooks);
           jQuery2.cssHooks.borderColor = {
             expand: function(value) {
-              var expanded2 = {};
+              var expanded3 = {};
               each(["Top", "Right", "Bottom", "Left"], function(i, part) {
-                expanded2["border" + part + "Color"] = value;
+                expanded3["border" + part + "Color"] = value;
               });
-              return expanded2;
+              return expanded3;
             }
           };
           colors = jQuery2.Color.names = {
@@ -62271,8 +63684,8 @@
               );
             };
           }
-          $2.effects.animateClass = function(value, duration2, easing, callback) {
-            var o = $2.speed(duration2, easing, callback);
+          $2.effects.animateClass = function(value, duration3, easing, callback) {
+            var o = $2.speed(duration3, easing, callback);
             return this.queue(function() {
               var animated = $2(this), baseClass = animated.attr("class") || "", applyClassChange, allAnimations = o.children ? animated.find("*").addBack() : animated;
               allAnimations = allAnimations.map(function() {
@@ -62985,33 +64398,33 @@
             });
           },
           _animate: function(toShow, toHide, data) {
-            var total, easing, duration2, that = this, adjust = 0, down = toShow.length && (!toHide.length || toShow.index() < toHide.index()), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function() {
+            var total, easing, duration3, that = this, adjust = 0, down = toShow.length && (!toHide.length || toShow.index() < toHide.index()), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function() {
               that._toggleComplete(data);
             };
             if (typeof options === "number") {
-              duration2 = options;
+              duration3 = options;
             }
             if (typeof options === "string") {
               easing = options;
             }
             easing = easing || options.easing || animate.easing;
-            duration2 = duration2 || options.duration || animate.duration;
+            duration3 = duration3 || options.duration || animate.duration;
             if (!toHide.length) {
-              return toShow.animate(showProps, duration2, easing, complete);
+              return toShow.animate(showProps, duration3, easing, complete);
             }
             if (!toShow.length) {
-              return toHide.animate(hideProps, duration2, easing, complete);
+              return toHide.animate(hideProps, duration3, easing, complete);
             }
             total = toShow.show().outerHeight();
             toHide.animate(hideProps, {
-              duration: duration2,
+              duration: duration3,
               easing,
               step: function(now, fx) {
                 fx.now = Math.round(now);
               }
             });
             toShow.hide().animate(showProps, {
-              duration: duration2,
+              duration: duration3,
               easing,
               complete,
               step: function(now, fx) {
@@ -64435,7 +65848,7 @@
             if ($2.datepicker._isDisabledDatepicker(input) || $2.datepicker._lastInput === input) {
               return;
             }
-            var inst, beforeShow, beforeShowSettings, isFixed, offset, showAnim, duration2;
+            var inst, beforeShow, beforeShowSettings, isFixed, offset, showAnim, duration3;
             inst = $2.datepicker._getInst(input);
             if ($2.datepicker._curInst && $2.datepicker._curInst !== inst) {
               $2.datepicker._curInst.dpDiv.stop(true, true);
@@ -64478,13 +65891,13 @@
             });
             if (!inst.inline) {
               showAnim = $2.datepicker._get(inst, "showAnim");
-              duration2 = $2.datepicker._get(inst, "duration");
+              duration3 = $2.datepicker._get(inst, "duration");
               inst.dpDiv.zIndex($2(input).zIndex() + 1);
               $2.datepicker._datepickerShowing = true;
               if ($2.effects && $2.effects.effect[showAnim]) {
-                inst.dpDiv.show(showAnim, $2.datepicker._get(inst, "showOptions"), duration2);
+                inst.dpDiv.show(showAnim, $2.datepicker._get(inst, "showOptions"), duration3);
               } else {
-                inst.dpDiv[showAnim || "show"](showAnim ? duration2 : null);
+                inst.dpDiv[showAnim || "show"](showAnim ? duration3 : null);
               }
               if ($2.datepicker._shouldFocusInput(inst)) {
                 inst.input.focus();
@@ -64548,20 +65961,20 @@
            * @param  input  element - the input field attached to the date picker
            */
           _hideDatepicker: function(input) {
-            var showAnim, duration2, postProcess, onClose, inst = this._curInst;
+            var showAnim, duration3, postProcess, onClose, inst = this._curInst;
             if (!inst || input && inst !== $2.data(input, PROP_NAME)) {
               return;
             }
             if (this._datepickerShowing) {
               showAnim = this._get(inst, "showAnim");
-              duration2 = this._get(inst, "duration");
+              duration3 = this._get(inst, "duration");
               postProcess = function() {
                 $2.datepicker._tidyDialog(inst);
               };
               if ($2.effects && ($2.effects.effect[showAnim] || $2.effects[showAnim])) {
-                inst.dpDiv.hide(showAnim, $2.datepicker._get(inst, "showOptions"), duration2, postProcess);
+                inst.dpDiv.hide(showAnim, $2.datepicker._get(inst, "showOptions"), duration3, postProcess);
               } else {
-                inst.dpDiv[showAnim === "slideDown" ? "slideUp" : showAnim === "fadeIn" ? "fadeOut" : "hide"](showAnim ? duration2 : null, postProcess);
+                inst.dpDiv[showAnim === "slideDown" ? "slideUp" : showAnim === "fadeIn" ? "fadeOut" : "hide"](showAnim ? duration3 : null, postProcess);
               }
               if (!showAnim) {
                 postProcess();
@@ -64740,12 +66153,12 @@
               }
               return matches;
             }, getNumber = function(match) {
-              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num4 = value.substring(iValue).match(digits);
-              if (!num4) {
+              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num5 = value.substring(iValue).match(digits);
+              if (!num5) {
                 throw "Missing number at position " + iValue;
               }
-              iValue += num4[0].length;
-              return parseInt(num4[0], 10);
+              iValue += num5[0].length;
+              return parseInt(num5[0], 10);
             }, getName = function(match, shortNames, longNames) {
               var index = -1, names = $2.map(lookAhead(match) ? longNames : shortNames, function(v, k) {
                 return [[k, v]];
@@ -64907,13 +66320,13 @@
               }
               return matches;
             }, formatNumber = function(match, value, len) {
-              var num4 = "" + value;
+              var num5 = "" + value;
               if (lookAhead(match)) {
-                while (num4.length < len) {
-                  num4 = "0" + num4;
+                while (num5.length < len) {
+                  num5 = "0" + num5;
                 }
               }
-              return num4;
+              return num5;
             }, formatName = function(match, value, shortNames, longNames) {
               return lookAhead(match) ? longNames[value] : shortNames[value];
             }, output = "", literal = false;
@@ -66307,7 +67720,7 @@
       })(jQuery);
       (function($2, undefined2) {
         $2.effects.effect.fold = function(o, done) {
-          var el = $2(this), props = ["position", "top", "bottom", "left", "right", "height", "width"], mode = $2.effects.setMode(el, o.mode || "hide"), show = mode === "show", hide = mode === "hide", size = o.size || 15, percent = /([0-9]+)%/.exec(size), horizFirst = !!o.horizFirst, widthFirst = show !== horizFirst, ref = widthFirst ? ["width", "height"] : ["height", "width"], duration2 = o.duration / 2, wrapper, distance, animation1 = {}, animation2 = {};
+          var el = $2(this), props = ["position", "top", "bottom", "left", "right", "height", "width"], mode = $2.effects.setMode(el, o.mode || "hide"), show = mode === "show", hide = mode === "hide", size = o.size || 15, percent = /([0-9]+)%/.exec(size), horizFirst = !!o.horizFirst, widthFirst = show !== horizFirst, ref = widthFirst ? ["width", "height"] : ["height", "width"], duration3 = o.duration / 2, wrapper, distance, animation1 = {}, animation2 = {};
           $2.effects.save(el, props);
           el.show();
           wrapper = $2.effects.createWrapper(el).css({
@@ -66328,7 +67741,7 @@
           }
           animation1[ref[0]] = show ? distance[0] : size;
           animation2[ref[1]] = show ? distance[1] : 0;
-          wrapper.animate(animation1, duration2, o.easing).animate(animation2, duration2, o.easing, function() {
+          wrapper.animate(animation1, duration3, o.easing).animate(animation2, duration3, o.easing, function() {
             if (hide) {
               el.hide();
             }
@@ -66366,7 +67779,7 @@
       })(jQuery);
       (function($2, undefined2) {
         $2.effects.effect.pulsate = function(o, done) {
-          var elem = $2(this), mode = $2.effects.setMode(elem, o.mode || "show"), show = mode === "show", hide = mode === "hide", showhide = show || mode === "hide", anims = (o.times || 5) * 2 + (showhide ? 1 : 0), duration2 = o.duration / anims, animateTo = 0, queue = elem.queue(), queuelen = queue.length, i;
+          var elem = $2(this), mode = $2.effects.setMode(elem, o.mode || "show"), show = mode === "show", hide = mode === "hide", showhide = show || mode === "hide", anims = (o.times || 5) * 2 + (showhide ? 1 : 0), duration3 = o.duration / anims, animateTo = 0, queue = elem.queue(), queuelen = queue.length, i;
           if (show || !elem.is(":visible")) {
             elem.css("opacity", 0).show();
             animateTo = 1;
@@ -66374,12 +67787,12 @@
           for (i = 1; i < anims; i++) {
             elem.animate({
               opacity: animateTo
-            }, duration2, o.easing);
+            }, duration3, o.easing);
             animateTo = 1 - animateTo;
           }
           elem.animate({
             opacity: animateTo
-          }, duration2, o.easing);
+          }, duration3, o.easing);
           elem.queue(function() {
             if (hide) {
               elem.hide();
@@ -68213,8 +69626,8 @@
             }
             return precision;
           },
-          _precisionOf: function(num4) {
-            var str = num4.toString(), decimal = str.indexOf(".");
+          _precisionOf: function(num5) {
+            var str = num5.toString(), decimal = str.indexOf(".");
             return decimal === -1 ? 0 : str.length - decimal - 1;
           },
           _adjustValue: function(value) {
@@ -68845,12 +70258,12 @@
             } else {
               index = this._getIndex(index);
               if ($2.isArray(disabled)) {
-                disabled = $2.map(disabled, function(num4) {
-                  return num4 !== index ? num4 : null;
+                disabled = $2.map(disabled, function(num5) {
+                  return num5 !== index ? num5 : null;
                 });
               } else {
-                disabled = $2.map(this.tabs, function(li, num4) {
-                  return num4 !== index ? num4 : null;
+                disabled = $2.map(this.tabs, function(li, num5) {
+                  return num5 !== index ? num5 : null;
                 });
               }
             }
@@ -69363,7 +70776,7 @@
         NetworkView2.show();
       }, 3e3);
     } else if (system.key === "homelab") {
-      HomelabView2.init();
+      HomelabView2.init(ha);
       setTimeout(function() {
         active8 = "homelab";
         HomelabView2.show();
