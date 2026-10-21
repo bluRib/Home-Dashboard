@@ -57182,6 +57182,18 @@
     }
     return '<img class="' + cls + '" src="' + esc(svc.iconUrl) + '" alt="" loading="lazy" data-letter="' + initial + '">';
   }
+  function cardBasis(n, width) {
+    var GAP = 8;
+    var PREF = 215;
+    if (!width || n < 1) {
+      return PREF;
+    }
+    var fit2 = Math.max(1, Math.floor((width + GAP) / (PREF + GAP)));
+    var cols = Math.min(n, fit2);
+    var rows2 = Math.ceil(n / cols);
+    cols = Math.ceil(n / rows2);
+    return Math.max(120, Math.floor((width - (cols - 1) * GAP) / cols) - 1);
+  }
   function renderCards() {
     var box = $id6("hl-cards");
     if (!box || !feeds6) {
@@ -57191,6 +57203,10 @@
     if (!servers.length) {
       return;
     }
+    box.style.setProperty(
+      "--hl-card-basis",
+      cardBasis(servers.length, box.clientWidth) + "px"
+    );
     box.innerHTML = servers.map(function(sv) {
       var st = sv.stats;
       var header = anchor(
@@ -57242,13 +57258,60 @@
     }).join("");
     swapBrokenIcons(box);
   }
+  function groupHeight(g) {
+    return 26 + g.items.length * 75;
+  }
+  function columnsFor(groups, width, height) {
+    var MIN = 200;
+    var MAX = 300;
+    var GAP = 9;
+    var total = groups.reduce(function(t, g) {
+      return t + groupHeight(g);
+    }, 0);
+    var widest = Math.max(1, Math.floor((width + GAP) / (MIN + GAP)));
+    var fewest = Math.max(1, Math.ceil((width + GAP) / (MAX + GAP)));
+    var n = widest;
+    for (var k = Math.min(fewest, widest); k <= widest; k++) {
+      if (total / k + 2 * GAP <= (height || 0)) {
+        n = k;
+        break;
+      }
+    }
+    n = Math.max(1, Math.min(groups.length, n));
+    var cols = [];
+    for (var i = 0; i < n; i++) {
+      cols.push({ items: [], h: 0 });
+    }
+    groups.slice().sort(function(a, b) {
+      return groupHeight(b) - groupHeight(a);
+    }).forEach(function(g) {
+      var best = cols[0];
+      cols.forEach(function(c2) {
+        if (c2.h < best.h) {
+          best = c2;
+        }
+      });
+      best.items.push(g);
+      best.h += groupHeight(g);
+    });
+    var order = {};
+    groups.forEach(function(g, i2) {
+      order[g.group] = i2;
+    });
+    cols.forEach(function(c2) {
+      c2.items.sort(function(a, b) {
+        return order[a.group] - order[b.group];
+      });
+    });
+    return cols;
+  }
   function renderGrid() {
     var box = $id6("hl-grid");
     if (!box || !feeds6) {
       return;
     }
     var groups = feeds6.services();
-    box.innerHTML = groups.map(function(g) {
+    var section = function(g) {
       var items = g.items.slice().sort(function(a, b) {
         var ad = a.hostSeen ? 1 : 0, bd = b.hostSeen ? 1 : 0;
         return ad - bd || a.name.localeCompare(b.name);
@@ -57263,6 +57326,15 @@
           icon(s, "hl-tile-icon") + '<span class="hl-tile-text"><b>' + esc(s.name) + "</b><i>" + esc(s.host) + '</i></span><span class="hl-tile-state">' + state2 + "</span>"
         );
       }).join("") + "</div></div>";
+    };
+    var body = box.parentNode;
+    var cols = columnsFor(
+      groups,
+      box.clientWidth || 1200,
+      body ? body.clientHeight : 0
+    );
+    box.innerHTML = cols.map(function(c2) {
+      return '<div class="hl-gcol">' + c2.items.map(section).join("") + "</div>";
     }).join("");
     swapBrokenIcons(box);
   }

@@ -43,7 +43,10 @@
 /* A ceiling so a long card list cannot push the services grid off screen;
    below it the panel is as tall as its cards. */
 #hl-servers  { grid-area: servers; max-height: 46vh; }
+/* The one scroller on the screen. At 1366 the groups cannot all fit, so this
+   panel scrolls inside itself; the page never does. */
 #hl-services { grid-area: services; }
+#hl-services > .hs-body { overflow-y: auto; overflow-x: hidden; }
 #hl-side     { grid-area: side; }
 #hl-clock    { grid-area: clock; }
 
@@ -64,17 +67,23 @@
 /* ---- server cards ------------------------------------------------------------ */
 
 #hl-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
     gap: 8px;
-    align-content: start;
     padding-bottom: 2px;
 }
+
+/* The basis is measured in renderCards so that the cards divide evenly over
+   the rows, and every row is then filled by flex-grow. 215px is only the
+   fallback for the first paint, before a width is known. */
+.hl-card { flex: 1 1 var(--hl-card-basis, 215px); }
 
 .hl-card {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    max-width: 100%;
     border: 1px solid rgba(63, 224, 255, .22);
     border-left: 3px solid #3fe0ff;
     padding: 5px 8px 7px;
@@ -101,9 +110,8 @@
     color: #e6fbff;
     font-size: clamp(10px, 0.78vw, 15px);
     letter-spacing: .09em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* A long server name wraps instead of losing its tail to an ellipsis. */
+    overflow-wrap: anywhere;
 }
 
 .hl-card-ip {
@@ -223,7 +231,7 @@
     text-decoration: none;
     color: #bff4ff;
     font-size: clamp(7px, 0.45vw, 10px);
-    white-space: nowrap;
+    line-height: 1.25;
 }
 
 .hl-chip:hover { background: rgba(63, 224, 255, .18); border-color: #3fe0ff; }
@@ -236,13 +244,32 @@
     display: block;
 }
 
-.hl-chip-name { overflow: hidden; text-overflow: ellipsis; }
+/* A chip grows to its name and the row wraps, rather than the name losing
+   its tail. */
+.hl-chip-name { overflow-wrap: anywhere; }
 
 /* ---- the services grid ---------------------------------------------------------- */
 
-#hl-grid { padding-bottom: 2px; }
+/* Groups flow into columns and fill the width, instead of each one taking a
+   full width row of its own and leaving the right hand side empty. A group is
+   never split across a column break. */
+/* The columns are built in HomelabView, so this only has to lay them out. */
+#hl-grid {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding-bottom: 2px;
+}
 
-.hl-gsection { margin-bottom: 7px; }
+.hl-gcol {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.hl-gsection { margin: 0; min-width: 0; }
 
 .hl-gtitle {
     color: #3fe0ff;
@@ -254,13 +281,17 @@
     margin-bottom: 4px;
 }
 
+/* Inside a column a group is a single stack, so every tile is the full
+   column width and comfortably past the 140px floor. */
 .hl-gtiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-/* The whole tile is the link. 140 by 70 is the floor Jovan asked for. */
+/* The whole tile is the link. 140 by 70 is the floor Jovan asked for; a long
+   name wraps to a second line and the tile grows rather than losing its tail
+   to an ellipsis. */
 .hl-tile {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -268,7 +299,8 @@
     align-content: center;
     gap: 1px 7px;
     min-height: 70px;
-    padding: 7px 9px;
+    min-width: 140px;
+    padding: 5px 8px;
     border: 1px solid rgba(63, 224, 255, .22);
     background: rgba(63, 224, 255, .04);
     text-decoration: none;
@@ -305,11 +337,11 @@
 .hl-tile-text b {
     color: #e6fbff;
     font-weight: normal;
-    font-size: clamp(9px, 0.56vw, 12px);
-    letter-spacing: .04em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: clamp(9px, 0.54vw, 12px);
+    letter-spacing: .02em;
+    line-height: 1.2;
+    /* Up to two lines, and break a long word rather than clip it. */
+    overflow-wrap: anywhere;
 }
 
 .hl-tile-text i {
@@ -317,8 +349,6 @@
     font-size: clamp(7px, 0.44vw, 10px);
     opacity: .42;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .hl-tile-state {
@@ -407,14 +437,26 @@
     margin-top: 2px;
 }
 
-#hl-power, #hl-ha { flex: 1 1 auto; min-height: 0; }
+/* Home Assistant is a fixed set of readings, so it takes the height it needs
+   and no more. Power and the UPS units absorb everything that is left. */
+#hl-ha { flex: 0 0 auto; min-height: 0; }
+#hl-power { flex: 1 1 auto; min-height: 0; }
 #hl-power .hs-body, #hl-ha .hs-body { overflow-y: auto; }
 
-#hl-power-body, #hl-ha-body {
+/* The readings spread into the height Home Assistant gave back, but only so
+   far: past about 640px the gaps stop reading as spacing and start reading as
+   missing rows, so on a tall monitor the panel keeps them together. */
+#hl-power-body {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    min-height: 100%;
+    min-height: min(100%, 640px);
+}
+
+/* Compact: the rows sit together rather than spreading down the panel. */
+#hl-ha-body {
+    display: flex;
+    flex-direction: column;
 }
 
 .hl-ptotal {
@@ -436,7 +478,7 @@
 .hl-prow span { grid-area: label; opacity: .6; white-space: nowrap;
                 overflow: hidden; text-overflow: ellipsis; }
 .hl-prow b { grid-area: value; color: #e6fbff; font-weight: normal; white-space: nowrap; }
-.hl-prow i { grid-area: bar; display: block; height: 3px; background: #3fe0ff; }
+.hl-prow i { grid-area: bar; display: block; height: 5px; background: #3fe0ff; }
 
 .hl-ups { border-left: 2px solid #4dffb0; padding: 2px 0 3px 6px; }
 .hl-ups.bad { border-left-color: #ff8a1f; }
@@ -452,7 +494,7 @@
 .hl-ups-head span { color: #e6fbff; }
 .hl-ups.bad .hl-ups-head span { color: #ff8a1f; }
 
-.hl-ups-bar { height: 3px; background: rgba(63, 224, 255, .14); margin: 2px 0 1px; }
+.hl-ups-bar { height: 5px; background: rgba(63, 224, 255, .14); margin: 3px 0 2px; }
 .hl-ups-bar i { display: block; height: 100%; background: #4dffb0; }
 .hl-ups.bad .hl-ups-bar i { background: #ff8a1f; }
 
@@ -470,7 +512,7 @@
     gap: 8px;
     font-size: clamp(8px, 0.52vw, 11px);
     border-bottom: 1px solid rgba(63, 224, 255, .1);
-    padding: 1px 0;
+    padding: 2px 0;
     white-space: nowrap;
 }
 

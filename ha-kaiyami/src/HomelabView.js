@@ -166,12 +166,32 @@ function icon(svc, cls) {
 
 /* ---- server cards ---------------------------------------------------------- */
 
+/* How wide one card should ask to be, so that eleven of them divide evenly
+ * over however many rows they need. Picking the widest row count that still
+ * fits and then dividing back means the last row is never one lonely card
+ * stretched across the panel. */
+function cardBasis(n, width) {
+    var GAP = 8;
+    var PREF = 215;
+    if (!width || n < 1) { return PREF; }
+    var fit = Math.max(1, Math.floor((width + GAP) / (PREF + GAP)));
+    var cols = Math.min(n, fit);
+    var rows = Math.ceil(n / cols);
+    cols = Math.ceil(n / rows);
+    /* One pixel under the exact share, so rounding can never let an extra
+       card squeeze onto the row. Flex-grow takes the slack back. */
+    return Math.max(120, Math.floor((width - (cols - 1) * GAP) / cols) - 1);
+}
+
 function renderCards() {
     var box = $id("hl-cards");
     if (!box || !feeds) { return; }
 
     var servers = feeds.servers();
     if (!servers.length) { return; }
+
+    box.style.setProperty("--hl-card-basis",
+        cardBasis(servers.length, box.clientWidth) + "px");
 
     box.innerHTML = servers.map(function (sv) {
         var st = sv.stats;
@@ -244,12 +264,65 @@ function renderCards() {
 
 /* ---- services grid ---------------------------------------------------------- */
 
+/* Roughly how tall a group will be, from its title and its tiles. Used only
+ * to balance the columns, so an estimate is enough. */
+function groupHeight(g) {
+    return 26 + g.items.length * 75;
+}
+
+/* CSS multi-column balances badly here: a group cannot be split, and with
+ * twelve unbreakable blocks of very different heights the browser settles on
+ * far fewer columns than fit, which left the panel scrolling at 1920 when the
+ * content would have fit. Choosing the count here and packing the groups
+ * shortest column first fills the width, and knows the panel height as well,
+ * which CSS columns never do. */
+function columnsFor(groups, width, height) {
+    var MIN = 200;
+    var MAX = 300;
+    var GAP = 9;
+    var total = groups.reduce(function (t, g) { return t + groupHeight(g); }, 0);
+
+    /* The width sets the range: no column narrower than MIN, none wider than
+       MAX. Inside that range take the fewest columns whose content still fits
+       the panel, so the tiles are as wide as the height allows instead of
+       leaving the lower half of the screen empty on a tall monitor. */
+    var widest = Math.max(1, Math.floor((width + GAP) / (MIN + GAP)));
+    var fewest = Math.max(1, Math.ceil((width + GAP) / (MAX + GAP)));
+    var n = widest;
+    for (var k = Math.min(fewest, widest); k <= widest; k++) {
+        if (total / k + 2 * GAP <= (height || 0)) { n = k; break; }
+    }
+    n = Math.max(1, Math.min(groups.length, n));
+
+    var cols = [];
+    for (var i = 0; i < n; i++) {
+        cols.push({ items: [], h: 0 });
+    }
+    /* Tallest first, into whichever column is shortest. */
+    groups.slice().sort(function (a, b) {
+        return groupHeight(b) - groupHeight(a);
+    }).forEach(function (g) {
+        var best = cols[0];
+        cols.forEach(function (c) { if (c.h < best.h) { best = c; } });
+        best.items.push(g);
+        best.h += groupHeight(g);
+    });
+    /* Put each column back into the order the groups came in, so the reading
+       order down a column still matches the Homepage grouping. */
+    var order = {};
+    groups.forEach(function (g, i) { order[g.group] = i; });
+    cols.forEach(function (c) {
+        c.items.sort(function (a, b) { return order[a.group] - order[b.group]; });
+    });
+    return cols;
+}
+
 function renderGrid() {
     var box = $id("hl-grid");
     if (!box || !feeds) { return; }
 
     var groups = feeds.services();
-    box.innerHTML = groups.map(function (g) {
+    var section = function (g) {
         /* Anything down sorts to the front of its group. */
         var items = g.items.slice().sort(function (a, b) {
             var ad = a.hostSeen ? 1 : 0, bd = b.hostSeen ? 1 : 0;
@@ -271,6 +344,13 @@ function renderGrid() {
                         '<i>' + esc(s.host) + '</i></span>' +
                     '<span class="hl-tile-state">' + state + '</span>');
             }).join("") + '</div></div>';
+    };
+
+    var body = box.parentNode;
+    var cols = columnsFor(groups, box.clientWidth || 1200,
+                          body ? body.clientHeight : 0);
+    box.innerHTML = cols.map(function (c) {
+        return '<div class="hl-gcol">' + c.items.map(section).join("") + '</div>';
     }).join("");
 
     swapBrokenIcons(box);
