@@ -55,29 +55,29 @@ var SOURCES = {
  * Homepage directory; the Arcane container on port 3552 is what marks a Docker
  * host, and every one of them has it. */
 var HOSTS = [
-    { ip: "10.69.2.40",  name: "Proxmox red",   kind: "pve",
+    { card: true, ip: "10.69.2.40",  name: "Proxmox red",   kind: "pve",
       url: "https://10.69.2.40:8006" },
-    { ip: "10.69.2.50",  name: "Proxmox blu",   kind: "pve",
+    { card: true, ip: "10.69.2.50",  name: "Proxmox blu",   kind: "pve",
       url: "https://10.69.2.50:8006" },
-    { ip: "10.69.2.60",  name: "Proxmox grey",  kind: "pve",
+    { card: true, ip: "10.69.2.60",  name: "Proxmox grey",  kind: "pve",
       url: "https://10.69.2.60:8006" },
 
     /* A Docker host's own interface is the Arcane container it runs on 3552,
        which is the thing that actually manages it. */
-    { ip: "10.69.2.134", name: "Frigate",       kind: "docker",
+    { card: true, ip: "10.69.2.134", name: "Frigate",       kind: "docker",
       url: "http://10.69.2.134:3552" },
-    { ip: "10.69.2.222", name: "Media",         kind: "docker",
+    { card: true, ip: "10.69.2.222", name: "Media",         kind: "docker",
       url: "http://10.69.2.222:3552" },
-    { ip: "10.69.2.5",   name: "Trusted",       kind: "docker",
+    { card: true, ip: "10.69.2.5",   name: "Trusted",       kind: "docker",
       url: "http://10.69.2.5:3552" },
-    { ip: "10.69.2.184", name: "Paperless",     kind: "docker",
+    { card: true, ip: "10.69.2.184", name: "Paperless",     kind: "docker",
       url: "http://10.69.2.184:3552" },
-    { ip: "10.69.2.18",  name: "Newt",          kind: "docker",
+    { card: true, ip: "10.69.2.18",  name: "Newt",          kind: "docker",
       url: "http://10.69.2.18:3552" },
 
-    { ip: "10.69.2.41",  name: "PBS",           kind: "single",
+    { card: true, ip: "10.69.2.41",  name: "PBS",           kind: "single",
       url: "https://10.69.2.41:8007" },
-    { ip: "10.69.2.180", name: "TrueNAS",       kind: "single",
+    { card: true, ip: "10.69.2.180", name: "TrueNAS",       kind: "single",
       url: "http://10.69.2.180" },
     { ip: "10.69.2.70",  name: "Immich",        kind: "single",
       url: "http://10.69.2.70:2283/" },
@@ -100,7 +100,7 @@ var HOSTS = [
     /* PeaNut answers on 8080. Homepage lists 3000, where nothing listens. */
     { ip: "10.69.2.77",  name: "PeaNut",        kind: "single",
       url: "http://10.69.2.77:8080" },
-    { ip: "10.69.2.151", name: "Home Assistant", kind: "single",
+    { card: true, ip: "10.69.2.151", name: "Home Assistant", kind: "single",
       url: "http://10.69.2.151:8123" }
 ];
 
@@ -113,62 +113,70 @@ var HOSTS = [
  * the one that answers.
  */
 var SERVICES = [
-    { host: "10.69.2.40",  name: "Proxmox Red",    group: "System",      port: 8006, https: true },
-    { host: "10.69.2.50",  name: "Proxmox Blue",   group: "System",      port: 8006, https: true },
-    { host: "10.69.2.60",  name: "Proxmox Grey",   group: "System",      port: 8006, https: true },
-    { host: "10.69.2.41",  name: "Proxmox Backup Server", group: "System", port: 8007, https: true },
-    { host: "10.69.2.167", name: "Semaphore",      group: "System",      port: 3000 },
+    { host: "10.69.2.40",  name: "Proxmox Red",    group: "System",      port: 8006, https: true , icon: "proxmox" },
+    { host: "10.69.2.50",  name: "Proxmox Blue",   group: "System",      port: 8006, https: true , icon: "proxmox" },
+    { host: "10.69.2.60",  name: "Proxmox Grey",   group: "System",      port: 8006, https: true , icon: "proxmox" },
+    { host: "10.69.2.41",  name: "Proxmox Backup Server", group: "System", port: 8007, https: true , icon: "proxmox" },
+    { host: "10.69.2.167", name: "Semaphore",      group: "System",      port: 3000 , icon: "semaphore" },
 
-    { host: "10.69.2.222", name: "Arcane Media",   group: "Docker",      port: 3552 },
-    { host: "10.69.2.5",   name: "Arcane Trusted", group: "Docker",      port: 3552 },
-    { host: "10.69.2.134", name: "Arcane Frigate", group: "Docker",      port: 3552 },
-    { host: "10.69.2.184", name: "Arcane Paperless", group: "Docker",    port: 3552 },
-    { host: "10.69.2.18",  name: "Arcane Newt",    group: "Docker",      port: 3552 },
+    { host: "10.69.2.222", name: "Arcane Media",   group: "Docker",      port: 3552 , icon: "arcane" },
+    { host: "10.69.2.5",   name: "Arcane Trusted", group: "Docker",      port: 3552 , icon: "arcane" },
+    { host: "10.69.2.134", name: "Arcane Frigate", group: "Docker",      port: 3552 , icon: "arcane" },
+    { host: "10.69.2.184", name: "Arcane Paperless", group: "Docker",    port: 3552 , icon: "arcane" },
+    { host: "10.69.2.18",  name: "Arcane Newt",    group: "Docker",      port: 3552 , icon: "arcane" },
 
-    { host: "10.69.2.151", name: "Home Assistant", group: "Home Automation", port: 8123 },
-    { host: "10.69.2.10",  name: "Zigbee2MQTT",    group: "Home Automation", port: 8080 },
-    { host: "10.69.2.29",  name: "Z-Wave JS",      group: "Home Automation", port: 8091 },
-    { host: "10.69.2.133", name: "Node-RED",       group: "Home Automation", port: 1880 },
-    { host: "10.69.2.163", name: "LoRa-the-Explorer", group: "Home Automation", port: 80 },
-    { host: "10.69.2.134", name: "n8n",            group: "Home Automation", port: 5678 },
-    { host: "10.69.2.140", name: "SLZB-06",        group: "Home Automation", port: 80 },
+    { host: "10.69.2.151", name: "Home Assistant", group: "Home Automation", port: 8123 , icon: "home-assistant" },
+    { host: "10.69.2.10",  name: "Zigbee2MQTT",    group: "Home Automation", port: 8080 , icon: "zigbee2mqtt" },
+    { host: "10.69.2.29",  name: "Z-Wave JS",      group: "Home Automation", port: 8091 , icon: "zwavejs2mqtt" },
+    { host: "10.69.2.133", name: "Node-RED",       group: "Home Automation", port: 1880 , icon: "node-red" },
+    { host: "10.69.2.163", name: "LoRa-the-Explorer", group: "Home Automation", port: 80 , icon: "" },
+    { host: "10.69.2.134", name: "n8n",            group: "Home Automation", port: 5678 , icon: "n8n" },
+    { host: "10.69.2.140", name: "SLZB-06",        group: "Home Automation", port: 80 , icon: "smlight" },
 
-    { host: "10.69.1.1",   name: "UniFi",          group: "Network Management", port: 443, https: true },
-    { host: "10.69.2.3",   name: "Pi-hole",        group: "Network Management", port: 443, https: true, path: "/admin" },
+    { host: "10.69.1.1",   name: "UniFi",          group: "Network Management", port: 443, https: true , icon: "unifi" },
+    { host: "10.69.2.3",   name: "Pi-hole",        group: "Network Management", port: 443, https: true, path: "/admin" , icon: "pi-hole" },
 
-    { host: "10.69.2.222", name: "Jellyfin",       group: "Media Processing", port: 8096 },
-    { host: "10.69.2.222", name: "SABnzbd",        group: "Media Processing", port: 8080 },
-    { host: "10.69.2.222", name: "Prowlarr",       group: "Media Processing", port: 9696 },
-    { host: "10.69.2.222", name: "Sonarr",         group: "Media Processing", port: 8989 },
-    { host: "10.69.2.222", name: "Radarr",         group: "Media Processing", port: 7878 },
-    { host: "10.69.2.222", name: "Jellyseerr",     group: "Media Processing", port: 5055 },
+    { host: "10.69.2.222", name: "Jellyfin",       group: "Media Processing", port: 8096 , icon: "jellyfin" },
+    { host: "10.69.2.222", name: "SABnzbd",        group: "Media Processing", port: 8080 , icon: "sabnzbd" },
+    { host: "10.69.2.222", name: "Prowlarr",       group: "Media Processing", port: 9696 , icon: "prowlarr" },
+    { host: "10.69.2.222", name: "Sonarr",         group: "Media Processing", port: 8989 , icon: "sonarr" },
+    { host: "10.69.2.222", name: "Radarr",         group: "Media Processing", port: 7878 , icon: "radarr" },
+    { host: "10.69.2.222", name: "Jellyseerr",     group: "Media Processing", port: 5055 , icon: "jellyseerr" },
 
-    { host: "10.69.2.18",  name: "Beszel",         group: "System Monitoring", port: 8090 },
-    { host: "10.69.2.77",  name: "PeaNut",         group: "System Monitoring", port: 8080 },
-    { host: "10.69.2.5",   name: "Uptime Kuma",    group: "System Monitoring", port: 3001 },
-    { host: "10.69.2.5",   name: "Gotify",         group: "System Monitoring", port: 8088 },
+    { host: "10.69.2.18",  name: "Beszel",         group: "System Monitoring", port: 8090 , icon: "beszel" },
+    { host: "10.69.2.77",  name: "PeaNut",         group: "System Monitoring", port: 8080 , icon: "peanut" },
+    { host: "10.69.2.5",   name: "Uptime Kuma",    group: "System Monitoring", port: 3001 , icon: "uptime-kuma" },
+    { host: "10.69.2.5",   name: "Gotify",         group: "System Monitoring", port: 8088 , icon: "gotify" },
 
-    { host: "10.69.2.134", name: "InfluxDB",       group: "Database",    port: 8086 },
-    { host: "10.69.2.112", name: "PostgreSQL",     group: "Database",    port: 80, path: "/adminer/" },
-    { host: "10.69.2.134", name: "Prometheus",     group: "Database",    port: 9090 },
+    { host: "10.69.2.134", name: "InfluxDB",       group: "Database",    port: 8086 , icon: "influxdb" },
+    { host: "10.69.2.112", name: "PostgreSQL",     group: "Database",    port: 80, path: "/adminer/" , icon: "postgresql" },
+    { host: "10.69.2.134", name: "Prometheus",     group: "Database",    port: 9090 , icon: "prometheus" },
 
-    { host: "10.69.2.134", name: "Frigate",        group: "Security",    port: 5000 },
-    { host: "10.69.4.160", name: "Reolink Doorbell", group: "Security",  port: 80 },
-    { host: "10.69.1.27",  name: "Front Yard Camera", group: "Security", port: 80 },
-    { host: "10.69.1.19",  name: "Garage Camera",  group: "Security",    port: 80 },
-    { host: "10.69.1.16",  name: "Back Yard Camera", group: "Security",  port: 80 },
+    { host: "10.69.2.134", name: "Frigate",        group: "Security",    port: 5000 , icon: "frigate" },
+    { host: "10.69.4.160", name: "Reolink Doorbell", group: "Security",  port: 80 , icon: "reolink" },
+    { host: "10.69.1.27",  name: "Front Yard Camera", group: "Security", port: 80 , icon: "" },
+    { host: "10.69.1.19",  name: "Garage Camera",  group: "Security",    port: 80 , icon: "" },
+    { host: "10.69.1.16",  name: "Back Yard Camera", group: "Security",  port: 80 , icon: "" },
 
-    { host: "10.69.2.180", name: "TrueNAS",        group: "Storage",     port: 443, https: true },
-    { host: "10.69.2.134", name: "Garage S3",      group: "Storage",     port: 3909 },
+    { host: "10.69.2.180", name: "TrueNAS",        group: "Storage",     port: 443, https: true , icon: "truenas" },
+    { host: "10.69.2.134", name: "Garage S3",      group: "Storage",     port: 3909 , icon: "garage" },
 
-    { host: "10.69.2.5",   name: "Gitea",          group: "Apps",        port: 8080 },
-    { host: "10.69.2.70",  name: "Immich",         group: "Apps",        port: 2283 },
-    { host: "10.69.2.5",   name: "Mealie",         group: "Apps",        port: 9091 },
-    { host: "10.69.2.18",  name: "Securo",         group: "Apps",        port: 3000 },
+    { host: "10.69.2.5",   name: "Gitea",          group: "Apps",        port: 8080 , icon: "gitea" },
+    { host: "10.69.2.70",  name: "Immich",         group: "Apps",        port: 2283 , icon: "immich" },
+    { host: "10.69.2.5",   name: "Mealie",         group: "Apps",        port: 9091 , icon: "mealie" },
+    { host: "10.69.2.18",  name: "Securo",         group: "Apps",        port: 3000 , icon: "" },
 
-    { host: "10.69.2.184", name: "Paperless-ngx",  group: "Documents",   port: 8000 },
-    { host: "10.69.2.184", name: "Paperless-AI",   group: "Documents",   port: 3000 },
-    { host: "10.69.2.184", name: "Paperless-GPT",  group: "Documents",   port: 3002 }
+    { host: "10.69.2.184", name: "Paperless-ngx",  group: "Documents",   port: 8000 , icon: "paperless-ngx" },
+    { host: "10.69.2.184", name: "Paperless-AI",   group: "Documents",   port: 3000 , icon: "paperless-ngx" },
+    { host: "10.69.2.184", name: "Paperless-GPT",  group: "Documents",   port: 3002 , icon: "paperless-ngx" },
+
+    /* The two Homepage entries that live on a public domain rather than an
+       address on the LAN. They have no host on this network, so they carry no
+       link state and simply always read as reachable. */
+    { host: "vault.vaznet.site", name: "Vaultwarden", group: "Apps",
+      port: 443, https: true, icon: "vaultwarden", external: true },
+    { host: "mon.vaznet.site", name: "Umami Analytics", group: "Rx Degree",
+      port: 443, https: true, path: "/websites", icon: "umami", external: true }
 ];
 
 /* Home Assistant entities this screen reads. Named rather than pattern matched
@@ -221,6 +229,22 @@ var BACKUP_STALE_HOURS = 26;
 /* Number(null) is 0 and Number("") is 0, so a missing entity was arriving as
  * a real zero and the Home Assistant panel printed "CPU 0%" for a sensor that
  * does not exist. Absent has to stay absent, or the panel invents a reading. */
+/* dashboard-icons, the same set Homepage draws from. A full URL in the
+ * Homepage config is used as it stands; a bare name becomes a PNG from the
+ * icon repository. A service with no icon falls back to its initial, which the
+ * stylesheet draws, so nothing ever shows a broken image. */
+var ICON_BASE = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/";
+
+function iconUrl(name) {
+    if (!name) {
+        return null;
+    }
+    if (name.indexOf("http") === 0) {
+        return name;
+    }
+    return ICON_BASE + name + ".png";
+}
+
 /* The one place a service URL is assembled. hosts() and services() both use
  * it, so a satellite in the map and a row in the list always agree. */
 function serviceUrl(s) {
@@ -397,7 +421,10 @@ HomelabFeeds.prototype.pollBeszel = function () {
                     memPct: info.mp !== undefined ? info.mp : null,
                     diskPct: info.dp !== undefined ? info.dp : null,
                     uptime: info.u !== undefined ? info.u : null,
-                    temp: info.dt !== undefined ? info.dt : null
+                    /* Beszel reports the highest sensor it can see. */
+                    temp: info.dt !== undefined ? info.dt
+                        : (info.t !== undefined ? info.t : null),
+                    containers: it.containers || null
                 };
             });
             self.hostStats = by;
@@ -434,11 +461,24 @@ HomelabFeeds.prototype.hosts = function () {
     var self = this;
     return HOSTS.map(function (h) {
         var c = self.unifi[h.ip];
-        var stats = self.hostStats
-            ? (self.hostStats[h.name] || self.hostStats[h.ip] || null) : null;
+        /* Beszel names its systems however Jovan named them, so a match is
+           tried on the address first and then on the name, case folded. */
+        var stats = null;
+        if (self.hostStats) {
+            var keys = Object.keys(self.hostStats);
+            for (var k = 0; k < keys.length; k++) {
+                var cand = self.hostStats[keys[k]];
+                if (cand.host === h.ip ||
+                    String(cand.name).toLowerCase() === h.name.toLowerCase()) {
+                    stats = cand;
+                    break;
+                }
+            }
+        }
         var services = SERVICES.filter(function (s) { return s.host === h.ip; })
             .map(function (s) {
-                return Object.assign({}, s, { url: serviceUrl(s) });
+                return Object.assign({}, s, { url: serviceUrl(s),
+                                              iconUrl: iconUrl(s.icon) });
             });
 
         return {
@@ -455,11 +495,18 @@ HomelabFeeds.prototype.hosts = function () {
             port: c ? (c.m.sw_port || "") : "",
             mac: c ? c.m.mac : "",
             url: h.url || null,
+            card: !!h.card,
             stats: stats,
             services: services,
             serviceCount: services.length
         };
     });
+};
+
+/* The servers that get a card. Everything else appears only as a tile in the
+ * services grid. */
+HomelabFeeds.prototype.servers = function () {
+    return this.hosts().filter(function (h) { return h.card; });
 };
 
 HomelabFeeds.prototype.guests = function () {
@@ -623,12 +670,15 @@ HomelabFeeds.prototype.services = function () {
             group: s.group,
             host: s.host,
             url: serviceUrl(s),
+            icon: s.icon || "",
+            iconUrl: iconUrl(s.icon),
             /* The host's link state is known from the controller. Whether the
                service itself answers is not, until Uptime Kuma is scraped, and
                the board labels the difference rather than implying one from
                the other. */
-            hostSeen: hostSeen[s.host] !== false,
-            hostKnown: hostSeen[s.host] !== undefined,
+            external: !!s.external,
+            hostSeen: s.external ? true : hostSeen[s.host] !== false,
+            hostKnown: s.external ? true : hostSeen[s.host] !== undefined,
             status: k ? k.status : null,
             ms: k ? k.ms : null
         });

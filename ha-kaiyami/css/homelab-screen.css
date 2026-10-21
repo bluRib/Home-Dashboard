@@ -1,9 +1,12 @@
-/* Homelab screen: full viewport grid, same approach as the other screens, and
- * it borrows .hs-head / .hs-body from house-screen.css for the panel chrome.
+/* Homelab screen: server cards, a services grid, and a narrow side column.
+ *
+ * Read the way a Homepage dashboard is read: the state of every server at a
+ * glance, and one click to any web interface. Everything clickable is a real
+ * anchor, so it carries the browser's own affordances.
  *
  * Palette: #3fe0ff primary, #bff4ff text, #ff8a1f alert, #4dffb0 accent.
- * Orange is only a problem: a host the controller cannot see, a service down,
- * a stale backup, a Z-Wave fault, a UPS off full charge.
+ * Orange is only a problem: a server the controller cannot see, a service on
+ * one, a stale backup, a Z-Wave fault, a UPS off full charge.
  */
 
 #homelab-screen {
@@ -18,19 +21,17 @@
     gap: 10px;
     background: #03060a;
 
-    /* Panels are sized to what they hold. The services list is the only one
-       that can absorb any height, so it takes the tall right column; the Home
-       Assistant panel is a fixed nine rows and sits in a cell that matches it,
-       beside the power panel. The map, which scales, gets the width.
-       .has-storage below gives storage a cell the moment TrueNAS and PBS
-       start reaching Prometheus. */
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) minmax(275px, 21vw);
-    grid-template-rows: auto minmax(0, 2.4fr) minmax(0, 1fr) auto;
+    /* Cards on top because they are the point of the screen, the services grid
+       underneath, and the readings down the right. */
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 18vw);
+    /* The cards take the height they need and no more; whatever is left goes
+       to the services grid, which can always use it. A fixed fraction left a
+       wide empty band under two rows of cards. */
+    grid-template-rows: minmax(0, auto) minmax(0, 1fr) auto;
     grid-template-areas:
-        "status status status"
-        "map    map    services"
-        "power  ha     services"
-        "power  ha     clock";
+        "servers  side"
+        "services side"
+        "services clock";
 
     font-family: Menlo, Consolas, "Courier New", monospace;
     color: #bff4ff;
@@ -39,26 +40,16 @@
 
 #homelab-screen * { box-sizing: border-box; }
 
-#homelab-screen.has-storage {
-    grid-template-areas:
-        "status status  status"
-        "map    map     services"
-        "power  ha      services"
-        "power  storage clock";
-}
-
-#hl-status   { grid-area: status; }
-#hl-map      { grid-area: map; }
-#hl-power    { grid-area: power; }
+/* A ceiling so a long card list cannot push the services grid off screen;
+   below it the panel is as tall as its cards. */
+#hl-servers  { grid-area: servers; max-height: 46vh; }
 #hl-services { grid-area: services; }
-#hl-ha       { grid-area: ha; }
-#hl-storage  { grid-area: storage; }
+#hl-side     { grid-area: side; }
 #hl-clock    { grid-area: clock; }
 
 #homelab-screen .hs-head { color: #3fe0ff; border-bottom-color: #3fe0ff; }
 #homelab-screen .hs-head::after { border-bottom-color: rgba(63, 224, 255, .35); }
 #homelab-screen .hs-head em { color: #3fe0ff; opacity: .72; }
-#homelab-screen .hs-head em.warn { color: #ff8a1f; opacity: 1; }
 
 .hl-panel {
     display: flex;
@@ -68,500 +59,427 @@
     overflow: hidden;
 }
 
-/* ---- anything that opens a web interface -------------------------------------- */
+.hl-panel > .hs-body { overflow-y: auto; }
 
-/* A small arrow after the name, and the URL in the tooltip. Dim until the row
-   is hovered, so it marks the affordance without shouting. */
-.hl-link-icon {
-    font-style: normal;
-    color: #3fe0ff;
-    opacity: .45;
-    font-size: .9em;
-    padding-left: 2px;
-}
+/* ---- server cards ------------------------------------------------------------ */
 
-.hl-srow:hover .hl-link-icon,
-.hl-chip:hover .hl-link-icon { opacity: 1; }
-
-.hl-label-name { pointer-events: none; }
-
-/* ---- status row ---------------------------------------------------------------- */
-
-#hl-status {
+#hl-cards {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+    gap: 8px;
+    align-content: start;
+    padding-bottom: 2px;
+}
+
+.hl-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: 1px solid rgba(63, 224, 255, .22);
+    border-left: 3px solid #3fe0ff;
+    padding: 5px 8px 7px;
+    background: rgba(63, 224, 255, .03);
+}
+
+.hl-card.down { border-color: rgba(255, 138, 31, .4); border-left-color: #ff8a1f; }
+
+/* The header is the link to the server's own interface. */
+.hl-card-head {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+    padding-bottom: 2px;
+}
+
+.hl-card-head:hover .hl-card-name { color: #3fe0ff; }
+.hl-card-head:hover .hl-card-go { opacity: 1; }
+
+.hl-card-name {
+    color: #e6fbff;
+    font-size: clamp(10px, 0.78vw, 15px);
+    letter-spacing: .09em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hl-card-ip {
+    font-size: clamp(8px, 0.5vw, 11px);
+    opacity: .45;
+    white-space: nowrap;
+}
+
+.hl-card-go {
+    margin-left: auto;
+    color: #3fe0ff;
+    opacity: .4;
+    font-size: .9em;
+}
+
+.hl-card.down .hl-card-name { color: #ff8a1f; }
+
+.hl-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 1px 0 2px;
+}
+
+.hl-pill {
+    font-size: clamp(7px, 0.44vw, 10px);
+    letter-spacing: .16em;
+    padding: 0 5px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+}
+
+.hl-pill.up { color: #3fe0ff; }
+.hl-pill.down { color: #ff8a1f; }
+
+.hl-card-uptime {
+    font-size: clamp(8px, 0.5vw, 11px);
+    opacity: .6;
+    white-space: nowrap;
+}
+
+/* The network path, which is what the map used to carry. */
+.hl-card-path {
+    font-size: clamp(7px, 0.46vw, 10px);
+    letter-spacing: .06em;
+    color: #3fe0ff;
+    opacity: .65;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hl-card-path.dim { color: #bff4ff; opacity: .3; }
+
+.hl-card-net {
+    display: flex;
+    gap: 12px;
+    margin: 2px 0 1px;
+    font-size: clamp(8px, 0.52vw, 11px);
+    color: #e6fbff;
+    white-space: nowrap;
+}
+
+.hl-card-net i {
+    font-style: normal;
+    opacity: .45;
+    letter-spacing: .12em;
+    margin-right: 4px;
+    font-size: .88em;
+}
+
+/* ---- the bars, which exist only when something reports them ------------------- */
+
+.hl-bars { margin: 3px 0 1px; }
+
+.hl-bar {
+    display: grid;
+    grid-template-columns: 2.7em minmax(0, 1fr) auto;
+    grid-template-areas: "label track val";
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 2px;
+    font-size: clamp(7px, 0.46vw, 10px);
+}
+
+.hl-bar-label { grid-area: label; opacity: .5; letter-spacing: .1em; }
+.hl-bar-val { grid-area: val; color: #e6fbff; white-space: nowrap; }
+
+.hl-bar-track {
+    grid-area: track;
+    height: 4px;
+    background: rgba(63, 224, 255, .14);
+    display: block;
+    min-width: 10px;
+}
+
+.hl-bar-track i { display: block; height: 100%; background: #3fe0ff; }
+.hl-bar.hot .hl-bar-track i { background: #ff8a1f; }
+.hl-bar.hot .hl-bar-val { color: #ff8a1f; }
+
+/* ---- the service chips inside a card ------------------------------------------- */
+
+.hl-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.hl-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 100%;
+    padding: 1px 5px 1px 3px;
+    border: 1px solid rgba(63, 224, 255, .25);
+    text-decoration: none;
+    color: #bff4ff;
+    font-size: clamp(7px, 0.45vw, 10px);
+    white-space: nowrap;
+}
+
+.hl-chip:hover { background: rgba(63, 224, 255, .18); border-color: #3fe0ff; }
+
+.hl-chip-icon {
+    width: 11px;
+    height: 11px;
+    object-fit: contain;
+    flex: none;
+    display: block;
+}
+
+.hl-chip-name { overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- the services grid ---------------------------------------------------------- */
+
+#hl-grid { padding-bottom: 2px; }
+
+.hl-gsection { margin-bottom: 7px; }
+
+.hl-gtitle {
+    color: #3fe0ff;
+    font-size: clamp(8px, 0.52vw, 11px);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(63, 224, 255, .2);
+    padding-bottom: 2px;
+    margin-bottom: 4px;
+}
+
+.hl-gtiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px;
+}
+
+/* The whole tile is the link. 140 by 70 is the floor Jovan asked for. */
+.hl-tile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "icon text" "icon state";
+    align-content: center;
+    gap: 1px 7px;
+    min-height: 70px;
+    padding: 7px 9px;
+    border: 1px solid rgba(63, 224, 255, .22);
+    background: rgba(63, 224, 255, .04);
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+}
+
+.hl-tile:hover {
+    background: rgba(63, 224, 255, .16);
+    border-color: #3fe0ff;
+    box-shadow: 0 0 10px rgba(63, 224, 255, .25);
+}
+
+.hl-tile.down { border-color: rgba(255, 138, 31, .45); }
+.hl-tile.down:hover { border-color: #ff8a1f; background: rgba(255, 138, 31, .14); }
+
+.hl-tile-icon {
+    grid-area: icon;
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    align-self: center;
+    flex: none;
+    display: block;
+}
+
+.hl-tile-text {
+    grid-area: text;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.hl-tile-text b {
+    color: #e6fbff;
+    font-weight: normal;
+    font-size: clamp(9px, 0.56vw, 12px);
+    letter-spacing: .04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hl-tile-text i {
+    font-style: normal;
+    font-size: clamp(7px, 0.44vw, 10px);
+    opacity: .42;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hl-tile-state {
+    grid-area: state;
+    font-size: clamp(7px, 0.42vw, 9px);
+    letter-spacing: .14em;
+    color: #3fe0ff;
+    opacity: .75;
+    white-space: nowrap;
+}
+
+.hl-tile.down .hl-tile-state { color: #ff8a1f; opacity: 1; }
+.hl-tile.down .hl-tile-text b { color: #ff8a1f; }
+
+/* A service with no icon, or an icon the CDN does not carry, shows its
+   initial rather than a broken image frame. */
+.hl-icon-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(63, 224, 255, .12);
+    border: 1px solid rgba(63, 224, 255, .3);
+    color: #3fe0ff;
+    font-size: .8em;
+    letter-spacing: 0;
+}
+
+/* ---- the side column --------------------------------------------------------------- */
+
+#hl-side {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
     min-height: 0;
+    overflow: hidden;
 }
 
-#homelab-screen.has-guests #hl-status {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+#hl-counts {
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
 }
 
-/* Hidden until pve-exporter enumerates guests, rather than shown as a dash. */
-#hl-stat-guests { display: none; }
-#homelab-screen.has-guests #hl-stat-guests { display: flex; }
-
-.hl-stat {
+.hl-count {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 3px 12px;
+    padding: 2px 8px;
     border: 1px solid rgba(63, 224, 255, .25);
     border-left: 3px solid #3fe0ff;
     min-width: 0;
 }
 
-.hl-stat b {
+.hl-count b {
     color: #e6fbff;
     font-weight: normal;
-    font-size: clamp(16px, 1.45vw, 30px);
+    font-size: clamp(13px, 1.15vw, 24px);
     line-height: 1.1;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.hl-stat span {
-    font-size: clamp(9px, 0.55vw, 12px);
-    letter-spacing: .13em;
-    text-transform: uppercase;
-    opacity: .62;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.hl-stat.bad { border-color: rgba(255, 138, 31, .5); border-left-color: #ff8a1f; }
-.hl-stat.bad b { color: #ff8a1f; }
-.hl-stat.bad span { opacity: .85; }
-
-/* ---- the map ---------------------------------------------------------------------- */
-
-#hl-map .hs-body { position: relative; }
-
-#hl-map-body {
-    position: absolute;
-    inset: 0;
-    min-height: 0;
-    min-width: 0;
-}
-
-#hl-svg, #hl-pulses {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-#hl-pulses { pointer-events: none; }
-
-.hl-link { transition: stroke-opacity .15s linear; }
-.hl-node { cursor: pointer; }
-.hl-node:hover { filter: drop-shadow(0 0 6px rgba(63, 224, 255, .9)); }
-.hl-node-spine { cursor: default; }
-.hl-node-cluster { stroke: rgba(3, 6, 10, .8); stroke-width: 1; }
-.hl-node-service { cursor: pointer; }
-
-.hl-label {
-    font-family: Menlo, Consolas, "Courier New", monospace;
-    font-size: clamp(8px, 0.6vw, 12px);
-    cursor: pointer;
-    pointer-events: bounding-box;
-    paint-order: stroke;
-    stroke: #03060a;
-    stroke-width: 3px;
-    stroke-linejoin: round;
-}
-
-.hl-label-name { fill: #bff4ff; letter-spacing: .05em; }
-.hl-label-sub { fill: #3fe0ff; opacity: .65; font-size: .86em; }
-.hl-label-pve .hl-label-name { fill: #4dffb0; }
-.hl-label.bad .hl-label-name, .hl-label.bad .hl-label-sub { fill: #ff8a1f; opacity: 1; }
-
-.hl-label-spine {
-    fill: rgba(63, 224, 255, .5);
+.hl-count span {
     font-size: clamp(7px, 0.46vw, 10px);
-    letter-spacing: .2em;
-    cursor: default;
-    pointer-events: none;
-}
-
-.hl-empty {
-    fill: rgba(191, 244, 255, .45);
-    font-family: Menlo, Consolas, "Courier New", monospace;
-    font-size: 12px;
-    letter-spacing: .2em;
-}
-
-/* ---- services board -------------------------------------------------------------- */
-
-#hl-services .hs-body { overflow-y: auto; }
-
-.hl-sgroup {
-    color: #3fe0ff;
-    font-size: clamp(8px, 0.52vw, 11px);
-    letter-spacing: .16em;
+    letter-spacing: .14em;
     text-transform: uppercase;
-    border-bottom: 1px solid rgba(63, 224, 255, .2);
-    margin: 7px 0 2px;
-    padding-bottom: 2px;
-}
-
-.hl-srow {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
-    gap: 7px;
-    padding: 2px;
-    font-size: clamp(9px, 0.56vw, 12px);
-    cursor: pointer;
-    border-bottom: 1px solid rgba(63, 224, 255, .07);
-    white-space: nowrap;
-}
-
-.hl-srow:hover { background: rgba(63, 224, 255, .09); }
-
-.hl-sname { overflow: hidden; text-overflow: ellipsis; }
-.hl-sstate { color: #4dffb0; font-size: .84em; letter-spacing: .1em; }
-.hl-sms { color: #e6fbff; font-size: .84em; opacity: .7; }
-
-.hl-srow.bad .hl-sname, .hl-srow.bad .hl-sstate { color: #ff8a1f; }
-
-/* ---- Home Assistant and generic rows ------------------------------------------------ */
-
-#hl-ha .hs-body {
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-/* The rows share the height of the panel instead of bunching at the top and
-   leaving the rest of the cell empty. */
-#hl-ha-body {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.hl-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "label value" "note note";
-    padding: 3px 0;
-    border-bottom: 1px solid rgba(63, 224, 255, .1);
-    font-size: clamp(9px, 0.56vw, 12px);
-}
-
-.hl-row span {
-    grid-area: label;
     opacity: .6;
-    letter-spacing: .09em;
-    text-transform: uppercase;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.hl-row b {
-    grid-area: value;
-    color: #e6fbff;
-    font-weight: normal;
-    white-space: nowrap;
+.hl-count.bad { border-color: rgba(255, 138, 31, .5); border-left-color: #ff8a1f; }
+.hl-count.bad b { color: #ff8a1f; }
+
+.hl-alerts { grid-column: 1 / -1; }
+
+.hl-alert {
+    font-size: clamp(7px, 0.46vw, 10px);
+    color: #ff8a1f;
+    opacity: .85;
+    line-height: 1.5;
+    border-left: 2px solid rgba(255, 138, 31, .5);
+    padding-left: 6px;
+    margin-top: 2px;
 }
 
-.hl-row i {
-    grid-area: note;
-    font-style: normal;
-    font-size: .84em;
-    opacity: .45;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+#hl-power, #hl-ha { flex: 1 1 auto; min-height: 0; }
+#hl-power .hs-body, #hl-ha .hs-body { overflow-y: auto; }
 
-.hl-row.bad b, .hl-row.bad i { color: #ff8a1f; opacity: 1; }
-
-/* ---- storage ------------------------------------------------------------------------- */
-
-#hl-storage .hs-body { overflow-y: auto; }
-
-/* ---- power and UPS --------------------------------------------------------------------- */
-
-#hl-power .hs-body {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-#hl-power-body { flex: 1 1 auto; min-height: 0; }
-
-.hl-pgrid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 10px 16px;
-    height: 100%;
-    min-height: 0;
-}
-
-/* The readings share the height of the panel rather than bunching at the top
-   and leaving the rest of the cell empty. */
-.hl-pcol {
+#hl-power-body, #hl-ha-body {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    min-width: 0;
-    min-height: 0;
-}
-
-.hl-sub {
-    color: #3fe0ff;
-    font-size: clamp(8px, 0.5vw, 11px);
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    opacity: .7;
-    margin-bottom: 3px;
+    min-height: 100%;
 }
 
 .hl-ptotal {
     color: #e6fbff;
-    font-size: clamp(20px, 2.1vw, 42px);
+    font-size: clamp(16px, 1.5vw, 30px);
     line-height: 1;
-    margin-bottom: 4px;
 }
 
-.hl-ptotal small { font-size: .4em; margin-left: .2em; color: #bff4ff; opacity: .7; }
+.hl-ptotal small { font-size: .42em; margin-left: .2em; opacity: .7; }
 
 .hl-prow {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: "label value" "bar bar";
-    gap: 1px 8px;
-    padding: 2px 0 3px;
-    font-size: clamp(9px, 0.54vw, 12px);
+    gap: 1px 7px;
+    font-size: clamp(8px, 0.5vw, 11px);
 }
 
-.hl-prow span { grid-area: label; opacity: .62; white-space: nowrap;
+.hl-prow span { grid-area: label; opacity: .6; white-space: nowrap;
                 overflow: hidden; text-overflow: ellipsis; }
 .hl-prow b { grid-area: value; color: #e6fbff; font-weight: normal; white-space: nowrap; }
+.hl-prow i { grid-area: bar; display: block; height: 3px; background: #3fe0ff; }
 
-.hl-prow i {
-    grid-area: bar;
-    display: block;
-    height: 3px;
-    background: #3fe0ff;
-    margin-top: 1px;
-}
-
-.hl-ups {
-    border-left: 2px solid #4dffb0;
-    padding: 3px 0 5px 7px;
-    margin-bottom: 6px;
-}
-
+.hl-ups { border-left: 2px solid #4dffb0; padding: 2px 0 3px 6px; }
 .hl-ups.bad { border-left-color: #ff8a1f; }
 
 .hl-ups-head {
     display: flex;
     justify-content: space-between;
-    font-size: clamp(9px, 0.56vw, 12px);
+    font-size: clamp(8px, 0.5vw, 11px);
     white-space: nowrap;
 }
 
-.hl-ups-head b { color: #bff4ff; font-weight: normal; letter-spacing: .08em; }
+.hl-ups-head b { color: #bff4ff; font-weight: normal; }
 .hl-ups-head span { color: #e6fbff; }
 .hl-ups.bad .hl-ups-head span { color: #ff8a1f; }
 
-.hl-ups-bar {
-    height: 4px;
-    background: rgba(63, 224, 255, .14);
-    margin: 3px 0 2px;
-}
-
+.hl-ups-bar { height: 3px; background: rgba(63, 224, 255, .14); margin: 2px 0 1px; }
 .hl-ups-bar i { display: block; height: 100%; background: #4dffb0; }
 .hl-ups.bad .hl-ups-bar i { background: #ff8a1f; }
 
 .hl-ups-sub {
-    font-size: clamp(8px, 0.48vw, 10px);
+    font-size: clamp(7px, 0.42vw, 9px);
     opacity: .5;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* ---- detail panel ------------------------------------------------------------------------ */
-
-#hl-detail {
-    position: absolute;
-    inset: 0;
-    z-index: 30;
+.hl-harow {
     display: flex;
-    flex-direction: column;
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-    background: #03070b;
-    border: 1px solid rgba(63, 224, 255, .4);
-    box-shadow: -14px 0 40px rgba(0, 0, 0, .75);
-    transform: translateX(103%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform .26s cubic-bezier(.2, .7, .3, 1), opacity .2s linear;
-}
-
-#hl-detail.open { transform: translateX(0); opacity: 1; pointer-events: auto; }
-
-#hl-detail-head {
-    flex: none;
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 6px 12px;
-    border-bottom: 1px solid #3fe0ff;
-}
-
-#hl-detail-name {
-    color: #e6fbff;
-    font-size: clamp(12px, 1vw, 20px);
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#hl-detail-name.bad { color: #ff8a1f; }
-
-#hl-detail-sub {
-    color: #3fe0ff;
-    opacity: .7;
-    font-size: clamp(9px, 0.58vw, 13px);
-    white-space: nowrap;
-}
-
-#hl-detail-open {
-    margin-left: auto;
-    flex: none;
-    font-family: inherit;
-    font-size: clamp(9px, 0.58vw, 13px);
-    letter-spacing: .16em;
-    color: #4dffb0;
-    background: transparent;
-    border: 1px solid rgba(77, 255, 176, .45);
-    padding: 1px 10px;
-    cursor: pointer;
-}
-
-#hl-detail-open:hover { background: rgba(77, 255, 176, .16); }
-
-#hl-detail-close {
-    flex: none;
-    font-family: inherit;
-    font-size: clamp(9px, 0.58vw, 13px);
-    letter-spacing: .16em;
-    color: #3fe0ff;
-    background: transparent;
-    border: 1px solid rgba(63, 224, 255, .4);
-    padding: 1px 10px;
-    cursor: pointer;
-}
-
-#hl-detail-close:hover { background: rgba(63, 224, 255, .16); }
-
-#hl-detail-body {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
-    grid-template-areas: "rows chart" "services services";
-    gap: 8px 16px;
-    padding: 9px 12px 11px;
-    overflow: hidden;
-}
-
-#hl-detail-rows {
-    grid-area: rows;
-    overflow-y: auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
     justify-content: space-between;
-}
-
-#hl-detail-chart { grid-area: chart; position: relative; min-height: 0; }
-#hl-detail-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-
-#hl-detail-services {
-    grid-area: services;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: baseline;
-    max-height: 5.5em;
-    overflow: hidden;
-}
-
-#hl-detail-services .hl-sub { width: 100%; margin-bottom: 1px; }
-
-.hl-chip {
-    font-size: clamp(8px, 0.48vw, 10px);
-    padding: 1px 6px;
-    border: 1px solid rgba(63, 224, 255, .3);
-    color: #bff4ff;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.hl-chip:hover { background: rgba(63, 224, 255, .16); border-color: #3fe0ff; }
-
-/* The last row of the Home Assistant panel is the way into Home Assistant. */
-.hl-row.hl-open { cursor: pointer; border-bottom: none; padding-top: 6px; }
-.hl-row.hl-open:hover b { color: #3fe0ff; }
-.hl-row.hl-open b { color: #bff4ff; opacity: .8; }
-
-.hl-drow {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "label value" "note note";
-    padding: 3px 0;
+    gap: 8px;
+    font-size: clamp(8px, 0.52vw, 11px);
     border-bottom: 1px solid rgba(63, 224, 255, .1);
-    font-size: clamp(9px, 0.56vw, 12px);
-}
-
-.hl-drow span {
-    grid-area: label;
-    opacity: .6;
-    letter-spacing: .09em;
-    text-transform: uppercase;
+    padding: 1px 0;
     white-space: nowrap;
 }
 
-.hl-drow b {
-    grid-area: value;
-    color: #e6fbff;
-    font-weight: normal;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 13em;
-}
+.hl-harow span { opacity: .6; letter-spacing: .08em; text-transform: uppercase;
+                 overflow: hidden; text-overflow: ellipsis; }
+.hl-harow b { color: #e6fbff; font-weight: normal; }
+.hl-harow.bad b { color: #ff8a1f; }
 
-.hl-drow i {
-    grid-area: note;
-    font-style: normal;
-    font-size: .84em;
-    opacity: .45;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.hl-drow.bad b, .hl-drow.bad i { color: #ff8a1f; opacity: 1; }
-
-/* ---- clock, bottom right ------------------------------------------------------------------ */
+/* ---- clock, bottom right ---------------------------------------------------------------- */
 
 #hl-clock {
     display: flex;
@@ -575,7 +493,7 @@
 
 #hl-time {
     color: #e6fbff;
-    font-size: clamp(16px, 1.7vw, 34px);
+    font-size: clamp(15px, 1.5vw, 30px);
     line-height: 1.05;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
@@ -589,28 +507,15 @@
 }
 
 #hl-date {
-    font-size: clamp(8px, 0.56vw, 12px);
+    font-size: clamp(7px, 0.5vw, 11px);
     letter-spacing: .1em;
     text-transform: uppercase;
     opacity: .7;
     white-space: nowrap;
 }
 
-/* ---- scrollbars -------------------------------------------------------------------------- */
+/* ---- scrollbars ----------------------------------------------------------------------- */
 
-#hl-services .hs-body::-webkit-scrollbar,
-#hl-ha .hs-body::-webkit-scrollbar,
-#hl-storage .hs-body::-webkit-scrollbar,
-#hl-detail-rows::-webkit-scrollbar { width: 6px; }
-#hl-services .hs-body::-webkit-scrollbar-track,
-#hl-ha .hs-body::-webkit-scrollbar-track,
-#hl-storage .hs-body::-webkit-scrollbar-track,
-#hl-detail-rows::-webkit-scrollbar-track { background: rgba(63, 224, 255, .05); }
-#hl-services .hs-body::-webkit-scrollbar-thumb,
-#hl-ha .hs-body::-webkit-scrollbar-thumb,
-#hl-storage .hs-body::-webkit-scrollbar-thumb,
-#hl-detail-rows::-webkit-scrollbar-thumb { background: rgba(63, 224, 255, .3); }
-
-@media (prefers-reduced-motion: reduce) {
-    #hl-detail { transition: none; }
-}
+#homelab-screen .hs-body::-webkit-scrollbar { width: 6px; }
+#homelab-screen .hs-body::-webkit-scrollbar-track { background: rgba(63, 224, 255, .05); }
+#homelab-screen .hs-body::-webkit-scrollbar-thumb { background: rgba(63, 224, 255, .3); }

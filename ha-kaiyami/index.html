@@ -1129,69 +1129,37 @@
 
         </div>
 
-        <!-- The Homelab screen. The map is drawn by HomelabView; panels
-             whose source is not standing up yet say what they are waiting on
-             rather than showing a zero. -->
+        <!-- The Homelab screen. Server cards, then the services grid, with
+             the counts, power and Home Assistant health down the right. Every
+             tile and chip is a real anchor, so the browser handles navigation
+             rather than a click handler. -->
         <div id="homelab-screen">
 
-            <div id="hl-status">
-                <div class="hl-stat" id="hl-stat-nodes"><b>--</b><span>Hosts seen</span></div>
-                <div class="hl-stat" id="hl-stat-guests"><b>--</b><span>Guests running</span></div>
-                <div class="hl-stat" id="hl-stat-services"><b>--</b><span>Services up</span></div>
-                <div class="hl-stat" id="hl-stat-alerts"><b>--</b><span>Active alerts</span></div>
-            </div>
-
-            <div class="hl-panel" id="hl-map">
-                <div class="hs-head">Homelab Map <em>Click a host, open the singles cluster</em></div>
+            <div class="hl-panel" id="hl-servers">
+                <div class="hs-head">Servers <em>Click a card header for its web interface</em></div>
                 <div class="hs-body">
-                    <div id="hl-map-body">
-                        <svg id="hl-svg" xmlns="http://www.w3.org/2000/svg"></svg>
-                        <canvas id="hl-pulses"></canvas>
-
-                        <div id="hl-detail">
-                            <div id="hl-detail-head">
-                                <span id="hl-detail-name">Host</span>
-                                <span id="hl-detail-sub"></span>
-                                <button type="button" id="hl-detail-open">OPEN</button>
-                                <button type="button" id="hl-detail-close">ESC</button>
-                            </div>
-                            <div id="hl-detail-body">
-                                <div id="hl-detail-rows"></div>
-                                <div id="hl-detail-chart">
-                                    <canvas id="hl-detail-canvas"></canvas>
-                                </div>
-                                <div id="hl-detail-services"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hl-panel" id="hl-power">
-                <div class="hs-head">Power and UPS <em>Live</em></div>
-                <div class="hs-body">
-                    <div id="hl-power-body"></div>
+                    <div id="hl-cards"></div>
                 </div>
             </div>
 
             <div class="hl-panel" id="hl-services">
-                <div class="hs-head">Services <em id="hl-services-note"></em></div>
+                <div class="hs-head">Services <em>From Homepage</em></div>
                 <div class="hs-body">
-                    <div id="hl-services-body"></div>
+                    <div id="hl-grid"></div>
                 </div>
             </div>
 
-            <div class="hl-panel" id="hl-ha">
-                <div class="hs-head">Home Assistant <em>Live</em></div>
-                <div class="hs-body">
-                    <div id="hl-ha-body"></div>
-                </div>
-            </div>
+            <div id="hl-side">
+                <div id="hl-counts"></div>
 
-            <div class="hl-panel" id="hl-storage">
-                <div class="hs-head">Storage and Backups</div>
-                <div class="hs-body">
-                    <div id="hl-storage-body"></div>
+                <div class="hl-panel" id="hl-power">
+                    <div class="hs-head">Power and UPS</div>
+                    <div class="hs-body"><div id="hl-power-body"></div></div>
+                </div>
+
+                <div class="hl-panel" id="hl-ha">
+                    <div class="hs-head">Home Assistant</div>
+                    <div class="hs-body"><div id="hl-ha-body"></div></div>
                 </div>
             </div>
 

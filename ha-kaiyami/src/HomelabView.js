@@ -1,22 +1,26 @@
 /* The Homelab screen.
  *
- * Full viewport grid, same approach as the other screens. The hero is a map of
- * the homelab: the Proxmox cluster, the five Docker hosts with their services
- * as satellites, and the singles as a cluster that opens.
+ * Built to be read the way Jovan reads his Homepage dashboard: how every
+ * server is doing at a glance, and one click through to any web interface.
  *
- * Every panel names the source it is waiting on rather than showing a zero.
- * Right now Home Assistant and unpoller are live, so host link state, uptime,
- * throughput, both UPS units, the homelab power draw and the whole Home
- * Assistant panel are real. Node and guest metrics, per service checks and
- * storage are waiting on exporters that do not exist yet, and say so.
+ * Server cards across the top, a services grid underneath, and a narrow column
+ * down the right for the counts, power and Home Assistant health. There is no
+ * map any more: the one thing it carried that a card cannot is the network
+ * path, and that now sits inside each card as a line of text.
+ *
+ * Every tile and every chip is a real anchor with an href, so middle click,
+ * copy link address and open in a new window all behave the way they do
+ * anywhere else on the web. Nothing here needs a JavaScript handler to
+ * navigate.
+ *
+ * Sources: Beszel for CPU, memory, disk and temperature; unpoller through
+ * Prometheus for link state, the switch and port, uptime and throughput; Home
+ * Assistant for power, the UPS units and its own health. Beszel is optional.
+ * Until it has credentials the cards simply carry no bars, and say nothing
+ * about it.
  */
 
 import { HomelabFeeds, BACKUP_STALE_HOURS } from "./HomelabFeeds.js";
-
-var CYAN = "#3fe0ff";
-var ALERT = "#ff8a1f";
-var ACCENT = "#4dffb0";
-var DIM = "#2aa3bb";
 
 var REFRESH_MS = 2500;
 
@@ -35,20 +39,9 @@ var active = false;
 var built = false;
 var dirty = true;
 var lastRender = 0;
-var lastFrame = 0;
 var resizeTimer = null;
-var observer = null;
 
-var svg = null, pulseCanvas = null, pctx = null;
-var detailCanvas = null, dctx = null;
-
-var expanded = false;        // the singles cluster
-var selected = null;         // host ip
-var selectedHistory = null;
-var layout = { nodes: [], links: [] };
-var pulses = [];
-
-/* ---- lifecycle ----------------------------------------------------------------- */
+/* ---- lifecycle ----------------------------------------------------------- */
 
 HomelabView.init = function (ha) {
     var root = $id("homelab-screen");
@@ -56,26 +49,14 @@ HomelabView.init = function (ha) {
     root.style.visibility = "hidden";
     active = true;
 
-    svg = $id("hl-svg");
-    pulseCanvas = $id("hl-pulses");
-    pctx = pulseCanvas ? pulseCanvas.getContext("2d") : null;
-    detailCanvas = $id("hl-detail-canvas");
-    dctx = detailCanvas ? detailCanvas.getContext("2d") : null;
-
     if (!feeds) {
         feeds = new HomelabFeeds(ha, function () { dirty = true; });
         feeds.start();
     }
-
     if (!built) {
         built = true;
         bindControls();
     }
-
-    watchPanels();
-    requestAnimationFrame(function () {
-        requestAnimationFrame(function () { HomelabView.resize(); });
-    });
     dirty = true;
 };
 
@@ -84,7 +65,8 @@ HomelabView.show = function () {
     var root = $id("homelab-screen");
     root.style.display = "grid";
     root.style.visibility = "visible";
-    HomelabView.resize();
+    dirty = true;
+    lastRender = 0;
 };
 
 HomelabView.hide = function () {
@@ -92,7 +74,6 @@ HomelabView.hide = function () {
     $id("homelab-screen").style.display = "none";
 };
 
-/* Home Assistant state changes move the HA panel, the UPS and the power. */
 HomelabView.message = function () { dirty = true; };
 HomelabView.seed = function () { dirty = true; };
 
@@ -101,35 +82,20 @@ HomelabView.animate = function () {
         return;
     }
     var now = Date.now();
-    var dt = lastFrame ? Math.min((now - lastFrame) / 1000, 0.1) : 0;
-    lastFrame = now;
-
     renderClock(now);
-    stepPulses(dt);
 
     if (dirty && now - lastRender > REFRESH_MS) {
         lastRender = now;
         dirty = false;
-        buildMap();
-        renderStatus();
-        renderServices();
-        renderHa();
-        renderStorage();
+        renderCards();
+        renderGrid();
+        renderCounts();
         renderPower();
-        renderDetail();
+        renderHa();
     }
 };
 
-HomelabView.resize = function () {
-    if (!active) {
-        return;
-    }
-    sizeCanvas(pulseCanvas, pctx);
-    sizeCanvas(detailCanvas, dctx);
-    dirty = true;
-    lastRender = 0;
-    buildMap();
-};
+HomelabView.resize = function () { dirty = true; };
 
 HomelabView.resizeDebounced = function () {
     if (resizeTimer) {
@@ -141,35 +107,10 @@ HomelabView.resizeDebounced = function () {
     }, 150);
 };
 
-function watchPanels() {
-    if (observer || typeof ResizeObserver === "undefined") {
-        return;
-    }
-    observer = new ResizeObserver(function () { HomelabView.resizeDebounced(); });
-    ["hl-map-body", "hl-detail"].forEach(function (id) {
-        var el = $id(id);
-        if (el) { observer.observe(el); }
-    });
-}
-
-function sizeCanvas(canvas, ctx) {
-    if (!canvas || !ctx) {
-        return;
-    }
-    var w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) {
-        return;
-    }
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-
-/* ---- formatting ------------------------------------------------------------------- */
+/* ---- formatting ----------------------------------------------------------- */
 
 function rate(bps) {
-    if (bps === null || bps === undefined) { return "n/a"; }
+    if (bps === null || bps === undefined) { return "0 b/s"; }
     var bits = bps * 8;
     if (bits >= 1e9) { return (bits / 1e9).toFixed(2) + " Gb/s"; }
     if (bits >= 1e6) { return (bits / 1e6).toFixed(1) + " Mb/s"; }
@@ -186,541 +127,228 @@ function duration(sec) {
     return m + "m";
 }
 
-function escapeText(s) {
+function esc(s) {
     return String(s === null || s === undefined ? "" : s)
         .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-/* Nothing on this screen is a placeholder. A panel or a field whose source is
- * not answering is removed from the layout rather than shown empty, and the
- * grid closes up behind it. The wiring stays, so the moment a source starts
- * answering its panel reappears on its own.
- *
- * The one shared piece of furniture for anything that opens a web interface:
- * a small arrow, and the URL in the tooltip. */
-var LINK_ICON = "\u2197";
-
-function linkIcon() {
-    return '<i class="hl-link-icon">' + LINK_ICON + '</i>';
+/* Every outbound link on this screen is built here, so they all carry the same
+ * target and the same rel. */
+function anchor(url, cls, title, inner) {
+    return '<a class="' + cls + '" href="' + esc(url) + '" target="_blank"' +
+        ' rel="noopener noreferrer" title="' + esc(title) + '">' + inner + '</a>';
 }
 
-/* Open a web interface in a new tab. noopener because these are other
- * people's admin panels and none of them need a handle back to this page. */
-function openUrl(url) {
-    if (url) {
-        window.open(url, "_blank", "noopener,noreferrer");
-    }
+/* A labelled bar. Only ever called with a real reading. */
+function bar(label, pct, readout, warnAt) {
+    var v = Math.max(0, Math.min(100, pct));
+    var hot = warnAt !== undefined && pct >= warnAt;
+    return '<div class="hl-bar' + (hot ? " hot" : "") + '">' +
+        '<span class="hl-bar-label">' + esc(label) + '</span>' +
+        '<span class="hl-bar-val">' + esc(readout) + '</span>' +
+        '<span class="hl-bar-track"><i style="width:' + v.toFixed(1) + '%"></i></span>' +
+        '</div>';
 }
 
-/* ---- the map ------------------------------------------------------------------------ */
-
-function buildMap() {
-    var host = $id("hl-map-body");
-    if (!host || !svg || !feeds) {
-        return;
+/* The icon for a tile or a chip. A service with no icon shows its initial
+ * rather than a broken image, and a 404 from the icon CDN falls back to the
+ * same thing. */
+function icon(svc, cls) {
+    var initial = esc((svc.name || "?").charAt(0).toUpperCase());
+    var letter = '<span class="' + cls + ' hl-icon-letter">' + initial + '</span>';
+    if (!svc.iconUrl) {
+        return letter;
     }
-    var w = host.clientWidth, h = host.clientHeight;
-    if (!w || !h) {
-        return;
-    }
+    return '<img class="' + cls + '" src="' + esc(svc.iconUrl) + '" alt=""' +
+        ' loading="lazy" data-letter="' + initial + '">';
+}
 
-    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
-    svg.setAttribute("width", w);
-    svg.setAttribute("height", h);
+/* ---- server cards ---------------------------------------------------------- */
 
-    var hosts = feeds.hosts();
-    if (!hosts.length) {
-        svg.innerHTML = '<text x="' + (w / 2) + '" y="' + (h / 2) +
-            '" text-anchor="middle" class="hl-empty">LOADING</text>';
-        layout = { nodes: [], links: [] };
-        pulses = [];
-        return;
-    }
+function renderCards() {
+    var box = $id("hl-cards");
+    if (!box || !feeds) { return; }
 
-    var fontPx = Math.max(8, Math.min(12, w * 0.0062));
-    var charW = fontPx * 0.62;
-    var padX = Math.max(40, Math.min(70, w * 0.05));
-    var padY = 18;
+    var servers = feeds.servers();
+    if (!servers.length) { return; }
 
-    var nodes = [], links = [];
-    var pve = hosts.filter(function (x) { return x.kind === "pve"; });
-    var docker = hosts.filter(function (x) { return x.kind === "docker"; });
-    var singles = hosts.filter(function (x) { return x.kind === "single"; });
+    box.innerHTML = servers.map(function (sv) {
+        var st = sv.stats;
 
-    /* Three bands down the panel: the cluster, the Docker hosts, the singles.
-       Each band is laid out across the width, with service satellites placed
-       on a short arc under their host. */
-    var bandY = [h * 0.17, h * 0.52, h * 0.86];
+        var header = anchor(sv.url || "#", "hl-card-head",
+            sv.name + "  " + (sv.url || ""),
+            '<span class="hl-card-name">' + esc(sv.name) + '</span>' +
+            '<span class="hl-card-ip">' + esc(sv.ip) + '</span>' +
+            '<span class="hl-card-go">↗</span>');
 
-    /* The spine sits at spineX with its band name centred above it. The widest
-       band name is SINGLES at seven characters, and the name carries wide
-       letter spacing, so the hosts have to begin clear of that or the first
-       host label prints on top of the band name. */
-    var spineX = padX * 0.42;
-    var bandNameW = 7 * charW * 1.35;
-    /* Plus the arrow the first host's label now carries. */
-    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 34);
+        var meta = '<div class="hl-card-meta">' +
+            '<span class="hl-pill ' + (sv.seen ? "up" : "down") + '">' +
+                (sv.seen ? "UP" : "NOT SEEN") + '</span>' +
+            '<span class="hl-card-uptime">' + esc(duration(sv.uptime)) + '</span>' +
+            '</div>';
 
-    function place(list, y) {
-        var n = list.length;
-        var span = w - bandLeft - padX;
-        var gap = n > 1 ? span / (n - 1) : 0;
-        list.forEach(function (hst, i) {
-            nodes.push({
-                kind: hst.kind, host: hst,
-                x: n > 1 ? bandLeft + gap * i : (bandLeft + w - padX) / 2,
-                y: y, r: hst.kind === "pve" ? 13 : 11
-            });
-        });
-    }
+        /* The one thing the map carried that a card could not. */
+        var path = '<div class="hl-card-path' + (sv.via ? "" : " dim") + '">' +
+            (sv.via ? esc(sv.via) + (sv.port ? " port " + esc(sv.port) : "")
+                    : "no link reported") + '</div>';
 
-    place(pve, bandY[0]);
-    place(docker, bandY[1]);
+        var net = '<div class="hl-card-net">' +
+            '<span><i>DOWN</i>' + rate(sv.rx) + '</span>' +
+            '<span><i>UP</i>' + rate(sv.tx) + '</span></div>';
 
-    if (expanded) {
-        place(singles, bandY[2]);
-    } else {
-        var seenCount = singles.filter(function (x) { return x.seen; }).length;
-        nodes.push({
-            kind: "cluster", x: (bandLeft + w - padX) / 2, y: bandY[2], r: 13,
-            label: "Singles", count: singles.length, seen: seenCount,
-            singles: singles
-        });
-    }
-
-    /* Service satellites, on an arc beneath each Docker host. */
-    nodes.slice().forEach(function (n, ni) {
-        if (n.kind !== "docker" || !n.host.services.length) {
-            return;
-        }
-        var svcs = n.host.services;
-        var spread = Math.min(1.5, 0.42 + svcs.length * 0.14);
-        var radius = Math.max(34, Math.min(60, w * 0.035));
-        svcs.forEach(function (s, i) {
-            var t = svcs.length === 1 ? 0
-                : (i / (svcs.length - 1) - 0.5) * spread;
-            nodes.push({
-                kind: "service", service: s, parent: ni,
-                x: n.x + Math.sin(t) * radius,
-                y: n.y + Math.cos(t) * radius * 0.78 + 8,
-                r: 3
-            });
-            links.push({ source: ni, target: nodes.length - 1, kind: "service",
-                         rate: 0, down: !n.host.seen });
-        });
-    });
-
-    /* Link every host up to the band label on the left, which stands in for
-       the rack. The point is to read as a map, not as an org chart. */
-    [0, 1, 2].forEach(function (b) {
-        nodes.push({ kind: "spine", x: spineX, y: bandY[b], r: 4,
-                     label: ["PROXMOX", "DOCKER", "SINGLES"][b] });
-    });
-    var spineIdx = {};
-    nodes.forEach(function (n, i) {
-        if (n.kind === "spine") {
-            spineIdx[Math.round(n.y)] = i;
-        }
-    });
-    nodes.forEach(function (n, i) {
-        if (n.kind === "pve" || n.kind === "docker" || n.kind === "cluster" ||
-            (n.kind === "single" && expanded)) {
-            var si = spineIdx[Math.round(n.y)];
-            if (si !== undefined && si !== i) {
-                links.push({ source: si, target: i, kind: "host",
-                             rate: n.host ? (n.host.rx + n.host.tx) : 0,
-                             down: n.host ? !n.host.seen : false });
+        /* Bars only exist once something is reporting them. No credentials,
+           no bars, and nothing said about it. */
+        var bars = "";
+        if (st) {
+            var parts = [];
+            if (st.cpu !== null && st.cpu !== undefined) {
+                parts.push(bar("CPU", st.cpu, Math.round(st.cpu) + "%", 85));
+            }
+            if (st.memPct !== null && st.memPct !== undefined) {
+                parts.push(bar("RAM", st.memPct, Math.round(st.memPct) + "%", 90));
+            }
+            if (st.diskPct !== null && st.diskPct !== undefined) {
+                parts.push(bar("DISK", st.diskPct, Math.round(st.diskPct) + "%", 90));
+            }
+            if (st.temp !== null && st.temp !== undefined) {
+                /* Temperature is not a percentage, so the bar is scaled
+                   against 90 C and the readout stays in degrees. */
+                parts.push(bar("TEMP", (st.temp / 90) * 100,
+                               Math.round(st.temp) + " C", 83));
+            }
+            if (parts.length) {
+                bars = '<div class="hl-bars">' + parts.join("") + '</div>';
             }
         }
-    });
 
-    var maxRate = 1;
-    links.forEach(function (l) { maxRate = Math.max(maxRate, l.rate || 0); });
+        var chips = sv.services.length
+            ? '<div class="hl-chips">' + sv.services.map(function (s) {
+                  var tip = s.name + "  " + s.url;
+                  if (st && st.containers) {
+                      tip += "\n" + sv.name + " reports " + st.containers +
+                          " containers";
+                  }
+                  return anchor(s.url, "hl-chip", tip,
+                      icon(s, "hl-chip-icon") +
+                      '<span class="hl-chip-name">' + esc(s.name) + '</span>');
+              }).join("") + '</div>'
+            : "";
 
-    var parts = [];
+        return '<div class="hl-card' + (sv.seen ? "" : " down") + '">' +
+            header + meta + path + net + bars + chips + '</div>';
+    }).join("");
 
-    links.forEach(function (l, i) {
-        var a = nodes[l.source], b = nodes[l.target];
-        if (!a || !b) { return; }
-        var share = (l.rate || 0) / maxRate;
-        var colour = l.down ? ALERT : (l.kind === "service" ? DIM : CYAN);
-        var width = l.kind === "service" ? 1
-            : Math.max(1.2, 1.2 + Math.sqrt(share) * 4.5);
-        var opacity = l.kind === "service" ? 0.28 : (0.3 + 0.5 * Math.sqrt(share));
-        var d = "M" + a.x + "," + a.y +
-            "C" + ((a.x + b.x) / 2) + "," + a.y + " " +
-            ((a.x + b.x) / 2) + "," + b.y + " " + b.x + "," + b.y;
-        l._d = d; l._w = width; l._down = l.down;
-        parts.push('<path class="hl-link' + (l.down ? " down" : "") +
-            '" d="' + d + '" stroke="' + colour + '" stroke-width="' + width.toFixed(2) +
-            '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none"></path>');
-    });
-
-    nodes.forEach(function (n, i) {
-        parts.push(nodeMarkup(n, i, fontPx, charW, w));
-    });
-
-    svg.innerHTML = parts.join("");
-    layout = { nodes: nodes, links: links };
-    seedPulses(links, maxRate);
+    swapBrokenIcons(box);
 }
 
-function nodeMarkup(n, i, fontPx, charW, w) {
-    if (n.kind === "spine") {
-        return '<circle class="hl-node hl-node-spine" cx="' + n.x + '" cy="' + n.y +
-            '" r="3" fill="' + DIM + '"></circle>' +
-            '<text class="hl-label hl-label-spine" x="' + n.x + '" y="' +
-            (n.y - 10) + '" text-anchor="middle">' + escapeText(n.label) + '</text>';
-    }
+/* ---- services grid ---------------------------------------------------------- */
 
-    if (n.kind === "service") {
-        var sv = n.service;
-        var down = sv.status === 0 || (sv.status === null && !sv.hostSeen);
-        var col = down ? ALERT : DIM;
-        return '<circle class="hl-node hl-node-service' + (down ? " bad" : "") +
-            '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + col +
-            '" data-node="' + i + '"><title>' + escapeText(sv.name + "  " + sv.url) +
-            '</title></circle>';
-    }
-
-    var bad = false, colour = CYAN;
-    var label = "", sub = "";
-
-    if (n.kind === "cluster") {
-        label = n.label + " (" + n.count + ")";
-        sub = n.seen + " of " + n.count + " up";
-        bad = n.seen < n.count;
-        colour = bad ? ALERT : CYAN;
-    } else {
-        var hst = n.host;
-        label = hst.name;
-        bad = !hst.seen;
-        colour = bad ? ALERT : (hst.kind === "pve" ? ACCENT : CYAN);
-        if (!hst.seen) {
-            sub = "NOT SEEN";
-        } else if (hst.stats) {
-            sub = Math.round(hst.stats.cpu) + "% cpu";
-        } else {
-            sub = rate(hst.rx + hst.tx);
-        }
-    }
-
-    /* The arrow is appended after truncation, so its two characters come out
-       of the budget first. Without that the label grew past the gap and ran
-       into the band name on the left again. */
-    var url0 = n.host ? n.host.url : null;
-    var maxChars = Math.floor((w * 0.13) / charW) - (url0 ? 2 : 0);
-    if (label.length > maxChars && maxChars > 4) {
-        label = label.slice(0, maxChars - 1) + "…";
-    }
-
-    /* Everything in the map that has a web interface says so, in the tooltip
-       and with the arrow after its name. */
-    var url = n.host ? n.host.url : null;
-    var tip = n.kind === "cluster"
-        ? "Click to open the singles"
-        : (n.host ? (n.host.name + (url ? "  " + url : "")) : "");
-
-    var shape = n.kind === "cluster"
-        ? '<rect class="hl-node hl-node-cluster' + (bad ? " bad" : "") +
-          '" x="' + (n.x - n.r) + '" y="' + (n.y - n.r) + '" width="' + (n.r * 2) +
-          '" height="' + (n.r * 2) + '" fill="' + colour + '" data-node="' + i +
-          '"><title>' + escapeText(tip) + '</title></rect>'
-        : '<circle class="hl-node hl-node-' + n.kind + (bad ? " bad" : "") +
-          '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + colour +
-          '" data-node="' + i + '"><title>' + escapeText(tip) + '</title></circle>';
-
-    return shape +
-        '<text class="hl-label hl-label-' + n.kind + (bad ? " bad" : "") +
-        '" x="' + n.x + '" y="' + (n.y - n.r - fontPx * 0.8) +
-        '" text-anchor="middle" data-node="' + i + '">' +
-        '<title>' + escapeText(tip) + '</title>' +
-        '<tspan class="hl-label-name" x="' + n.x + '">' + escapeText(label) +
-        (url ? ' ' + LINK_ICON : '') + '</tspan>' +
-        (sub ? '<tspan class="hl-label-sub" x="' + n.x + '" dy="' +
-               (-fontPx * 1.05).toFixed(1) + '">' + escapeText(sub) + '</tspan>' : '') +
-        '</text>';
-}
-
-/* ---- pulses -------------------------------------------------------------------------- */
-
-function samplePath(d, n) {
-    var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    el.setAttribute("d", d);
-    var len = 0;
-    try { len = el.getTotalLength(); } catch (err) { return null; }
-    if (!len || !isFinite(len)) { return null; }
-    var pts = [];
-    for (var i = 0; i <= n; i++) {
-        var p = el.getPointAtLength((i / n) * len);
-        pts.push(p.x, p.y);
-    }
-    return { pts: pts, len: len, n: n };
-}
-
-function seedPulses(links, maxRate) {
-    pulses = [];
-    links.forEach(function (l, i) {
-        if (l.kind === "service" || !(l.rate > 0)) { return; }
-        var sampled = samplePath(l._d, 24);
-        if (!sampled) { return; }
-        l._path = sampled;
-        var share = l.rate / maxRate;
-        var count = Math.max(1, Math.round(1 + 5 * Math.sqrt(share)));
-        var speed = 26 + 120 * Math.sqrt(share);
-        for (var k = 0; k < count; k++) {
-            pulses.push({ link: i, at: Math.random(),
-                          speed: speed * (0.85 + Math.random() * 0.3),
-                          size: Math.max(1, l._w * 0.4), down: !!l._down });
-        }
-    });
-}
-
-function stepPulses(dt) {
-    if (!pctx || !pulseCanvas) { return; }
-    var w = pulseCanvas.clientWidth, h = pulseCanvas.clientHeight;
-    if (!w || !h) { return; }
-    pctx.clearRect(0, 0, w, h);
-    if (!pulses.length || !layout.links.length) { return; }
-    pctx.globalCompositeOperation = "lighter";
-
-    for (var i = 0; i < pulses.length; i++) {
-        var p = pulses[i];
-        var l = layout.links[p.link];
-        if (!l || !l._path) { continue; }
-        p.at += (p.speed * dt) / l._path.len;
-        if (p.at > 1) { p.at -= 1; }
-        var pts = l._path.pts;
-        var f = p.at * l._path.n;
-        var i0 = Math.floor(f), t = f - i0;
-        if (i0 >= l._path.n) { i0 = l._path.n - 1; t = 1; }
-        var x = pts[i0 * 2] + (pts[i0 * 2 + 2] - pts[i0 * 2]) * t;
-        var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
-        var edge = Math.min(p.at, 1 - p.at);
-        var alpha = Math.min(1, edge / 0.08) * 0.8;
-        pctx.beginPath();
-        pctx.arc(x, y, p.size, 0, Math.PI * 2);
-        pctx.fillStyle = p.down ? "rgba(255,138,31," + alpha.toFixed(3) + ")"
-                                : "rgba(191,244,255," + alpha.toFixed(3) + ")";
-        pctx.fill();
-    }
-    pctx.globalCompositeOperation = "source-over";
-}
-
-/* ---- status row --------------------------------------------------------------------- */
-
-function stat(id, value, sub, bad) {
-    var el = $id(id);
-    if (!el) { return; }
-    el.firstChild.textContent = value;
-    var span = el.querySelector("span");
-    if (span && sub !== undefined && sub !== null) { span.textContent = sub; }
-    el.className = "hl-stat" + (bad ? " bad" : "");
-}
-
-function renderStatus() {
-    if (!feeds) { return; }
-    var s = feeds.status();
-
-    stat("hl-stat-nodes", s.hostsUp + " / " + s.hostsTotal,
-         "Hosts seen, " + s.nodesUp + " of " + s.nodesTotal + " Proxmox",
-         s.hostsUp < s.hostsTotal);
-
-    /* The guests tile only exists once something enumerates guests. Until
-       then the row is three columns wide and closes up behind it. */
-    var root = $id("homelab-screen");
-    root.classList.toggle("has-guests", s.guestsKnown);
-    if (s.guestsKnown) {
-        stat("hl-stat-guests", s.guestsRunning + " / " + s.guestsTotal,
-             "Guests running", false);
-    }
-
-    /* Without Uptime Kuma a service is up when its host's link is up, which is
-       a real reading from the controller rather than a placeholder. */
-    stat("hl-stat-services", s.servicesReachable + " / " + s.servicesTotal,
-         s.servicesKnown ? "Services up" : "Services on hosts that are up",
-         s.servicesReachable < s.servicesTotal);
-
-    stat("hl-stat-alerts", String(s.alerts.length),
-         s.alerts.length ? s.alerts[0].text : "No active alerts",
-         s.alerts.length > 0);
-}
-
-/* ---- services board ------------------------------------------------------------------ */
-
-function renderServices() {
-    var box = $id("hl-services-body");
-    var head = $id("hl-services-note");
+function renderGrid() {
+    var box = $id("hl-grid");
     if (!box || !feeds) { return; }
 
     var groups = feeds.services();
-    var kumaLive = feeds.sources.kuma.live;
-    if (head) {
-        head.textContent = kumaLive ? "Live checks" : "Host link";
-    }
-
-    var html = "";
-    groups.forEach(function (g) {
-        /* Anything down sorts to the top of its group. */
+    box.innerHTML = groups.map(function (g) {
+        /* Anything down sorts to the front of its group. */
         var items = g.items.slice().sort(function (a, b) {
-            var ad = a.status === 0 ? 0 : (a.hostSeen ? 2 : 1);
-            var bd = b.status === 0 ? 0 : (b.hostSeen ? 2 : 1);
+            var ad = a.hostSeen ? 1 : 0, bd = b.hostSeen ? 1 : 0;
             return ad - bd || a.name.localeCompare(b.name);
         });
-        html += '<div class="hl-sgroup">' + escapeText(g.group) + '</div>';
-        items.forEach(function (sv) {
-            var down = sv.status === 0 || (sv.status === null && !sv.hostSeen);
-            var stateText = sv.status === 1 ? "UP"
-                : sv.status === 0 ? "DOWN"
-                : sv.hostSeen ? "UP" : "NOT SEEN";
-            html += '<div class="hl-srow' + (down ? " bad" : "") +
-                '" data-url="' + escapeText(sv.url) + '"' +
-                ' title="' + escapeText(sv.name + "  " + sv.url) + '">' +
-                '<span class="hl-sname">' + escapeText(sv.name) + '</span>' +
-                '<span class="hl-sstate">' + stateText + '</span>' +
-                (sv.ms !== null && sv.ms !== undefined
-                    ? '<span class="hl-sms">' + Math.round(sv.ms) + ' ms</span>'
-                    : '<span class="hl-sms"></span>') +
-                linkIcon() + '</div>';
-        });
-    });
+        return '<div class="hl-gsection">' +
+            '<div class="hl-gtitle">' + esc(g.group) + '</div>' +
+            '<div class="hl-gtiles">' + items.map(function (s) {
+                var down = s.status === 0 || (s.status === null && !s.hostSeen);
+                var state = s.status === 1 ? "UP"
+                    : s.status === 0 ? "DOWN"
+                    : s.external ? "EXTERNAL"
+                    : s.hostSeen ? "UP" : "NOT SEEN";
+                return anchor(s.url, "hl-tile" + (down ? " down" : ""),
+                    s.name + "  " + s.url,
+                    icon(s, "hl-tile-icon") +
+                    '<span class="hl-tile-text">' +
+                        '<b>' + esc(s.name) + '</b>' +
+                        '<i>' + esc(s.host) + '</i></span>' +
+                    '<span class="hl-tile-state">' + state + '</span>');
+            }).join("") + '</div></div>';
+    }).join("");
 
-    box.innerHTML = html;
+    swapBrokenIcons(box);
 }
 
-/* ---- Home Assistant panel --------------------------------------------------------------- */
+/* An icon the CDN does not have would otherwise leave a broken image frame.
+ * Swapping on the error event rather than an inline onerror attribute keeps
+ * the markup free of script. */
+function swapBrokenIcons(root) {
+    root.querySelectorAll("img[data-letter]").forEach(function (img) {
+        img.addEventListener("error", function () {
+            var span = document.createElement("span");
+            span.className = img.className + " hl-icon-letter";
+            span.textContent = img.getAttribute("data-letter");
+            if (img.parentNode) {
+                img.parentNode.replaceChild(span, img);
+            }
+        }, { once: true });
+    });
+}
 
-function renderHa() {
-    var box = $id("hl-ha-body");
+/* ---- side column ------------------------------------------------------------- */
+
+function renderCounts() {
+    var box = $id("hl-counts");
     if (!box || !feeds) { return; }
-    var ha = feeds.homeAssistant();
+    var st = feeds.status();
+    var servers = feeds.servers();
+    var up = servers.filter(function (s) { return s.seen; }).length;
 
-    /* Home Assistant is the one source that is always up here, because the
-       whole dashboard runs on its socket. If it ever is not, the panel is
-       removed rather than shown empty. */
-    var panel = $id("hl-ha");
-    if (panel) { panel.style.display = ha.live ? "" : "none"; }
-    if (!ha.live) { return; }
-
-    var row = function (label, value, note, bad) {
-        return '<div class="hl-row' + (bad ? " bad" : "") + '">' +
-            '<span>' + escapeText(label) + '</span>' +
-            '<b>' + escapeText(value) + '</b>' +
-            (note ? '<i>' + escapeText(note) + '</i>' : '') + '</div>';
+    var cell = function (value, label, bad) {
+        return '<div class="hl-count' + (bad ? " bad" : "") + '">' +
+            '<b>' + esc(value) + '</b><span>' + esc(label) + '</span></div>';
     };
 
-    var html = "";
-    html += row("Core version", ha.version || "n/a",
-                ha.coreUpdate ? "update to " + ha.latest : "up to date", ha.coreUpdate);
-    html += row("Updates available", String(ha.updates.length),
-                ha.updates.length ? ha.updates.slice(0, 2).map(function (u) {
-                    return u.name;
-                }).join(", ") : "none", ha.updates.length > 0);
-
-    /* These two only appear if the entities exist. No System Monitor
-       integration on this instance, so today they simply are not drawn. */
-    if (ha.cpu !== null) {
-        html += row("CPU", Math.round(ha.cpu) + "%", "", ha.cpu > 85);
+    var html = cell(up + " / " + servers.length, "Servers up", up < servers.length);
+    html += cell(st.servicesReachable + " / " + st.servicesTotal, "Services",
+                 st.servicesReachable < st.servicesTotal);
+    if (st.guestsKnown) {
+        html += cell(st.guestsRunning + " / " + st.guestsTotal, "Guests", false);
     }
-    if (ha.memory !== null) {
-        html += row("Memory", Math.round(ha.memory) + "%", "", ha.memory > 90);
+    html += cell(String(st.alerts.length), "Alerts", st.alerts.length > 0);
+
+    if (st.alerts.length) {
+        html += '<div class="hl-alerts">' + st.alerts.slice(0, 3).map(function (a) {
+            return '<div class="hl-alert">' + esc(a.text) + '</div>';
+        }).join("") + '</div>';
     }
-    if (ha.dbSize !== null) {
-        html += row("Database", ha.dbSize.toFixed(1) + " MB", "", false);
-    }
-
-    html += row("Zigbee coordinator",
-                ha.zigbee.eth && ha.zigbee.net ? "ONLINE" : "LINK DOWN",
-                "SLZB-06 " + (ha.zigbee.chipTemp !== null
-                    ? Math.round(ha.zigbee.chipTemp) + " C" : "") +
-                (ha.zigbee.z2m ? ", Z2M " + (ha.zigbee.z2mVersion || "connected") : ", Z2M down"),
-                !(ha.zigbee.eth && ha.zigbee.net) || !ha.zigbee.z2m);
-
-    html += row("Z-Wave dead nodes", String(ha.zwave.dead.length),
-                ha.zwave.dead.length ? ha.zwave.dead.slice(0, 2).join(", ") : "none",
-                ha.zwave.dead.length > 0);
-    html += row("Z-Wave faults", String(ha.zwave.failing.length),
-                ha.zwave.failing.length
-                    ? ha.zwave.failing.slice(0, 2).join(", ") + (
-                        ha.zwave.failing.length > 2
-                            ? " and " + (ha.zwave.failing.length - 2) + " more" : "")
-                    : "none",
-                ha.zwave.failing.length > 0);
-
-    var age = ha.backups.ageHours;
-    html += row("Backups",
-                ha.backups.stale ? "STALE" : (ha.backups.state || "n/a"),
-                age !== null ? Math.round(age) + " h ago" : "",
-                ha.backups.stale || (age !== null && age > BACKUP_STALE_HOURS));
-
-    /* The panel header doubles as the link to Home Assistant itself. */
-    html += '<div class="hl-row hl-open" data-url="http://10.69.2.151:8123"' +
-        ' title="Home Assistant  http://10.69.2.151:8123">' +
-        '<span>Open</span><b>10.69.2.151:8123 ' + LINK_ICON + '</b></div>';
-
     box.innerHTML = html;
 }
-
-/* ---- storage and backups ------------------------------------------------------------------ */
-
-/* The storage panel is removed from the grid until TrueNAS and PBS are
- * reaching Prometheus. The markup and the wiring stay, so it reappears on its
- * own the moment those metrics exist. */
-function renderStorage() {
-    var panel = $id("hl-storage");
-    var box = $id("hl-storage-body");
-    if (!panel || !box || !feeds) { return; }
-
-    var st = feeds.storage();
-    var root = $id("homelab-screen");
-    root.classList.toggle("has-storage", !!st.live);
-    panel.style.display = st.live ? "" : "none";
-    if (!st.live) { return; }
-
-    var html = "";
-    st.pools.forEach(function (pool) {
-        html += '<div class="hl-row"><span>' + escapeText(pool.name) + '</span>' +
-            '<b>' + Math.round(pool.usedPercent) + '%</b></div>';
-    });
-    st.datastores.forEach(function (ds) {
-        html += '<div class="hl-row"><span>' + escapeText(ds.name) + '</span>' +
-            '<b>' + Math.round(ds.usedPercent) + '%</b></div>';
-    });
-    box.innerHTML = html;
-}
-
-/* ---- power and UPS -------------------------------------------------------------------------- */
 
 function renderPower() {
     var box = $id("hl-power-body");
+    var panel = $id("hl-power");
     if (!box || !feeds) { return; }
+
     var p = feeds.power();
     var u = feeds.ups();
-
-    var panel = $id("hl-power");
     if (panel) { panel.style.display = (p.live || u.live) ? "" : "none"; }
     if (!p.live && !u.live) { return; }
 
-    var html = '<div class="hl-pgrid">';
-
-    html += '<div class="hl-pcol"><div class="hl-sub">Homelab draw</div>';
-    html += '<div class="hl-ptotal">' + Math.round(p.total) + '<small>W</small></div>';
-    var max = p.items.reduce(function (a, x) { return Math.max(a, x.watts); }, 1);
-    p.items.forEach(function (x) {
-        html += '<div class="hl-prow"><span>' + escapeText(x.label) + '</span>' +
-            '<b>' + x.watts.toFixed(1) + ' W</b>' +
-            '<i style="width:' + Math.max(2, (x.watts / max) * 100).toFixed(1) +
-            '%"></i></div>';
-    });
-    html += '</div>';
-
-    html += '<div class="hl-pcol"><div class="hl-sub">UPS</div>';
+    var html = "";
+    if (p.live) {
+        html += '<div class="hl-ptotal">' + Math.round(p.total) +
+            '<small>W</small></div>';
+        var max = p.items.reduce(function (a, x) { return Math.max(a, x.watts); }, 1);
+        html += p.items.map(function (x) {
+            return '<div class="hl-prow"><span>' + esc(x.label) + '</span>' +
+                '<b>' + x.watts.toFixed(0) + ' W</b>' +
+                '<i style="width:' + Math.max(2, (x.watts / max) * 100).toFixed(1) +
+                '%"></i></div>';
+        }).join("");
+    }
     if (u.live) {
-        u.units.forEach(function (x) {
+        html += u.units.map(function (x) {
             var low = x.charge !== null && x.charge < 95;
-            html += '<div class="hl-ups' + (low ? " bad" : "") + '">' +
-                '<div class="hl-ups-head"><b>' + escapeText(x.label) + '</b>' +
+            return '<div class="hl-ups' + (low ? " bad" : "") + '">' +
+                '<div class="hl-ups-head"><b>' + esc(x.label) + '</b>' +
                 '<span>' + (x.charge !== null ? Math.round(x.charge) + "%" : "n/a") +
                 '</span></div>' +
                 '<div class="hl-ups-bar"><i style="width:' +
@@ -728,177 +356,47 @@ function renderPower() {
                 '<div class="hl-ups-sub">load ' +
                     (x.load !== null ? Math.round(x.load) + "%" : "n/a") +
                     ', in ' + (x.volts !== null ? Math.round(x.volts) + " V" : "n/a") +
-                    ', runtime not reported</div>' +
-                '</div>';
-        });
+                    '</div></div>';
+        }).join("");
     }
-    html += '</div></div>';
+    box.innerHTML = html;
+}
+
+function renderHa() {
+    var box = $id("hl-ha-body");
+    var panel = $id("hl-ha");
+    if (!box || !feeds) { return; }
+
+    var ha = feeds.homeAssistant();
+    if (panel) { panel.style.display = ha.live ? "" : "none"; }
+    if (!ha.live) { return; }
+
+    var row = function (label, value, bad) {
+        return '<div class="hl-harow' + (bad ? " bad" : "") + '">' +
+            '<span>' + esc(label) + '</span><b>' + esc(value) + '</b></div>';
+    };
+
+    var html = "";
+    html += row("Core", ha.version || "n/a", ha.coreUpdate);
+    html += row("Updates", String(ha.updates.length), ha.updates.length > 0);
+    if (ha.cpu !== null) { html += row("CPU", Math.round(ha.cpu) + "%", ha.cpu > 85); }
+    if (ha.memory !== null) { html += row("RAM", Math.round(ha.memory) + "%", ha.memory > 90); }
+    if (ha.dbSize !== null) { html += row("Database", ha.dbSize.toFixed(1) + " MB", false); }
+    html += row("Zigbee", ha.zigbee.eth && ha.zigbee.net ? "ONLINE" : "DOWN",
+                !(ha.zigbee.eth && ha.zigbee.net));
+    html += row("Z-Wave dead", String(ha.zwave.dead.length), ha.zwave.dead.length > 0);
+    html += row("Z-Wave faults", String(ha.zwave.failing.length),
+                ha.zwave.failing.length > 0);
+    var age = ha.backups.ageHours;
+    html += row("Backups", ha.backups.stale ? "STALE"
+                    : (age !== null ? Math.round(age) + " h"
+                                    : (ha.backups.state || "n/a")),
+                ha.backups.stale || (age !== null && age > BACKUP_STALE_HOURS));
 
     box.innerHTML = html;
 }
 
-/* ---- detail panel ------------------------------------------------------------------------------ */
-
-function openHost(ip) {
-    selected = ip;
-    selectedHistory = null;
-    feeds.hostHistory(ip).then(function (points) {
-        if (selected === ip) {
-            selectedHistory = points;
-            dirty = true;
-        }
-    });
-    dirty = true;
-    renderDetail();
-}
-
-function closeDetail() {
-    selected = null;
-    selectedHistory = null;
-    var panel = $id("hl-detail");
-    if (panel) { panel.classList.remove("open"); }
-    dirty = true;
-}
-
-function renderDetail() {
-    var panel = $id("hl-detail");
-    if (!panel || !feeds) { return; }
-    if (!selected) {
-        panel.classList.remove("open");
-        return;
-    }
-    var host = null;
-    feeds.hosts().forEach(function (h) { if (h.ip === selected) { host = h; } });
-    if (!host) {
-        panel.classList.remove("open");
-        return;
-    }
-
-    panel.classList.add("open");
-    $id("hl-detail-name").textContent = host.name;
-    $id("hl-detail-name").className = host.seen ? "" : "bad";
-    $id("hl-detail-sub").textContent = host.ip;
-
-    /* The way out of the panel and into the thing itself. */
-    var openBtn = $id("hl-detail-open");
-    if (openBtn) {
-        if (host.url) {
-            openBtn.style.display = "";
-            openBtn.setAttribute("data-url", host.url);
-            openBtn.setAttribute("title", host.name + "  " + host.url);
-            openBtn.innerHTML = "OPEN " + LINK_ICON;
-        } else {
-            openBtn.style.display = "none";
-        }
-    }
-
-    var rows = [
-        ["Link", host.seen ? "UP" : "NOT SEEN",
-         host.seen ? host.via + (host.port ? " port " + host.port : "") : "", !host.seen],
-        ["Uptime", duration(host.uptime), "association", false],
-        ["Down now", rate(host.rx), "", false],
-        ["Up now", rate(host.tx), "", false],
-        ["MAC", host.mac || "n/a", "", false],
-        ["Role", host.kind === "pve" ? "Proxmox node"
-            : host.kind === "docker" ? "Docker host" : "Single service host", "", false]
-    ];
-
-    /* Host metrics are only listed when something is reporting them. */
-    if (host.stats) {
-        rows.push(["CPU", Math.round(host.stats.cpu) + "%", "", host.stats.cpu > 85]);
-        rows.push(["Memory", Math.round(host.stats.memPct) + "%", "", host.stats.memPct > 90]);
-        rows.push(["Disk", Math.round(host.stats.diskPct) + "%", "", host.stats.diskPct > 90]);
-    }
-
-    $id("hl-detail-rows").innerHTML = rows.map(function (r) {
-        return '<div class="hl-drow' + (r[3] ? " bad" : "") + '">' +
-            '<span>' + escapeText(r[0]) + '</span><b>' + escapeText(r[1]) + '</b>' +
-            '<i>' + escapeText(r[2] || "") + '</i></div>';
-    }).join("");
-
-    var svcBox = $id("hl-detail-services");
-    if (svcBox) {
-        svcBox.innerHTML = host.services.length
-            ? '<div class="hl-sub">Services on this host</div>' +
-              host.services.map(function (sv) {
-                  return '<span class="hl-chip" data-url="' + escapeText(sv.url) +
-                      '" title="' + escapeText(sv.name + "  " + sv.url) + '">' +
-                      escapeText(sv.name) + ' ' + LINK_ICON + '</span>';
-              }).join("")
-            : '<div class="hl-sub">No Homepage services on this host</div>';
-    }
-
-    sizeCanvas(detailCanvas, dctx);
-    drawDetailChart();
-}
-
-function drawDetailChart() {
-    if (!dctx || !detailCanvas) { return; }
-    var w = detailCanvas.clientWidth, h = detailCanvas.clientHeight;
-    if (!w || !h) { return; }
-    var ctx = dctx;
-    ctx.clearRect(0, 0, w, h);
-
-    var pts = selectedHistory;
-    if (!pts || pts.length < 2) {
-        ctx.fillStyle = "rgba(191,244,255,.4)";
-        ctx.font = "10px Menlo, Consolas, monospace";
-        ctx.fillText(pts ? "No throughput history" : "Loading history", 6, 16);
-        return;
-    }
-
-    var left = 44, right = 8, top = 16, bottom = 14;
-    var pw = w - left - right, ph = h - top - bottom;
-    var max = 1;
-    pts.forEach(function (p) { max = Math.max(max, p.rx, p.tx); });
-    max *= 1.15;
-
-    var t0 = pts[0].t, t1 = pts[pts.length - 1].t;
-    var span = Math.max(1, t1 - t0);
-    var X = function (t) { return left + ((t - t0) / span) * pw; };
-    var Y = function (v) { return top + ph - (v / max) * ph; };
-
-    ctx.font = "9px Menlo, Consolas, monospace";
-    ctx.textAlign = "right";
-    [0, max].forEach(function (v) {
-        var y = Math.floor(Y(v)) + 0.5;
-        ctx.strokeStyle = "rgba(63,224,255,.1)";
-        ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(w - right, y); ctx.stroke();
-        ctx.fillStyle = "rgba(191,244,255,.5)";
-        var bits = v * 8;
-        ctx.fillText(bits >= 1e6 ? (bits / 1e6).toFixed(1) + "M"
-            : (bits / 1e3).toFixed(0) + "k", left - 3, y + 3);
-    });
-
-    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
-    grad.addColorStop(0, "rgba(63,224,255,.38)");
-    grad.addColorStop(1, "rgba(63,224,255,.02)");
-    ctx.beginPath();
-    ctx.moveTo(X(pts[0].t), top + ph);
-    pts.forEach(function (p) { ctx.lineTo(X(p.t), Y(p.rx)); });
-    ctx.lineTo(X(pts[pts.length - 1].t), top + ph);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    ctx.beginPath();
-    pts.forEach(function (p, i) {
-        if (i) { ctx.lineTo(X(p.t), Y(p.rx)); } else { ctx.moveTo(X(p.t), Y(p.rx)); }
-    });
-    ctx.strokeStyle = CYAN; ctx.lineWidth = 1.2; ctx.stroke();
-
-    ctx.beginPath();
-    pts.forEach(function (p, i) {
-        if (i) { ctx.lineTo(X(p.t), Y(p.tx)); } else { ctx.moveTo(X(p.t), Y(p.tx)); }
-    });
-    ctx.strokeStyle = ACCENT; ctx.lineWidth = 1.1; ctx.stroke();
-
-    ctx.textAlign = "left";
-    ctx.fillStyle = CYAN; ctx.fillText("DOWN", left + 2, top - 5);
-    ctx.fillStyle = ACCENT; ctx.fillText("UP", left + 42, top - 5);
-}
-
-/* ---- clock ------------------------------------------------------------------------------------- */
+/* ---- clock ------------------------------------------------------------------- */
 
 var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 var MONTHS = ["January", "February", "March", "April", "May", "June",
@@ -921,56 +419,17 @@ function renderClock(now) {
     }
 }
 
-/* ---- controls ------------------------------------------------------------------------------------ */
+/* ---- controls ------------------------------------------------------------------ */
 
+/* Navigation is the anchors' own job. This exists only so Escape behaves the
+ * way it does on every other screen. */
 function bindControls() {
-    var root = $id("homelab-screen");
-
-    root.addEventListener("click", function (e) {
-        if (e.target.closest("#hl-detail-close")) {
-            closeDetail();
-            return;
-        }
-
-        /* Anything carrying a URL goes straight to it: a services row, a
-           chip in the detail panel, the OPEN button, the Home Assistant row. */
-        var linked = e.target.closest("[data-url]");
-        if (linked) {
-            openUrl(linked.getAttribute("data-url"));
-            return;
-        }
-
-        var hit = e.target.closest("[data-node]");
-        if (!hit) { return; }
-        var n = layout.nodes[Number(hit.getAttribute("data-node"))];
-        if (!n) { return; }
-
-        if (n.kind === "cluster") {
-            expanded = !expanded;
-            dirty = true;
-            lastRender = 0;
-            buildMap();
-        } else if (n.kind === "service") {
-            /* A satellite is a service, and a service has no detail panel, so
-               it goes straight to its interface. */
-            openUrl(n.service.url);
-        } else if (n.host) {
-            /* A host opens its detail panel; the panel's OPEN button is the
-               way through to its web interface. */
-            openHost(n.host.ip);
-        }
-    });
-
     window.addEventListener("keydown", function (e) {
         if (!active || e.key !== "Escape") { return; }
-        if (selected) {
-            closeDetail();
-        } else if (expanded) {
-            expanded = false;
-            dirty = true;
-            lastRender = 0;
-            buildMap();
-        }
+        ["hl-grid", "hl-cards"].forEach(function (id) {
+            var el = $id(id);
+            if (el) { el.scrollTop = 0; }
+        });
     });
 }
 

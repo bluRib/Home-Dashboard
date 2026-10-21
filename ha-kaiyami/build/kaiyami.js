@@ -3748,11 +3748,11 @@
         }, function(prefix, suffix) {
           jQuery.cssHooks[prefix + suffix] = {
             expand: function(value) {
-              var i = 0, expanded3 = {}, parts = typeof value === "string" ? value.split(" ") : [value];
+              var i = 0, expanded2 = {}, parts = typeof value === "string" ? value.split(" ") : [value];
               for (; i < 4; i++) {
-                expanded3[prefix + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
+                expanded2[prefix + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
               }
-              return expanded3;
+              return expanded2;
             }
           };
           if (!rmargin.test(prefix)) {
@@ -4747,7 +4747,7 @@
         function inspectPrefiltersOrTransports(structure, options, originalOptions, jqXHR) {
           var inspected = {}, seekingTransport = structure === transports;
           function inspect(dataType) {
-            var selected6;
+            var selected5;
             inspected[dataType] = true;
             jQuery.each(structure[dataType] || [], function(_, prefilterOrFactory) {
               var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
@@ -4756,10 +4756,10 @@
                 inspect(dataTypeOrTransport);
                 return false;
               } else if (seekingTransport) {
-                return !(selected6 = dataTypeOrTransport);
+                return !(selected5 = dataTypeOrTransport);
               }
             });
-            return selected6;
+            return selected5;
           }
           return inspect(options.dataTypes[0]) || !inspected["*"] && inspect("*");
         }
@@ -31767,7 +31767,7 @@
           this.isPlaying = false;
         },
         update: /* @__PURE__ */ function() {
-          var lastFrame4 = 0;
+          var lastFrame3 = 0;
           var currentFrame = 0;
           return function(delta) {
             if (this.isPlaying === false) return;
@@ -31779,14 +31779,14 @@
             var interpolation = this.duration / this.frames;
             var frame = Math.floor(this.currentTime / interpolation);
             if (frame != currentFrame) {
-              this.mesh.morphTargetInfluences[lastFrame4] = 0;
+              this.mesh.morphTargetInfluences[lastFrame3] = 0;
               this.mesh.morphTargetInfluences[currentFrame] = 1;
               this.mesh.morphTargetInfluences[frame] = 0;
-              lastFrame4 = currentFrame;
+              lastFrame3 = currentFrame;
               currentFrame = frame;
             }
             this.mesh.morphTargetInfluences[frame] = this.currentTime % interpolation / interpolation;
-            this.mesh.morphTargetInfluences[lastFrame4] = 1 - this.mesh.morphTargetInfluences[frame];
+            this.mesh.morphTargetInfluences[lastFrame3] = 1 - this.mesh.morphTargetInfluences[frame];
           };
         }()
       };
@@ -35832,15 +35832,15 @@
         var scanBottom = fy(0) - 2;
         var scanTop = fy(TOP) + 2;
         var firstRun = null;
-        var lastFrame4 = Date.now();
+        var lastFrame3 = Date.now();
         return {
           tick: function() {
             var now = Date.now();
             if (firstRun === null) {
               firstRun = now;
             }
-            var dt = Math.min(now - lastFrame4, 100);
-            lastFrame4 = now;
+            var dt = Math.min(now - lastFrame3, 100);
+            lastFrame3 = now;
             var age = now - firstRun;
             var fade = Math.min(1, age / 3e3);
             roomMaterial.opacity = fade;
@@ -49084,10 +49084,10 @@
           document.body.appendChild(backdrop);
         }
         function createPhoneSVG() {
-          var svg4 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg4.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-          svg4.setAttribute("id", "pleaserotate-graphic");
-          svg4.setAttribute("viewBox", "0 0 250 250");
+          var svg3 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg3.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+          svg3.setAttribute("id", "pleaserotate-graphic");
+          svg3.setAttribute("viewBox", "0 0 250 250");
           var group2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group2.setAttribute("id", "pleaserotate-graphic-path");
           if (options.forcePortrait) {
@@ -49095,9 +49095,9 @@
           }
           var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", "M190.5,221.3c0,8.3-6.8,15-15,15H80.2c-8.3,0-15-6.8-15-15V28.7c0-8.3,6.8-15,15-15h95.3c8.3,0,15,6.8,15,15V221.3zM74.4,33.5l-0.1,139.2c0,8.3,0,17.9,0,21.5c0,3.6,0,6.9,0,7.3c0,0.5,0.2,0.8,0.4,0.8s7.2,0,15.4,0h75.6c8.3,0,15.1,0,15.2,0s0.2-6.8,0.2-15V33.5c0-2.6-1-5-2.6-6.5c-1.3-1.3-3-2.1-4.9-2.1H81.9c-2.7,0-5,1.6-6.3,4C74.9,30.2,74.4,31.8,74.4,33.5zM127.7,207c-5.4,0-9.8,5.1-9.8,11.3s4.4,11.3,9.8,11.3s9.8-5.1,9.8-11.3S133.2,207,127.7,207z");
-          svg4.appendChild(group2);
+          svg3.appendChild(group2);
           group2.appendChild(path);
-          return svg4;
+          return svg3;
         }
         function setVisibility(visible) {
           var backdropElement = document.getElementById("pleaserotate-backdrop");
@@ -56085,9 +56085,9 @@
         closeDevice();
         return;
       }
-      var bar = e.target.closest(".en-bar-row");
-      if (bar) {
-        openDevice(bar.getAttribute("data-device"));
+      var bar2 = e.target.closest(".en-bar-row");
+      if (bar2) {
+        openDevice(bar2.getAttribute("data-device"));
         return;
       }
       var hit = e.target.closest("[data-node], [data-link]");
@@ -56310,6 +56310,15 @@
       pass: c2.beszelPass || null
     };
   }
+  function iconUrl(name) {
+    if (!name) {
+      return null;
+    }
+    if (name.indexOf("http") === 0) {
+      return name;
+    }
+    return ICON_BASE + name + ".png";
+  }
   function serviceUrl(s) {
     return (s.https ? "https://" : "http://") + s.host + (s.port === 80 || s.port === 443 ? "" : ":" + s.port) + (s.path || "");
   }
@@ -56365,7 +56374,7 @@
     this._timers = [];
     this._history = {};
   }
-  var PROM, SOURCES, HOSTS, SERVICES, HA_ENTITIES, UPS, POWER, POLL_MS, SOURCE_CHECK_MS, DAY_MS2, BACKUP_STALE_HOURS;
+  var PROM, SOURCES, HOSTS, SERVICES, HA_ENTITIES, UPS, POWER, POLL_MS, SOURCE_CHECK_MS, DAY_MS2, BACKUP_STALE_HOURS, ICON_BASE;
   var init_HomelabFeeds = __esm({
     "src/HomelabFeeds.js"() {
       PROM = "http://10.69.2.134:9090";
@@ -56379,18 +56388,21 @@
       };
       HOSTS = [
         {
+          card: true,
           ip: "10.69.2.40",
           name: "Proxmox red",
           kind: "pve",
           url: "https://10.69.2.40:8006"
         },
         {
+          card: true,
           ip: "10.69.2.50",
           name: "Proxmox blu",
           kind: "pve",
           url: "https://10.69.2.50:8006"
         },
         {
+          card: true,
           ip: "10.69.2.60",
           name: "Proxmox grey",
           kind: "pve",
@@ -56399,42 +56411,49 @@
         /* A Docker host's own interface is the Arcane container it runs on 3552,
            which is the thing that actually manages it. */
         {
+          card: true,
           ip: "10.69.2.134",
           name: "Frigate",
           kind: "docker",
           url: "http://10.69.2.134:3552"
         },
         {
+          card: true,
           ip: "10.69.2.222",
           name: "Media",
           kind: "docker",
           url: "http://10.69.2.222:3552"
         },
         {
+          card: true,
           ip: "10.69.2.5",
           name: "Trusted",
           kind: "docker",
           url: "http://10.69.2.5:3552"
         },
         {
+          card: true,
           ip: "10.69.2.184",
           name: "Paperless",
           kind: "docker",
           url: "http://10.69.2.184:3552"
         },
         {
+          card: true,
           ip: "10.69.2.18",
           name: "Newt",
           kind: "docker",
           url: "http://10.69.2.18:3552"
         },
         {
+          card: true,
           ip: "10.69.2.41",
           name: "PBS",
           kind: "single",
           url: "https://10.69.2.41:8007"
         },
         {
+          card: true,
           ip: "10.69.2.180",
           name: "TrueNAS",
           kind: "single",
@@ -56502,6 +56521,7 @@
           url: "http://10.69.2.77:8080"
         },
         {
+          card: true,
           ip: "10.69.2.151",
           name: "Home Assistant",
           kind: "single",
@@ -56509,52 +56529,74 @@
         }
       ];
       SERVICES = [
-        { host: "10.69.2.40", name: "Proxmox Red", group: "System", port: 8006, https: true },
-        { host: "10.69.2.50", name: "Proxmox Blue", group: "System", port: 8006, https: true },
-        { host: "10.69.2.60", name: "Proxmox Grey", group: "System", port: 8006, https: true },
-        { host: "10.69.2.41", name: "Proxmox Backup Server", group: "System", port: 8007, https: true },
-        { host: "10.69.2.167", name: "Semaphore", group: "System", port: 3e3 },
-        { host: "10.69.2.222", name: "Arcane Media", group: "Docker", port: 3552 },
-        { host: "10.69.2.5", name: "Arcane Trusted", group: "Docker", port: 3552 },
-        { host: "10.69.2.134", name: "Arcane Frigate", group: "Docker", port: 3552 },
-        { host: "10.69.2.184", name: "Arcane Paperless", group: "Docker", port: 3552 },
-        { host: "10.69.2.18", name: "Arcane Newt", group: "Docker", port: 3552 },
-        { host: "10.69.2.151", name: "Home Assistant", group: "Home Automation", port: 8123 },
-        { host: "10.69.2.10", name: "Zigbee2MQTT", group: "Home Automation", port: 8080 },
-        { host: "10.69.2.29", name: "Z-Wave JS", group: "Home Automation", port: 8091 },
-        { host: "10.69.2.133", name: "Node-RED", group: "Home Automation", port: 1880 },
-        { host: "10.69.2.163", name: "LoRa-the-Explorer", group: "Home Automation", port: 80 },
-        { host: "10.69.2.134", name: "n8n", group: "Home Automation", port: 5678 },
-        { host: "10.69.2.140", name: "SLZB-06", group: "Home Automation", port: 80 },
-        { host: "10.69.1.1", name: "UniFi", group: "Network Management", port: 443, https: true },
-        { host: "10.69.2.3", name: "Pi-hole", group: "Network Management", port: 443, https: true, path: "/admin" },
-        { host: "10.69.2.222", name: "Jellyfin", group: "Media Processing", port: 8096 },
-        { host: "10.69.2.222", name: "SABnzbd", group: "Media Processing", port: 8080 },
-        { host: "10.69.2.222", name: "Prowlarr", group: "Media Processing", port: 9696 },
-        { host: "10.69.2.222", name: "Sonarr", group: "Media Processing", port: 8989 },
-        { host: "10.69.2.222", name: "Radarr", group: "Media Processing", port: 7878 },
-        { host: "10.69.2.222", name: "Jellyseerr", group: "Media Processing", port: 5055 },
-        { host: "10.69.2.18", name: "Beszel", group: "System Monitoring", port: 8090 },
-        { host: "10.69.2.77", name: "PeaNut", group: "System Monitoring", port: 8080 },
-        { host: "10.69.2.5", name: "Uptime Kuma", group: "System Monitoring", port: 3001 },
-        { host: "10.69.2.5", name: "Gotify", group: "System Monitoring", port: 8088 },
-        { host: "10.69.2.134", name: "InfluxDB", group: "Database", port: 8086 },
-        { host: "10.69.2.112", name: "PostgreSQL", group: "Database", port: 80, path: "/adminer/" },
-        { host: "10.69.2.134", name: "Prometheus", group: "Database", port: 9090 },
-        { host: "10.69.2.134", name: "Frigate", group: "Security", port: 5e3 },
-        { host: "10.69.4.160", name: "Reolink Doorbell", group: "Security", port: 80 },
-        { host: "10.69.1.27", name: "Front Yard Camera", group: "Security", port: 80 },
-        { host: "10.69.1.19", name: "Garage Camera", group: "Security", port: 80 },
-        { host: "10.69.1.16", name: "Back Yard Camera", group: "Security", port: 80 },
-        { host: "10.69.2.180", name: "TrueNAS", group: "Storage", port: 443, https: true },
-        { host: "10.69.2.134", name: "Garage S3", group: "Storage", port: 3909 },
-        { host: "10.69.2.5", name: "Gitea", group: "Apps", port: 8080 },
-        { host: "10.69.2.70", name: "Immich", group: "Apps", port: 2283 },
-        { host: "10.69.2.5", name: "Mealie", group: "Apps", port: 9091 },
-        { host: "10.69.2.18", name: "Securo", group: "Apps", port: 3e3 },
-        { host: "10.69.2.184", name: "Paperless-ngx", group: "Documents", port: 8e3 },
-        { host: "10.69.2.184", name: "Paperless-AI", group: "Documents", port: 3e3 },
-        { host: "10.69.2.184", name: "Paperless-GPT", group: "Documents", port: 3002 }
+        { host: "10.69.2.40", name: "Proxmox Red", group: "System", port: 8006, https: true, icon: "proxmox" },
+        { host: "10.69.2.50", name: "Proxmox Blue", group: "System", port: 8006, https: true, icon: "proxmox" },
+        { host: "10.69.2.60", name: "Proxmox Grey", group: "System", port: 8006, https: true, icon: "proxmox" },
+        { host: "10.69.2.41", name: "Proxmox Backup Server", group: "System", port: 8007, https: true, icon: "proxmox" },
+        { host: "10.69.2.167", name: "Semaphore", group: "System", port: 3e3, icon: "semaphore" },
+        { host: "10.69.2.222", name: "Arcane Media", group: "Docker", port: 3552, icon: "arcane" },
+        { host: "10.69.2.5", name: "Arcane Trusted", group: "Docker", port: 3552, icon: "arcane" },
+        { host: "10.69.2.134", name: "Arcane Frigate", group: "Docker", port: 3552, icon: "arcane" },
+        { host: "10.69.2.184", name: "Arcane Paperless", group: "Docker", port: 3552, icon: "arcane" },
+        { host: "10.69.2.18", name: "Arcane Newt", group: "Docker", port: 3552, icon: "arcane" },
+        { host: "10.69.2.151", name: "Home Assistant", group: "Home Automation", port: 8123, icon: "home-assistant" },
+        { host: "10.69.2.10", name: "Zigbee2MQTT", group: "Home Automation", port: 8080, icon: "zigbee2mqtt" },
+        { host: "10.69.2.29", name: "Z-Wave JS", group: "Home Automation", port: 8091, icon: "zwavejs2mqtt" },
+        { host: "10.69.2.133", name: "Node-RED", group: "Home Automation", port: 1880, icon: "node-red" },
+        { host: "10.69.2.163", name: "LoRa-the-Explorer", group: "Home Automation", port: 80, icon: "" },
+        { host: "10.69.2.134", name: "n8n", group: "Home Automation", port: 5678, icon: "n8n" },
+        { host: "10.69.2.140", name: "SLZB-06", group: "Home Automation", port: 80, icon: "smlight" },
+        { host: "10.69.1.1", name: "UniFi", group: "Network Management", port: 443, https: true, icon: "unifi" },
+        { host: "10.69.2.3", name: "Pi-hole", group: "Network Management", port: 443, https: true, path: "/admin", icon: "pi-hole" },
+        { host: "10.69.2.222", name: "Jellyfin", group: "Media Processing", port: 8096, icon: "jellyfin" },
+        { host: "10.69.2.222", name: "SABnzbd", group: "Media Processing", port: 8080, icon: "sabnzbd" },
+        { host: "10.69.2.222", name: "Prowlarr", group: "Media Processing", port: 9696, icon: "prowlarr" },
+        { host: "10.69.2.222", name: "Sonarr", group: "Media Processing", port: 8989, icon: "sonarr" },
+        { host: "10.69.2.222", name: "Radarr", group: "Media Processing", port: 7878, icon: "radarr" },
+        { host: "10.69.2.222", name: "Jellyseerr", group: "Media Processing", port: 5055, icon: "jellyseerr" },
+        { host: "10.69.2.18", name: "Beszel", group: "System Monitoring", port: 8090, icon: "beszel" },
+        { host: "10.69.2.77", name: "PeaNut", group: "System Monitoring", port: 8080, icon: "peanut" },
+        { host: "10.69.2.5", name: "Uptime Kuma", group: "System Monitoring", port: 3001, icon: "uptime-kuma" },
+        { host: "10.69.2.5", name: "Gotify", group: "System Monitoring", port: 8088, icon: "gotify" },
+        { host: "10.69.2.134", name: "InfluxDB", group: "Database", port: 8086, icon: "influxdb" },
+        { host: "10.69.2.112", name: "PostgreSQL", group: "Database", port: 80, path: "/adminer/", icon: "postgresql" },
+        { host: "10.69.2.134", name: "Prometheus", group: "Database", port: 9090, icon: "prometheus" },
+        { host: "10.69.2.134", name: "Frigate", group: "Security", port: 5e3, icon: "frigate" },
+        { host: "10.69.4.160", name: "Reolink Doorbell", group: "Security", port: 80, icon: "reolink" },
+        { host: "10.69.1.27", name: "Front Yard Camera", group: "Security", port: 80, icon: "" },
+        { host: "10.69.1.19", name: "Garage Camera", group: "Security", port: 80, icon: "" },
+        { host: "10.69.1.16", name: "Back Yard Camera", group: "Security", port: 80, icon: "" },
+        { host: "10.69.2.180", name: "TrueNAS", group: "Storage", port: 443, https: true, icon: "truenas" },
+        { host: "10.69.2.134", name: "Garage S3", group: "Storage", port: 3909, icon: "garage" },
+        { host: "10.69.2.5", name: "Gitea", group: "Apps", port: 8080, icon: "gitea" },
+        { host: "10.69.2.70", name: "Immich", group: "Apps", port: 2283, icon: "immich" },
+        { host: "10.69.2.5", name: "Mealie", group: "Apps", port: 9091, icon: "mealie" },
+        { host: "10.69.2.18", name: "Securo", group: "Apps", port: 3e3, icon: "" },
+        { host: "10.69.2.184", name: "Paperless-ngx", group: "Documents", port: 8e3, icon: "paperless-ngx" },
+        { host: "10.69.2.184", name: "Paperless-AI", group: "Documents", port: 3e3, icon: "paperless-ngx" },
+        { host: "10.69.2.184", name: "Paperless-GPT", group: "Documents", port: 3002, icon: "paperless-ngx" },
+        /* The two Homepage entries that live on a public domain rather than an
+           address on the LAN. They have no host on this network, so they carry no
+           link state and simply always read as reachable. */
+        {
+          host: "vault.vaznet.site",
+          name: "Vaultwarden",
+          group: "Apps",
+          port: 443,
+          https: true,
+          icon: "vaultwarden",
+          external: true
+        },
+        {
+          host: "mon.vaznet.site",
+          name: "Umami Analytics",
+          group: "Rx Degree",
+          port: 443,
+          https: true,
+          path: "/websites",
+          icon: "umami",
+          external: true
+        }
       ];
       HA_ENTITIES = {
         coreUpdate: "update.home_assistant_core_update",
@@ -56598,6 +56640,7 @@
       SOURCE_CHECK_MS = 5 * 60 * 1e3;
       DAY_MS2 = 24 * 3600 * 1e3;
       BACKUP_STALE_HOURS = 26;
+      ICON_BASE = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/";
       HomelabFeeds.prototype.start = function() {
         var self = this;
         this.poll();
@@ -56711,7 +56754,9 @@
                 memPct: info.mp !== void 0 ? info.mp : null,
                 diskPct: info.dp !== void 0 ? info.dp : null,
                 uptime: info.u !== void 0 ? info.u : null,
-                temp: info.dt !== void 0 ? info.dt : null
+                /* Beszel reports the highest sensor it can see. */
+                temp: info.dt !== void 0 ? info.dt : info.t !== void 0 ? info.t : null,
+                containers: it.containers || null
               };
             });
             self.hostStats = by;
@@ -56740,11 +56785,24 @@
         var self = this;
         return HOSTS.map(function(h) {
           var c2 = self.unifi[h.ip];
-          var stats = self.hostStats ? self.hostStats[h.name] || self.hostStats[h.ip] || null : null;
+          var stats = null;
+          if (self.hostStats) {
+            var keys = Object.keys(self.hostStats);
+            for (var k = 0; k < keys.length; k++) {
+              var cand = self.hostStats[keys[k]];
+              if (cand.host === h.ip || String(cand.name).toLowerCase() === h.name.toLowerCase()) {
+                stats = cand;
+                break;
+              }
+            }
+          }
           var services = SERVICES.filter(function(s) {
             return s.host === h.ip;
           }).map(function(s) {
-            return Object.assign({}, s, { url: serviceUrl(s) });
+            return Object.assign({}, s, {
+              url: serviceUrl(s),
+              iconUrl: iconUrl(s.icon)
+            });
           });
           return {
             ip: h.ip,
@@ -56760,10 +56818,16 @@
             port: c2 ? c2.m.sw_port || "" : "",
             mac: c2 ? c2.m.mac : "",
             url: h.url || null,
+            card: !!h.card,
             stats,
             services,
             serviceCount: services.length
           };
+        });
+      };
+      HomelabFeeds.prototype.servers = function() {
+        return this.hosts().filter(function(h) {
+          return h.card;
         });
       };
       HomelabFeeds.prototype.guests = function() {
@@ -56934,12 +56998,15 @@
             group: s.group,
             host: s.host,
             url: serviceUrl(s),
+            icon: s.icon || "",
+            iconUrl: iconUrl(s.icon),
             /* The host's link state is known from the controller. Whether the
                service itself answers is not, until Uptime Kuma is scraped, and
                the board labels the difference rather than implying one from
                the other. */
-            hostSeen: hostSeen[s.host] !== false,
-            hostKnown: hostSeen[s.host] !== void 0,
+            external: !!s.external,
+            hostSeen: s.external ? true : hostSeen[s.host] !== false,
+            hostKnown: s.external ? true : hostSeen[s.host] !== void 0,
             status: k ? k.status : null,
             ms: k ? k.ms : null
           });
@@ -57066,36 +57133,9 @@
   function pad6(n) {
     return String(n).length < 2 ? "0" + n : String(n);
   }
-  function watchPanels6() {
-    if (observer6 || typeof ResizeObserver === "undefined") {
-      return;
-    }
-    observer6 = new ResizeObserver(function() {
-      HomelabView.resizeDebounced();
-    });
-    ["hl-map-body", "hl-detail"].forEach(function(id) {
-      var el = $id6(id);
-      if (el) {
-        observer6.observe(el);
-      }
-    });
-  }
-  function sizeCanvas3(canvas, ctx) {
-    if (!canvas || !ctx) {
-      return;
-    }
-    var w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) {
-      return;
-    }
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
   function rate(bps) {
     if (bps === null || bps === void 0) {
-      return "n/a";
+      return "0 b/s";
     }
     var bits = bps * 8;
     if (bits >= 1e9) {
@@ -57123,660 +57163,229 @@
     }
     return m + "m";
   }
-  function escapeText2(s) {
-    return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function esc(s) {
+    return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
-  function linkIcon() {
-    return '<i class="hl-link-icon">' + LINK_ICON + "</i>";
+  function anchor(url, cls, title, inner) {
+    return '<a class="' + cls + '" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" title="' + esc(title) + '">' + inner + "</a>";
   }
-  function openUrl(url) {
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
+  function bar(label, pct2, readout, warnAt) {
+    var v = Math.max(0, Math.min(100, pct2));
+    var hot = warnAt !== void 0 && pct2 >= warnAt;
+    return '<div class="hl-bar' + (hot ? " hot" : "") + '"><span class="hl-bar-label">' + esc(label) + '</span><span class="hl-bar-val">' + esc(readout) + '</span><span class="hl-bar-track"><i style="width:' + v.toFixed(1) + '%"></i></span></div>';
+  }
+  function icon(svc, cls) {
+    var initial = esc((svc.name || "?").charAt(0).toUpperCase());
+    var letter = '<span class="' + cls + ' hl-icon-letter">' + initial + "</span>";
+    if (!svc.iconUrl) {
+      return letter;
     }
+    return '<img class="' + cls + '" src="' + esc(svc.iconUrl) + '" alt="" loading="lazy" data-letter="' + initial + '">';
   }
-  function buildMap() {
-    var host = $id6("hl-map-body");
-    if (!host || !svg2 || !feeds6) {
+  function renderCards() {
+    var box = $id6("hl-cards");
+    if (!box || !feeds6) {
       return;
     }
-    var w = host.clientWidth, h = host.clientHeight;
-    if (!w || !h) {
+    var servers = feeds6.servers();
+    if (!servers.length) {
       return;
     }
-    svg2.setAttribute("viewBox", "0 0 " + w + " " + h);
-    svg2.setAttribute("width", w);
-    svg2.setAttribute("height", h);
-    var hosts = feeds6.hosts();
-    if (!hosts.length) {
-      svg2.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="hl-empty">LOADING</text>';
-      layout2 = { nodes: [], links: [] };
-      pulses = [];
-      return;
-    }
-    var fontPx = Math.max(8, Math.min(12, w * 62e-4));
-    var charW = fontPx * 0.62;
-    var padX = Math.max(40, Math.min(70, w * 0.05));
-    var padY = 18;
-    var nodes = [], links = [];
-    var pve = hosts.filter(function(x) {
-      return x.kind === "pve";
-    });
-    var docker = hosts.filter(function(x) {
-      return x.kind === "docker";
-    });
-    var singles = hosts.filter(function(x) {
-      return x.kind === "single";
-    });
-    var bandY = [h * 0.17, h * 0.52, h * 0.86];
-    var spineX = padX * 0.42;
-    var bandNameW = 7 * charW * 1.35;
-    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 34);
-    function place(list, y) {
-      var n = list.length;
-      var span = w - bandLeft - padX;
-      var gap = n > 1 ? span / (n - 1) : 0;
-      list.forEach(function(hst, i) {
-        nodes.push({
-          kind: hst.kind,
-          host: hst,
-          x: n > 1 ? bandLeft + gap * i : (bandLeft + w - padX) / 2,
-          y,
-          r: hst.kind === "pve" ? 13 : 11
-        });
-      });
-    }
-    place(pve, bandY[0]);
-    place(docker, bandY[1]);
-    if (expanded) {
-      place(singles, bandY[2]);
-    } else {
-      var seenCount = singles.filter(function(x) {
-        return x.seen;
-      }).length;
-      nodes.push({
-        kind: "cluster",
-        x: (bandLeft + w - padX) / 2,
-        y: bandY[2],
-        r: 13,
-        label: "Singles",
-        count: singles.length,
-        seen: seenCount,
-        singles
-      });
-    }
-    nodes.slice().forEach(function(n, ni) {
-      if (n.kind !== "docker" || !n.host.services.length) {
-        return;
-      }
-      var svcs = n.host.services;
-      var spread = Math.min(1.5, 0.42 + svcs.length * 0.14);
-      var radius = Math.max(34, Math.min(60, w * 0.035));
-      svcs.forEach(function(s, i) {
-        var t = svcs.length === 1 ? 0 : (i / (svcs.length - 1) - 0.5) * spread;
-        nodes.push({
-          kind: "service",
-          service: s,
-          parent: ni,
-          x: n.x + Math.sin(t) * radius,
-          y: n.y + Math.cos(t) * radius * 0.78 + 8,
-          r: 3
-        });
-        links.push({
-          source: ni,
-          target: nodes.length - 1,
-          kind: "service",
-          rate: 0,
-          down: !n.host.seen
-        });
-      });
-    });
-    [0, 1, 2].forEach(function(b) {
-      nodes.push({
-        kind: "spine",
-        x: spineX,
-        y: bandY[b],
-        r: 4,
-        label: ["PROXMOX", "DOCKER", "SINGLES"][b]
-      });
-    });
-    var spineIdx = {};
-    nodes.forEach(function(n, i) {
-      if (n.kind === "spine") {
-        spineIdx[Math.round(n.y)] = i;
-      }
-    });
-    nodes.forEach(function(n, i) {
-      if (n.kind === "pve" || n.kind === "docker" || n.kind === "cluster" || n.kind === "single" && expanded) {
-        var si = spineIdx[Math.round(n.y)];
-        if (si !== void 0 && si !== i) {
-          links.push({
-            source: si,
-            target: i,
-            kind: "host",
-            rate: n.host ? n.host.rx + n.host.tx : 0,
-            down: n.host ? !n.host.seen : false
-          });
+    box.innerHTML = servers.map(function(sv) {
+      var st = sv.stats;
+      var header = anchor(
+        sv.url || "#",
+        "hl-card-head",
+        sv.name + "  " + (sv.url || ""),
+        '<span class="hl-card-name">' + esc(sv.name) + '</span><span class="hl-card-ip">' + esc(sv.ip) + '</span><span class="hl-card-go">\u2197</span>'
+      );
+      var meta = '<div class="hl-card-meta"><span class="hl-pill ' + (sv.seen ? "up" : "down") + '">' + (sv.seen ? "UP" : "NOT SEEN") + '</span><span class="hl-card-uptime">' + esc(duration(sv.uptime)) + "</span></div>";
+      var path = '<div class="hl-card-path' + (sv.via ? "" : " dim") + '">' + (sv.via ? esc(sv.via) + (sv.port ? " port " + esc(sv.port) : "") : "no link reported") + "</div>";
+      var net = '<div class="hl-card-net"><span><i>DOWN</i>' + rate(sv.rx) + "</span><span><i>UP</i>" + rate(sv.tx) + "</span></div>";
+      var bars = "";
+      if (st) {
+        var parts = [];
+        if (st.cpu !== null && st.cpu !== void 0) {
+          parts.push(bar("CPU", st.cpu, Math.round(st.cpu) + "%", 85));
+        }
+        if (st.memPct !== null && st.memPct !== void 0) {
+          parts.push(bar("RAM", st.memPct, Math.round(st.memPct) + "%", 90));
+        }
+        if (st.diskPct !== null && st.diskPct !== void 0) {
+          parts.push(bar("DISK", st.diskPct, Math.round(st.diskPct) + "%", 90));
+        }
+        if (st.temp !== null && st.temp !== void 0) {
+          parts.push(bar(
+            "TEMP",
+            st.temp / 90 * 100,
+            Math.round(st.temp) + " C",
+            83
+          ));
+        }
+        if (parts.length) {
+          bars = '<div class="hl-bars">' + parts.join("") + "</div>";
         }
       }
-    });
-    var maxRate = 1;
-    links.forEach(function(l) {
-      maxRate = Math.max(maxRate, l.rate || 0);
-    });
-    var parts = [];
-    links.forEach(function(l, i) {
-      var a = nodes[l.source], b = nodes[l.target];
-      if (!a || !b) {
-        return;
-      }
-      var share = (l.rate || 0) / maxRate;
-      var colour = l.down ? ALERT3 : l.kind === "service" ? DIM : CYAN3;
-      var width = l.kind === "service" ? 1 : Math.max(1.2, 1.2 + Math.sqrt(share) * 4.5);
-      var opacity = l.kind === "service" ? 0.28 : 0.3 + 0.5 * Math.sqrt(share);
-      var d = "M" + a.x + "," + a.y + "C" + (a.x + b.x) / 2 + "," + a.y + " " + (a.x + b.x) / 2 + "," + b.y + " " + b.x + "," + b.y;
-      l._d = d;
-      l._w = width;
-      l._down = l.down;
-      parts.push('<path class="hl-link' + (l.down ? " down" : "") + '" d="' + d + '" stroke="' + colour + '" stroke-width="' + width.toFixed(2) + '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none"></path>');
-    });
-    nodes.forEach(function(n, i) {
-      parts.push(nodeMarkup(n, i, fontPx, charW, w));
-    });
-    svg2.innerHTML = parts.join("");
-    layout2 = { nodes, links };
-    seedPulses(links, maxRate);
+      var chips = sv.services.length ? '<div class="hl-chips">' + sv.services.map(function(s) {
+        var tip = s.name + "  " + s.url;
+        if (st && st.containers) {
+          tip += "\n" + sv.name + " reports " + st.containers + " containers";
+        }
+        return anchor(
+          s.url,
+          "hl-chip",
+          tip,
+          icon(s, "hl-chip-icon") + '<span class="hl-chip-name">' + esc(s.name) + "</span>"
+        );
+      }).join("") + "</div>" : "";
+      return '<div class="hl-card' + (sv.seen ? "" : " down") + '">' + header + meta + path + net + bars + chips + "</div>";
+    }).join("");
+    swapBrokenIcons(box);
   }
-  function nodeMarkup(n, i, fontPx, charW, w) {
-    if (n.kind === "spine") {
-      return '<circle class="hl-node hl-node-spine" cx="' + n.x + '" cy="' + n.y + '" r="3" fill="' + DIM + '"></circle><text class="hl-label hl-label-spine" x="' + n.x + '" y="' + (n.y - 10) + '" text-anchor="middle">' + escapeText2(n.label) + "</text>";
-    }
-    if (n.kind === "service") {
-      var sv = n.service;
-      var down = sv.status === 0 || sv.status === null && !sv.hostSeen;
-      var col = down ? ALERT3 : DIM;
-      return '<circle class="hl-node hl-node-service' + (down ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + col + '" data-node="' + i + '"><title>' + escapeText2(sv.name + "  " + sv.url) + "</title></circle>";
-    }
-    var bad = false, colour = CYAN3;
-    var label = "", sub = "";
-    if (n.kind === "cluster") {
-      label = n.label + " (" + n.count + ")";
-      sub = n.seen + " of " + n.count + " up";
-      bad = n.seen < n.count;
-      colour = bad ? ALERT3 : CYAN3;
-    } else {
-      var hst = n.host;
-      label = hst.name;
-      bad = !hst.seen;
-      colour = bad ? ALERT3 : hst.kind === "pve" ? ACCENT2 : CYAN3;
-      if (!hst.seen) {
-        sub = "NOT SEEN";
-      } else if (hst.stats) {
-        sub = Math.round(hst.stats.cpu) + "% cpu";
-      } else {
-        sub = rate(hst.rx + hst.tx);
-      }
-    }
-    var url0 = n.host ? n.host.url : null;
-    var maxChars = Math.floor(w * 0.13 / charW) - (url0 ? 2 : 0);
-    if (label.length > maxChars && maxChars > 4) {
-      label = label.slice(0, maxChars - 1) + "\u2026";
-    }
-    var url = n.host ? n.host.url : null;
-    var tip = n.kind === "cluster" ? "Click to open the singles" : n.host ? n.host.name + (url ? "  " + url : "") : "";
-    var shape = n.kind === "cluster" ? '<rect class="hl-node hl-node-cluster' + (bad ? " bad" : "") + '" x="' + (n.x - n.r) + '" y="' + (n.y - n.r) + '" width="' + n.r * 2 + '" height="' + n.r * 2 + '" fill="' + colour + '" data-node="' + i + '"><title>' + escapeText2(tip) + "</title></rect>" : '<circle class="hl-node hl-node-' + n.kind + (bad ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + colour + '" data-node="' + i + '"><title>' + escapeText2(tip) + "</title></circle>";
-    return shape + '<text class="hl-label hl-label-' + n.kind + (bad ? " bad" : "") + '" x="' + n.x + '" y="' + (n.y - n.r - fontPx * 0.8) + '" text-anchor="middle" data-node="' + i + '"><title>' + escapeText2(tip) + '</title><tspan class="hl-label-name" x="' + n.x + '">' + escapeText2(label) + (url ? " " + LINK_ICON : "") + "</tspan>" + (sub ? '<tspan class="hl-label-sub" x="' + n.x + '" dy="' + (-fontPx * 1.05).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
-  }
-  function samplePath2(d, n) {
-    var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    el.setAttribute("d", d);
-    var len = 0;
-    try {
-      len = el.getTotalLength();
-    } catch (err) {
-      return null;
-    }
-    if (!len || !isFinite(len)) {
-      return null;
-    }
-    var pts = [];
-    for (var i = 0; i <= n; i++) {
-      var p = el.getPointAtLength(i / n * len);
-      pts.push(p.x, p.y);
-    }
-    return { pts, len, n };
-  }
-  function seedPulses(links, maxRate) {
-    pulses = [];
-    links.forEach(function(l, i) {
-      if (l.kind === "service" || !(l.rate > 0)) {
-        return;
-      }
-      var sampled = samplePath2(l._d, 24);
-      if (!sampled) {
-        return;
-      }
-      l._path = sampled;
-      var share = l.rate / maxRate;
-      var count2 = Math.max(1, Math.round(1 + 5 * Math.sqrt(share)));
-      var speed = 26 + 120 * Math.sqrt(share);
-      for (var k = 0; k < count2; k++) {
-        pulses.push({
-          link: i,
-          at: Math.random(),
-          speed: speed * (0.85 + Math.random() * 0.3),
-          size: Math.max(1, l._w * 0.4),
-          down: !!l._down
-        });
-      }
-    });
-  }
-  function stepPulses(dt) {
-    if (!pctx2 || !pulseCanvas) {
-      return;
-    }
-    var w = pulseCanvas.clientWidth, h = pulseCanvas.clientHeight;
-    if (!w || !h) {
-      return;
-    }
-    pctx2.clearRect(0, 0, w, h);
-    if (!pulses.length || !layout2.links.length) {
-      return;
-    }
-    pctx2.globalCompositeOperation = "lighter";
-    for (var i = 0; i < pulses.length; i++) {
-      var p = pulses[i];
-      var l = layout2.links[p.link];
-      if (!l || !l._path) {
-        continue;
-      }
-      p.at += p.speed * dt / l._path.len;
-      if (p.at > 1) {
-        p.at -= 1;
-      }
-      var pts = l._path.pts;
-      var f = p.at * l._path.n;
-      var i0 = Math.floor(f), t = f - i0;
-      if (i0 >= l._path.n) {
-        i0 = l._path.n - 1;
-        t = 1;
-      }
-      var x = pts[i0 * 2] + (pts[i0 * 2 + 2] - pts[i0 * 2]) * t;
-      var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
-      var edge = Math.min(p.at, 1 - p.at);
-      var alpha = Math.min(1, edge / 0.08) * 0.8;
-      pctx2.beginPath();
-      pctx2.arc(x, y, p.size, 0, Math.PI * 2);
-      pctx2.fillStyle = p.down ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
-      pctx2.fill();
-    }
-    pctx2.globalCompositeOperation = "source-over";
-  }
-  function stat4(id, value, sub, bad) {
-    var el = $id6(id);
-    if (!el) {
-      return;
-    }
-    el.firstChild.textContent = value;
-    var span = el.querySelector("span");
-    if (span && sub !== void 0 && sub !== null) {
-      span.textContent = sub;
-    }
-    el.className = "hl-stat" + (bad ? " bad" : "");
-  }
-  function renderStatus4() {
-    if (!feeds6) {
-      return;
-    }
-    var s = feeds6.status();
-    stat4(
-      "hl-stat-nodes",
-      s.hostsUp + " / " + s.hostsTotal,
-      "Hosts seen, " + s.nodesUp + " of " + s.nodesTotal + " Proxmox",
-      s.hostsUp < s.hostsTotal
-    );
-    var root = $id6("homelab-screen");
-    root.classList.toggle("has-guests", s.guestsKnown);
-    if (s.guestsKnown) {
-      stat4(
-        "hl-stat-guests",
-        s.guestsRunning + " / " + s.guestsTotal,
-        "Guests running",
-        false
-      );
-    }
-    stat4(
-      "hl-stat-services",
-      s.servicesReachable + " / " + s.servicesTotal,
-      s.servicesKnown ? "Services up" : "Services on hosts that are up",
-      s.servicesReachable < s.servicesTotal
-    );
-    stat4(
-      "hl-stat-alerts",
-      String(s.alerts.length),
-      s.alerts.length ? s.alerts[0].text : "No active alerts",
-      s.alerts.length > 0
-    );
-  }
-  function renderServices() {
-    var box = $id6("hl-services-body");
-    var head = $id6("hl-services-note");
+  function renderGrid() {
+    var box = $id6("hl-grid");
     if (!box || !feeds6) {
       return;
     }
     var groups = feeds6.services();
-    var kumaLive = feeds6.sources.kuma.live;
-    if (head) {
-      head.textContent = kumaLive ? "Live checks" : "Host link";
-    }
-    var html = "";
-    groups.forEach(function(g) {
+    box.innerHTML = groups.map(function(g) {
       var items = g.items.slice().sort(function(a, b) {
-        var ad = a.status === 0 ? 0 : a.hostSeen ? 2 : 1;
-        var bd = b.status === 0 ? 0 : b.hostSeen ? 2 : 1;
+        var ad = a.hostSeen ? 1 : 0, bd = b.hostSeen ? 1 : 0;
         return ad - bd || a.name.localeCompare(b.name);
       });
-      html += '<div class="hl-sgroup">' + escapeText2(g.group) + "</div>";
-      items.forEach(function(sv) {
-        var down = sv.status === 0 || sv.status === null && !sv.hostSeen;
-        var stateText = sv.status === 1 ? "UP" : sv.status === 0 ? "DOWN" : sv.hostSeen ? "UP" : "NOT SEEN";
-        html += '<div class="hl-srow' + (down ? " bad" : "") + '" data-url="' + escapeText2(sv.url) + '" title="' + escapeText2(sv.name + "  " + sv.url) + '"><span class="hl-sname">' + escapeText2(sv.name) + '</span><span class="hl-sstate">' + stateText + "</span>" + (sv.ms !== null && sv.ms !== void 0 ? '<span class="hl-sms">' + Math.round(sv.ms) + " ms</span>" : '<span class="hl-sms"></span>') + linkIcon() + "</div>";
-      });
-    });
-    box.innerHTML = html;
+      return '<div class="hl-gsection"><div class="hl-gtitle">' + esc(g.group) + '</div><div class="hl-gtiles">' + items.map(function(s) {
+        var down = s.status === 0 || s.status === null && !s.hostSeen;
+        var state2 = s.status === 1 ? "UP" : s.status === 0 ? "DOWN" : s.external ? "EXTERNAL" : s.hostSeen ? "UP" : "NOT SEEN";
+        return anchor(
+          s.url,
+          "hl-tile" + (down ? " down" : ""),
+          s.name + "  " + s.url,
+          icon(s, "hl-tile-icon") + '<span class="hl-tile-text"><b>' + esc(s.name) + "</b><i>" + esc(s.host) + '</i></span><span class="hl-tile-state">' + state2 + "</span>"
+        );
+      }).join("") + "</div></div>";
+    }).join("");
+    swapBrokenIcons(box);
   }
-  function renderHa() {
-    var box = $id6("hl-ha-body");
+  function swapBrokenIcons(root) {
+    root.querySelectorAll("img[data-letter]").forEach(function(img) {
+      img.addEventListener("error", function() {
+        var span = document.createElement("span");
+        span.className = img.className + " hl-icon-letter";
+        span.textContent = img.getAttribute("data-letter");
+        if (img.parentNode) {
+          img.parentNode.replaceChild(span, img);
+        }
+      }, { once: true });
+    });
+  }
+  function renderCounts() {
+    var box = $id6("hl-counts");
     if (!box || !feeds6) {
       return;
     }
-    var ha2 = feeds6.homeAssistant();
-    var panel = $id6("hl-ha");
-    if (panel) {
-      panel.style.display = ha2.live ? "" : "none";
-    }
-    if (!ha2.live) {
-      return;
-    }
-    var row = function(label, value, note, bad) {
-      return '<div class="hl-row' + (bad ? " bad" : "") + '"><span>' + escapeText2(label) + "</span><b>" + escapeText2(value) + "</b>" + (note ? "<i>" + escapeText2(note) + "</i>" : "") + "</div>";
+    var st = feeds6.status();
+    var servers = feeds6.servers();
+    var up = servers.filter(function(s) {
+      return s.seen;
+    }).length;
+    var cell = function(value, label, bad) {
+      return '<div class="hl-count' + (bad ? " bad" : "") + '"><b>' + esc(value) + "</b><span>" + esc(label) + "</span></div>";
     };
-    var html = "";
-    html += row(
-      "Core version",
-      ha2.version || "n/a",
-      ha2.coreUpdate ? "update to " + ha2.latest : "up to date",
-      ha2.coreUpdate
+    var html = cell(up + " / " + servers.length, "Servers up", up < servers.length);
+    html += cell(
+      st.servicesReachable + " / " + st.servicesTotal,
+      "Services",
+      st.servicesReachable < st.servicesTotal
     );
-    html += row(
-      "Updates available",
-      String(ha2.updates.length),
-      ha2.updates.length ? ha2.updates.slice(0, 2).map(function(u) {
-        return u.name;
-      }).join(", ") : "none",
-      ha2.updates.length > 0
-    );
-    if (ha2.cpu !== null) {
-      html += row("CPU", Math.round(ha2.cpu) + "%", "", ha2.cpu > 85);
+    if (st.guestsKnown) {
+      html += cell(st.guestsRunning + " / " + st.guestsTotal, "Guests", false);
     }
-    if (ha2.memory !== null) {
-      html += row("Memory", Math.round(ha2.memory) + "%", "", ha2.memory > 90);
+    html += cell(String(st.alerts.length), "Alerts", st.alerts.length > 0);
+    if (st.alerts.length) {
+      html += '<div class="hl-alerts">' + st.alerts.slice(0, 3).map(function(a) {
+        return '<div class="hl-alert">' + esc(a.text) + "</div>";
+      }).join("") + "</div>";
     }
-    if (ha2.dbSize !== null) {
-      html += row("Database", ha2.dbSize.toFixed(1) + " MB", "", false);
-    }
-    html += row(
-      "Zigbee coordinator",
-      ha2.zigbee.eth && ha2.zigbee.net ? "ONLINE" : "LINK DOWN",
-      "SLZB-06 " + (ha2.zigbee.chipTemp !== null ? Math.round(ha2.zigbee.chipTemp) + " C" : "") + (ha2.zigbee.z2m ? ", Z2M " + (ha2.zigbee.z2mVersion || "connected") : ", Z2M down"),
-      !(ha2.zigbee.eth && ha2.zigbee.net) || !ha2.zigbee.z2m
-    );
-    html += row(
-      "Z-Wave dead nodes",
-      String(ha2.zwave.dead.length),
-      ha2.zwave.dead.length ? ha2.zwave.dead.slice(0, 2).join(", ") : "none",
-      ha2.zwave.dead.length > 0
-    );
-    html += row(
-      "Z-Wave faults",
-      String(ha2.zwave.failing.length),
-      ha2.zwave.failing.length ? ha2.zwave.failing.slice(0, 2).join(", ") + (ha2.zwave.failing.length > 2 ? " and " + (ha2.zwave.failing.length - 2) + " more" : "") : "none",
-      ha2.zwave.failing.length > 0
-    );
-    var age = ha2.backups.ageHours;
-    html += row(
-      "Backups",
-      ha2.backups.stale ? "STALE" : ha2.backups.state || "n/a",
-      age !== null ? Math.round(age) + " h ago" : "",
-      ha2.backups.stale || age !== null && age > BACKUP_STALE_HOURS
-    );
-    html += '<div class="hl-row hl-open" data-url="http://10.69.2.151:8123" title="Home Assistant  http://10.69.2.151:8123"><span>Open</span><b>10.69.2.151:8123 ' + LINK_ICON + "</b></div>";
-    box.innerHTML = html;
-  }
-  function renderStorage() {
-    var panel = $id6("hl-storage");
-    var box = $id6("hl-storage-body");
-    if (!panel || !box || !feeds6) {
-      return;
-    }
-    var st = feeds6.storage();
-    var root = $id6("homelab-screen");
-    root.classList.toggle("has-storage", !!st.live);
-    panel.style.display = st.live ? "" : "none";
-    if (!st.live) {
-      return;
-    }
-    var html = "";
-    st.pools.forEach(function(pool) {
-      html += '<div class="hl-row"><span>' + escapeText2(pool.name) + "</span><b>" + Math.round(pool.usedPercent) + "%</b></div>";
-    });
-    st.datastores.forEach(function(ds) {
-      html += '<div class="hl-row"><span>' + escapeText2(ds.name) + "</span><b>" + Math.round(ds.usedPercent) + "%</b></div>";
-    });
     box.innerHTML = html;
   }
   function renderPower() {
     var box = $id6("hl-power-body");
+    var panel = $id6("hl-power");
     if (!box || !feeds6) {
       return;
     }
     var p = feeds6.power();
     var u = feeds6.ups();
-    var panel = $id6("hl-power");
     if (panel) {
       panel.style.display = p.live || u.live ? "" : "none";
     }
     if (!p.live && !u.live) {
       return;
     }
-    var html = '<div class="hl-pgrid">';
-    html += '<div class="hl-pcol"><div class="hl-sub">Homelab draw</div>';
-    html += '<div class="hl-ptotal">' + Math.round(p.total) + "<small>W</small></div>";
-    var max = p.items.reduce(function(a, x) {
-      return Math.max(a, x.watts);
-    }, 1);
-    p.items.forEach(function(x) {
-      html += '<div class="hl-prow"><span>' + escapeText2(x.label) + "</span><b>" + x.watts.toFixed(1) + ' W</b><i style="width:' + Math.max(2, x.watts / max * 100).toFixed(1) + '%"></i></div>';
-    });
-    html += "</div>";
-    html += '<div class="hl-pcol"><div class="hl-sub">UPS</div>';
-    if (u.live) {
-      u.units.forEach(function(x) {
-        var low = x.charge !== null && x.charge < 95;
-        html += '<div class="hl-ups' + (low ? " bad" : "") + '"><div class="hl-ups-head"><b>' + escapeText2(x.label) + "</b><span>" + (x.charge !== null ? Math.round(x.charge) + "%" : "n/a") + '</span></div><div class="hl-ups-bar"><i style="width:' + (x.charge !== null ? Math.max(2, x.charge) : 0) + '%"></i></div><div class="hl-ups-sub">load ' + (x.load !== null ? Math.round(x.load) + "%" : "n/a") + ", in " + (x.volts !== null ? Math.round(x.volts) + " V" : "n/a") + ", runtime not reported</div></div>";
-      });
+    var html = "";
+    if (p.live) {
+      html += '<div class="hl-ptotal">' + Math.round(p.total) + "<small>W</small></div>";
+      var max = p.items.reduce(function(a, x) {
+        return Math.max(a, x.watts);
+      }, 1);
+      html += p.items.map(function(x) {
+        return '<div class="hl-prow"><span>' + esc(x.label) + "</span><b>" + x.watts.toFixed(0) + ' W</b><i style="width:' + Math.max(2, x.watts / max * 100).toFixed(1) + '%"></i></div>';
+      }).join("");
     }
-    html += "</div></div>";
+    if (u.live) {
+      html += u.units.map(function(x) {
+        var low = x.charge !== null && x.charge < 95;
+        return '<div class="hl-ups' + (low ? " bad" : "") + '"><div class="hl-ups-head"><b>' + esc(x.label) + "</b><span>" + (x.charge !== null ? Math.round(x.charge) + "%" : "n/a") + '</span></div><div class="hl-ups-bar"><i style="width:' + (x.charge !== null ? Math.max(2, x.charge) : 0) + '%"></i></div><div class="hl-ups-sub">load ' + (x.load !== null ? Math.round(x.load) + "%" : "n/a") + ", in " + (x.volts !== null ? Math.round(x.volts) + " V" : "n/a") + "</div></div>";
+      }).join("");
+    }
     box.innerHTML = html;
   }
-  function openHost(ip) {
-    selected4 = ip;
-    selectedHistory = null;
-    feeds6.hostHistory(ip).then(function(points) {
-      if (selected4 === ip) {
-        selectedHistory = points;
-        dirty6 = true;
-      }
-    });
-    dirty6 = true;
-    renderDetail4();
-  }
-  function closeDetail() {
-    selected4 = null;
-    selectedHistory = null;
-    var panel = $id6("hl-detail");
+  function renderHa() {
+    var box = $id6("hl-ha-body");
+    var panel = $id6("hl-ha");
+    if (!box || !feeds6) {
+      return;
+    }
+    var ha2 = feeds6.homeAssistant();
     if (panel) {
-      panel.classList.remove("open");
+      panel.style.display = ha2.live ? "" : "none";
     }
-    dirty6 = true;
-  }
-  function renderDetail4() {
-    var panel = $id6("hl-detail");
-    if (!panel || !feeds6) {
+    if (!ha2.live) {
       return;
     }
-    if (!selected4) {
-      panel.classList.remove("open");
-      return;
-    }
-    var host = null;
-    feeds6.hosts().forEach(function(h) {
-      if (h.ip === selected4) {
-        host = h;
-      }
-    });
-    if (!host) {
-      panel.classList.remove("open");
-      return;
-    }
-    panel.classList.add("open");
-    $id6("hl-detail-name").textContent = host.name;
-    $id6("hl-detail-name").className = host.seen ? "" : "bad";
-    $id6("hl-detail-sub").textContent = host.ip;
-    var openBtn = $id6("hl-detail-open");
-    if (openBtn) {
-      if (host.url) {
-        openBtn.style.display = "";
-        openBtn.setAttribute("data-url", host.url);
-        openBtn.setAttribute("title", host.name + "  " + host.url);
-        openBtn.innerHTML = "OPEN " + LINK_ICON;
-      } else {
-        openBtn.style.display = "none";
-      }
-    }
-    var rows2 = [
-      [
-        "Link",
-        host.seen ? "UP" : "NOT SEEN",
-        host.seen ? host.via + (host.port ? " port " + host.port : "") : "",
-        !host.seen
-      ],
-      ["Uptime", duration(host.uptime), "association", false],
-      ["Down now", rate(host.rx), "", false],
-      ["Up now", rate(host.tx), "", false],
-      ["MAC", host.mac || "n/a", "", false],
-      ["Role", host.kind === "pve" ? "Proxmox node" : host.kind === "docker" ? "Docker host" : "Single service host", "", false]
-    ];
-    if (host.stats) {
-      rows2.push(["CPU", Math.round(host.stats.cpu) + "%", "", host.stats.cpu > 85]);
-      rows2.push(["Memory", Math.round(host.stats.memPct) + "%", "", host.stats.memPct > 90]);
-      rows2.push(["Disk", Math.round(host.stats.diskPct) + "%", "", host.stats.diskPct > 90]);
-    }
-    $id6("hl-detail-rows").innerHTML = rows2.map(function(r) {
-      return '<div class="hl-drow' + (r[3] ? " bad" : "") + '"><span>' + escapeText2(r[0]) + "</span><b>" + escapeText2(r[1]) + "</b><i>" + escapeText2(r[2] || "") + "</i></div>";
-    }).join("");
-    var svcBox = $id6("hl-detail-services");
-    if (svcBox) {
-      svcBox.innerHTML = host.services.length ? '<div class="hl-sub">Services on this host</div>' + host.services.map(function(sv) {
-        return '<span class="hl-chip" data-url="' + escapeText2(sv.url) + '" title="' + escapeText2(sv.name + "  " + sv.url) + '">' + escapeText2(sv.name) + " " + LINK_ICON + "</span>";
-      }).join("") : '<div class="hl-sub">No Homepage services on this host</div>';
-    }
-    sizeCanvas3(detailCanvas, dctx);
-    drawDetailChart();
-  }
-  function drawDetailChart() {
-    if (!dctx || !detailCanvas) {
-      return;
-    }
-    var w = detailCanvas.clientWidth, h = detailCanvas.clientHeight;
-    if (!w || !h) {
-      return;
-    }
-    var ctx = dctx;
-    ctx.clearRect(0, 0, w, h);
-    var pts = selectedHistory;
-    if (!pts || pts.length < 2) {
-      ctx.fillStyle = "rgba(191,244,255,.4)";
-      ctx.font = "10px Menlo, Consolas, monospace";
-      ctx.fillText(pts ? "No throughput history" : "Loading history", 6, 16);
-      return;
-    }
-    var left = 44, right = 8, top = 16, bottom = 14;
-    var pw = w - left - right, ph = h - top - bottom;
-    var max = 1;
-    pts.forEach(function(p) {
-      max = Math.max(max, p.rx, p.tx);
-    });
-    max *= 1.15;
-    var t0 = pts[0].t, t1 = pts[pts.length - 1].t;
-    var span = Math.max(1, t1 - t0);
-    var X = function(t) {
-      return left + (t - t0) / span * pw;
+    var row = function(label, value, bad) {
+      return '<div class="hl-harow' + (bad ? " bad" : "") + '"><span>' + esc(label) + "</span><b>" + esc(value) + "</b></div>";
     };
-    var Y = function(v) {
-      return top + ph - v / max * ph;
-    };
-    ctx.font = "9px Menlo, Consolas, monospace";
-    ctx.textAlign = "right";
-    [0, max].forEach(function(v) {
-      var y = Math.floor(Y(v)) + 0.5;
-      ctx.strokeStyle = "rgba(63,224,255,.1)";
-      ctx.beginPath();
-      ctx.moveTo(left, y);
-      ctx.lineTo(w - right, y);
-      ctx.stroke();
-      ctx.fillStyle = "rgba(191,244,255,.5)";
-      var bits = v * 8;
-      ctx.fillText(bits >= 1e6 ? (bits / 1e6).toFixed(1) + "M" : (bits / 1e3).toFixed(0) + "k", left - 3, y + 3);
-    });
-    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
-    grad.addColorStop(0, "rgba(63,224,255,.38)");
-    grad.addColorStop(1, "rgba(63,224,255,.02)");
-    ctx.beginPath();
-    ctx.moveTo(X(pts[0].t), top + ph);
-    pts.forEach(function(p) {
-      ctx.lineTo(X(p.t), Y(p.rx));
-    });
-    ctx.lineTo(X(pts[pts.length - 1].t), top + ph);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-    ctx.beginPath();
-    pts.forEach(function(p, i) {
-      if (i) {
-        ctx.lineTo(X(p.t), Y(p.rx));
-      } else {
-        ctx.moveTo(X(p.t), Y(p.rx));
-      }
-    });
-    ctx.strokeStyle = CYAN3;
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-    ctx.beginPath();
-    pts.forEach(function(p, i) {
-      if (i) {
-        ctx.lineTo(X(p.t), Y(p.tx));
-      } else {
-        ctx.moveTo(X(p.t), Y(p.tx));
-      }
-    });
-    ctx.strokeStyle = ACCENT2;
-    ctx.lineWidth = 1.1;
-    ctx.stroke();
-    ctx.textAlign = "left";
-    ctx.fillStyle = CYAN3;
-    ctx.fillText("DOWN", left + 2, top - 5);
-    ctx.fillStyle = ACCENT2;
-    ctx.fillText("UP", left + 42, top - 5);
+    var html = "";
+    html += row("Core", ha2.version || "n/a", ha2.coreUpdate);
+    html += row("Updates", String(ha2.updates.length), ha2.updates.length > 0);
+    if (ha2.cpu !== null) {
+      html += row("CPU", Math.round(ha2.cpu) + "%", ha2.cpu > 85);
+    }
+    if (ha2.memory !== null) {
+      html += row("RAM", Math.round(ha2.memory) + "%", ha2.memory > 90);
+    }
+    if (ha2.dbSize !== null) {
+      html += row("Database", ha2.dbSize.toFixed(1) + " MB", false);
+    }
+    html += row(
+      "Zigbee",
+      ha2.zigbee.eth && ha2.zigbee.net ? "ONLINE" : "DOWN",
+      !(ha2.zigbee.eth && ha2.zigbee.net)
+    );
+    html += row("Z-Wave dead", String(ha2.zwave.dead.length), ha2.zwave.dead.length > 0);
+    html += row(
+      "Z-Wave faults",
+      String(ha2.zwave.failing.length),
+      ha2.zwave.failing.length > 0
+    );
+    var age = ha2.backups.ageHours;
+    html += row(
+      "Backups",
+      ha2.backups.stale ? "STALE" : age !== null ? Math.round(age) + " h" : ha2.backups.state || "n/a",
+      ha2.backups.stale || age !== null && age > BACKUP_STALE_HOURS
+    );
+    box.innerHTML = html;
   }
   function renderClock6(now) {
     var el = $id6("hl-time");
@@ -57797,58 +57406,22 @@
     }
   }
   function bindControls5() {
-    var root = $id6("homelab-screen");
-    root.addEventListener("click", function(e) {
-      if (e.target.closest("#hl-detail-close")) {
-        closeDetail();
-        return;
-      }
-      var linked = e.target.closest("[data-url]");
-      if (linked) {
-        openUrl(linked.getAttribute("data-url"));
-        return;
-      }
-      var hit = e.target.closest("[data-node]");
-      if (!hit) {
-        return;
-      }
-      var n = layout2.nodes[Number(hit.getAttribute("data-node"))];
-      if (!n) {
-        return;
-      }
-      if (n.kind === "cluster") {
-        expanded = !expanded;
-        dirty6 = true;
-        lastRender6 = 0;
-        buildMap();
-      } else if (n.kind === "service") {
-        openUrl(n.service.url);
-      } else if (n.host) {
-        openHost(n.host.ip);
-      }
-    });
     window.addEventListener("keydown", function(e) {
       if (!active6 || e.key !== "Escape") {
         return;
       }
-      if (selected4) {
-        closeDetail();
-      } else if (expanded) {
-        expanded = false;
-        dirty6 = true;
-        lastRender6 = 0;
-        buildMap();
-      }
+      ["hl-grid", "hl-cards"].forEach(function(id) {
+        var el = $id6(id);
+        if (el) {
+          el.scrollTop = 0;
+        }
+      });
     });
   }
-  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS3, HomelabView, feeds6, active6, built5, dirty6, lastRender6, lastFrame2, resizeTimer6, observer6, svg2, pulseCanvas, pctx2, detailCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, LINK_ICON, DAYS6, MONTHS6, lastClock3;
+  var REFRESH_MS3, HomelabView, feeds6, active6, built5, dirty6, lastRender6, resizeTimer6, DAYS6, MONTHS6, lastClock3;
   var init_HomelabView = __esm({
     "src/HomelabView.js"() {
       init_HomelabFeeds();
-      CYAN3 = "#3fe0ff";
-      ALERT3 = "#ff8a1f";
-      ACCENT2 = "#4dffb0";
-      DIM = "#2aa3bb";
       REFRESH_MS3 = 2500;
       HomelabView = {};
       feeds6 = null;
@@ -57856,29 +57429,12 @@
       built5 = false;
       dirty6 = true;
       lastRender6 = 0;
-      lastFrame2 = 0;
       resizeTimer6 = null;
-      observer6 = null;
-      svg2 = null;
-      pulseCanvas = null;
-      pctx2 = null;
-      detailCanvas = null;
-      dctx = null;
-      expanded = false;
-      selected4 = null;
-      selectedHistory = null;
-      layout2 = { nodes: [], links: [] };
-      pulses = [];
       HomelabView.init = function(ha2) {
         var root = $id6("homelab-screen");
         root.style.display = "grid";
         root.style.visibility = "hidden";
         active6 = true;
-        svg2 = $id6("hl-svg");
-        pulseCanvas = $id6("hl-pulses");
-        pctx2 = pulseCanvas ? pulseCanvas.getContext("2d") : null;
-        detailCanvas = $id6("hl-detail-canvas");
-        dctx = detailCanvas ? detailCanvas.getContext("2d") : null;
         if (!feeds6) {
           feeds6 = new HomelabFeeds(ha2, function() {
             dirty6 = true;
@@ -57889,12 +57445,6 @@
           built5 = true;
           bindControls5();
         }
-        watchPanels6();
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            HomelabView.resize();
-          });
-        });
         dirty6 = true;
       };
       HomelabView.show = function() {
@@ -57902,7 +57452,8 @@
         var root = $id6("homelab-screen");
         root.style.display = "grid";
         root.style.visibility = "visible";
-        HomelabView.resize();
+        dirty6 = true;
+        lastRender6 = 0;
       };
       HomelabView.hide = function() {
         active6 = false;
@@ -57919,31 +57470,19 @@
           return;
         }
         var now = Date.now();
-        var dt = lastFrame2 ? Math.min((now - lastFrame2) / 1e3, 0.1) : 0;
-        lastFrame2 = now;
         renderClock6(now);
-        stepPulses(dt);
         if (dirty6 && now - lastRender6 > REFRESH_MS3) {
           lastRender6 = now;
           dirty6 = false;
-          buildMap();
-          renderStatus4();
-          renderServices();
-          renderHa();
-          renderStorage();
+          renderCards();
+          renderGrid();
+          renderCounts();
           renderPower();
-          renderDetail4();
+          renderHa();
         }
       };
       HomelabView.resize = function() {
-        if (!active6) {
-          return;
-        }
-        sizeCanvas3(pulseCanvas, pctx2);
-        sizeCanvas3(detailCanvas, dctx);
         dirty6 = true;
-        lastRender6 = 0;
-        buildMap();
       };
       HomelabView.resizeDebounced = function() {
         if (resizeTimer6) {
@@ -57954,7 +57493,6 @@
           HomelabView.resize();
         }, 150);
       };
-      LINK_ICON = "\u2197";
       DAYS6 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       MONTHS6 = [
         "January",
@@ -58548,14 +58086,14 @@
           wireless: g("unpoller_topology_connections_wireless")
         };
       };
-      NetworkFeeds.prototype.topology = function(expanded3) {
+      NetworkFeeds.prototype.topology = function(expanded2) {
         var devices = this.devices();
         var clients = this.clients();
         var wans = this.wans();
         var nodes = [];
         var links = [];
         var index = {};
-        expanded3 = expanded3 || {};
+        expanded2 = expanded2 || {};
         function node(id, label, kind, col, extra) {
           if (index[id] === void 0) {
             index[id] = nodes.length;
@@ -58609,7 +58147,7 @@
           link(from === void 0 ? gw : from, ai, { kind: "infra", rate: 0 });
         });
         this.subnets().forEach(function(g) {
-          var open = !!expanded3[g.key];
+          var open = !!expanded2[g.key];
           if (!open) {
             var ci = node(
               "sub:" + g.key,
@@ -58689,21 +58227,21 @@
   function pad7(n) {
     return String(n).length < 2 ? "0" + n : String(n);
   }
-  function watchPanels7() {
-    if (observer7 || typeof ResizeObserver === "undefined") {
+  function watchPanels6() {
+    if (observer6 || typeof ResizeObserver === "undefined") {
       return;
     }
-    observer7 = new ResizeObserver(function() {
+    observer6 = new ResizeObserver(function() {
       NetworkView.resizeDebounced();
     });
     ["nw-map", "nw-wan", "nw-detail"].forEach(function(id) {
       var el = $id7(id);
       if (el) {
-        observer7.observe(el);
+        observer6.observe(el);
       }
     });
   }
-  function sizeCanvas4(canvas, ctx) {
+  function sizeCanvas3(canvas, ctx) {
     if (!canvas || !ctx) {
       return;
     }
@@ -58747,28 +58285,28 @@
     }
     return m + "m";
   }
-  function escapeText3(s) {
+  function escapeText2(s) {
     return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
   function buildTopology() {
     var host = $id7("nw-map-body");
-    if (!host || !svg3 || !feeds7) {
+    if (!host || !svg2 || !feeds7) {
       return;
     }
     var w = host.clientWidth, h = host.clientHeight;
     if (!w || !h) {
       return;
     }
-    svg3.setAttribute("viewBox", "0 0 " + w + " " + h);
-    svg3.setAttribute("width", w);
-    svg3.setAttribute("height", h);
+    svg2.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg2.setAttribute("width", w);
+    svg2.setAttribute("height", h);
     if (!feeds7.ready) {
-      svg3.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="nw-empty">' + (feeds7.error ? "PROMETHEUS UNREACHABLE" : "QUERYING PROMETHEUS") + "</text>";
-      layout3 = { nodes: [], links: [], w, h };
-      pulses2 = [];
+      svg2.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="nw-empty">' + (feeds7.error ? "PROMETHEUS UNREACHABLE" : "QUERYING PROMETHEUS") + "</text>";
+      layout2 = { nodes: [], links: [], w, h };
+      pulses = [];
       return;
     }
-    var graph = feeds7.topology(expanded2);
+    var graph = feeds7.topology(expanded);
     var nodes = graph.nodes;
     var links = graph.links;
     var padX = Math.max(46, Math.min(84, w * 0.055));
@@ -58807,7 +58345,7 @@
       var share = (l.rate || 0) / maxRate;
       var isStandbyWan = l.kind === "wan" && !l.active;
       var hot = l.kind === "wan" && l.active && l.wan && l.wan.group !== "WAN" || l.isNew;
-      var colour = hot ? ALERT4 : isStandbyWan ? DIM2 : CYAN4;
+      var colour = hot ? ALERT3 : isStandbyWan ? DIM : CYAN3;
       var width = isStandbyWan ? 1 : Math.max(1.2, 1.2 + Math.sqrt(share) * 5.5);
       var opacity = isStandbyWan ? 0.3 : 0.3 + 0.55 * Math.sqrt(share);
       if (isStandbyWan) {
@@ -58825,37 +58363,37 @@
       var gapLeft = ci > 0 ? (COL_AT[ci] - COL_AT[ci - 1]) * usable : padX;
       var gapRight = ci < COL_AT.length - 1 ? (COL_AT[ci + 1] - COL_AT[ci]) * usable : w - n.x;
       var room2 = (ci >= 5 ? gapLeft : gapRight) * 0.5 - 26;
-      parts.push(nodeMarkup2(n, i, fontPx, charW, Math.max(36, room2)));
+      parts.push(nodeMarkup(n, i, fontPx, charW, Math.max(36, room2)));
     });
-    svg3.innerHTML = parts.join("");
-    layout3 = { nodes, links, w, h };
-    seedPulses2(links, maxRate);
+    svg2.innerHTML = parts.join("");
+    layout2 = { nodes, links, w, h };
+    seedPulses(links, maxRate);
     renderFailoverBanner();
   }
   function curve(a, b) {
     var mx = (a.x + b.x) / 2;
     return "M" + a.x + "," + a.y + "C" + mx + "," + a.y + " " + mx + "," + b.y + " " + b.x + "," + b.y;
   }
-  function nodeMarkup2(n, i, fontPx, charW, room2) {
+  function nodeMarkup(n, i, fontPx, charW, room2) {
     var r = n.kind === "internet" ? 7 : n.kind === "gateway" ? 9 : n.kind === "cluster" ? 10 : n.kind === "client" ? 3.4 : 6.5;
     var bad = false;
-    var colour = CYAN4;
+    var colour = CYAN3;
     if (n.kind === "internet") {
-      colour = ACCENT3;
+      colour = ACCENT2;
     }
     if (n.kind === "wan") {
-      colour = n.wan && n.wan.active ? n.wan.group === "WAN" ? ACCENT3 : ALERT4 : DIM2;
+      colour = n.wan && n.wan.active ? n.wan.group === "WAN" ? ACCENT2 : ALERT3 : DIM;
     }
     if (n.kind === "cluster" && n.isNew > 0) {
-      colour = ALERT4;
+      colour = ALERT3;
       bad = true;
     }
     if (n.kind === "client" && n.client && n.client.isNew) {
-      colour = ALERT4;
+      colour = ALERT3;
       bad = true;
     }
     if (n.device && n.device.type === "usw" && n.device.portsUp === 0) {
-      colour = ALERT4;
+      colour = ALERT3;
       bad = true;
     }
     var label = n.label;
@@ -58865,7 +58403,7 @@
     var above = n.kind === "gateway";
     var right = n.col >= 5;
     var tx = above ? n.x : right ? n.x - r - 5 : n.x + r + 5;
-    var anchor = above ? "middle" : right ? "end" : "start";
+    var anchor2 = above ? "middle" : right ? "end" : "start";
     var maxChars = Math.floor(room2 / charW);
     if (label.length > maxChars && maxChars > 4) {
       label = label.slice(0, maxChars - 1) + "\u2026";
@@ -58894,9 +58432,9 @@
     if (above) {
       y1 = n.y - r - fontPx * 0.7;
     }
-    return shape + '<text class="nw-label nw-label-' + n.kind + (bad ? " bad" : "") + '" x="' + tx + '" y="' + y1 + '" text-anchor="' + anchor + '" dominant-baseline="' + (above ? "auto" : "middle") + '" data-node="' + i + '"><tspan class="nw-label-name" x="' + tx + '">' + escapeText3(label) + "</tspan>" + (sub ? '<tspan class="nw-label-sub" x="' + tx + '" dy="' + (fontPx * 1.06).toFixed(1) + '">' + escapeText3(sub) + "</tspan>" : "") + "</text>";
+    return shape + '<text class="nw-label nw-label-' + n.kind + (bad ? " bad" : "") + '" x="' + tx + '" y="' + y1 + '" text-anchor="' + anchor2 + '" dominant-baseline="' + (above ? "auto" : "middle") + '" data-node="' + i + '"><tspan class="nw-label-name" x="' + tx + '">' + escapeText2(label) + "</tspan>" + (sub ? '<tspan class="nw-label-sub" x="' + tx + '" dy="' + (fontPx * 1.06).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
   }
-  function samplePath3(d, n) {
+  function samplePath2(d, n) {
     var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
     el.setAttribute("d", d);
     var len = 0;
@@ -58915,13 +58453,13 @@
     }
     return { pts, len, n };
   }
-  function seedPulses2(links, maxRate) {
-    pulses2 = [];
+  function seedPulses(links, maxRate) {
+    pulses = [];
     links.forEach(function(l, i) {
       if (l._standby) {
         return;
       }
-      var sampled = samplePath3(l._d, 30);
+      var sampled = samplePath2(l._d, 30);
       if (!sampled) {
         return;
       }
@@ -58933,7 +58471,7 @@
       var count2 = Math.max(1, Math.round(1 + 7 * Math.sqrt(share)));
       var speed = 30 + 150 * Math.sqrt(share);
       for (var k = 0; k < count2; k++) {
-        pulses2.push({
+        pulses.push({
           link: i,
           at: Math.random(),
           speed: speed * (0.85 + Math.random() * 0.3),
@@ -58943,22 +58481,22 @@
       }
     });
   }
-  function stepPulses2(dt) {
-    if (!pctx3 || !pulseCanvas2) {
+  function stepPulses(dt) {
+    if (!pctx2 || !pulseCanvas) {
       return;
     }
-    var w = pulseCanvas2.clientWidth, h = pulseCanvas2.clientHeight;
+    var w = pulseCanvas.clientWidth, h = pulseCanvas.clientHeight;
     if (!w || !h) {
       return;
     }
-    pctx3.clearRect(0, 0, w, h);
-    if (!pulses2.length || !layout3.links.length) {
+    pctx2.clearRect(0, 0, w, h);
+    if (!pulses.length || !layout2.links.length) {
       return;
     }
-    pctx3.globalCompositeOperation = "lighter";
-    for (var i = 0; i < pulses2.length; i++) {
-      var p = pulses2[i];
-      var l = layout3.links[p.link];
+    pctx2.globalCompositeOperation = "lighter";
+    for (var i = 0; i < pulses.length; i++) {
+      var p = pulses[i];
+      var l = layout2.links[p.link];
       if (!l || !l._path) {
         continue;
       }
@@ -58978,12 +58516,12 @@
       var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
       var edge = Math.min(p.at, 1 - p.at);
       var alpha = Math.min(1, edge / 0.07) * 0.85;
-      pctx3.beginPath();
-      pctx3.arc(x, y, p.size, 0, Math.PI * 2);
-      pctx3.fillStyle = p.hot ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
-      pctx3.fill();
+      pctx2.beginPath();
+      pctx2.arc(x, y, p.size, 0, Math.PI * 2);
+      pctx2.fillStyle = p.hot ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
+      pctx2.fill();
     }
-    pctx3.globalCompositeOperation = "source-over";
+    pctx2.globalCompositeOperation = "source-over";
   }
   function renderFailoverBanner() {
     var el = $id7("nw-failover");
@@ -58996,9 +58534,9 @@
       return;
     }
     el.style.display = "flex";
-    el.innerHTML = "<b>FAILOVER ACTIVE</b><span>Running on " + escapeText3(f.on ? f.on.name : "the backup line") + ". " + escapeText3(f.primary ? f.primary.name : "The primary") + " is not carrying traffic.</span>";
+    el.innerHTML = "<b>FAILOVER ACTIVE</b><span>Running on " + escapeText2(f.on ? f.on.name : "the backup line") + ". " + escapeText2(f.primary ? f.primary.name : "The primary") + " is not carrying traffic.</span>";
   }
-  function stat5(id, value, sub, bad) {
+  function stat4(id, value, sub, bad) {
     var el = $id7(id);
     if (!el) {
       return;
@@ -59010,7 +58548,7 @@
     }
     el.className = "nw-stat" + (bad ? " bad" : "");
   }
-  function renderStatus5() {
+  function renderStatus4() {
     if (!feeds7) {
       return;
     }
@@ -59021,25 +58559,25 @@
       return w.active;
     })[0];
     var f = feeds7.failover();
-    stat5(
+    stat4(
       "nw-stat-wan",
       activeWan ? activeWan.short : "--",
       activeWan ? activeWan.name.replace(/^(Primary|Secondary)\s*\([^)]*\)\s*/, "") : "No active line",
       f.active
     );
-    stat5(
+    stat4(
       "nw-stat-down",
       activeWan ? rate2(activeWan.rx) : "--",
       "Down, up " + (activeWan ? rate2(activeWan.tx) : "n/a"),
       false
     );
-    stat5(
+    stat4(
       "nw-stat-latency",
       site.latencyMs === null || site.latencyMs === void 0 ? "--" : Math.round(site.latencyMs) + " ms",
       "Latency" + (site.loss !== null && site.loss !== void 0 ? ", loss " + site.loss.toFixed(2) + "%" : ""),
       !!site.latencyHigh
     );
-    stat5(
+    stat4(
       "nw-stat-clients",
       String(counts.total),
       counts.wired + " wired, " + counts.wireless + " wireless" + (counts.isNew ? ", " + counts.isNew + " new" : ""),
@@ -59060,7 +58598,7 @@
     box.innerHTML = wans.map(function(w) {
       var cls = w.active ? w.group === "WAN" ? "on" : "on failover" : "standby";
       var provider = w.providerDown ? (w.providerDown / 1e3).toFixed(0) + " / " + (w.providerUp / 1e3).toFixed(0) + " Mb/s provisioned" : "No provisioned rate";
-      return '<div class="nw-wan-line ' + cls + '"><div class="nw-wan-head"><b>' + escapeText3(w.short) + '</b><span class="nw-wan-name">' + escapeText3(w.name) + '</span><i class="nw-wan-state">' + escapeText3(w.state) + '</i></div><div class="nw-wan-rates"><span><i>DOWN</i>' + (w.active ? rate2(w.rx) : "idle") + "</span><span><i>UP</i>" + (w.active ? rate2(w.tx) : "idle") + "</span><span><i>SPEEDTEST</i>" + (w.latency ? Math.round(w.latency) + " ms" : "n/a") + "</span><span><i>UPTIME</i>" + (w.uptimePercent >= 0 ? w.uptimePercent.toFixed(2) + "%" : "n/a") + '</span></div><div class="nw-wan-sub">' + escapeText3(provider) + ", priority " + (w.priority || "n/a") + "</div></div>";
+      return '<div class="nw-wan-line ' + cls + '"><div class="nw-wan-head"><b>' + escapeText2(w.short) + '</b><span class="nw-wan-name">' + escapeText2(w.name) + '</span><i class="nw-wan-state">' + escapeText2(w.state) + '</i></div><div class="nw-wan-rates"><span><i>DOWN</i>' + (w.active ? rate2(w.rx) : "idle") + "</span><span><i>UP</i>" + (w.active ? rate2(w.tx) : "idle") + "</span><span><i>SPEEDTEST</i>" + (w.latency ? Math.round(w.latency) + " ms" : "n/a") + "</span><span><i>UPTIME</i>" + (w.uptimePercent >= 0 ? w.uptimePercent.toFixed(2) + "%" : "n/a") + '</span></div><div class="nw-wan-sub">' + escapeText2(provider) + ", priority " + (w.priority || "n/a") + "</div></div>";
     }).join("");
     var loss = $id7("nw-wan-loss");
     if (loss) {
@@ -59147,7 +58685,7 @@
         ctx.moveTo(X(p.t), Y(p.rx));
       }
     });
-    ctx.strokeStyle = CYAN4;
+    ctx.strokeStyle = CYAN3;
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.beginPath();
@@ -59158,13 +58696,13 @@
         ctx.moveTo(X(p.t), Y(p.tx));
       }
     });
-    ctx.strokeStyle = ACCENT3;
+    ctx.strokeStyle = ACCENT2;
     ctx.lineWidth = 1.1;
     ctx.stroke();
     ctx.textAlign = "left";
-    ctx.fillStyle = CYAN4;
+    ctx.fillStyle = CYAN3;
     ctx.fillText("DOWN", left + 2, top - 5);
-    ctx.fillStyle = ACCENT3;
+    ctx.fillStyle = ACCENT2;
     ctx.fillText("UP", left + 42, top - 5);
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(191,244,255,.45)";
@@ -59194,7 +58732,7 @@
       var max = top[0].total || 1;
       html += top.map(function(c2) {
         var pc = Math.max(2, c2.total / max * 100);
-        return '<div class="nw-row' + (c2.isNew ? " bad" : "") + '" data-client="' + escapeText3(c2.mac) + '"><span class="nw-row-name">' + escapeText3(c2.name) + '</span><span class="nw-row-val">' + rate2(c2.total) + '</span><span class="nw-row-sub">' + escapeText3(c2.ip) + " " + (c2.wired ? "wired" : c2.band || "wireless") + '</span><span class="nw-row-track"><i style="width:' + pc.toFixed(1) + '%"></i></span></div>';
+        return '<div class="nw-row' + (c2.isNew ? " bad" : "") + '" data-client="' + escapeText2(c2.mac) + '"><span class="nw-row-name">' + escapeText2(c2.name) + '</span><span class="nw-row-val">' + rate2(c2.total) + '</span><span class="nw-row-sub">' + escapeText2(c2.ip) + " " + (c2.wired ? "wired" : c2.band || "wireless") + '</span><span class="nw-row-track"><i style="width:' + pc.toFixed(1) + '%"></i></span></div>';
       }).join("");
     }
     html += '<div class="nw-sub-head' + (fresh.length ? " bad" : "") + '">New in the last 24 hours' + (fresh.length ? " (" + fresh.length + ")" : "") + "</div>";
@@ -59202,7 +58740,7 @@
       html += '<div class="nw-wait">None</div>';
     } else {
       html += fresh.slice(0, 8).map(function(c2) {
-        return '<div class="nw-row bad" data-client="' + escapeText3(c2.mac) + '"><span class="nw-row-name">' + escapeText3(c2.name) + '</span><span class="nw-row-val">' + duration2(c2.uptime) + '</span><span class="nw-row-sub">' + escapeText3(c2.ip) + " " + escapeText3(c2.oui || (c2.wired ? "wired" : "wireless")) + "</span></div>";
+        return '<div class="nw-row bad" data-client="' + escapeText2(c2.mac) + '"><span class="nw-row-name">' + escapeText2(c2.name) + '</span><span class="nw-row-val">' + duration2(c2.uptime) + '</span><span class="nw-row-sub">' + escapeText2(c2.ip) + " " + escapeText2(c2.oui || (c2.wired ? "wired" : "wireless")) + "</span></div>";
       }).join("");
     }
     box.innerHTML = html;
@@ -59223,7 +58761,7 @@
     }).forEach(function(sw) {
       var budget = sw.poeBudget || 0;
       var pc = budget > 0 ? sw.poeUsed / budget * 100 : 0;
-      html += '<div class="nw-dev" data-device="' + escapeText3(sw.name) + '"><div class="nw-dev-head"><b>' + escapeText3(sw.name) + "</b><span>" + escapeText3(sw.model) + "</span><i>" + sw.portsUp + (sw.portsTotal ? " / " + sw.portsTotal : "") + " ports up</i></div>";
+      html += '<div class="nw-dev" data-device="' + escapeText2(sw.name) + '"><div class="nw-dev-head"><b>' + escapeText2(sw.name) + "</b><span>" + escapeText2(sw.model) + "</span><i>" + sw.portsUp + (sw.portsTotal ? " / " + sw.portsTotal : "") + " ports up</i></div>";
       if (budget > 0) {
         html += '<div class="nw-poe"><span>PoE ' + sw.poeUsed.toFixed(1) + " of " + budget + ' W</span><span class="nw-poe-track"><i style="width:' + Math.min(100, pc).toFixed(1) + '%"></i></span></div>';
       } else {
@@ -59240,21 +58778,21 @@
         var cls = !port ? "off" : port.poe > 0 ? "poe" : "up";
         var speed = port ? port.speed >= 1e9 ? port.speed / 1e9 + "G" : Math.round(port.speed / 1e6) + "M" : "down";
         var title = "Port " + i + ": " + (port ? speed + (port.poe > 0 ? ", PoE " + port.poe.toFixed(1) + " W" : "") : "no link");
-        html += '<i class="nw-port ' + cls + '" title="' + escapeText3(title) + '">' + i + "</i>";
+        html += '<i class="nw-port ' + cls + '" title="' + escapeText2(title) + '">' + i + "</i>";
       }
       html += "</div></div>";
     });
     devices.filter(function(d) {
       return d.type === "uap";
     }).forEach(function(ap) {
-      html += '<div class="nw-dev" data-device="' + escapeText3(ap.name) + '"><div class="nw-dev-head"><b>' + escapeText3(ap.name) + "</b><span>" + escapeText3(ap.model) + "</span><i>" + (ap.stations || 0) + " clients</i></div>";
+      html += '<div class="nw-dev" data-device="' + escapeText2(ap.name) + '"><div class="nw-dev-head"><b>' + escapeText2(ap.name) + "</b><span>" + escapeText2(ap.model) + "</span><i>" + (ap.stations || 0) + " clients</i></div>";
       if (!ap.radios.length) {
         html += '<div class="nw-wait">No radio data</div>';
       } else {
         html += '<div class="nw-radios">' + ap.radios.map(function(r) {
           var util = r.utilization !== void 0 && r.utilization !== null ? Math.round(r.utilization * 100) + "%" : "n/a";
           var high = r.utilization > 0.7;
-          return '<span class="nw-radio' + (high ? " bad" : "") + '"><b>' + escapeText3(r.band) + "</b>ch " + (r.channel || "n/a") + ", " + (r.stations || 0) + " cl, util " + util + "</span>";
+          return '<span class="nw-radio' + (high ? " bad" : "") + '"><b>' + escapeText2(r.band) + "</b>ch " + (r.channel || "n/a") + ", " + (r.stations || 0) + " cl, util " + util + "</span>";
         }).join("") + "</div>";
       }
       html += "</div>";
@@ -59272,47 +58810,47 @@
     if (!found) {
       return;
     }
-    selected5 = { kind: "client", id: mac };
-    selectedHistory2 = null;
+    selected4 = { kind: "client", id: mac };
+    selectedHistory = null;
     feeds7.clientHistory(mac).then(function(points) {
-      if (selected5 && selected5.id === mac) {
-        selectedHistory2 = points;
+      if (selected4 && selected4.id === mac) {
+        selectedHistory = points;
         dirty7 = true;
       }
     });
     dirty7 = true;
-    renderDetail5();
+    renderDetail4();
   }
   function openDevice2(name) {
-    selected5 = { kind: "device", id: name };
-    selectedHistory2 = null;
+    selected4 = { kind: "device", id: name };
+    selectedHistory = null;
     dirty7 = true;
-    renderDetail5();
+    renderDetail4();
   }
-  function closeDetail2() {
-    selected5 = null;
-    selectedHistory2 = null;
+  function closeDetail() {
+    selected4 = null;
+    selectedHistory = null;
     var panel = $id7("nw-detail");
     if (panel) {
       panel.classList.remove("open");
     }
     dirty7 = true;
   }
-  function renderDetail5() {
+  function renderDetail4() {
     var panel = $id7("nw-detail");
     if (!panel || !feeds7) {
       return;
     }
-    if (!selected5) {
+    if (!selected4) {
       panel.classList.remove("open");
       return;
     }
     var rows2 = [];
     var title = "", sub = "", bad = false;
-    if (selected5.kind === "client") {
+    if (selected4.kind === "client") {
       var c2 = null;
       feeds7.clients().forEach(function(x) {
-        if (x.mac === selected5.id) {
+        if (x.mac === selected4.id) {
           c2 = x;
         }
       });
@@ -59348,7 +58886,7 @@
     } else {
       var d = null;
       feeds7.devices().forEach(function(x) {
-        if (x.name === selected5.id) {
+        if (x.name === selected4.id) {
           d = x;
         }
       });
@@ -59378,26 +58916,26 @@
     $id7("nw-detail-rows").innerHTML = rows2.map(function(r) {
       var note = r[2] || "";
       var hot = /NEW IN|UPDATE AVAILABLE/.test(note);
-      return '<div class="nw-drow' + (hot ? " bad" : "") + '"><span>' + escapeText3(r[0]) + "</span><b>" + escapeText3(r[1]) + "</b><i>" + escapeText3(note) + "</i></div>";
+      return '<div class="nw-drow' + (hot ? " bad" : "") + '"><span>' + escapeText2(r[0]) + "</span><b>" + escapeText2(r[1]) + "</b><i>" + escapeText2(note) + "</i></div>";
     }).join("");
-    sizeCanvas4(devCanvas, dctx2);
-    drawDetailChart2();
+    sizeCanvas3(devCanvas, dctx);
+    drawDetailChart();
   }
-  function drawDetailChart2() {
-    if (!dctx2 || !devCanvas) {
+  function drawDetailChart() {
+    if (!dctx || !devCanvas) {
       return;
     }
     var w = devCanvas.clientWidth, h = devCanvas.clientHeight;
     if (!w || !h) {
       return;
     }
-    var ctx = dctx2;
+    var ctx = dctx;
     ctx.clearRect(0, 0, w, h);
-    var pts = selectedHistory2;
+    var pts = selectedHistory;
     if (!pts || pts.length < 2) {
       ctx.fillStyle = "rgba(191,244,255,.4)";
       ctx.font = "10px Menlo, Consolas, monospace";
-      ctx.fillText(selected5 && selected5.kind === "device" ? "Per device history is not collected" : pts ? "No traffic history" : "Loading history", 6, 16);
+      ctx.fillText(selected4 && selected4.kind === "device" ? "Per device history is not collected" : pts ? "No traffic history" : "Loading history", 6, 16);
       return;
     }
     var left = 44, right = 8, top = 16, bottom = 14;
@@ -59448,7 +58986,7 @@
         ctx.moveTo(X(p.t), Y(p.rx));
       }
     });
-    ctx.strokeStyle = CYAN4;
+    ctx.strokeStyle = CYAN3;
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.beginPath();
@@ -59459,13 +58997,13 @@
         ctx.moveTo(X(p.t), Y(p.tx));
       }
     });
-    ctx.strokeStyle = ACCENT3;
+    ctx.strokeStyle = ACCENT2;
     ctx.lineWidth = 1.1;
     ctx.stroke();
     ctx.textAlign = "left";
-    ctx.fillStyle = CYAN4;
+    ctx.fillStyle = CYAN3;
     ctx.fillText("DOWN", left + 2, top - 5);
-    ctx.fillStyle = ACCENT3;
+    ctx.fillStyle = ACCENT2;
     ctx.fillText("UP", left + 42, top - 5);
   }
   function renderClock7(now) {
@@ -59488,13 +59026,13 @@
   }
   function nodeAt2(target) {
     var i = target.getAttribute("data-node");
-    return i === null ? null : layout3.nodes[Number(i)];
+    return i === null ? null : layout2.nodes[Number(i)];
   }
   function bindControls6() {
     var root = $id7("network-screen");
     root.addEventListener("click", function(e) {
       if (e.target.closest("#nw-detail-close")) {
-        closeDetail2();
+        closeDetail();
         return;
       }
       var row = e.target.closest("[data-client]");
@@ -59516,7 +59054,7 @@
         return;
       }
       if (n.kind === "cluster") {
-        expanded2[n.subnet.key] = !expanded2[n.subnet.key];
+        expanded[n.subnet.key] = !expanded[n.subnet.key];
         dirty7 = true;
         lastRender7 = 0;
         buildTopology();
@@ -59530,14 +59068,14 @@
       if (!active7 || e.key !== "Escape") {
         return;
       }
-      if (selected5) {
-        closeDetail2();
+      if (selected4) {
+        closeDetail();
       } else {
-        var any = Object.keys(expanded2).some(function(k) {
-          return expanded2[k];
+        var any = Object.keys(expanded).some(function(k) {
+          return expanded[k];
         });
         if (any) {
-          expanded2 = {};
+          expanded = {};
           dirty7 = true;
           lastRender7 = 0;
           buildTopology();
@@ -59545,14 +59083,14 @@
       }
     });
   }
-  var CYAN4, ALERT4, ACCENT3, DIM2, REFRESH_MS4, NetworkView, feeds7, active7, built6, dirty7, lastRender7, lastFrame3, resizeTimer7, observer7, svg3, pulseCanvas2, pctx3, wanCanvas, wctx, devCanvas, dctx2, expanded2, selected5, selectedHistory2, layout3, pulses2, DAYS7, MONTHS7, lastClock4;
+  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS4, NetworkView, feeds7, active7, built6, dirty7, lastRender7, lastFrame2, resizeTimer7, observer6, svg2, pulseCanvas, pctx2, wanCanvas, wctx, devCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, DAYS7, MONTHS7, lastClock4;
   var init_NetworkView = __esm({
     "src/NetworkView.js"() {
       init_NetworkFeeds();
-      CYAN4 = "#3fe0ff";
-      ALERT4 = "#ff8a1f";
-      ACCENT3 = "#4dffb0";
-      DIM2 = "#2aa3bb";
+      CYAN3 = "#3fe0ff";
+      ALERT3 = "#ff8a1f";
+      ACCENT2 = "#4dffb0";
+      DIM = "#2aa3bb";
       REFRESH_MS4 = 2e3;
       NetworkView = {};
       feeds7 = null;
@@ -59560,33 +59098,33 @@
       built6 = false;
       dirty7 = true;
       lastRender7 = 0;
-      lastFrame3 = 0;
+      lastFrame2 = 0;
       resizeTimer7 = null;
-      observer7 = null;
-      svg3 = null;
-      pulseCanvas2 = null;
-      pctx3 = null;
+      observer6 = null;
+      svg2 = null;
+      pulseCanvas = null;
+      pctx2 = null;
       wanCanvas = null;
       wctx = null;
       devCanvas = null;
-      dctx2 = null;
-      expanded2 = {};
-      selected5 = null;
-      selectedHistory2 = null;
-      layout3 = { nodes: [], links: [], w: 0, h: 0 };
-      pulses2 = [];
+      dctx = null;
+      expanded = {};
+      selected4 = null;
+      selectedHistory = null;
+      layout2 = { nodes: [], links: [], w: 0, h: 0 };
+      pulses = [];
       NetworkView.init = function() {
         var root = $id7("network-screen");
         root.style.display = "grid";
         root.style.visibility = "hidden";
         active7 = true;
-        svg3 = $id7("nw-svg");
-        pulseCanvas2 = $id7("nw-pulses");
-        pctx3 = pulseCanvas2 ? pulseCanvas2.getContext("2d") : null;
+        svg2 = $id7("nw-svg");
+        pulseCanvas = $id7("nw-pulses");
+        pctx2 = pulseCanvas ? pulseCanvas.getContext("2d") : null;
         wanCanvas = $id7("nw-wan-canvas");
         wctx = wanCanvas ? wanCanvas.getContext("2d") : null;
         devCanvas = $id7("nw-detail-canvas");
-        dctx2 = devCanvas ? devCanvas.getContext("2d") : null;
+        dctx = devCanvas ? devCanvas.getContext("2d") : null;
         if (!feeds7) {
           feeds7 = new NetworkFeeds(function() {
             dirty7 = true;
@@ -59597,7 +59135,7 @@
           built6 = true;
           bindControls6();
         }
-        watchPanels7();
+        watchPanels6();
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
             NetworkView.resize();
@@ -59626,28 +59164,28 @@
           return;
         }
         var now = Date.now();
-        var dt = lastFrame3 ? Math.min((now - lastFrame3) / 1e3, 0.1) : 0;
-        lastFrame3 = now;
+        var dt = lastFrame2 ? Math.min((now - lastFrame2) / 1e3, 0.1) : 0;
+        lastFrame2 = now;
         renderClock7(now);
-        stepPulses2(dt);
+        stepPulses(dt);
         if (dirty7 && now - lastRender7 > REFRESH_MS4) {
           lastRender7 = now;
           dirty7 = false;
           buildTopology();
-          renderStatus5();
+          renderStatus4();
           renderWan();
           renderClients();
           renderInfra();
-          renderDetail5();
+          renderDetail4();
         }
       };
       NetworkView.resize = function() {
         if (!active7) {
           return;
         }
-        sizeCanvas4(pulseCanvas2, pctx3);
-        sizeCanvas4(wanCanvas, wctx);
-        sizeCanvas4(devCanvas, dctx2);
+        sizeCanvas3(pulseCanvas, pctx2);
+        sizeCanvas3(wanCanvas, wctx);
+        sizeCanvas3(devCanvas, dctx);
         dirty7 = true;
         lastRender7 = 0;
         buildTopology();
@@ -63767,11 +63305,11 @@
           color.hook(stepHooks);
           jQuery2.cssHooks.borderColor = {
             expand: function(value) {
-              var expanded3 = {};
+              var expanded2 = {};
               each(["Top", "Right", "Bottom", "Left"], function(i, part) {
-                expanded3["border" + part + "Color"] = value;
+                expanded2["border" + part + "Color"] = value;
               });
-              return expanded3;
+              return expanded2;
             }
           };
           colors = jQuery2.Color.names = {
@@ -68456,13 +67994,13 @@
             }
           },
           refresh: function() {
-            var menus, icon = this.options.icons.submenu, submenus = this.element.find(this.options.menus);
+            var menus, icon2 = this.options.icons.submenu, submenus = this.element.find(this.options.menus);
             submenus.filter(":not(.ui-menu)").addClass("ui-menu ui-widget ui-widget-content ui-corner-all").hide().attr({
               role: this.options.role,
               "aria-hidden": "true",
               "aria-expanded": "false"
             }).each(function() {
-              var menu = $2(this), item2 = menu.prev("a"), submenuCarat = $2("<span>").addClass("ui-menu-icon ui-icon " + icon).data("ui-menu-submenu-carat", true);
+              var menu = $2(this), item2 = menu.prev("a"), submenuCarat = $2("<span>").addClass("ui-menu-icon ui-icon " + icon2).data("ui-menu-submenu-carat", true);
               item2.attr("aria-haspopup", "true").prepend(submenuCarat);
               menu.attr("aria-labelledby", item2.attr("id"));
             });
@@ -69938,8 +69476,8 @@
         function getNextTabId() {
           return ++tabId;
         }
-        function isLocal(anchor) {
-          return anchor.hash.length > 1 && decodeURIComponent(anchor.href.replace(rhash, "")) === decodeURIComponent(location.href.replace(rhash, ""));
+        function isLocal(anchor2) {
+          return anchor2.hash.length > 1 && decodeURIComponent(anchor2.href.replace(rhash, "")) === decodeURIComponent(location.href.replace(rhash, ""));
         }
         $2.widget("ui.tabs", {
           version: "1.10.3",
@@ -70198,10 +69736,10 @@
               tabIndex: -1
             });
             this.panels = $2();
-            this.anchors.each(function(i, anchor) {
-              var selector, panel, panelId, anchorId = $2(anchor).uniqueId().attr("id"), tab = $2(anchor).closest("li"), originalAriaControls = tab.attr("aria-controls");
-              if (isLocal(anchor)) {
-                selector = anchor.hash;
+            this.anchors.each(function(i, anchor2) {
+              var selector, panel, panelId, anchorId = $2(anchor2).uniqueId().attr("id"), tab = $2(anchor2).closest("li"), originalAriaControls = tab.attr("aria-controls");
+              if (isLocal(anchor2)) {
+                selector = anchor2.hash;
                 panel = that.element.find(that._sanitizeSelector(selector));
               } else {
                 panelId = that._tabId(tab);
@@ -70295,7 +69833,7 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active9 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active9[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active9.length ? $2() : this._getPanelForTab(active9), eventData = {
+            var options = this.options, active9 = this.active, anchor2 = $2(event.currentTarget), tab = anchor2.closest("li"), clickedIsActive = tab[0] === active9[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active9.length ? $2() : this._getPanelForTab(active9), eventData = {
               oldTab: active9,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
@@ -70371,17 +69909,17 @@
             });
           },
           _activate: function(index) {
-            var anchor, active9 = this._findActive(index);
+            var anchor2, active9 = this._findActive(index);
             if (active9[0] === this.active[0]) {
               return;
             }
             if (!active9.length) {
               active9 = this.active;
             }
-            anchor = active9.find(".ui-tabs-anchor")[0];
+            anchor2 = active9.find(".ui-tabs-anchor")[0];
             this._eventHandler({
-              target: anchor,
-              currentTarget: anchor,
+              target: anchor2,
+              currentTarget: anchor2,
               preventDefault: $2.noop
             });
           },
@@ -70464,14 +70002,14 @@
           },
           load: function(index, event) {
             index = this._getIndex(index);
-            var that = this, tab = this.tabs.eq(index), anchor = tab.find(".ui-tabs-anchor"), panel = this._getPanelForTab(tab), eventData = {
+            var that = this, tab = this.tabs.eq(index), anchor2 = tab.find(".ui-tabs-anchor"), panel = this._getPanelForTab(tab), eventData = {
               tab,
               panel
             };
-            if (isLocal(anchor[0])) {
+            if (isLocal(anchor2[0])) {
               return;
             }
-            this.xhr = $2.ajax(this._ajaxSettings(anchor, event, eventData));
+            this.xhr = $2.ajax(this._ajaxSettings(anchor2, event, eventData));
             if (this.xhr && this.xhr.statusText !== "canceled") {
               tab.addClass("ui-tabs-loading");
               panel.attr("aria-busy", "true");
@@ -70494,10 +70032,10 @@
               });
             }
           },
-          _ajaxSettings: function(anchor, event, eventData) {
+          _ajaxSettings: function(anchor2, event, eventData) {
             var that = this;
             return {
-              url: anchor.attr("href"),
+              url: anchor2.attr("href"),
               beforeSend: function(jqXHR, settings) {
                 return that._trigger(
                   "beforeLoad",

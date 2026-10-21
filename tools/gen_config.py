@@ -35,6 +35,14 @@ DEFAULTS = {
     # block, so that one panel calls the API directly and needs its own key.
     # Optional: without it every other panel still works.
     'PW_KEY': '',
+    # Beszel collects CPU, memory, disk and temperature for every Docker host
+    # and Proxmox node. Its API answers the browser directly (it sends
+    # Access-Control-Allow-Origin: *) but returns an empty list until it has a
+    # login. Optional: without it the Homelab cards still show status, uptime
+    # and throughput, they simply carry no bars.
+    'BESZEL_URL': 'http://10.69.2.18:8090',
+    'BESZEL_USER': '',
+    'BESZEL_PASS': '',
 }
 
 
@@ -83,6 +91,9 @@ def build(env):
         'token': env['HA_TOKEN'].strip(),
         'reconnectSeconds': reconnect,
         'pirateWeatherKey': env['PW_KEY'].strip(),
+        'beszelUrl': env['BESZEL_URL'].strip(),
+        'beszelUser': env['BESZEL_USER'].strip(),
+        'beszelPass': env['BESZEL_PASS'].strip(),
     }
 
 
@@ -136,6 +147,12 @@ def main():
         print('  token    %d chars ending %s' % (len(cfg['token']), cfg['token'][-6:]))
     else:
         print('  token    EMPTY. Set HA_TOKEN in %s and run this again.' % env_path)
+    if cfg['beszelUser'] and cfg['beszelPass']:
+        print('  beszel   written for %s' % cfg['beszelUrl'])
+    else:
+        print('  beszel   no credentials, Homelab cards will show no bars')
+        print('           add BESZEL_USER and BESZEL_PASS to %s' % env_path)
+
     if cfg['pirateWeatherKey']:
         print('  pw key   written, %d chars' % len(cfg['pirateWeatherKey']))
     else:
