@@ -1,0 +1,655 @@
+/* Network screen: full viewport grid, same approach as the other screens, and
+ * it borrows .hs-head / .hs-body from house-screen.css for the panel chrome,
+ * recoloured to this screen's palette.
+ *
+ * Palette: #3fe0ff primary, #bff4ff text, #ff8a1f alert, #4dffb0 accent.
+ * Orange is only ever a problem: failover, a new client, a dead port, latency
+ * over the threshold, or firmware that needs attention.
+ */
+
+#network-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 12px var(--screen-pad-x);
+    gap: 10px;
+    background: #03060a;
+
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 19vw) minmax(250px, 18vw);
+    /* The topology is the hero and wants the height; the WAN chart reads
+       fine in less. */
+    grid-template-rows: auto minmax(0, 1.9fr) minmax(0, 1fr) auto;
+    grid-template-areas:
+        "status status  status"
+        "map    clients infra"
+        "wan    clients infra"
+        "wan    clients clock";
+
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    color: #bff4ff;
+    font-size: clamp(11px, 0.75vw, 16px);
+}
+
+#network-screen * { box-sizing: border-box; }
+
+#nw-status  { grid-area: status; }
+#nw-map     { grid-area: map; }
+#nw-wan     { grid-area: wan; }
+#nw-clients { grid-area: clients; }
+#nw-infra   { grid-area: infra; }
+#nw-clock   { grid-area: clock; }
+
+#network-screen .hs-head { color: #3fe0ff; border-bottom-color: #3fe0ff; }
+#network-screen .hs-head::after { border-bottom-color: rgba(63, 224, 255, .35); }
+#network-screen .hs-head em { color: #3fe0ff; opacity: .72; }
+
+.nw-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.nw-wait { opacity: .45; padding: 3px 0; }
+
+/* ---- status row -------------------------------------------------------------- */
+
+#nw-status {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    min-height: 0;
+}
+
+.nw-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3px 12px;
+    border: 1px solid rgba(63, 224, 255, .25);
+    border-left: 3px solid #3fe0ff;
+    min-width: 0;
+}
+
+.nw-stat b {
+    color: #e6fbff;
+    font-weight: normal;
+    font-size: clamp(16px, 1.45vw, 30px);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nw-stat span {
+    font-size: clamp(9px, 0.55vw, 12px);
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    opacity: .62;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nw-stat.bad { border-color: rgba(255, 138, 31, .5); border-left-color: #ff8a1f; }
+.nw-stat.bad b { color: #ff8a1f; }
+.nw-stat.bad span { opacity: .85; }
+
+/* ---- the topology map ---------------------------------------------------------- */
+
+#nw-map .hs-body { position: relative; display: flex; flex-direction: column; }
+
+#nw-map-body {
+    flex: 1 1 auto;
+    position: relative;
+    min-height: 0;
+    min-width: 0;
+}
+
+#nw-svg, #nw-pulses {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* The pulses are decoration and must never eat a click. */
+#nw-pulses { pointer-events: none; }
+
+.nw-link { transition: stroke-opacity .15s linear; }
+#nw-map-body:hover .nw-link { stroke-opacity: .16; }
+#nw-map-body .nw-link:hover { stroke-opacity: .9 !important; }
+.nw-link.standby { pointer-events: none; }
+
+.nw-node { cursor: pointer; }
+.nw-node:hover { filter: drop-shadow(0 0 6px rgba(63, 224, 255, .9)); }
+.nw-node-internet { cursor: default; }
+.nw-node-cluster { stroke: rgba(3, 6, 10, .8); stroke-width: 1; }
+
+.nw-label {
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    font-size: clamp(8px, 0.62vw, 12px);
+    cursor: pointer;
+    /* bounding-box so the gap between the name and the value is still a
+       target. SVG text otherwise only hit tests the glyphs themselves. */
+    pointer-events: bounding-box;
+    paint-order: stroke;
+    stroke: #03060a;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+}
+
+.nw-label-name { fill: #bff4ff; letter-spacing: .05em; }
+.nw-label-sub { fill: #3fe0ff; opacity: .7; }
+.nw-label-internet .nw-label-name { fill: #4dffb0; letter-spacing: .18em; }
+.nw-label-gateway .nw-label-name { fill: #e6fbff; letter-spacing: .1em; }
+.nw-label-client .nw-label-name { opacity: .85; }
+.nw-label.bad .nw-label-name, .nw-label.bad .nw-label-sub { fill: #ff8a1f; opacity: 1; }
+
+.nw-empty {
+    fill: rgba(191, 244, 255, .45);
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    font-size: 12px;
+    letter-spacing: .2em;
+}
+
+/* ---- failover banner ------------------------------------------------------------ */
+
+#nw-failover {
+    flex: none;
+    display: none;
+    align-items: baseline;
+    gap: 10px;
+    margin: 4px 0 0;
+    padding: 3px 9px;
+    background: rgba(255, 138, 31, .14);
+    border-left: 3px solid #ff8a1f;
+    font-size: clamp(9px, 0.58vw, 12px);
+    color: #ffd7ae;
+    animation: nw-pulse 1.5s ease-in-out infinite;
+}
+
+#nw-failover b {
+    flex: none;
+    color: #ff8a1f;
+    font-weight: normal;
+    letter-spacing: .2em;
+    white-space: nowrap;
+}
+
+@keyframes nw-pulse {
+    0%, 100% { background: rgba(255, 138, 31, .14); }
+    50%      { background: rgba(255, 138, 31, .28); }
+}
+
+/* ---- WAN panel -------------------------------------------------------------------- */
+
+#nw-wan .hs-body { display: flex; flex-direction: column; min-height: 0; }
+
+#nw-wan-lines {
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.nw-wan-line {
+    border: 1px solid rgba(63, 224, 255, .2);
+    border-left: 3px solid #2aa3bb;
+    padding: 4px 9px;
+    min-width: 0;
+}
+
+.nw-wan-line.on { border-left-color: #4dffb0; border-color: rgba(77, 255, 176, .3); }
+.nw-wan-line.on.failover { border-left-color: #ff8a1f; border-color: rgba(255, 138, 31, .4); }
+.nw-wan-line.standby { opacity: .62; }
+
+.nw-wan-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.nw-wan-head b {
+    color: #e6fbff;
+    font-weight: normal;
+    letter-spacing: .16em;
+    font-size: clamp(10px, 0.72vw, 15px);
+}
+
+.nw-wan-name {
+    font-size: clamp(8px, 0.52vw, 11px);
+    opacity: .6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nw-wan-state {
+    margin-left: auto;
+    font-style: normal;
+    font-size: clamp(8px, 0.5vw, 10px);
+    letter-spacing: .16em;
+    color: #3fe0ff;
+}
+
+.nw-wan-line.on .nw-wan-state { color: #4dffb0; }
+.nw-wan-line.on.failover .nw-wan-state { color: #ff8a1f; }
+.nw-wan-line.standby .nw-wan-state { color: #bff4ff; opacity: .6; }
+
+.nw-wan-rates {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 3px;
+}
+
+.nw-wan-rates span {
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(9px, 0.62vw, 13px);
+    color: #e6fbff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nw-wan-rates i {
+    font-style: normal;
+    font-size: .74em;
+    letter-spacing: .14em;
+    opacity: .5;
+    color: #bff4ff;
+}
+
+.nw-wan-sub {
+    margin-top: 2px;
+    font-size: clamp(8px, 0.5vw, 11px);
+    opacity: .5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#nw-wan-chart { flex: 1 1 auto; position: relative; min-height: 0; }
+#nw-wan-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+#nw-wan-loss {
+    flex: none;
+    font-size: clamp(8px, 0.5vw, 11px);
+    opacity: .5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-top: 2px;
+}
+
+/* ---- clients panel ------------------------------------------------------------------ */
+
+#nw-clients .hs-body { overflow-y: auto; }
+
+.nw-counts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.nw-counts span {
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(7px, 0.46vw, 10px);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    opacity: .6;
+    border-left: 2px solid rgba(63, 224, 255, .4);
+    padding-left: 5px;
+    white-space: nowrap;
+}
+
+.nw-counts b {
+    color: #e6fbff;
+    font-weight: normal;
+    font-size: clamp(13px, 1.1vw, 22px);
+    opacity: 1;
+}
+
+.nw-counts span.bad { border-left-color: #ff8a1f; opacity: .9; }
+.nw-counts span.bad b { color: #ff8a1f; }
+
+.nw-sub-head {
+    color: #3fe0ff;
+    font-size: clamp(8px, 0.52vw, 11px);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(63, 224, 255, .2);
+    margin: 7px 0 3px;
+    padding-bottom: 2px;
+}
+
+.nw-sub-head.bad { color: #ff8a1f; border-bottom-color: rgba(255, 138, 31, .35); }
+
+.nw-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "name val" "sub sub" "track track";
+    gap: 1px 8px;
+    padding: 3px 2px 4px;
+    border-bottom: 1px solid rgba(63, 224, 255, .08);
+    cursor: pointer;
+    font-size: clamp(9px, 0.58vw, 12px);
+}
+
+.nw-row:hover { background: rgba(63, 224, 255, .08); }
+
+.nw-row-name {
+    grid-area: name;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nw-row-val { grid-area: val; color: #e6fbff; white-space: nowrap; }
+
+.nw-row-sub {
+    grid-area: sub;
+    font-size: .82em;
+    opacity: .45;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nw-row-track {
+    grid-area: track;
+    height: 3px;
+    background: rgba(63, 224, 255, .12);
+    display: block;
+    margin-top: 2px;
+}
+
+.nw-row-track i { display: block; height: 100%; background: #3fe0ff; }
+
+.nw-row.bad .nw-row-name, .nw-row.bad .nw-row-val { color: #ff8a1f; }
+.nw-row.bad .nw-row-track i { background: #ff8a1f; }
+
+/* ---- switches and APs ------------------------------------------------------------------ */
+
+#nw-infra .hs-body { overflow-y: auto; }
+
+.nw-dev {
+    border-bottom: 1px solid rgba(63, 224, 255, .12);
+    padding: 5px 2px 7px;
+    cursor: pointer;
+}
+
+.nw-dev:hover { background: rgba(63, 224, 255, .07); }
+
+.nw-dev-head {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: clamp(9px, 0.58vw, 12px);
+}
+
+.nw-dev-head b { color: #e6fbff; font-weight: normal; letter-spacing: .08em; }
+.nw-dev-head span { font-size: .82em; opacity: .45; }
+.nw-dev-head i { margin-left: auto; font-style: normal; color: #3fe0ff; font-size: .86em; }
+
+.nw-poe {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 3px 0 4px;
+    font-size: clamp(8px, 0.5vw, 11px);
+    opacity: .72;
+    white-space: nowrap;
+}
+
+.nw-poe-track {
+    flex: 1 1 auto;
+    height: 3px;
+    background: rgba(63, 224, 255, .14);
+    display: block;
+    min-width: 20px;
+}
+
+.nw-poe-track i { display: block; height: 100%; background: #4dffb0; }
+
+.nw-ports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+/* One tile per physical port. A port with no link is dim, a live port is cyan,
+   a port delivering PoE is green. */
+.nw-port {
+    font-style: normal;
+    font-size: clamp(6px, 0.42vw, 9px);
+    line-height: 1;
+    min-width: 1.5em;
+    padding: 2px 1px;
+    text-align: center;
+    border: 1px solid rgba(63, 224, 255, .18);
+    color: rgba(191, 244, 255, .3);
+}
+
+.nw-port.up { border-color: #3fe0ff; color: #3fe0ff; background: rgba(63, 224, 255, .12); }
+.nw-port.poe { border-color: #4dffb0; color: #4dffb0; background: rgba(77, 255, 176, .14); }
+
+.nw-radios { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+
+.nw-radio {
+    font-size: clamp(7px, 0.46vw, 10px);
+    letter-spacing: .04em;
+    padding: 2px 6px;
+    border: 1px solid rgba(63, 224, 255, .22);
+    white-space: nowrap;
+    opacity: .85;
+}
+
+.nw-radio b {
+    color: #3fe0ff;
+    font-weight: normal;
+    margin-right: 5px;
+    letter-spacing: .1em;
+}
+
+.nw-radio.bad { border-color: rgba(255, 138, 31, .5); color: #ff8a1f; }
+.nw-radio.bad b { color: #ff8a1f; }
+
+/* ---- detail panel ---------------------------------------------------------------------- */
+
+/* A child of the map body, so it covers the topology and never the panel
+   header above it. */
+#nw-detail {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: #03070b;
+    border: 1px solid rgba(63, 224, 255, .4);
+    box-shadow: -14px 0 40px rgba(0, 0, 0, .75);
+    transform: translateX(103%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .26s cubic-bezier(.2, .7, .3, 1), opacity .2s linear;
+}
+
+#nw-detail.open { transform: translateX(0); opacity: 1; pointer-events: auto; }
+
+#nw-detail-head {
+    flex: none;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #3fe0ff;
+}
+
+#nw-detail-name {
+    color: #e6fbff;
+    font-size: clamp(12px, 1vw, 20px);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#nw-detail-name.bad { color: #ff8a1f; }
+
+#nw-detail-sub {
+    color: #3fe0ff;
+    opacity: .7;
+    font-size: clamp(9px, 0.6vw, 13px);
+    letter-spacing: .1em;
+    white-space: nowrap;
+}
+
+#nw-detail-close {
+    margin-left: auto;
+    flex: none;
+    font-family: inherit;
+    font-size: clamp(9px, 0.6vw, 13px);
+    letter-spacing: .16em;
+    color: #3fe0ff;
+    background: transparent;
+    border: 1px solid rgba(63, 224, 255, .4);
+    padding: 1px 10px;
+    cursor: pointer;
+}
+
+#nw-detail-close:hover { background: rgba(63, 224, 255, .16); }
+
+#nw-detail-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "rows chart";
+    gap: 10px 16px;
+    padding: 9px 12px 11px;
+    overflow: hidden;
+}
+
+#nw-detail-rows {
+    grid-area: rows;
+    overflow-y: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#nw-detail-chart { grid-area: chart; position: relative; min-height: 0; }
+#nw-detail-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.nw-drow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "label value" "note note";
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(63, 224, 255, .1);
+    font-size: clamp(9px, 0.56vw, 12px);
+}
+
+.nw-drow span {
+    grid-area: label;
+    opacity: .6;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.nw-drow b {
+    grid-area: value;
+    color: #e6fbff;
+    font-weight: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 14em;
+}
+
+.nw-drow i {
+    grid-area: note;
+    font-style: normal;
+    font-size: .84em;
+    opacity: .45;
+    letter-spacing: .06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nw-drow.bad b, .nw-drow.bad i { color: #ff8a1f; opacity: 1; }
+
+/* ---- clock, bottom right ------------------------------------------------------------------ */
+
+#nw-clock {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 0;
+    padding: 2px clamp(4px, 0.5vw, 10px);
+    border-top: 1px solid rgba(63, 224, 255, .22);
+}
+
+#nw-time {
+    color: #e6fbff;
+    font-size: clamp(16px, 1.7vw, 34px);
+    line-height: 1.05;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+#nw-time small {
+    font-size: .45em;
+    letter-spacing: .12em;
+    margin-left: .35em;
+    color: #bff4ff;
+}
+
+#nw-date {
+    font-size: clamp(8px, 0.56vw, 12px);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    opacity: .7;
+    white-space: nowrap;
+}
+
+/* ---- scrollbars ----------------------------------------------------------------------------- */
+
+#nw-clients .hs-body::-webkit-scrollbar,
+#nw-infra .hs-body::-webkit-scrollbar,
+#nw-detail-rows::-webkit-scrollbar { width: 6px; }
+#nw-clients .hs-body::-webkit-scrollbar-track,
+#nw-infra .hs-body::-webkit-scrollbar-track,
+#nw-detail-rows::-webkit-scrollbar-track { background: rgba(63, 224, 255, .05); }
+#nw-clients .hs-body::-webkit-scrollbar-thumb,
+#nw-infra .hs-body::-webkit-scrollbar-thumb,
+#nw-detail-rows::-webkit-scrollbar-thumb { background: rgba(63, 224, 255, .3); }
+
+/* ---- reduced motion -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    #nw-failover { animation: none; }
+    #nw-detail { transition: none; }
+}

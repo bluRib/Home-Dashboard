@@ -70,10 +70,10 @@
           },
           // Get the Nth element in the matched element set OR
           // Get the whole matched element set as a clean array
-          get: function(num3) {
-            return num3 != null ? (
+          get: function(num4) {
+            return num4 != null ? (
               // Return just the one element from the set
-              num3 < 0 ? this[num3 + this.length] : this[num3]
+              num4 < 0 ? this[num4 + this.length] : this[num4]
             ) : (
               // Return all the elements in a clean array
               slice.call(this)
@@ -283,13 +283,13 @@
           inArray: function(elem, arr2, i) {
             return arr2 == null ? -1 : indexOf.call(arr2, elem, i);
           },
-          merge: function(first, second) {
-            var len = +second.length, j = 0, i = first.length;
+          merge: function(first2, second) {
+            var len = +second.length, j = 0, i = first2.length;
             for (; j < len; j++) {
-              first[i++] = second[j];
+              first2[i++] = second[j];
             }
-            first.length = i;
-            return first;
+            first2.length = i;
+            return first2;
           },
           grep: function(elems, callback, invert) {
             var callbackInverse, matches = [], i = 0, length = elems.length, callbackExpect = !invert;
@@ -931,9 +931,9 @@
                     return operator === "=" ? result === check : operator === "!=" ? result !== check : operator === "^=" ? check && result.indexOf(check) === 0 : operator === "*=" ? check && result.indexOf(check) > -1 : operator === "$=" ? check && result.slice(-check.length) === check : operator === "~=" ? (" " + result.replace(rwhitespace, " ") + " ").indexOf(check) > -1 : operator === "|=" ? result === check || result.slice(0, check.length + 1) === check + "-" : false;
                   };
                 },
-                "CHILD": function(type, what, argument, first, last) {
+                "CHILD": function(type, what, argument, first2, last) {
                   var simple = type.slice(0, 3) !== "nth", forward = type.slice(-4) !== "last", ofType = what === "of-type";
-                  return first === 1 && last === 0 ? (
+                  return first2 === 1 && last === 0 ? (
                     // Shortcut for :nth-*(n)
                     function(elem) {
                       return !!elem.parentNode;
@@ -982,7 +982,7 @@
                         }
                       }
                       diff -= last;
-                      return diff === first || diff % first === 0 && diff / first >= 0;
+                      return diff === first2 || diff % first2 === 0 && diff / first2 >= 0;
                     }
                   };
                 },
@@ -1218,8 +1218,8 @@
               }
               return selector;
             }
-            function addCombinator(matcher, combinator, base) {
-              var dir = combinator.dir, checkNonElements = base && dir === "parentNode", doneName = done++;
+            function addCombinator(matcher, combinator, base2) {
+              var dir = combinator.dir, checkNonElements = base2 && dir === "parentNode", doneName = done++;
               return combinator.first ? (
                 // Check against closest ancestor/preceding element
                 function(elem, context, xml) {
@@ -3310,7 +3310,7 @@
           },
           domManip: function(args, callback) {
             args = concat.apply([], args);
-            var fragment, first, scripts, hasScripts, node, doc, i = 0, l = this.length, set = this, iNoClone = l - 1, value = args[0], isFunction = jQuery.isFunction(value);
+            var fragment, first2, scripts, hasScripts, node, doc, i = 0, l = this.length, set = this, iNoClone = l - 1, value = args[0], isFunction = jQuery.isFunction(value);
             if (isFunction || l > 1 && typeof value === "string" && !support.checkClone && rchecked.test(value)) {
               return this.each(function(index) {
                 var self = set.eq(index);
@@ -3322,11 +3322,11 @@
             }
             if (l) {
               fragment = jQuery.buildFragment(args, this[0].ownerDocument, false, this);
-              first = fragment.firstChild;
+              first2 = fragment.firstChild;
               if (fragment.childNodes.length === 1) {
-                fragment = first;
+                fragment = first2;
               }
-              if (first) {
+              if (first2) {
                 scripts = jQuery.map(getAll(fragment, "script"), disableScript);
                 hasScripts = scripts.length;
                 for (; i < l; i++) {
@@ -3684,7 +3684,7 @@
             }
           },
           css: function(elem, name, extra, styles) {
-            var val, num3, hooks, origName = jQuery.camelCase(name);
+            var val, num4, hooks, origName = jQuery.camelCase(name);
             name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(elem.style, origName));
             hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
             if (hooks && "get" in hooks) {
@@ -3697,8 +3697,8 @@
               val = cssNormalTransform[name];
             }
             if (extra === "" || extra) {
-              num3 = parseFloat(val);
-              return extra === true || jQuery.isNumeric(num3) ? num3 || 0 : val;
+              num4 = parseFloat(val);
+              return extra === true || jQuery.isNumeric(num4) ? num4 || 0 : val;
             }
             return val;
           }
@@ -3748,11 +3748,11 @@
         }, function(prefix, suffix) {
           jQuery.cssHooks[prefix + suffix] = {
             expand: function(value) {
-              var i = 0, expanded = {}, parts = typeof value === "string" ? value.split(" ") : [value];
+              var i = 0, expanded2 = {}, parts = typeof value === "string" ? value.split(" ") : [value];
               for (; i < 4; i++) {
-                expanded[prefix + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
+                expanded2[prefix + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
               }
-              return expanded;
+              return expanded2;
             }
           };
           if (!rmargin.test(prefix)) {
@@ -4747,7 +4747,7 @@
         function inspectPrefiltersOrTransports(structure, options, originalOptions, jqXHR) {
           var inspected = {}, seekingTransport = structure === transports;
           function inspect(dataType) {
-            var selected4;
+            var selected5;
             inspected[dataType] = true;
             jQuery.each(structure[dataType] || [], function(_, prefilterOrFactory) {
               var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
@@ -4756,10 +4756,10 @@
                 inspect(dataTypeOrTransport);
                 return false;
               } else if (seekingTransport) {
-                return !(selected4 = dataTypeOrTransport);
+                return !(selected5 = dataTypeOrTransport);
               }
             });
-            return selected4;
+            return selected5;
           }
           return inspect(options.dataTypes[0]) || !inspected["*"] && inspect("*");
         }
@@ -6255,8 +6255,8 @@
           if (arguments[0] instanceof Color) {
             return new Color(arguments[0]._value);
           } else if (typeof arguments[0] == "string") {
-            var first = arguments[0][0];
-            if (first == "#") {
+            var first2 = arguments[0][0];
+            if (first2 == "#") {
               if (match = arguments[0].match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/i)) {
                 return new Color(hex4ToRgba(match[0]));
               } else if (match = arguments[0].match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/i)) {
@@ -6596,11 +6596,11 @@
                 set.push(this.hue("+", h).saturation(s).value(v));
             return set;
           },
-          "hueRange": function(range2, count2) {
-            var base = this.hue();
+          "hueRange": function(range3, count2) {
+            var base2 = this.hue();
             var set = [];
             for (var i = 0; i < count2; ++i) {
-              var h = base + 2 * (i / (count2 - 1) - 0.5) * range2;
+              var h = base2 + 2 * (i / (count2 - 1) - 0.5) * range3;
               set.push(this.hue("=", h));
             }
             return set;
@@ -8995,30 +8995,30 @@
       })(function(moment) {
         var weekEndings = "vas\xE1rnap h\xE9tf\u0151n kedden szerd\xE1n cs\xFCt\xF6rt\xF6k\xF6n p\xE9nteken szombaton".split(" ");
         function translate(number, withoutSuffix, key, isFuture) {
-          var num3 = number, suffix;
+          var num4 = number, suffix;
           switch (key) {
             case "s":
               return isFuture || withoutSuffix ? "n\xE9h\xE1ny m\xE1sodperc" : "n\xE9h\xE1ny m\xE1sodperce";
             case "m":
               return "egy" + (isFuture || withoutSuffix ? " perc" : " perce");
             case "mm":
-              return num3 + (isFuture || withoutSuffix ? " perc" : " perce");
+              return num4 + (isFuture || withoutSuffix ? " perc" : " perce");
             case "h":
               return "egy" + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "hh":
-              return num3 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
+              return num4 + (isFuture || withoutSuffix ? " \xF3ra" : " \xF3r\xE1ja");
             case "d":
               return "egy" + (isFuture || withoutSuffix ? " nap" : " napja");
             case "dd":
-              return num3 + (isFuture || withoutSuffix ? " nap" : " napja");
+              return num4 + (isFuture || withoutSuffix ? " nap" : " napja");
             case "M":
               return "egy" + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "MM":
-              return num3 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
+              return num4 + (isFuture || withoutSuffix ? " h\xF3nap" : " h\xF3napja");
             case "y":
               return "egy" + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
             case "yy":
-              return num3 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
+              return num4 + (isFuture || withoutSuffix ? " \xE9v" : " \xE9ve");
           }
           return "";
         }
@@ -10975,9 +10975,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num3) {
+        function plural(word, num4) {
           var forms = word.split("_");
-          return num3 % 10 === 1 && num3 % 100 !== 11 ? forms[0] : num3 % 10 >= 2 && num3 % 10 <= 4 && (num3 % 100 < 10 || num3 % 100 >= 20) ? forms[1] : forms[2];
+          return num4 % 10 === 1 && num4 % 100 !== 11 ? forms[0] : num4 % 10 >= 2 && num4 % 10 <= 4 && (num4 % 100 < 10 || num4 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -12173,9 +12173,9 @@
           factory(window.moment);
         }
       })(function(moment) {
-        function plural(word, num3) {
+        function plural(word, num4) {
           var forms = word.split("_");
-          return num3 % 10 === 1 && num3 % 100 !== 11 ? forms[0] : num3 % 10 >= 2 && num3 % 10 <= 4 && (num3 % 100 < 10 || num3 % 100 >= 20) ? forms[1] : forms[2];
+          return num4 % 10 === 1 && num4 % 100 !== 11 ? forms[0] : num4 % 10 >= 2 && num4 % 10 <= 4 && (num4 % 100 < 10 || num4 % 100 >= 20) ? forms[1] : forms[2];
         }
         function relativeTimeWithPlural(number, withoutSuffix, key) {
           var format = {
@@ -12942,8 +12942,8 @@
           checkOverflow(config);
           extend(this, config);
         }
-        function Duration(duration) {
-          var normalizedInput = normalizeObjectUnits(duration), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
+        function Duration(duration2) {
+          var normalizedInput = normalizeObjectUnits(duration2), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
           this._milliseconds = +milliseconds + seconds * 1e3 + // 1000
           minutes * 6e4 + // 1000 * 60
           hours * 36e5;
@@ -12989,8 +12989,8 @@
           }
           return (sign ? forceSign ? "+" : "" : "-") + output;
         }
-        function addOrSubtractDurationFromMoment(mom, duration, isAdding, updateOffset) {
-          var milliseconds = duration._milliseconds, days = duration._days, months = duration._months;
+        function addOrSubtractDurationFromMoment(mom, duration2, isAdding, updateOffset) {
+          var milliseconds = duration2._milliseconds, days = duration2._days, months = duration2._months;
           updateOffset = updateOffset == null ? true : updateOffset;
           if (milliseconds) {
             mom._d.setTime(+mom._d + milliseconds * isAdding);
@@ -13877,23 +13877,23 @@
           return moment(input * 1e3);
         };
         moment.duration = function(input, key) {
-          var duration = input, match = null, sign, ret, parseIso;
+          var duration2 = input, match = null, sign, ret, parseIso;
           if (moment.isDuration(input)) {
-            duration = {
+            duration2 = {
               ms: input._milliseconds,
               d: input._days,
               M: input._months
             };
           } else if (typeof input === "number") {
-            duration = {};
+            duration2 = {};
             if (key) {
-              duration[key] = input;
+              duration2[key] = input;
             } else {
-              duration.milliseconds = input;
+              duration2.milliseconds = input;
             }
           } else if (!!(match = aspNetTimeSpanJsonRegex.exec(input))) {
             sign = match[1] === "-" ? -1 : 1;
-            duration = {
+            duration2 = {
               y: 0,
               d: toInt(match[DATE]) * sign,
               h: toInt(match[HOUR]) * sign,
@@ -13907,7 +13907,7 @@
               var res = inp && parseFloat(inp.replace(",", "."));
               return (isNaN(res) ? 0 : res) * sign;
             };
-            duration = {
+            duration2 = {
               y: parseIso(match[2]),
               M: parseIso(match[3]),
               d: parseIso(match[4]),
@@ -13917,7 +13917,7 @@
               w: parseIso(match[8])
             };
           }
-          ret = new Duration(duration);
+          ret = new Duration(duration2);
           if (moment.isDuration(input) && input.hasOwnProperty("_lang")) {
             ret._lang = input._lang;
           }
@@ -18370,8 +18370,8 @@
           return low + Math.random() * (high - low);
         },
         // Random float from <-range/2, range/2> interval
-        randFloatSpread: function(range2) {
-          return range2 * (0.5 - Math.random());
+        randFloatSpread: function(range3) {
+          return range3 * (0.5 - Math.random());
         },
         sign: function(x) {
           return x < 0 ? -1 : x > 0 ? 1 : 0;
@@ -23132,7 +23132,7 @@
           var parts = morph.name.match(pattern);
           if (parts && parts.length > 1) {
             var label = parts[1];
-            var num3 = parts[2];
+            var num4 = parts[2];
             if (!animations[label]) animations[label] = { start: Infinity, end: -Infinity };
             var animation = animations[label];
             if (i < animation.start) animation.start = i;
@@ -27910,9 +27910,9 @@
           var attributes = material.program.attributes;
           if (material.morphTargets) {
             material.numSupportedMorphTargets = 0;
-            var id, base = "morphTarget";
+            var id, base2 = "morphTarget";
             for (i = 0; i < this.maxMorphTargets; i++) {
-              id = base + i;
+              id = base2 + i;
               if (attributes[id] >= 0) {
                 material.numSupportedMorphTargets++;
               }
@@ -27920,9 +27920,9 @@
           }
           if (material.morphNormals) {
             material.numSupportedMorphNormals = 0;
-            var id, base = "morphNormal";
+            var id, base2 = "morphNormal";
             for (i = 0; i < this.maxMorphNormals; i++) {
-              id = base + i;
+              id = base2 + i;
               if (attributes[id] >= 0) {
                 material.numSupportedMorphNormals++;
               }
@@ -30242,8 +30242,8 @@
         this.autoClose = false;
       };
       THREE.CurvePath.prototype = Object.create(THREE.Curve.prototype);
-      THREE.CurvePath.prototype.add = function(curve) {
-        this.curves.push(curve);
+      THREE.CurvePath.prototype.add = function(curve2) {
+        this.curves.push(curve2);
       };
       THREE.CurvePath.prototype.checkConnection = function() {
       };
@@ -30257,13 +30257,13 @@
       THREE.CurvePath.prototype.getPoint = function(t) {
         var d = t * this.getLength();
         var curveLengths = this.getCurveLengths();
-        var i = 0, diff, curve;
+        var i = 0, diff, curve2;
         while (i < curveLengths.length) {
           if (curveLengths[i] >= d) {
             diff = curveLengths[i] - d;
-            curve = this.curves[i];
-            var u = 1 - diff / curve.getLength();
-            return curve.getPointAt(u);
+            curve2 = this.curves[i];
+            var u = 1 - diff / curve2.getLength();
+            return curve2.getPointAt(u);
             break;
           }
           i++;
@@ -30444,8 +30444,8 @@
         var lastargs = this.actions[this.actions.length - 1].args;
         var x0 = lastargs[lastargs.length - 2];
         var y0 = lastargs[lastargs.length - 1];
-        var curve = new THREE.LineCurve(new THREE.Vector2(x0, y0), new THREE.Vector2(x, y));
-        this.curves.push(curve);
+        var curve2 = new THREE.LineCurve(new THREE.Vector2(x0, y0), new THREE.Vector2(x, y));
+        this.curves.push(curve2);
         this.actions.push({ action: THREE.PathActions.LINE_TO, args });
       };
       THREE.Path.prototype.quadraticCurveTo = function(aCPx, aCPy, aX, aY) {
@@ -30453,12 +30453,12 @@
         var lastargs = this.actions[this.actions.length - 1].args;
         var x0 = lastargs[lastargs.length - 2];
         var y0 = lastargs[lastargs.length - 1];
-        var curve = new THREE.QuadraticBezierCurve(
+        var curve2 = new THREE.QuadraticBezierCurve(
           new THREE.Vector2(x0, y0),
           new THREE.Vector2(aCPx, aCPy),
           new THREE.Vector2(aX, aY)
         );
-        this.curves.push(curve);
+        this.curves.push(curve2);
         this.actions.push({ action: THREE.PathActions.QUADRATIC_CURVE_TO, args });
       };
       THREE.Path.prototype.bezierCurveTo = function(aCP1x, aCP1y, aCP2x, aCP2y, aX, aY) {
@@ -30466,13 +30466,13 @@
         var lastargs = this.actions[this.actions.length - 1].args;
         var x0 = lastargs[lastargs.length - 2];
         var y0 = lastargs[lastargs.length - 1];
-        var curve = new THREE.CubicBezierCurve(
+        var curve2 = new THREE.CubicBezierCurve(
           new THREE.Vector2(x0, y0),
           new THREE.Vector2(aCP1x, aCP1y),
           new THREE.Vector2(aCP2x, aCP2y),
           new THREE.Vector2(aX, aY)
         );
-        this.curves.push(curve);
+        this.curves.push(curve2);
         this.actions.push({ action: THREE.PathActions.BEZIER_CURVE_TO, args });
       };
       THREE.Path.prototype.splineThru = function(pts) {
@@ -30482,8 +30482,8 @@
         var y0 = lastargs[lastargs.length - 1];
         var npts = [new THREE.Vector2(x0, y0)];
         Array.prototype.push.apply(npts, pts);
-        var curve = new THREE.SplineCurve(npts);
-        this.curves.push(curve);
+        var curve2 = new THREE.SplineCurve(npts);
+        this.curves.push(curve2);
         this.actions.push({ action: THREE.PathActions.CSPLINE_THRU, args });
       };
       THREE.Path.prototype.arc = function(aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise) {
@@ -30518,7 +30518,7 @@
       };
       THREE.Path.prototype.absellipse = function(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise) {
         var args = Array.prototype.slice.call(arguments);
-        var curve = new THREE.EllipseCurve(
+        var curve2 = new THREE.EllipseCurve(
           aX,
           aY,
           xRadius,
@@ -30527,8 +30527,8 @@
           aEndAngle,
           aClockwise
         );
-        this.curves.push(curve);
-        var lastPoint = curve.getPoint(1);
+        this.curves.push(curve2);
+        var lastPoint = curve2.getPoint(1);
         args.push(lastPoint.x);
         args.push(lastPoint.y);
         this.actions.push({ action: THREE.PathActions.ELLIPSE, args });
@@ -31520,15 +31520,15 @@
           this.currentTime += delta * this.timeScale;
           var vector;
           var types = ["pos", "rot", "scl"];
-          var duration = this.data.length;
-          if (this.loop === true && this.currentTime > duration) {
-            this.currentTime %= duration;
+          var duration2 = this.data.length;
+          if (this.loop === true && this.currentTime > duration2) {
+            this.currentTime %= duration2;
             this.reset();
-          } else if (this.loop === false && this.currentTime > duration) {
+          } else if (this.loop === false && this.currentTime > duration2) {
             this.stop();
             return;
           }
-          this.currentTime = Math.min(this.currentTime, duration);
+          this.currentTime = Math.min(this.currentTime, duration2);
           for (var h = 0, hl = this.hierarchy.length; h < hl; h++) {
             var object = this.hierarchy[h];
             var animationCache = object.animationCache;
@@ -31701,11 +31701,11 @@
       THREE.KeyFrameAnimation.prototype.update = function(delta) {
         if (this.isPlaying === false) return;
         this.currentTime += delta * this.timeScale;
-        var duration = this.data.length;
-        if (this.loop === true && this.currentTime > duration) {
-          this.currentTime %= duration;
+        var duration2 = this.data.length;
+        if (this.loop === true && this.currentTime > duration2) {
+          this.currentTime %= duration2;
         }
-        this.currentTime = Math.min(this.currentTime, duration);
+        this.currentTime = Math.min(this.currentTime, duration2);
         for (var h = 0, hl = this.hierarchy.length; h < hl; h++) {
           var object = this.hierarchy[h];
           var node = this.data.hierarchy[h];
@@ -31767,7 +31767,7 @@
           this.isPlaying = false;
         },
         update: /* @__PURE__ */ function() {
-          var lastFrame2 = 0;
+          var lastFrame3 = 0;
           var currentFrame = 0;
           return function(delta) {
             if (this.isPlaying === false) return;
@@ -31779,14 +31779,14 @@
             var interpolation = this.duration / this.frames;
             var frame = Math.floor(this.currentTime / interpolation);
             if (frame != currentFrame) {
-              this.mesh.morphTargetInfluences[lastFrame2] = 0;
+              this.mesh.morphTargetInfluences[lastFrame3] = 0;
               this.mesh.morphTargetInfluences[currentFrame] = 1;
               this.mesh.morphTargetInfluences[frame] = 0;
-              lastFrame2 = currentFrame;
+              lastFrame3 = currentFrame;
               currentFrame = frame;
             }
             this.mesh.morphTargetInfluences[frame] = this.currentTime % interpolation / interpolation;
-            this.mesh.morphTargetInfluences[lastFrame2] = 1 - this.mesh.morphTargetInfluences[frame];
+            this.mesh.morphTargetInfluences[lastFrame3] = 1 - this.mesh.morphTargetInfluences[frame];
           };
         }()
       };
@@ -32576,11 +32576,11 @@
         var np = points.length;
         for (var i = 0, il = segments; i < il; i++) {
           for (var j = 0, jl = points.length - 1; j < jl; j++) {
-            var base = j + np * i;
-            var a = base;
-            var b = base + np;
-            var c2 = base + 1 + np;
-            var d = base + 1;
+            var base2 = j + np * i;
+            var a = base2;
+            var b = base2 + np;
+            var c2 = base2 + 1 + np;
+            var d = base2 + 1;
             var u0 = i * inverseSegments;
             var v0 = j * inversePointLength;
             var u1 = u0 + inverseSegments;
@@ -34013,17 +34013,17 @@
           var chunks = morph.name.match(pattern);
           if (chunks && chunks.length > 1) {
             var name = chunks[1];
-            var num3 = chunks[2];
+            var num4 = chunks[2];
             if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: -Infinity };
-            var range2 = frameRanges[name];
-            if (i < range2.start) range2.start = i;
-            if (i > range2.end) range2.end = i;
+            var range3 = frameRanges[name];
+            if (i < range3.start) range3.start = i;
+            if (i > range3.end) range3.end = i;
             if (!firstAnimation) firstAnimation = name;
           }
         }
         for (var name in frameRanges) {
-          var range2 = frameRanges[name];
-          this.createAnimation(name, range2.start, range2.end, fps);
+          var range3 = frameRanges[name];
+          this.createAnimation(name, range3.start, range3.end, fps);
         }
         this.firstAnimation = firstAnimation;
       };
@@ -34048,10 +34048,10 @@
           animation.duration = (animation.end - animation.start) / animation.fps;
         }
       };
-      THREE.MorphBlendMesh.prototype.setAnimationDuration = function(name, duration) {
+      THREE.MorphBlendMesh.prototype.setAnimationDuration = function(name, duration2) {
         var animation = this.animationsMap[name];
         if (animation) {
-          animation.duration = duration;
+          animation.duration = duration2;
           animation.fps = (animation.end - animation.start) / animation.duration;
         }
       };
@@ -34076,12 +34076,12 @@
         return time;
       };
       THREE.MorphBlendMesh.prototype.getAnimationDuration = function(name) {
-        var duration = -1;
+        var duration2 = -1;
         var animation = this.animationsMap[name];
         if (animation) {
-          duration = animation.duration;
+          duration2 = animation.duration;
         }
-        return duration;
+        return duration2;
       };
       THREE.MorphBlendMesh.prototype.playAnimation = function(name) {
         var animation = this.animationsMap[name];
@@ -35454,7 +35454,7 @@
         return null;
       }
       var webglTest;
-      var active8 = false;
+      var active9 = false;
       var initialized = false;
       var currentWidth = 0;
       var currentHeight = 0;
@@ -35508,10 +35508,10 @@
         if (typeof cb == "function") {
           setTimeout(cb, 500);
         }
-        active8 = true;
+        active9 = true;
       };
       LightTable2.hide = function(cb) {
-        active8 = false;
+        active9 = false;
         $2("#lt-mobile-readme").attr("style", "");
         $2("#k-32").attr("style", "");
         $2(".lt-header-animator-right").attr("style", "");
@@ -35531,7 +35531,7 @@
         }
       };
       LightTable2.animate = function() {
-        if (active8 && initialized) {
+        if (active9 && initialized) {
           webglTest.tick();
         }
       };
@@ -35766,10 +35766,10 @@
         };
         for (var i = 0; i < ROOMS2.length; i++) {
           var r = ROOMS2[i];
-          var base = r.level === 1 ? LEVEL1_ELEVATION2 : 0;
+          var base2 = r.level === 1 ? LEVEL1_ELEVATION2 : 0;
           var x0 = fx(r.x[0]), x1 = fx(r.x[1]);
           var z0 = fz(r.z[0]), z1 = fz(r.z[1]);
-          var y0 = fy(base), y1 = fy(base + WALL);
+          var y0 = fy(base2), y1 = fy(base2 + WALL);
           var levels = [y0, y1];
           for (var L = 0; L < 2; L++) {
             var y = levels[L];
@@ -35832,15 +35832,15 @@
         var scanBottom = fy(0) - 2;
         var scanTop = fy(TOP) + 2;
         var firstRun = null;
-        var lastFrame2 = Date.now();
+        var lastFrame3 = Date.now();
         return {
           tick: function() {
             var now = Date.now();
             if (firstRun === null) {
               firstRun = now;
             }
-            var dt = Math.min(now - lastFrame2, 100);
-            lastFrame2 = now;
+            var dt = Math.min(now - lastFrame3, 100);
+            lastFrame3 = now;
             var age = now - firstRun;
             var fade = Math.min(1, age / 3e3);
             roomMaterial.opacity = fade;
@@ -36283,9 +36283,9 @@
         for (var field in object) {
           _valuesStart[field] = parseFloat(object[field], 10);
         }
-        this.to = function(properties, duration) {
-          if (duration !== void 0) {
-            _duration = duration;
+        this.to = function(properties, duration2) {
+          if (duration2 !== void 0) {
+            _duration = duration2;
           }
           _valuesEnd = properties;
           return this;
@@ -39428,16 +39428,16 @@
         renderFunction(buffer.getContext("2d"));
         return buffer;
       };
-      Utils.extend = function(first, second) {
-        for (var i in first) {
-          second[i] = first[i];
+      Utils.extend = function(first2, second) {
+        for (var i in first2) {
+          second[i] = first2[i];
         }
       };
       Utils.sCurve = function(t) {
         return 1 / (1 + Math.exp(-t * 12 + 6));
       };
       Utils.shadeColor = function(color, percent) {
-        var num3 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num3 >> 16) + amt, G = (num3 >> 8 & 255) + amt, B = (num3 & 255) + amt;
+        var num4 = parseInt(color.slice(1), 16), amt = Math.round(2.55 * percent), R = (num4 >> 16) + amt, G = (num4 >> 8 & 255) + amt, B = (num4 & 255) + amt;
         return "#" + (16777216 + (R < 255 ? R < 1 ? 0 : R : 255) * 65536 + (G < 255 ? G < 1 ? 0 : G : 255) * 256 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
       };
       Utils.drawCurvedRectangle = function(ctx, left, top, width, height, radius) {
@@ -40851,8 +40851,8 @@
           };
           function memoize(fn, keyFn) {
             var cache = {};
-            return function(first) {
-              var key = keyFn ? keyFn.apply(this, arguments) : first;
+            return function(first2) {
+              var key = keyFn ? keyFn.apply(this, arguments) : first2;
               return key in cache ? cache[key] : cache[key] = fn.apply(this, arguments);
             };
           }
@@ -48985,8 +48985,8 @@
         var hours = Math.floor(elapsed / 36e5 % 100);
         return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + ":" + (mili < 10 ? "0" : "") + mili;
       }
-      function formatYTD(first, last) {
-        var percentage = 100 * ((last - first) / first - 1);
+      function formatYTD(first2, last) {
+        var percentage = 100 * ((last - first2) / first2 - 1);
         var output = percentage.toFixed(1) + "%";
         if (percentage > 0 && percentage < 100) {
           output = "+" + output;
@@ -49084,10 +49084,10 @@
           document.body.appendChild(backdrop);
         }
         function createPhoneSVG() {
-          var svg2 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg2.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
-          svg2.setAttribute("id", "pleaserotate-graphic");
-          svg2.setAttribute("viewBox", "0 0 250 250");
+          var svg3 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg3.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+          svg3.setAttribute("id", "pleaserotate-graphic");
+          svg3.setAttribute("viewBox", "0 0 250 250");
           var group2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group2.setAttribute("id", "pleaserotate-graphic-path");
           if (options.forcePortrait) {
@@ -49095,9 +49095,9 @@
           }
           var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", "M190.5,221.3c0,8.3-6.8,15-15,15H80.2c-8.3,0-15-6.8-15-15V28.7c0-8.3,6.8-15,15-15h95.3c8.3,0,15,6.8,15,15V221.3zM74.4,33.5l-0.1,139.2c0,8.3,0,17.9,0,21.5c0,3.6,0,6.9,0,7.3c0,0.5,0.2,0.8,0.4,0.8s7.2,0,15.4,0h75.6c8.3,0,15.1,0,15.2,0s0.2-6.8,0.2-15V33.5c0-2.6-1-5-2.6-6.5c-1.3-1.3-3-2.1-4.9-2.1H81.9c-2.7,0-5,1.6-6.3,4C74.9,30.2,74.4,31.8,74.4,33.5zM127.7,207c-5.4,0-9.8,5.1-9.8,11.3s4.4,11.3,9.8,11.3s9.8-5.1,9.8-11.3S133.2,207,127.7,207z");
-          svg2.appendChild(group2);
+          svg3.appendChild(group2);
           group2.appendChild(path);
-          return svg2;
+          return svg3;
         }
         function setVisibility(visible) {
           var backdropElement = document.getElementById("pleaserotate-backdrop");
@@ -49305,8 +49305,8 @@
         }
         _retry(reason) {
           this._attempts += 1;
-          const base = (this.config.reconnectSeconds || 2) * 1e3;
-          const wait = Math.min(base * Math.pow(2, this._attempts - 1), BACKOFF_MAX);
+          const base2 = (this.config.reconnectSeconds || 2) * 1e3;
+          const wait = Math.min(base2 * Math.pow(2, this._attempts - 1), BACKOFF_MAX);
           this._setStatus(Status.RETRYING, reason + ". retrying in " + Math.round(wait / 1e3) + "s");
           setTimeout(() => {
             if (!this._closed) this._open();
@@ -49905,13 +49905,13 @@
             if (rows2.length < 2) {
               return;
             }
-            var first = parseFloat(rows2[0].s !== void 0 ? rows2[0].s : rows2[0].state);
+            var first2 = parseFloat(rows2[0].s !== void 0 ? rows2[0].s : rows2[0].state);
             var tail = rows2[rows2.length - 1];
             var last = parseFloat(tail.s !== void 0 ? tail.s : tail.state);
-            if (!isFinite(first) || !isFinite(last)) {
+            if (!isFinite(first2) || !isFinite(last)) {
               return;
             }
-            total += last >= first ? last - first : last;
+            total += last >= first2 ? last - first2 : last;
             meters++;
           });
           self.energy.todayKwh = meters ? total : null;
@@ -50248,7 +50248,7 @@
     var now = Date.now();
     var events = state && state.events || [];
     var top = Math.min(18, h * 0.3);
-    var base = h - 1;
+    var base2 = h - 1;
     var i, gx;
     ctx.strokeStyle = "rgba(255,255,255,.10)";
     ctx.lineWidth = 1;
@@ -50256,12 +50256,12 @@
       gx = Math.floor(w * i / 10) + 0.5;
       ctx.beginPath();
       ctx.moveTo(gx, top);
-      ctx.lineTo(gx, base);
+      ctx.lineTo(gx, base2);
       ctx.stroke();
     }
     ctx.beginPath();
-    ctx.moveTo(0, base + 0.5);
-    ctx.lineTo(w, base + 0.5);
+    ctx.moveTo(0, base2 + 0.5);
+    ctx.lineTo(w, base2 + 0.5);
     ctx.strokeStyle = "rgba(0,238,238,.35)";
     ctx.stroke();
     ctx.fillStyle = "rgba(0,238,238,.55)";
@@ -50281,12 +50281,12 @@
       var px = w * (1 - age / TIMELINE_WINDOW);
       var isAlert = ev.severity === Severity.ALERT;
       var isMotion = ev.severity === Severity.MOTION;
-      var height = isAlert ? base - top : isMotion ? (base - top) * 0.66 : (base - top) * 0.42;
-      var py = base - height;
+      var height = isAlert ? base2 - top : isMotion ? (base2 - top) * 0.66 : (base2 - top) * 0.42;
+      var py = base2 - height;
       ctx.strokeStyle = colorFor(ev.severity);
       ctx.globalAlpha = isAlert ? 1 : 0.8;
       ctx.beginPath();
-      ctx.moveTo(px, base);
+      ctx.moveTo(px, base2);
       ctx.lineTo(px, py);
       ctx.stroke();
       ctx.globalAlpha = 1;
@@ -50762,12 +50762,12 @@
         }
         var s = this.state(zone.entity);
         var a = s && s.attributes || {};
-        var base = this._pending[zoneKey] !== void 0 ? this._pending[zoneKey] : numOrNull(a.temperature);
-        if (base === null) {
+        var base2 = this._pending[zoneKey] !== void 0 ? this._pending[zoneKey] : numOrNull(a.temperature);
+        if (base2 === null) {
           return;
         }
         var step = numOrNull(a.target_temp_step) || 1;
-        var next2 = Math.round((base + delta * step) * 10) / 10;
+        var next2 = Math.round((base2 + delta * step) * 10) / 10;
         var min = numOrNull(a.min_temp), max = numOrNull(a.max_temp);
         if (min !== null) {
           next2 = Math.max(min, next2);
@@ -51243,7 +51243,7 @@
           self._paintScrubber();
         });
         var track = this.scrubEl.querySelector(".radar-track");
-        var pick = function(clientX) {
+        var pick2 = function(clientX) {
           var box = track.getBoundingClientRect();
           var f = (clientX - box.left) / Math.max(1, box.width);
           var i2 = Math.round(f * (OFFSETS.length - 1));
@@ -51253,11 +51253,11 @@
           self._dragging = true;
           self.playing = false;
           track.setPointerCapture(e.pointerId);
-          pick(e.clientX);
+          pick2(e.clientX);
         });
         track.addEventListener("pointermove", function(e) {
           if (self._dragging) {
-            pick(e.clientX);
+            pick2(e.clientX);
           }
         });
         var release = function() {
@@ -51647,19 +51647,19 @@
     if (empty) {
       empty.className = "";
     }
-    var first = -1, i;
+    var first2 = -1, i;
     for (i = 0; i < m.points.length; i++) {
       if (m.points[i].intensity > 2e-3 || m.points[i].probability > 0.25) {
-        first = i;
+        first2 = i;
         break;
       }
     }
-    if (first < 0) {
+    if (first2 < 0) {
       note.textContent = "No rain in the next hour";
-    } else if (first === 0) {
+    } else if (first2 === 0) {
       note.textContent = "Rain now";
     } else {
-      note.textContent = "Rain starting in " + first + " min";
+      note.textContent = "Rain starting in " + first2 + " min";
     }
     drawMinutely(m.points);
   }
@@ -51673,7 +51673,7 @@
     }
     var ctx = minutelyCtx;
     ctx.clearRect(0, 0, w, h);
-    var top = 12, base = h - 14;
+    var top = 12, base2 = h - 14;
     var max = 0.02, i;
     for (i = 0; i < points.length; i++) {
       if (points[i].intensity > max) {
@@ -51686,25 +51686,25 @@
       var gx = Math.floor(w * i / 6) + 0.5;
       ctx.beginPath();
       ctx.moveTo(gx, top);
-      ctx.lineTo(gx, base);
+      ctx.lineTo(gx, base2);
       ctx.stroke();
     }
     var bw = w / points.length;
     for (i = 0; i < points.length; i++) {
       var p = points[i];
-      var hh = Math.max(p.intensity > 0 ? 1 : 0, p.intensity / max * (base - top));
+      var hh = Math.max(p.intensity > 0 ? 1 : 0, p.intensity / max * (base2 - top));
       if (hh <= 0) {
         continue;
       }
       ctx.fillStyle = p.intensity > 0.1 ? "#ff8a1f" : "#3fe0ff";
       ctx.globalAlpha = 0.3 + 0.7 * Math.min(1, p.probability + 0.2);
-      ctx.fillRect(i * bw, base - hh, Math.max(1, bw - 1), hh);
+      ctx.fillRect(i * bw, base2 - hh, Math.max(1, bw - 1), hh);
     }
     ctx.globalAlpha = 1;
     ctx.strokeStyle = "rgba(0,238,238,.35)";
     ctx.beginPath();
-    ctx.moveTo(0, base + 0.5);
-    ctx.lineTo(w, base + 0.5);
+    ctx.moveTo(0, base2 + 0.5);
+    ctx.lineTo(w, base2 + 0.5);
     ctx.stroke();
     ctx.fillStyle = "rgba(0,238,238,.6)";
     ctx.font = "10px Menlo, Consolas, monospace";
@@ -52700,13 +52700,13 @@
     var wet = feeds3.leaks().filter(function(l) {
       return l.wet;
     }).length;
-    var active8 = feeds3.motion().filter(function(m) {
+    var active9 = feeds3.motion().filter(function(m) {
       return m.active;
     }).length;
     var a = feeds3.alarm();
     stat("sc-stat-doors", open, open > 0);
     stat("sc-stat-leaks", wet, wet > 0);
-    stat("sc-stat-motion", active8, false);
+    stat("sc-stat-motion", active9, false);
     stat(
       "sc-stat-alarm",
       a.configured ? STATE_LABEL[a.state] || a.state : "NOT SET",
@@ -54548,11 +54548,11 @@
         return this.areas ? this.areas.areaName(device.power) || this.areas.areaName(device.energy) || "" : "";
       };
       SNAPSHOT_MS = 1500;
-      EnergyFeeds.prototype.devices = function(range2) {
+      EnergyFeeds.prototype.devices = function(range3) {
         var self = this;
         var win = this._window();
-        if (win.byRange[range2]) {
-          return win.byRange[range2];
+        if (win.byRange[range3]) {
+          return win.byRange[range3];
         }
         var today = startOfDay();
         var list = DEVICES.map(function(d) {
@@ -54580,10 +54580,10 @@
             avgWatts: avgW,
             unusual,
             kwh: kwh2,
-            value: range2 === "now" ? available ? w : 0 : kwh2[range2] || 0
+            value: range3 === "now" ? available ? w : 0 : kwh2[range3] || 0
           };
         });
-        win.byRange[range2] = list;
+        win.byRange[range3] = list;
         return list;
       };
       EnergyFeeds.prototype._sumDays = function(dayMap, from, to) {
@@ -54636,30 +54636,30 @@
         }
         return vals[Math.min(vals.length - 1, Math.floor(vals.length * q))];
       };
-      EnergyFeeds.prototype.rangeHours = function(range2) {
+      EnergyFeeds.prototype.rangeHours = function(range3) {
         var now = Date.now();
-        if (range2 === "today") {
+        if (range3 === "today") {
           return Math.max(0.25, (now - startOfDay()) / 36e5);
         }
-        if (range2 === "week") {
+        if (range3 === "week") {
           return Math.max(0.25, (now - (startOfDay() - 6 * DAY_MS)) / 36e5);
         }
-        if (range2 === "month") {
+        if (range3 === "month") {
           return Math.max(0.25, (now - startOfMonth()) / 36e5);
         }
         return 1;
       };
-      EnergyFeeds.prototype.isIdle = function(device, range2) {
+      EnergyFeeds.prototype.isIdle = function(device, range3) {
         if (!device.available) {
           return true;
         }
-        if (range2 === "now") {
+        if (range3 === "now") {
           return device.watts < IDLE_W;
         }
-        return device.value * 1e3 / this.rangeHours(range2) < IDLE_W;
+        return device.value * 1e3 / this.rangeHours(range3) < IDLE_W;
       };
-      EnergyFeeds.prototype.categories = function(range2) {
-        var devices = this.devices(range2);
+      EnergyFeeds.prototype.categories = function(range3) {
+        var devices = this.devices(range3);
         return CATEGORIES.map(function(c2) {
           var mine = devices.filter(function(d) {
             return d.cat === c2.key;
@@ -54687,10 +54687,10 @@
           return c2.devices.length > 0;
         });
       };
-      EnergyFeeds.prototype.flow = function(range2, only, opts) {
+      EnergyFeeds.prototype.flow = function(range3, only, opts) {
         var self = this;
         opts = opts || {};
-        var cats = this.categories(range2);
+        var cats = this.categories(range3);
         if (opts.hideHomelab && !only) {
           cats = cats.filter(function(c2) {
             return c2.key !== "homelab";
@@ -54705,7 +54705,7 @@
         if (!only) {
           cats = cats.map(function(c2) {
             var live = c2.devices.filter(function(d) {
-              if (self.isIdle(d, range2)) {
+              if (self.isIdle(d, range3)) {
                 idle.push(d);
                 return false;
               }
@@ -54817,7 +54817,7 @@
           }
         }
         if (HOUSE_METER && !only) {
-          var meter = this._meterValue(range2);
+          var meter = this._meterValue(range3);
           var gap = meter - total;
           if (gap > 0) {
             var ui = node(
@@ -54845,11 +54845,11 @@
           idleValue
         };
       };
-      EnergyFeeds.prototype.categoryWatts = function(key, range2) {
+      EnergyFeeds.prototype.categoryWatts = function(key, range3) {
         var self = this;
         if (key === "idle") {
           return this.devices("now").filter(function(d) {
-            return self.isIdle(d, range2 || "now");
+            return self.isIdle(d, range3 || "now");
           }).reduce(function(a, d) {
             return a + d.watts;
           }, 0);
@@ -54862,11 +54862,11 @@
         });
         return out;
       };
-      EnergyFeeds.prototype.categoryKwh = function(key, r, range2) {
+      EnergyFeeds.prototype.categoryKwh = function(key, r, range3) {
         var self = this;
         if (key === "idle") {
           return this.devices(r).filter(function(d) {
-            return self.isIdle(d, range2 || r);
+            return self.isIdle(d, range3 || r);
           }).reduce(function(a, d) {
             return a + d.value;
           }, 0);
@@ -54884,8 +54884,8 @@
           return a + d.watts;
         }, 0);
       };
-      EnergyFeeds.prototype.totalKwh = function(range2) {
-        return this.devices(range2).reduce(function(a, d) {
+      EnergyFeeds.prototype.totalKwh = function(range3) {
+        return this.devices(range3).reduce(function(a, d) {
           return a + d.value;
         }, 0);
       };
@@ -54916,8 +54916,8 @@
           }).length
         };
       };
-      EnergyFeeds.prototype.top = function(range2, n) {
-        return this.devices(range2).filter(function(d) {
+      EnergyFeeds.prototype.top = function(range3, n) {
+        return this.devices(range3).filter(function(d) {
           return d.value > 0;
         }).sort(function(a, b) {
           return b.value - a.value;
@@ -54944,15 +54944,15 @@
         });
         return out;
       };
-      EnergyFeeds.prototype.switchOns = function(curve) {
+      EnergyFeeds.prototype.switchOns = function(curve2) {
         var self = this;
         var marks2 = [];
-        if (!curve || curve.length < 3) {
+        if (!curve2 || curve2.length < 3) {
           return marks2;
         }
         var step = Math.max(120, this.totalWatts() * 0.18);
-        for (var i = 1; i < curve.length; i++) {
-          var jump = curve[i].w - curve[i - 1].w;
+        for (var i = 1; i < curve2.length; i++) {
+          var jump = curve2[i].w - curve2[i - 1].w;
           if (jump < step) {
             continue;
           }
@@ -54964,10 +54964,10 @@
             }
             var a = null, b = null;
             for (var j = 0; j < c2.length; j++) {
-              if (c2[j].t === curve[i].t) {
+              if (c2[j].t === curve2[i].t) {
                 b = c2[j].mean;
               }
-              if (c2[j].t === curve[i - 1].t) {
+              if (c2[j].t === curve2[i - 1].t) {
                 a = c2[j].mean;
               }
             }
@@ -54980,12 +54980,12 @@
             continue;
           }
           var recent = marks2.length && marks2[marks2.length - 1];
-          if (recent && recent.key === who.key && curve[i].t - recent.t < 30 * 6e4) {
+          if (recent && recent.key === who.key && curve2[i].t - recent.t < 30 * 6e4) {
             continue;
           }
           marks2.push({
-            t: curve[i].t,
-            w: curve[i].w,
+            t: curve2[i].t,
+            w: curve2[i].w,
             key: who.key,
             name: self.nameOf(who),
             jump
@@ -55004,7 +55004,7 @@
         if (!device) {
           return null;
         }
-        var curve = this.curves[key] || [];
+        var curve2 = this.curves[key] || [];
         var day = this.daily[key] || {};
         var today = startOfDay();
         var bars = [];
@@ -55013,12 +55013,12 @@
           bars.push({ t, kwh: day[t] || 0 });
         }
         var peak = null;
-        curve.forEach(function(p) {
+        curve2.forEach(function(p) {
           if (p.max !== null && (!peak || p.max > peak.w)) {
             peak = { w: p.max, t: p.t };
           }
         });
-        var lows = curve.map(function(p) {
+        var lows = curve2.map(function(p) {
           return p.min !== null ? p.min : p.mean;
         }).filter(function(v) {
           return v !== null && v !== void 0;
@@ -55029,7 +55029,7 @@
         var houseNow = this.totalWatts();
         return {
           device,
-          curve,
+          curve: curve2,
           bars,
           peak,
           standby,
@@ -55138,7 +55138,7 @@
         }
         return false;
       };
-      EnergyFeeds.prototype._meterValue = function(range2) {
+      EnergyFeeds.prototype._meterValue = function(range3) {
         var s = this._state(HOUSE_METER);
         return s ? num2(s.state) || 0 : 0;
       };
@@ -55250,9 +55250,9 @@
     });
     var labelRoom = Math.max(90, Math.min(w * 0.42, (longest + 12) * charW + 14));
     var nodeW = Math.max(6, Math.min(13, w * 0.011));
-    var pad7 = Math.max(7, Math.min(15, h / (nodes.length + 2)));
+    var pad8 = Math.max(7, Math.min(15, h / (nodes.length + 2)));
     var topRoom = Math.round(fontPx * 1.9);
-    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad7).extent([[2, topRoom], [w - labelRoom, h - 10]]);
+    var sankey = window.d3.sankey().nodeWidth(nodeW).nodePadding(pad8).extent([[2, topRoom], [w - labelRoom, h - 10]]);
     var out;
     try {
       out = sankey({ nodes, links });
@@ -55538,8 +55538,8 @@
     }
     var ctx = cctx;
     ctx.clearRect(0, 0, w, h);
-    var curve = feeds5.houseCurve();
-    if (curve.length < 2) {
+    var curve2 = feeds5.houseCurve();
+    if (curve2.length < 2) {
       ctx.fillStyle = "rgba(191,244,255,.4)";
       ctx.font = "11px Menlo, Consolas, monospace";
       ctx.fillText(feeds5.loaded ? "No power history" : "Loading power history", 8, 18);
@@ -55548,11 +55548,11 @@
     var left = 42, right = 10, top = 10, bottom = 16;
     var pw = w - left - right, ph = h - top - bottom;
     var max = 0;
-    curve.forEach(function(p) {
+    curve2.forEach(function(p) {
       max = Math.max(max, p.w);
     });
     max = Math.max(max * 1.12, 50);
-    var t0 = curve[0].t, t1 = curve[curve.length - 1].t;
+    var t0 = curve2[0].t, t1 = curve2[curve2.length - 1].t;
     var span = Math.max(1, t1 - t0);
     var X = function(t2) {
       return left + (t2 - t0) / span * pw;
@@ -55577,16 +55577,16 @@
     grad.addColorStop(0, "rgba(63,224,255,.42)");
     grad.addColorStop(1, "rgba(63,224,255,.03)");
     ctx.beginPath();
-    ctx.moveTo(X(curve[0].t), top + ph);
-    curve.forEach(function(p) {
+    ctx.moveTo(X(curve2[0].t), top + ph);
+    curve2.forEach(function(p) {
       ctx.lineTo(X(p.t), Y(p.w));
     });
-    ctx.lineTo(X(curve[curve.length - 1].t), top + ph);
+    ctx.lineTo(X(curve2[curve2.length - 1].t), top + ph);
     ctx.closePath();
     ctx.fillStyle = grad;
     ctx.fill();
     ctx.beginPath();
-    curve.forEach(function(p, i2) {
+    curve2.forEach(function(p, i2) {
       if (i2) {
         ctx.lineTo(X(p.t), Y(p.w));
       } else {
@@ -55607,7 +55607,7 @@
         h - 4
       );
     }
-    var marks2 = feeds5.switchOns(curve);
+    var marks2 = feeds5.switchOns(curve2);
     ctx.textAlign = "left";
     var rowEnd = [-1e9, -1e9, -1e9];
     var rowY = [top + 10, top + 21, top + 32];
@@ -55817,7 +55817,7 @@
     ctx.moveTo(left, Math.floor(top + ph) + 0.5);
     ctx.lineTo(w - right, Math.floor(top + ph) + 0.5);
     ctx.stroke();
-    var DAYS7 = ["S", "M", "T", "W", "T", "F", "S"];
+    var DAYS8 = ["S", "M", "T", "W", "T", "F", "S"];
     bars.forEach(function(b, i) {
       var bh = b.kwh / max * ph;
       var x = left + i * bw + bw * 0.18;
@@ -55829,7 +55829,7 @@
       }
       ctx.textAlign = "center";
       ctx.fillStyle = "rgba(191,244,255,.5)";
-      ctx.fillText(DAYS7[new Date(b.t).getDay()], x + bwid / 2, h - 3);
+      ctx.fillText(DAYS8[new Date(b.t).getDay()], x + bwid / 2, h - 3);
     });
   }
   function renderCrumb() {
@@ -56392,6 +56392,1709 @@
     }
   });
 
+  // src/NetworkFeeds.js
+  function num3(v) {
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function base() {
+    var config = window.HA_CONFIG || {};
+    return (config.prometheusUrl || PROM).replace(/\/+$/, "");
+  }
+  function instant(expr) {
+    var url = base() + "/api/v1/query?query=" + encodeURIComponent(expr);
+    return fetch(url, { mode: "cors" }).then(function(r) {
+      if (!r.ok) {
+        throw new Error("prometheus " + r.status);
+      }
+      return r.json();
+    }).then(function(j) {
+      if (j.status !== "success") {
+        throw new Error(j.error || "query failed");
+      }
+      return j.data.result || [];
+    });
+  }
+  function range2(expr, startMs, endMs, stepSec) {
+    var url = base() + "/api/v1/query_range?query=" + encodeURIComponent(expr) + "&start=" + Math.floor(startMs / 1e3) + "&end=" + Math.floor(endMs / 1e3) + "&step=" + stepSec;
+    return fetch(url, { mode: "cors" }).then(function(r) {
+      if (!r.ok) {
+        throw new Error("prometheus " + r.status);
+      }
+      return r.json();
+    }).then(function(j) {
+      if (j.status !== "success") {
+        throw new Error(j.error || "range query failed");
+      }
+      return j.data.result || [];
+    });
+  }
+  function byName(result) {
+    var out = {};
+    result.forEach(function(s) {
+      var n = s.metric.__name__;
+      if (!out[n]) {
+        out[n] = [];
+      }
+      out[n].push({ m: s.metric, v: num3(s.value[1]) });
+    });
+    return out;
+  }
+  function pick(groupData, metric) {
+    return groupData && groupData[metric] || [];
+  }
+  function first(groupData, metric, test) {
+    var list = pick(groupData, metric);
+    for (var i = 0; i < list.length; i++) {
+      if (!test || test(list[i].m)) {
+        return list[i];
+      }
+    }
+    return null;
+  }
+  function subnetOf(ip) {
+    if (!ip) {
+      return null;
+    }
+    var parts = String(ip).split(".");
+    if (parts.length !== 4) {
+      return null;
+    }
+    var three = parts.slice(0, 3).join(".");
+    if (SUBNETS[three]) {
+      return SUBNETS[three];
+    }
+    return { key: "net_" + three.replace(/\./g, "_"), label: three + ".x", unifi: "" };
+  }
+  function nameFor(m) {
+    var ip = m.ip || "";
+    if (HOST_NAMES[ip]) {
+      return HOST_NAMES[ip];
+    }
+    var n = (m.name || "").trim();
+    var mac = (m.mac || "").toLowerCase();
+    if (n && n.toLowerCase() !== mac && !/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/i.test(n)) {
+      return n.replace(/\s+/g, " ");
+    }
+    if (m.hostname) {
+      return m.hostname;
+    }
+    return ip || mac || "unknown";
+  }
+  function NetworkFeeds(onUpdate) {
+    this.onUpdate = onUpdate || function() {
+    };
+    this.data = {};
+    this.wanHistory = null;
+    this.ready = false;
+    this.error = null;
+    this.lastPoll = 0;
+    this._timers = [];
+    this._deviceHistory = {};
+  }
+  var PROM, GROUPS, POLL_MS, RANGE_MS, DAY_MS2, NEW_CLIENT_MS, LATENCY_WARN_MS, HOST_NAMES, SUBNETS, MODEL_PORTS;
+  var init_NetworkFeeds = __esm({
+    "src/NetworkFeeds.js"() {
+      PROM = "http://10.69.2.134:9090";
+      GROUPS = {
+        devices: "unpoller_device_(info|uptime_seconds|temperature_celsius|cpu_utilization_ratio|memory_utilization_ratio|upgradable|max_power_total|rate_bytes|stations)",
+        ports: "unpoller_device_port_(port_speed_bps|poe_watts|receive_rate_bytes|transmit_rate_bytes|receive_errors_total|transmit_errors_total)",
+        /* radio_signal_db is the real signal in dBm, from -78 to -33 on this
+           network. rssi_db is UniFi's own 18 to 63 quality scale, which is not
+           dBm and must not be labelled as such. Both are read so the panel can
+           show the measurement and the quality separately. */
+        clients: "unpoller_client_(receive_rate_bytes|transmit_rate_bytes|rssi_db|radio_signal_db|uptime_seconds|satisfaction_ratio|noise_db)",
+        radios: "unpoller_device_radio_(stations|channel|channel_utilization_total_ratio|transmit_power)",
+        wan: "unpoller_(wan_[a-z_]+|site_[a-z_]+|speedtest_[a-z_]+|device_wan_[a-z_]+|topology_[a-z_]+)"
+      };
+      POLL_MS = 5e3;
+      RANGE_MS = 5 * 60 * 1e3;
+      DAY_MS2 = 24 * 3600 * 1e3;
+      NEW_CLIENT_MS = DAY_MS2;
+      LATENCY_WARN_MS = 60;
+      HOST_NAMES = {
+        "10.69.1.1": "UDM Pro",
+        /* The cameras, spelled the way Homepage spells them. UniFi has
+           "Front Yard Carmera" with the typo still in it. */
+        "10.69.1.16": "Back Yard Camera",
+        "10.69.1.19": "Garage Camera",
+        "10.69.1.27": "Front Yard Camera",
+        "10.69.4.160": "Reolink Doorbell",
+        "10.69.2.3": "Pi-hole",
+        "10.69.2.5": "Trusted",
+        "10.69.2.10": "Zigbee2MQTT",
+        "10.69.2.18": "Newt",
+        "10.69.2.29": "Z-Wave JS",
+        "10.69.2.40": "Proxmox red",
+        "10.69.2.41": "PBS",
+        "10.69.2.50": "Proxmox blu",
+        "10.69.2.60": "Proxmox grey",
+        "10.69.2.70": "Immich",
+        "10.69.2.77": "PeaNut",
+        "10.69.2.112": "PostgreSQL",
+        "10.69.2.133": "Node-RED",
+        "10.69.2.134": "Frigate",
+        "10.69.2.140": "SLZB-06",
+        "10.69.2.151": "Home Assistant",
+        "10.69.2.163": "LoRa",
+        "10.69.2.167": "Semaphore",
+        "10.69.2.180": "TrueNAS",
+        "10.69.2.184": "Paperless",
+        "10.69.2.222": "Media"
+      };
+      SUBNETS = {
+        "10.69.1": { key: "net1", label: "Network and Cameras", unifi: "Default" },
+        "10.69.2": { key: "net2", label: "Servers and Homelab", unifi: "Server" },
+        "10.69.3": { key: "net3", label: "Home", unifi: "Home" },
+        "10.69.4": { key: "net4", label: "IoT and Doorbell", unifi: "IOT" }
+      };
+      MODEL_PORTS = {
+        US24PRO2: 24,
+        US8P60: 8,
+        USM8P: 8,
+        UDMPRO: 9
+      };
+      NetworkFeeds.prototype.start = function() {
+        var self = this;
+        this.poll();
+        this.refreshRange();
+        this._timers.push(setInterval(function() {
+          self.poll();
+        }, POLL_MS));
+        this._timers.push(setInterval(function() {
+          self.refreshRange();
+        }, RANGE_MS));
+      };
+      NetworkFeeds.prototype.stop = function() {
+        this._timers.forEach(clearInterval);
+        this._timers = [];
+      };
+      NetworkFeeds.prototype.poll = function() {
+        var self = this;
+        var keys = Object.keys(GROUPS);
+        Promise.all(keys.map(function(k) {
+          return instant('{__name__=~"' + GROUPS[k] + '"}').catch(function(e) {
+            self.error = e.message;
+            return null;
+          });
+        })).then(function(results) {
+          var any = false;
+          results.forEach(function(r, i) {
+            if (r) {
+              self.data[keys[i]] = byName(r);
+              any = true;
+            }
+          });
+          if (any) {
+            self.ready = true;
+            self.error = null;
+            self.lastPoll = Date.now();
+          }
+          self.onUpdate();
+        });
+      };
+      NetworkFeeds.prototype.refreshRange = function() {
+        var self = this;
+        var end = Date.now();
+        var start2 = end - DAY_MS2;
+        Promise.all([
+          range2("unpoller_device_wan_receive_rate_bytes", start2, end, 300),
+          range2("unpoller_device_wan_transmit_rate_bytes", start2, end, 300)
+        ]).then(function(res) {
+          var rx = res[0][0], tx = res[1][0];
+          if (!rx) {
+            return;
+          }
+          var points = rx.values.map(function(p, i) {
+            return {
+              t: p[0] * 1e3,
+              rx: num3(p[1]) || 0,
+              tx: tx && tx.values[i] ? num3(tx.values[i][1]) || 0 : 0
+            };
+          });
+          self.wanHistory = points;
+          self.onUpdate();
+        }).catch(function() {
+        });
+      };
+      NetworkFeeds.prototype.clientHistory = function(mac) {
+        var self = this;
+        var cached = this._deviceHistory[mac];
+        if (cached && Date.now() - cached.at < RANGE_MS) {
+          return Promise.resolve(cached.points);
+        }
+        var end = Date.now();
+        var start2 = end - DAY_MS2;
+        var sel = '{mac="' + mac + '"}';
+        return Promise.all([
+          range2("unpoller_client_receive_rate_bytes" + sel, start2, end, 300),
+          range2("unpoller_client_transmit_rate_bytes" + sel, start2, end, 300)
+        ]).then(function(res) {
+          var rx = res[0][0], tx = res[1][0];
+          var points = rx ? rx.values.map(function(p, i) {
+            return {
+              t: p[0] * 1e3,
+              rx: num3(p[1]) || 0,
+              tx: tx && tx.values[i] ? num3(tx.values[i][1]) || 0 : 0
+            };
+          }) : [];
+          self._deviceHistory[mac] = { at: Date.now(), points };
+          return points;
+        }).catch(function() {
+          return [];
+        });
+      };
+      NetworkFeeds.prototype.devices = function() {
+        var d = this.data.devices;
+        if (!d) {
+          return [];
+        }
+        var self = this;
+        var attached = {};
+        this.clients().forEach(function(c2) {
+          if (c2.via) {
+            attached[c2.via] = (attached[c2.via] || 0) + 1;
+          }
+        });
+        return pick(d, "unpoller_device_info").map(function(s) {
+          var m = s.m;
+          var at = function(metric) {
+            var hit = first(d, metric, function(x) {
+              return x.name === m.name;
+            });
+            return hit ? hit.v : null;
+          };
+          var ports = self.ports(m.name);
+          var radios = self.radios(m.name);
+          return {
+            key: m.name,
+            name: m.name,
+            type: m.type,
+            // udm, usw, uap
+            model: m.model,
+            version: m.version,
+            ip: m.ip,
+            mac: m.mac,
+            serial: m.serial,
+            uptime: at("unpoller_device_uptime_seconds"),
+            temperature: at("unpoller_device_temperature_celsius"),
+            cpu: at("unpoller_device_cpu_utilization_ratio"),
+            memory: at("unpoller_device_memory_utilization_ratio"),
+            upgradable: at("unpoller_device_upgradable") === 1,
+            stations: attached[m.name] || 0,
+            poeBudget: at("unpoller_device_max_power_total"),
+            poeUsed: ports.reduce(function(a, p) {
+              return a + (p.poe || 0);
+            }, 0),
+            portsUp: ports.length,
+            portsTotal: MODEL_PORTS[m.model] || null,
+            ports,
+            radios
+          };
+        }).sort(function(a, b) {
+          var order = { udm: 0, usw: 1, uap: 2 };
+          return order[a.type] - order[b.type] || a.name.localeCompare(b.name);
+        });
+      };
+      NetworkFeeds.prototype.ports = function(deviceName) {
+        var p = this.data.ports;
+        if (!p) {
+          return [];
+        }
+        var out = {};
+        var take = function(metric, field) {
+          pick(p, metric).forEach(function(s) {
+            if (s.m.name !== deviceName) {
+              return;
+            }
+            var n = s.m.port_num;
+            if (!out[n]) {
+              out[n] = { num: Number(n), name: s.m.port_name };
+            }
+            out[n][field] = s.v;
+          });
+        };
+        take("unpoller_device_port_port_speed_bps", "speed");
+        take("unpoller_device_port_poe_watts", "poe");
+        take("unpoller_device_port_receive_rate_bytes", "rx");
+        take("unpoller_device_port_transmit_rate_bytes", "tx");
+        take("unpoller_device_port_receive_errors_total", "rxErrors");
+        return Object.keys(out).map(function(k) {
+          var port = out[k];
+          port.up = (port.speed || 0) > 0;
+          return port;
+        }).sort(function(a, b) {
+          return a.num - b.num;
+        });
+      };
+      NetworkFeeds.prototype.radios = function(deviceName) {
+        var r = this.data.radios;
+        if (!r) {
+          return [];
+        }
+        var out = {};
+        var take = function(metric, field) {
+          pick(r, metric).forEach(function(s) {
+            if (s.m.name !== deviceName) {
+              return;
+            }
+            var id = s.m.radio_name || s.m.radio || "r";
+            if (!out[id]) {
+              var band = s.m.radio === "ng" ? "2.4 GHz" : s.m.radio === "na" ? "5 GHz" : s.m.radio === "6e" ? "6 GHz" : s.m.radio || "";
+              out[id] = { id, band, radio: s.m.radio };
+            }
+            if (field === "stations") {
+              out[id].stations = (out[id].stations || 0) + (s.v || 0);
+            } else if (out[id][field] === void 0 || s.v > out[id][field]) {
+              out[id][field] = s.v;
+            }
+          });
+        };
+        take("unpoller_device_radio_stations", "stations");
+        take("unpoller_device_radio_channel", "channel");
+        take("unpoller_device_radio_channel_utilization_total_ratio", "utilization");
+        take("unpoller_device_radio_transmit_power", "power");
+        return Object.keys(out).map(function(k) {
+          return out[k];
+        }).filter(function(x) {
+          return x.band;
+        }).sort(function(a, b) {
+          return (a.band || "").localeCompare(b.band || "");
+        });
+      };
+      NetworkFeeds.prototype.clients = function() {
+        var c2 = this.data.clients;
+        if (!c2) {
+          return [];
+        }
+        var by = {};
+        var take = function(metric, field) {
+          pick(c2, metric).forEach(function(s) {
+            var mac = s.m.mac;
+            if (!mac) {
+              return;
+            }
+            if (!by[mac]) {
+              by[mac] = { m: s.m };
+            }
+            by[mac][field] = s.v;
+          });
+        };
+        take("unpoller_client_receive_rate_bytes", "rx");
+        take("unpoller_client_transmit_rate_bytes", "tx");
+        take("unpoller_client_rssi_db", "rssi");
+        take("unpoller_client_radio_signal_db", "signal");
+        take("unpoller_client_uptime_seconds", "uptime");
+        take("unpoller_client_satisfaction_ratio", "satisfaction");
+        take("unpoller_client_noise_db", "noise");
+        return Object.keys(by).map(function(mac) {
+          var x = by[mac];
+          var m = x.m;
+          var wired = m.wired === "true";
+          var sub = subnetOf(m.ip);
+          var uptime = x.uptime || 0;
+          return {
+            mac,
+            name: nameFor(m),
+            unifiName: (m.name || "").trim(),
+            ip: m.ip || "",
+            oui: m.oui || "",
+            network: m.network || "",
+            vlan: m.vlan || "",
+            wired,
+            subnet: sub ? sub.key : "other",
+            subnetLabel: sub ? sub.label : "Other",
+            via: wired ? m.sw_name || "" : m.ap_name || "",
+            port: wired ? m.sw_port || "" : "",
+            essid: m.essid || "",
+            channel: m.channel || "",
+            band: m.radio_proto === "ng" ? "2.4 GHz" : m.radio_proto === "na" ? "5 GHz" : m.radio_proto === "ac" ? "5 GHz" : m.radio_proto === "ax" ? "5 GHz" : m.radio_proto || "",
+            rssi: x.rssi,
+            signal: x.signal,
+            noise: x.noise,
+            snr: x.signal !== void 0 && x.noise !== void 0 && x.signal !== null && x.noise !== null ? x.signal - x.noise : null,
+            satisfaction: x.satisfaction,
+            rx: x.rx || 0,
+            tx: x.tx || 0,
+            total: (x.rx || 0) + (x.tx || 0),
+            uptime,
+            isNew: uptime > 0 && uptime * 1e3 < NEW_CLIENT_MS
+          };
+        }).sort(function(a, b) {
+          return b.total - a.total;
+        });
+      };
+      NetworkFeeds.prototype.subnets = function() {
+        var groups = {};
+        this.clients().forEach(function(c2) {
+          if (!groups[c2.subnet]) {
+            groups[c2.subnet] = {
+              key: c2.subnet,
+              label: c2.subnetLabel,
+              clients: [],
+              rx: 0,
+              tx: 0,
+              isNew: 0
+            };
+          }
+          var g = groups[c2.subnet];
+          g.clients.push(c2);
+          g.rx += c2.rx;
+          g.tx += c2.tx;
+          if (c2.isNew) {
+            g.isNew += 1;
+          }
+        });
+        return Object.keys(groups).map(function(k) {
+          return groups[k];
+        }).sort(function(a, b) {
+          return b.clients.length - a.clients.length;
+        });
+      };
+      NetworkFeeds.prototype.wans = function() {
+        var w = this.data.wan;
+        if (!w) {
+          return [];
+        }
+        var states = {};
+        pick(w, "unpoller_wan_interface_state").forEach(function(s) {
+          states[s.m.wan_interface] = {
+            state: s.m.state,
+            up: s.v === 1,
+            group: s.m.wan_networkgroup
+          };
+        });
+        var byName2 = {};
+        var take = function(metric, field) {
+          pick(w, metric).forEach(function(s) {
+            var n = s.m.wan_name;
+            if (!n) {
+              return;
+            }
+            if (!byName2[n]) {
+              byName2[n] = {
+                name: n,
+                group: s.m.wan_networkgroup,
+                type: s.m.wan_type,
+                balance: s.m.wan_load_balance_type
+              };
+            }
+            byName2[n][field] = s.v;
+          });
+        };
+        take("unpoller_wan_failover_priority", "priority");
+        take("unpoller_wan_uptime_percentage", "uptimePercent");
+        take("unpoller_wan_provider_download_kbps", "providerDown");
+        take("unpoller_wan_provider_upload_kbps", "providerUp");
+        var liveRx = first(w, "unpoller_device_wan_receive_rate_bytes");
+        var liveTx = first(w, "unpoller_device_wan_transmit_rate_bytes");
+        var activePort = liveRx ? liveRx.m.port : null;
+        var latency = {};
+        pick(w, "unpoller_speedtest_latency_ms").forEach(function(s) {
+          latency[s.m.wan_group] = { ms: s.v, iface: s.m.wan_interface };
+        });
+        return Object.keys(byName2).map(function(n) {
+          var x = byName2[n];
+          var st = states[n] || {};
+          var lat = latency[x.group] || {};
+          var isActive = st.state === "ACTIVE";
+          return {
+            name: n,
+            short: x.group === "WAN" ? "WAN 1" : "WAN 2",
+            group: x.group,
+            iface: lat.iface || "",
+            state: st.state || "UNKNOWN",
+            active: isActive,
+            priority: x.priority,
+            uptimePercent: x.uptimePercent,
+            providerDown: x.providerDown,
+            providerUp: x.providerUp,
+            latency: lat.ms,
+            rx: isActive && liveRx ? liveRx.v : 0,
+            tx: isActive && liveTx ? liveTx.v : 0,
+            activePort: isActive ? activePort : null
+          };
+        }).sort(function(a, b) {
+          return (a.priority || 9) - (b.priority || 9);
+        });
+      };
+      NetworkFeeds.prototype.failover = function() {
+        var wans = this.wans();
+        if (wans.length < 2) {
+          return { active: false };
+        }
+        var primary = wans[0];
+        var activeOne = wans.filter(function(x) {
+          return x.active;
+        })[0];
+        return {
+          active: !!activeOne && activeOne.group !== primary.group,
+          on: activeOne || null,
+          primary
+        };
+      };
+      NetworkFeeds.prototype.site = function() {
+        var w = this.data.wan;
+        if (!w) {
+          return {};
+        }
+        var g = function(metric) {
+          var hit = first(w, metric);
+          return hit ? hit.v : null;
+        };
+        var latencyS = g("unpoller_site_latency_seconds");
+        var latencyMs = latencyS === null ? null : latencyS * 1e3;
+        var rxPackets = g("unpoller_device_wan_receive_packets_total");
+        var rxDropped = g("unpoller_device_wan_receive_dropped_total");
+        var rxErrors = g("unpoller_device_wan_receive_errors_total");
+        var loss = rxPackets && rxPackets > 0 && rxDropped !== null ? rxDropped / rxPackets * 100 : null;
+        return {
+          stations: g("unpoller_site_stations"),
+          users: g("unpoller_site_users"),
+          guests: g("unpoller_site_guests"),
+          iots: g("unpoller_site_iots"),
+          latencyMs,
+          latencyHigh: latencyMs !== null && latencyMs > LATENCY_WARN_MS,
+          drops: g("unpoller_site_intenet_drops_total"),
+          loss,
+          rxDropped,
+          rxErrors,
+          uptime: g("unpoller_site_uptime_seconds"),
+          devicesTotal: g("unpoller_topology_devices_total"),
+          clientsTotal: g("unpoller_topology_clients_total"),
+          wired: g("unpoller_topology_connections_wired"),
+          wireless: g("unpoller_topology_connections_wireless")
+        };
+      };
+      NetworkFeeds.prototype.topology = function(expanded2) {
+        var devices = this.devices();
+        var clients = this.clients();
+        var wans = this.wans();
+        var nodes = [];
+        var links = [];
+        var index = {};
+        expanded2 = expanded2 || {};
+        function node(id, label, kind, col, extra) {
+          if (index[id] === void 0) {
+            index[id] = nodes.length;
+            nodes.push(Object.assign(
+              { id, label, kind, col },
+              extra || {}
+            ));
+          }
+          return index[id];
+        }
+        function link(a, b, extra) {
+          if (a === void 0 || b === void 0) {
+            return;
+          }
+          links.push(Object.assign({ source: a, target: b }, extra || {}));
+        }
+        var net = node("internet", "INTERNET", "internet", 0, {});
+        var gateway = devices.filter(function(d) {
+          return d.type === "udm";
+        })[0];
+        var gw = gateway ? node("dev:" + gateway.name, gateway.name, "gateway", 2, { device: gateway }) : node("gw", "GATEWAY", "gateway", 2, {});
+        wans.forEach(function(w) {
+          var wi = node("wan:" + w.group, w.short, "wan", 1, { wan: w });
+          link(net, wi, { kind: "wan", wan: w, rate: w.rx + w.tx, active: w.active });
+          link(wi, gw, { kind: "wan", wan: w, rate: w.rx + w.tx, active: w.active });
+        });
+        var switches = devices.filter(function(d) {
+          return d.type === "usw";
+        });
+        switches.forEach(function(sw) {
+          var si = node("dev:" + sw.name, sw.name, "switch", 3, { device: sw });
+          var rate2 = sw.ports.reduce(function(a, p) {
+            return a + (p.rx || 0) + (p.tx || 0);
+          }, 0);
+          link(gw, si, { kind: "infra", rate: rate2 });
+        });
+        var aps = devices.filter(function(d) {
+          return d.type === "uap";
+        });
+        aps.forEach(function(ap) {
+          var ai = node("dev:" + ap.name, ap.name, "ap", 4, { device: ap });
+          var host = null;
+          switches.forEach(function(sw) {
+            clients.forEach(function(c2) {
+              if (!host && c2.wired && c2.name === ap.name && c2.via === sw.name) {
+                host = sw.name;
+              }
+            });
+          });
+          var from = host ? index["dev:" + host] : gw;
+          link(from === void 0 ? gw : from, ai, { kind: "infra", rate: 0 });
+        });
+        this.subnets().forEach(function(g) {
+          var open = !!expanded2[g.key];
+          if (!open) {
+            var ci = node(
+              "sub:" + g.key,
+              g.label,
+              "cluster",
+              5,
+              { subnet: g, count: g.clients.length, isNew: g.isNew }
+            );
+            var tally = {};
+            g.clients.forEach(function(c2) {
+              if (c2.via) {
+                tally[c2.via] = (tally[c2.via] || 0) + 1;
+              }
+            });
+            var best = null, bestN = 0;
+            Object.keys(tally).forEach(function(k) {
+              if (tally[k] > bestN) {
+                bestN = tally[k];
+                best = k;
+              }
+            });
+            var from = best && index["dev:" + best] !== void 0 ? index["dev:" + best] : gw;
+            link(from, ci, { kind: "cluster", rate: g.rx + g.tx, isNew: g.isNew > 0 });
+            return;
+          }
+          g.clients.forEach(function(c2) {
+            var ni = node("cli:" + c2.mac, c2.name, "client", 5, { client: c2 });
+            var from2 = c2.via && index["dev:" + c2.via] !== void 0 ? index["dev:" + c2.via] : gw;
+            link(from2, ni, {
+              kind: "client",
+              rate: c2.total,
+              client: c2,
+              isNew: c2.isNew
+            });
+          });
+        });
+        return { nodes, links };
+      };
+      NetworkFeeds.prototype.topTalkers = function(n) {
+        return this.clients().filter(function(c2) {
+          return c2.total > 0;
+        }).slice(0, n || 5);
+      };
+      NetworkFeeds.prototype.newClients = function() {
+        return this.clients().filter(function(c2) {
+          return c2.isNew;
+        }).sort(function(a, b) {
+          return a.uptime - b.uptime;
+        });
+      };
+      NetworkFeeds.prototype.counts = function() {
+        var clients = this.clients();
+        return {
+          total: clients.length,
+          wired: clients.filter(function(c2) {
+            return c2.wired;
+          }).length,
+          wireless: clients.filter(function(c2) {
+            return !c2.wired;
+          }).length,
+          isNew: clients.filter(function(c2) {
+            return c2.isNew;
+          }).length
+        };
+      };
+    }
+  });
+
+  // src/NetworkView.js
+  var NetworkView_exports = {};
+  __export(NetworkView_exports, {
+    NetworkView: () => NetworkView
+  });
+  function $id7(id) {
+    return document.getElementById(id);
+  }
+  function pad7(n) {
+    return String(n).length < 2 ? "0" + n : String(n);
+  }
+  function watchPanels6() {
+    if (observer6 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    observer6 = new ResizeObserver(function() {
+      NetworkView.resizeDebounced();
+    });
+    ["nw-map", "nw-wan", "nw-detail"].forEach(function(id) {
+      var el = $id7(id);
+      if (el) {
+        observer6.observe(el);
+      }
+    });
+  }
+  function sizeCanvas3(canvas, ctx) {
+    if (!canvas || !ctx) {
+      return;
+    }
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function rate(bytesPerSec) {
+    if (bytesPerSec === null || bytesPerSec === void 0) {
+      return "n/a";
+    }
+    var bits = bytesPerSec * 8;
+    if (bits >= 1e9) {
+      return (bits / 1e9).toFixed(2) + " Gb/s";
+    }
+    if (bits >= 1e6) {
+      return (bits / 1e6).toFixed(1) + " Mb/s";
+    }
+    if (bits >= 1e3) {
+      return (bits / 1e3).toFixed(0) + " kb/s";
+    }
+    return Math.round(bits) + " b/s";
+  }
+  function duration(sec) {
+    if (!sec && sec !== 0) {
+      return "n/a";
+    }
+    var d = Math.floor(sec / 86400);
+    var h = Math.floor(sec % 86400 / 3600);
+    var m = Math.floor(sec % 3600 / 60);
+    if (d > 0) {
+      return d + "d " + h + "h";
+    }
+    if (h > 0) {
+      return h + "h " + m + "m";
+    }
+    return m + "m";
+  }
+  function escapeText2(s) {
+    return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function buildTopology() {
+    var host = $id7("nw-map-body");
+    if (!host || !svg2 || !feeds6) {
+      return;
+    }
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    svg2.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg2.setAttribute("width", w);
+    svg2.setAttribute("height", h);
+    if (!feeds6.ready) {
+      svg2.innerHTML = '<text x="' + w / 2 + '" y="' + h / 2 + '" text-anchor="middle" class="nw-empty">' + (feeds6.error ? "PROMETHEUS UNREACHABLE" : "QUERYING PROMETHEUS") + "</text>";
+      layout2 = { nodes: [], links: [], w, h };
+      pulses = [];
+      return;
+    }
+    var graph = feeds6.topology(expanded);
+    var nodes = graph.nodes;
+    var links = graph.links;
+    var padX = Math.max(46, Math.min(84, w * 0.055));
+    var padY = 16;
+    var usable = w - padX * 2;
+    var COL_AT = [0, 0.13, 0.3, 0.5, 0.68, 0.97];
+    var fontPx = Math.max(8, Math.min(12, w * 62e-4));
+    var charW = fontPx * 0.62;
+    var byCol = {};
+    nodes.forEach(function(n) {
+      if (!byCol[n.col]) {
+        byCol[n.col] = [];
+      }
+      byCol[n.col].push(n);
+    });
+    Object.keys(byCol).forEach(function(c2) {
+      var list = byCol[c2];
+      var usableY = h - padY * 2;
+      var gap = usableY / (list.length + 1);
+      list.forEach(function(n, i) {
+        n.x = padX + COL_AT[Number(c2)] * usable;
+        n.y = padY + gap * (i + 1);
+        n.gapY = gap;
+      });
+    });
+    var maxRate = 1;
+    links.forEach(function(l) {
+      maxRate = Math.max(maxRate, l.rate || 0);
+    });
+    var parts = [];
+    links.forEach(function(l, i) {
+      var a = nodes[l.source], b = nodes[l.target];
+      if (!a || !b) {
+        return;
+      }
+      var share = (l.rate || 0) / maxRate;
+      var isStandbyWan = l.kind === "wan" && !l.active;
+      var hot = l.kind === "wan" && l.active && l.wan && l.wan.group !== "WAN" || l.isNew;
+      var colour = hot ? ALERT3 : isStandbyWan ? DIM : CYAN3;
+      var width = isStandbyWan ? 1 : Math.max(1.2, 1.2 + Math.sqrt(share) * 5.5);
+      var opacity = isStandbyWan ? 0.3 : 0.3 + 0.55 * Math.sqrt(share);
+      if (isStandbyWan) {
+        l._dash = true;
+      }
+      var d = curve(a, b);
+      l._d = d;
+      l._w = width;
+      l._hot = hot;
+      l._standby = isStandbyWan;
+      parts.push('<path class="nw-link' + (hot ? " hot" : "") + (isStandbyWan ? " standby" : "") + '" d="' + d + '" stroke="' + colour + '" stroke-width="' + width.toFixed(2) + '" stroke-opacity="' + opacity.toFixed(3) + '" fill="none"' + (isStandbyWan ? ' stroke-dasharray="5 5"' : "") + ' data-link="' + i + '"></path>');
+    });
+    nodes.forEach(function(n, i) {
+      var ci = Number(n.col);
+      var gapLeft = ci > 0 ? (COL_AT[ci] - COL_AT[ci - 1]) * usable : padX;
+      var gapRight = ci < COL_AT.length - 1 ? (COL_AT[ci + 1] - COL_AT[ci]) * usable : w - n.x;
+      var room2 = (ci >= 5 ? gapLeft : gapRight) * 0.5 - 26;
+      parts.push(nodeMarkup(n, i, fontPx, charW, Math.max(36, room2)));
+    });
+    svg2.innerHTML = parts.join("");
+    layout2 = { nodes, links, w, h };
+    seedPulses(links, maxRate);
+    renderFailoverBanner();
+  }
+  function curve(a, b) {
+    var mx = (a.x + b.x) / 2;
+    return "M" + a.x + "," + a.y + "C" + mx + "," + a.y + " " + mx + "," + b.y + " " + b.x + "," + b.y;
+  }
+  function nodeMarkup(n, i, fontPx, charW, room2) {
+    var r = n.kind === "internet" ? 7 : n.kind === "gateway" ? 9 : n.kind === "cluster" ? 10 : n.kind === "client" ? 3.4 : 6.5;
+    var bad = false;
+    var colour = CYAN3;
+    if (n.kind === "internet") {
+      colour = ACCENT2;
+    }
+    if (n.kind === "wan") {
+      colour = n.wan && n.wan.active ? n.wan.group === "WAN" ? ACCENT2 : ALERT3 : DIM;
+    }
+    if (n.kind === "cluster" && n.isNew > 0) {
+      colour = ALERT3;
+      bad = true;
+    }
+    if (n.kind === "client" && n.client && n.client.isNew) {
+      colour = ALERT3;
+      bad = true;
+    }
+    if (n.device && n.device.type === "usw" && n.device.portsUp === 0) {
+      colour = ALERT3;
+      bad = true;
+    }
+    var label = n.label;
+    if (n.kind === "cluster") {
+      label = n.label + " (" + n.count + ")";
+    }
+    var right = n.col >= 5;
+    var tx = right ? n.x - r - 5 : n.x + r + 5;
+    var anchor = right ? "end" : "start";
+    var maxChars = Math.floor(room2 / charW);
+    if (label.length > maxChars && maxChars > 4) {
+      label = label.slice(0, maxChars - 1) + "\u2026";
+    }
+    var shape = n.kind === "cluster" ? '<rect class="nw-node nw-node-' + n.kind + (bad ? " bad" : "") + '" x="' + (n.x - r) + '" y="' + (n.y - r) + '" width="' + r * 2 + '" height="' + r * 2 + '" fill="' + colour + '" data-node="' + i + '"></rect>' : '<circle class="nw-node nw-node-' + n.kind + (bad ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + r + '" fill="' + colour + '" data-node="' + i + '"></circle>';
+    var sub = "";
+    if (n.kind === "wan" && n.wan) {
+      sub = n.wan.active ? "ACTIVE" : "STANDBY";
+    } else if (n.device && n.device.type === "usw") {
+      sub = n.device.portsUp + (n.device.portsTotal ? "/" + n.device.portsTotal : "") + " up";
+    } else if (n.device && n.device.type === "uap") {
+      sub = (n.device.stations || 0) + " clients";
+    } else if (n.kind === "client" && n.client && n.client.total > 0) {
+      sub = rate(n.client.total);
+    }
+    if (sub && n.gapY !== void 0 && n.gapY < fontPx * 2.6) {
+      sub = "";
+    }
+    if (sub) {
+      var subMax = Math.floor(room2 / charW);
+      if (sub.length > subMax && subMax > 4) {
+        sub = sub.slice(0, subMax - 1) + "\u2026";
+      }
+    }
+    var y1 = sub ? n.y - fontPx * 0.52 : n.y;
+    return shape + '<text class="nw-label nw-label-' + n.kind + (bad ? " bad" : "") + '" x="' + tx + '" y="' + y1 + '" text-anchor="' + anchor + '" dominant-baseline="middle" data-node="' + i + '"><tspan class="nw-label-name" x="' + tx + '">' + escapeText2(label) + "</tspan>" + (sub ? '<tspan class="nw-label-sub" x="' + tx + '" dy="' + (fontPx * 1.06).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
+  }
+  function samplePath2(d, n) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    el.setAttribute("d", d);
+    var len = 0;
+    try {
+      len = el.getTotalLength();
+    } catch (err) {
+      return null;
+    }
+    if (!len || !isFinite(len)) {
+      return null;
+    }
+    var pts = [];
+    for (var i = 0; i <= n; i++) {
+      var p = el.getPointAtLength(i / n * len);
+      pts.push(p.x, p.y);
+    }
+    return { pts, len, n };
+  }
+  function seedPulses(links, maxRate) {
+    pulses = [];
+    links.forEach(function(l, i) {
+      if (l._standby) {
+        return;
+      }
+      var sampled = samplePath2(l._d, 30);
+      if (!sampled) {
+        return;
+      }
+      l._path = sampled;
+      var share = (l.rate || 0) / maxRate;
+      if (share <= 0) {
+        return;
+      }
+      var count2 = Math.max(1, Math.round(1 + 7 * Math.sqrt(share)));
+      var speed = 30 + 150 * Math.sqrt(share);
+      for (var k = 0; k < count2; k++) {
+        pulses.push({
+          link: i,
+          at: Math.random(),
+          speed: speed * (0.85 + Math.random() * 0.3),
+          size: Math.max(1, l._w * 0.42),
+          hot: !!l._hot
+        });
+      }
+    });
+  }
+  function stepPulses(dt) {
+    if (!pctx2 || !pulseCanvas) {
+      return;
+    }
+    var w = pulseCanvas.clientWidth, h = pulseCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    pctx2.clearRect(0, 0, w, h);
+    if (!pulses.length || !layout2.links.length) {
+      return;
+    }
+    pctx2.globalCompositeOperation = "lighter";
+    for (var i = 0; i < pulses.length; i++) {
+      var p = pulses[i];
+      var l = layout2.links[p.link];
+      if (!l || !l._path) {
+        continue;
+      }
+      p.at += p.speed * dt / l._path.len;
+      if (p.at > 1) {
+        p.at -= 1;
+      }
+      var pts = l._path.pts;
+      var f = p.at * l._path.n;
+      var i0 = Math.floor(f);
+      var t = f - i0;
+      if (i0 >= l._path.n) {
+        i0 = l._path.n - 1;
+        t = 1;
+      }
+      var x = pts[i0 * 2] + (pts[i0 * 2 + 2] - pts[i0 * 2]) * t;
+      var y = pts[i0 * 2 + 1] + (pts[i0 * 2 + 3] - pts[i0 * 2 + 1]) * t;
+      var edge = Math.min(p.at, 1 - p.at);
+      var alpha = Math.min(1, edge / 0.07) * 0.85;
+      pctx2.beginPath();
+      pctx2.arc(x, y, p.size, 0, Math.PI * 2);
+      pctx2.fillStyle = p.hot ? "rgba(255,138,31," + alpha.toFixed(3) + ")" : "rgba(191,244,255," + alpha.toFixed(3) + ")";
+      pctx2.fill();
+    }
+    pctx2.globalCompositeOperation = "source-over";
+  }
+  function renderFailoverBanner() {
+    var el = $id7("nw-failover");
+    if (!el || !feeds6) {
+      return;
+    }
+    var f = feeds6.failover();
+    if (!f.active) {
+      el.style.display = "none";
+      return;
+    }
+    el.style.display = "flex";
+    el.innerHTML = "<b>FAILOVER ACTIVE</b><span>Running on " + escapeText2(f.on ? f.on.name : "the backup line") + ". " + escapeText2(f.primary ? f.primary.name : "The primary") + " is not carrying traffic.</span>";
+  }
+  function stat4(id, value, sub, bad) {
+    var el = $id7(id);
+    if (!el) {
+      return;
+    }
+    el.firstChild.textContent = value;
+    var span = el.querySelector("span");
+    if (span && sub !== null && sub !== void 0) {
+      span.textContent = sub;
+    }
+    el.className = "nw-stat" + (bad ? " bad" : "");
+  }
+  function renderStatus4() {
+    if (!feeds6) {
+      return;
+    }
+    var site = feeds6.site();
+    var counts = feeds6.counts();
+    var wans = feeds6.wans();
+    var activeWan = wans.filter(function(w) {
+      return w.active;
+    })[0];
+    var f = feeds6.failover();
+    stat4(
+      "nw-stat-wan",
+      activeWan ? activeWan.short : "--",
+      activeWan ? activeWan.name.replace(/^(Primary|Secondary)\s*\([^)]*\)\s*/, "") : "No active line",
+      f.active
+    );
+    stat4(
+      "nw-stat-down",
+      activeWan ? rate(activeWan.rx) : "--",
+      "Down, up " + (activeWan ? rate(activeWan.tx) : "n/a"),
+      false
+    );
+    stat4(
+      "nw-stat-latency",
+      site.latencyMs === null || site.latencyMs === void 0 ? "--" : Math.round(site.latencyMs) + " ms",
+      "Latency" + (site.loss !== null && site.loss !== void 0 ? ", loss " + site.loss.toFixed(2) + "%" : ""),
+      !!site.latencyHigh
+    );
+    stat4(
+      "nw-stat-clients",
+      String(counts.total),
+      counts.wired + " wired, " + counts.wireless + " wireless" + (counts.isNew ? ", " + counts.isNew + " new" : ""),
+      counts.isNew > 0
+    );
+  }
+  function renderWan() {
+    var box = $id7("nw-wan-lines");
+    if (!box || !feeds6) {
+      return;
+    }
+    var wans = feeds6.wans();
+    var site = feeds6.site();
+    if (!wans.length) {
+      box.innerHTML = '<div class="nw-wait">' + (feeds6.ready ? "No WAN data" : "Loading") + "</div>";
+      return;
+    }
+    box.innerHTML = wans.map(function(w) {
+      var cls = w.active ? w.group === "WAN" ? "on" : "on failover" : "standby";
+      var provider = w.providerDown ? (w.providerDown / 1e3).toFixed(0) + " / " + (w.providerUp / 1e3).toFixed(0) + " Mb/s provisioned" : "No provisioned rate";
+      return '<div class="nw-wan-line ' + cls + '"><div class="nw-wan-head"><b>' + escapeText2(w.short) + '</b><span class="nw-wan-name">' + escapeText2(w.name) + '</span><i class="nw-wan-state">' + escapeText2(w.state) + '</i></div><div class="nw-wan-rates"><span><i>DOWN</i>' + (w.active ? rate(w.rx) : "idle") + "</span><span><i>UP</i>" + (w.active ? rate(w.tx) : "idle") + "</span><span><i>SPEEDTEST</i>" + (w.latency ? Math.round(w.latency) + " ms" : "n/a") + "</span><span><i>UPTIME</i>" + (w.uptimePercent >= 0 ? w.uptimePercent + "%" : "n/a") + '</span></div><div class="nw-wan-sub">' + escapeText2(provider) + ", priority " + (w.priority || "n/a") + "</div></div>";
+    }).join("");
+    var loss = $id7("nw-wan-loss");
+    if (loss) {
+      var bits = [];
+      if (site.loss !== null && site.loss !== void 0) {
+        bits.push("Dropped " + site.loss.toFixed(3) + "% of received packets");
+      }
+      if (site.rxErrors !== null && site.rxErrors !== void 0) {
+        bits.push(Math.round(site.rxErrors) + " receive errors");
+      }
+      if (site.drops !== null && site.drops !== void 0) {
+        bits.push(Math.round(site.drops) + " internet drops since boot");
+      }
+      loss.textContent = bits.join(", ");
+    }
+    drawWanChart();
+  }
+  function drawWanChart() {
+    if (!wctx || !wanCanvas || !feeds6) {
+      return;
+    }
+    var w = wanCanvas.clientWidth, h = wanCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = wctx;
+    ctx.clearRect(0, 0, w, h);
+    var pts = feeds6.wanHistory;
+    if (!pts || pts.length < 2) {
+      ctx.fillStyle = "rgba(191,244,255,.4)";
+      ctx.font = "10px Menlo, Consolas, monospace";
+      ctx.fillText(feeds6.ready ? "No WAN history yet" : "Loading history", 6, 16);
+      return;
+    }
+    var left = 44, right = 8, top = 16, bottom = 14;
+    var pw = w - left - right, ph = h - top - bottom;
+    var max = 1;
+    pts.forEach(function(p) {
+      max = Math.max(max, p.rx, p.tx);
+    });
+    max *= 1.12;
+    var t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+    var span = Math.max(1, t1 - t0);
+    var X = function(t2) {
+      return left + (t2 - t0) / span * pw;
+    };
+    var Y = function(v) {
+      return top + ph - v / max * ph;
+    };
+    ctx.font = "9px Menlo, Consolas, monospace";
+    ctx.textAlign = "right";
+    [0, max / 2, max].forEach(function(v) {
+      var y = Math.floor(Y(v)) + 0.5;
+      ctx.strokeStyle = "rgba(63,224,255,.1)";
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(191,244,255,.5)";
+      var bits = v * 8;
+      ctx.fillText(
+        bits >= 1e6 ? (bits / 1e6).toFixed(0) + "M" : (bits / 1e3).toFixed(0) + "k",
+        left - 3,
+        y + 3
+      );
+    });
+    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
+    grad.addColorStop(0, "rgba(63,224,255,.4)");
+    grad.addColorStop(1, "rgba(63,224,255,.02)");
+    ctx.beginPath();
+    ctx.moveTo(X(pts[0].t), top + ph);
+    pts.forEach(function(p) {
+      ctx.lineTo(X(p.t), Y(p.rx));
+    });
+    ctx.lineTo(X(pts[pts.length - 1].t), top + ph);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    pts.forEach(function(p, i2) {
+      if (i2) {
+        ctx.lineTo(X(p.t), Y(p.rx));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.rx));
+      }
+    });
+    ctx.strokeStyle = CYAN3;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.beginPath();
+    pts.forEach(function(p, i2) {
+      if (i2) {
+        ctx.lineTo(X(p.t), Y(p.tx));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.tx));
+      }
+    });
+    ctx.strokeStyle = ACCENT2;
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+    ctx.textAlign = "left";
+    ctx.fillStyle = CYAN3;
+    ctx.fillText("DOWN", left + 2, top - 5);
+    ctx.fillStyle = ACCENT2;
+    ctx.fillText("UP", left + 42, top - 5);
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(191,244,255,.45)";
+    for (var i = 0; i <= 24; i += 6) {
+      var t = t0 + span * i / 24;
+      var d = new Date(t);
+      ctx.fillText(
+        (d.getHours() % 12 || 12) + (d.getHours() < 12 ? "a" : "p"),
+        X(t),
+        h - 3
+      );
+    }
+  }
+  function renderClients() {
+    var box = $id7("nw-clients-body");
+    if (!box || !feeds6) {
+      return;
+    }
+    var counts = feeds6.counts();
+    var fresh = feeds6.newClients();
+    var top = feeds6.topTalkers(5);
+    var html = '<div class="nw-counts"><span><b>' + counts.total + "</b>online</span><span><b>" + counts.wired + "</b>wired</span><span><b>" + counts.wireless + '</b>wireless</span><span class="' + (counts.isNew ? "bad" : "") + '"><b>' + counts.isNew + "</b>new 24h</span></div>";
+    html += '<div class="nw-sub-head">Top talkers now</div>';
+    if (!top.length) {
+      html += '<div class="nw-wait">Nothing moving</div>';
+    } else {
+      var max = top[0].total || 1;
+      html += top.map(function(c2) {
+        var pc = Math.max(2, c2.total / max * 100);
+        return '<div class="nw-row' + (c2.isNew ? " bad" : "") + '" data-client="' + escapeText2(c2.mac) + '"><span class="nw-row-name">' + escapeText2(c2.name) + '</span><span class="nw-row-val">' + rate(c2.total) + '</span><span class="nw-row-sub">' + escapeText2(c2.ip) + " " + (c2.wired ? "wired" : c2.band || "wireless") + '</span><span class="nw-row-track"><i style="width:' + pc.toFixed(1) + '%"></i></span></div>';
+      }).join("");
+    }
+    html += '<div class="nw-sub-head' + (fresh.length ? " bad" : "") + '">New in the last 24 hours' + (fresh.length ? " (" + fresh.length + ")" : "") + "</div>";
+    if (!fresh.length) {
+      html += '<div class="nw-wait">None</div>';
+    } else {
+      html += fresh.slice(0, 8).map(function(c2) {
+        return '<div class="nw-row bad" data-client="' + escapeText2(c2.mac) + '"><span class="nw-row-name">' + escapeText2(c2.name) + '</span><span class="nw-row-val">' + duration(c2.uptime) + '</span><span class="nw-row-sub">' + escapeText2(c2.ip) + " " + escapeText2(c2.oui || (c2.wired ? "wired" : "wireless")) + "</span></div>";
+      }).join("");
+    }
+    box.innerHTML = html;
+  }
+  function renderInfra() {
+    var box = $id7("nw-infra-body");
+    if (!box || !feeds6) {
+      return;
+    }
+    var devices = feeds6.devices();
+    if (!devices.length) {
+      box.innerHTML = '<div class="nw-wait">' + (feeds6.ready ? "No devices" : "Loading") + "</div>";
+      return;
+    }
+    var html = "";
+    devices.filter(function(d) {
+      return d.type === "usw";
+    }).forEach(function(sw) {
+      var budget = sw.poeBudget || 0;
+      var pc = budget > 0 ? sw.poeUsed / budget * 100 : 0;
+      html += '<div class="nw-dev" data-device="' + escapeText2(sw.name) + '"><div class="nw-dev-head"><b>' + escapeText2(sw.name) + "</b><span>" + escapeText2(sw.model) + "</span><i>" + sw.portsUp + (sw.portsTotal ? " / " + sw.portsTotal : "") + " ports up</i></div>";
+      if (budget > 0) {
+        html += '<div class="nw-poe"><span>PoE ' + sw.poeUsed.toFixed(1) + " of " + budget + ' W</span><span class="nw-poe-track"><i style="width:' + Math.min(100, pc).toFixed(1) + '%"></i></span></div>';
+      } else {
+        html += '<div class="nw-poe"><span>No PoE budget</span></div>';
+      }
+      html += '<div class="nw-ports">';
+      for (var i = 1; i <= (sw.portsTotal || sw.portsUp); i++) {
+        var port = null;
+        for (var k = 0; k < sw.ports.length; k++) {
+          if (sw.ports[k].num === i) {
+            port = sw.ports[k];
+          }
+        }
+        var cls = !port ? "off" : port.poe > 0 ? "poe" : "up";
+        var speed = port ? port.speed >= 1e9 ? port.speed / 1e9 + "G" : Math.round(port.speed / 1e6) + "M" : "down";
+        var title = "Port " + i + ": " + (port ? speed + (port.poe > 0 ? ", PoE " + port.poe.toFixed(1) + " W" : "") : "no link");
+        html += '<i class="nw-port ' + cls + '" title="' + escapeText2(title) + '">' + i + "</i>";
+      }
+      html += "</div></div>";
+    });
+    devices.filter(function(d) {
+      return d.type === "uap";
+    }).forEach(function(ap) {
+      html += '<div class="nw-dev" data-device="' + escapeText2(ap.name) + '"><div class="nw-dev-head"><b>' + escapeText2(ap.name) + "</b><span>" + escapeText2(ap.model) + "</span><i>" + (ap.stations || 0) + " clients</i></div>";
+      if (!ap.radios.length) {
+        html += '<div class="nw-wait">No radio data</div>';
+      } else {
+        html += '<div class="nw-radios">' + ap.radios.map(function(r) {
+          var util = r.utilization !== void 0 && r.utilization !== null ? Math.round(r.utilization * 100) + "%" : "n/a";
+          var high = r.utilization > 0.7;
+          return '<span class="nw-radio' + (high ? " bad" : "") + '"><b>' + escapeText2(r.band) + "</b>ch " + (r.channel || "n/a") + ", " + (r.stations || 0) + " cl, util " + util + "</span>";
+        }).join("") + "</div>";
+      }
+      html += "</div>";
+    });
+    box.innerHTML = html;
+  }
+  function openClient(mac) {
+    var list = feeds6.clients();
+    var found = null;
+    list.forEach(function(c2) {
+      if (c2.mac === mac) {
+        found = c2;
+      }
+    });
+    if (!found) {
+      return;
+    }
+    selected4 = { kind: "client", id: mac };
+    selectedHistory = null;
+    feeds6.clientHistory(mac).then(function(points) {
+      if (selected4 && selected4.id === mac) {
+        selectedHistory = points;
+        dirty6 = true;
+      }
+    });
+    dirty6 = true;
+    renderDetail4();
+  }
+  function openDevice2(name) {
+    selected4 = { kind: "device", id: name };
+    selectedHistory = null;
+    dirty6 = true;
+    renderDetail4();
+  }
+  function closeDetail() {
+    selected4 = null;
+    selectedHistory = null;
+    var panel = $id7("nw-detail");
+    if (panel) {
+      panel.classList.remove("open");
+    }
+    dirty6 = true;
+  }
+  function renderDetail4() {
+    var panel = $id7("nw-detail");
+    if (!panel || !feeds6) {
+      return;
+    }
+    if (!selected4) {
+      panel.classList.remove("open");
+      return;
+    }
+    var rows2 = [];
+    var title = "", sub = "", bad = false;
+    if (selected4.kind === "client") {
+      var c2 = null;
+      feeds6.clients().forEach(function(x) {
+        if (x.mac === selected4.id) {
+          c2 = x;
+        }
+      });
+      if (!c2) {
+        panel.classList.remove("open");
+        return;
+      }
+      title = c2.name;
+      sub = c2.ip;
+      bad = c2.isNew;
+      rows2 = [
+        ["Address", c2.ip, c2.mac],
+        ["Vendor", c2.oui || "unknown", ""],
+        ["Network", c2.network + (c2.vlan ? " (VLAN " + c2.vlan + ")" : ""), c2.subnetLabel],
+        [
+          "Connection",
+          c2.wired ? "Wired" : "Wireless",
+          c2.wired ? c2.via + " port " + c2.port : c2.via + (c2.essid ? ", " + c2.essid : "")
+        ],
+        /* radio_signal_db, not rssi_db: the first is dBm, the second is
+           UniFi's 18 to 63 quality scale and would read as a nonsense
+           positive dBm. */
+        [
+          "Signal",
+          c2.wired ? "n/a" : c2.signal !== void 0 && c2.signal !== null ? Math.round(c2.signal) + " dBm" : "n/a",
+          c2.wired ? "" : c2.band + (c2.channel ? ", ch " + c2.channel : "") + (c2.snr !== null ? ", SNR " + Math.round(c2.snr) + " dB" : "")
+        ],
+        ["Down now", rate(c2.rx), ""],
+        ["Up now", rate(c2.tx), ""],
+        ["Connected", duration(c2.uptime), c2.isNew ? "NEW IN LAST 24 H" : ""],
+        ["Experience", c2.satisfaction !== void 0 && c2.satisfaction !== null ? Math.round(c2.satisfaction * 100) + "%" : "n/a", ""]
+      ];
+    } else {
+      var d = null;
+      feeds6.devices().forEach(function(x) {
+        if (x.name === selected4.id) {
+          d = x;
+        }
+      });
+      if (!d) {
+        panel.classList.remove("open");
+        return;
+      }
+      title = d.name;
+      sub = d.ip;
+      bad = d.upgradable;
+      rows2 = [
+        ["Model", d.model, d.type.toUpperCase()],
+        ["Address", d.ip, d.mac],
+        ["Firmware", d.version, d.upgradable ? "UPDATE AVAILABLE" : "up to date"],
+        ["Uptime", duration(d.uptime), ""],
+        ["CPU", d.cpu !== null ? Math.round(d.cpu * 100) + "%" : "n/a", ""],
+        ["Memory", d.memory !== null ? Math.round(d.memory * 100) + "%" : "n/a", ""],
+        ["Temperature", d.temperature !== null ? Math.round(d.temperature) + " C" : "n/a", ""],
+        ["Ports up", d.portsUp + (d.portsTotal ? " of " + d.portsTotal : ""), ""],
+        ["PoE", d.poeBudget ? d.poeUsed.toFixed(1) + " of " + d.poeBudget + " W" : "none", ""]
+      ];
+    }
+    panel.classList.add("open");
+    $id7("nw-detail-name").textContent = title;
+    $id7("nw-detail-sub").textContent = sub;
+    $id7("nw-detail-name").className = bad ? "bad" : "";
+    $id7("nw-detail-rows").innerHTML = rows2.map(function(r) {
+      var note = r[2] || "";
+      var hot = /NEW IN|UPDATE AVAILABLE/.test(note);
+      return '<div class="nw-drow' + (hot ? " bad" : "") + '"><span>' + escapeText2(r[0]) + "</span><b>" + escapeText2(r[1]) + "</b><i>" + escapeText2(note) + "</i></div>";
+    }).join("");
+    sizeCanvas3(devCanvas, dctx);
+    drawDetailChart();
+  }
+  function drawDetailChart() {
+    if (!dctx || !devCanvas) {
+      return;
+    }
+    var w = devCanvas.clientWidth, h = devCanvas.clientHeight;
+    if (!w || !h) {
+      return;
+    }
+    var ctx = dctx;
+    ctx.clearRect(0, 0, w, h);
+    var pts = selectedHistory;
+    if (!pts || pts.length < 2) {
+      ctx.fillStyle = "rgba(191,244,255,.4)";
+      ctx.font = "10px Menlo, Consolas, monospace";
+      ctx.fillText(selected4 && selected4.kind === "device" ? "Per device history is not collected" : pts ? "No traffic history" : "Loading history", 6, 16);
+      return;
+    }
+    var left = 44, right = 8, top = 16, bottom = 14;
+    var pw = w - left - right, ph = h - top - bottom;
+    var max = 1;
+    pts.forEach(function(p) {
+      max = Math.max(max, p.rx, p.tx);
+    });
+    max *= 1.15;
+    var t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+    var span = Math.max(1, t1 - t0);
+    var X = function(t) {
+      return left + (t - t0) / span * pw;
+    };
+    var Y = function(v) {
+      return top + ph - v / max * ph;
+    };
+    ctx.font = "9px Menlo, Consolas, monospace";
+    ctx.textAlign = "right";
+    [0, max].forEach(function(v) {
+      var y = Math.floor(Y(v)) + 0.5;
+      ctx.strokeStyle = "rgba(63,224,255,.1)";
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(191,244,255,.5)";
+      var bits = v * 8;
+      ctx.fillText(bits >= 1e6 ? (bits / 1e6).toFixed(1) + "M" : (bits / 1e3).toFixed(0) + "k", left - 3, y + 3);
+    });
+    var grad = ctx.createLinearGradient(0, top, 0, top + ph);
+    grad.addColorStop(0, "rgba(63,224,255,.38)");
+    grad.addColorStop(1, "rgba(63,224,255,.02)");
+    ctx.beginPath();
+    ctx.moveTo(X(pts[0].t), top + ph);
+    pts.forEach(function(p) {
+      ctx.lineTo(X(p.t), Y(p.rx));
+    });
+    ctx.lineTo(X(pts[pts.length - 1].t), top + ph);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    pts.forEach(function(p, i) {
+      if (i) {
+        ctx.lineTo(X(p.t), Y(p.rx));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.rx));
+      }
+    });
+    ctx.strokeStyle = CYAN3;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.beginPath();
+    pts.forEach(function(p, i) {
+      if (i) {
+        ctx.lineTo(X(p.t), Y(p.tx));
+      } else {
+        ctx.moveTo(X(p.t), Y(p.tx));
+      }
+    });
+    ctx.strokeStyle = ACCENT2;
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+    ctx.textAlign = "left";
+    ctx.fillStyle = CYAN3;
+    ctx.fillText("DOWN", left + 2, top - 5);
+    ctx.fillStyle = ACCENT2;
+    ctx.fillText("UP", left + 42, top - 5);
+  }
+  function renderClock7(now) {
+    var el = $id7("nw-time");
+    if (!el) {
+      return;
+    }
+    var d = new Date(now);
+    var h = d.getHours();
+    var text = (h % 12 || 12) + ":" + pad7(d.getMinutes()) + ":" + pad7(d.getSeconds());
+    if (text === lastClock4) {
+      return;
+    }
+    lastClock4 = text;
+    el.innerHTML = text + "<small>" + (h < 12 ? "AM" : "PM") + "</small>";
+    var dt = $id7("nw-date");
+    if (dt) {
+      dt.textContent = DAYS7[d.getDay()] + ", " + MONTHS7[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    }
+  }
+  function nodeAt2(target) {
+    var i = target.getAttribute("data-node");
+    return i === null ? null : layout2.nodes[Number(i)];
+  }
+  function bindControls5() {
+    var root = $id7("network-screen");
+    root.addEventListener("click", function(e) {
+      if (e.target.closest("#nw-detail-close")) {
+        closeDetail();
+        return;
+      }
+      var row = e.target.closest("[data-client]");
+      if (row) {
+        openClient(row.getAttribute("data-client"));
+        return;
+      }
+      var dev = e.target.closest("[data-device]");
+      if (dev) {
+        openDevice2(dev.getAttribute("data-device"));
+        return;
+      }
+      var hit = e.target.closest("[data-node]");
+      if (!hit) {
+        return;
+      }
+      var n = nodeAt2(hit);
+      if (!n) {
+        return;
+      }
+      if (n.kind === "cluster") {
+        expanded[n.subnet.key] = !expanded[n.subnet.key];
+        dirty6 = true;
+        lastRender6 = 0;
+        buildTopology();
+      } else if (n.kind === "client") {
+        openClient(n.client.mac);
+      } else if (n.device) {
+        openDevice2(n.device.name);
+      }
+    });
+    window.addEventListener("keydown", function(e) {
+      if (!active7 || e.key !== "Escape") {
+        return;
+      }
+      if (selected4) {
+        closeDetail();
+      } else {
+        var any = Object.keys(expanded).some(function(k) {
+          return expanded[k];
+        });
+        if (any) {
+          expanded = {};
+          dirty6 = true;
+          lastRender6 = 0;
+          buildTopology();
+        }
+      }
+    });
+  }
+  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS3, NetworkView, feeds6, active7, built5, dirty6, lastRender6, lastFrame2, resizeTimer7, observer6, svg2, pulseCanvas, pctx2, wanCanvas, wctx, devCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, DAYS7, MONTHS7, lastClock4;
+  var init_NetworkView = __esm({
+    "src/NetworkView.js"() {
+      init_NetworkFeeds();
+      CYAN3 = "#3fe0ff";
+      ALERT3 = "#ff8a1f";
+      ACCENT2 = "#4dffb0";
+      DIM = "#2aa3bb";
+      REFRESH_MS3 = 2e3;
+      NetworkView = {};
+      feeds6 = null;
+      active7 = false;
+      built5 = false;
+      dirty6 = true;
+      lastRender6 = 0;
+      lastFrame2 = 0;
+      resizeTimer7 = null;
+      observer6 = null;
+      svg2 = null;
+      pulseCanvas = null;
+      pctx2 = null;
+      wanCanvas = null;
+      wctx = null;
+      devCanvas = null;
+      dctx = null;
+      expanded = {};
+      selected4 = null;
+      selectedHistory = null;
+      layout2 = { nodes: [], links: [], w: 0, h: 0 };
+      pulses = [];
+      NetworkView.init = function() {
+        var root = $id7("network-screen");
+        root.style.display = "grid";
+        root.style.visibility = "hidden";
+        active7 = true;
+        svg2 = $id7("nw-svg");
+        pulseCanvas = $id7("nw-pulses");
+        pctx2 = pulseCanvas ? pulseCanvas.getContext("2d") : null;
+        wanCanvas = $id7("nw-wan-canvas");
+        wctx = wanCanvas ? wanCanvas.getContext("2d") : null;
+        devCanvas = $id7("nw-detail-canvas");
+        dctx = devCanvas ? devCanvas.getContext("2d") : null;
+        if (!feeds6) {
+          feeds6 = new NetworkFeeds(function() {
+            dirty6 = true;
+          });
+          feeds6.start();
+        }
+        if (!built5) {
+          built5 = true;
+          bindControls5();
+        }
+        watchPanels6();
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            NetworkView.resize();
+          });
+        });
+        dirty6 = true;
+      };
+      NetworkView.show = function() {
+        active7 = true;
+        var root = $id7("network-screen");
+        root.style.display = "grid";
+        root.style.visibility = "visible";
+        NetworkView.resize();
+      };
+      NetworkView.hide = function() {
+        active7 = false;
+        $id7("network-screen").style.display = "none";
+      };
+      NetworkView.message = function() {
+      };
+      NetworkView.seed = function() {
+        dirty6 = true;
+      };
+      NetworkView.animate = function() {
+        if (!active7 || !feeds6) {
+          return;
+        }
+        var now = Date.now();
+        var dt = lastFrame2 ? Math.min((now - lastFrame2) / 1e3, 0.1) : 0;
+        lastFrame2 = now;
+        renderClock7(now);
+        stepPulses(dt);
+        if (dirty6 && now - lastRender6 > REFRESH_MS3) {
+          lastRender6 = now;
+          dirty6 = false;
+          buildTopology();
+          renderStatus4();
+          renderWan();
+          renderClients();
+          renderInfra();
+          renderDetail4();
+        }
+      };
+      NetworkView.resize = function() {
+        if (!active7) {
+          return;
+        }
+        sizeCanvas3(pulseCanvas, pctx2);
+        sizeCanvas3(wanCanvas, wctx);
+        sizeCanvas3(devCanvas, dctx);
+        dirty6 = true;
+        lastRender6 = 0;
+        buildTopology();
+        drawWanChart();
+      };
+      NetworkView.resizeDebounced = function() {
+        if (resizeTimer7) {
+          clearTimeout(resizeTimer7);
+        }
+        resizeTimer7 = setTimeout(function() {
+          resizeTimer7 = null;
+          NetworkView.resize();
+        }, 150);
+      };
+      DAYS7 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      MONTHS7 = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      lastClock4 = "";
+    }
+  });
+
   // src/Areas.js
   var Areas_exports = {};
   __export(Areas_exports, {
@@ -56884,13 +58587,13 @@
           }
           _cleanData(elems);
         };
-        $2.widget = function(name, base, prototype) {
+        $2.widget = function(name, base2, prototype) {
           var fullName, existingConstructor, constructor, basePrototype, proxiedPrototype = {}, namespace = name.split(".")[0];
           name = name.split(".")[1];
           fullName = namespace + "-" + name;
           if (!prototype) {
-            prototype = base;
-            base = $2.Widget;
+            prototype = base2;
+            base2 = $2.Widget;
           }
           $2.expr[":"][fullName.toLowerCase()] = function(elem) {
             return !!$2.data(elem, fullName);
@@ -56914,7 +58617,7 @@
             // redefined after a widget inherits from it
             _childConstructors: []
           });
-          basePrototype = new base();
+          basePrototype = new base2();
           basePrototype.options = $2.widget.extend({}, basePrototype.options);
           $2.each(prototype, function(prop, value) {
             if (!$2.isFunction(value)) {
@@ -56923,9 +58626,9 @@
             }
             proxiedPrototype[prop] = /* @__PURE__ */ function() {
               var _super = function() {
-                return base.prototype[prop].apply(this, arguments);
+                return base2.prototype[prop].apply(this, arguments);
               }, _superApply = function(args) {
-                return base.prototype[prop].apply(this, args);
+                return base2.prototype[prop].apply(this, args);
               };
               return function() {
                 var __super = this._super, __superApply = this._superApply, returnValue;
@@ -56956,7 +58659,7 @@
             });
             delete existingConstructor._childConstructors;
           } else {
-            base._childConstructors.push(constructor);
+            base2._childConstructors.push(constructor);
           }
           $2.widget.bridge(name, constructor);
         };
@@ -57951,7 +59654,7 @@
             });
           },
           drag: function(event, ui) {
-            var ts, bs, ls, rs, l, r, t, b, i, first, inst = $2(this).data("ui-draggable"), o = inst.options, d = o.snapTolerance, x1 = ui.offset.left, x2 = x1 + inst.helperProportions.width, y1 = ui.offset.top, y2 = y1 + inst.helperProportions.height;
+            var ts, bs, ls, rs, l, r, t, b, i, first2, inst = $2(this).data("ui-draggable"), o = inst.options, d = o.snapTolerance, x1 = ui.offset.left, x2 = x1 + inst.helperProportions.width, y1 = ui.offset.top, y2 = y1 + inst.helperProportions.height;
             for (i = inst.snapElements.length - 1; i >= 0; i--) {
               l = inst.snapElements[i].left;
               r = l + inst.snapElements[i].width;
@@ -57982,7 +59685,7 @@
                   ui.position.left = inst._convertPositionTo("relative", { top: 0, left: r }).left - inst.margins.left;
                 }
               }
-              first = ts || bs || ls || rs;
+              first2 = ts || bs || ls || rs;
               if (o.snapMode !== "outer") {
                 ts = Math.abs(t - y1) <= d;
                 bs = Math.abs(b - y2) <= d;
@@ -58001,10 +59704,10 @@
                   ui.position.left = inst._convertPositionTo("relative", { top: 0, left: r - inst.helperProportions.width }).left - inst.margins.left;
                 }
               }
-              if (!inst.snapElements[i].snapping && (ts || bs || ls || rs || first)) {
+              if (!inst.snapElements[i].snapping && (ts || bs || ls || rs || first2)) {
                 inst.options.snap.snap && inst.options.snap.snap.call(inst.element, event, $2.extend(inst._uiHash(), { snapItem: inst.snapElements[i].item }));
               }
-              inst.snapElements[i].snapping = ts || bs || ls || rs || first;
+              inst.snapElements[i].snapping = ts || bs || ls || rs || first2;
             }
           }
         });
@@ -58291,7 +59994,7 @@
         };
       })(jQuery);
       (function($2, undefined2) {
-        function num3(v) {
+        function num4(v) {
           return parseInt(v, 10) || 0;
         }
         function isNumber(value) {
@@ -58467,8 +60170,8 @@
               el.css({ position: "absolute", top: iniPos.top, left: iniPos.left });
             }
             this._renderProxy();
-            curleft = num3(this.helper.css("left"));
-            curtop = num3(this.helper.css("top"));
+            curleft = num4(this.helper.css("left"));
+            curtop = num4(this.helper.css("top"));
             if (o.containment) {
               curleft += $2(o.containment).scrollLeft() || 0;
               curtop += $2(o.containment).scrollTop() || 0;
@@ -58773,7 +60476,7 @@
               element = $2(ce);
               p = [];
               $2(["Top", "Right", "Left", "Bottom"]).each(function(i, name) {
-                p[i] = num3(element.css("padding" + name));
+                p[i] = num4(element.css("padding" + name));
               });
               that.containerOffset = element.offset();
               that.containerPosition = element.position();
@@ -59682,7 +61385,7 @@
             o.placeholder.update(that, that.placeholder);
           },
           _contactContainers: function(event) {
-            var i, j, dist, itemWithLeastDistance, posProperty, sizeProperty, base, cur, nearBottom, floating, innermostContainer = null, innermostIndex = null;
+            var i, j, dist, itemWithLeastDistance, posProperty, sizeProperty, base2, cur, nearBottom, floating, innermostContainer = null, innermostIndex = null;
             for (i = this.containers.length - 1; i >= 0; i--) {
               if ($2.contains(this.currentItem[0], this.containers[i].element[0])) {
                 continue;
@@ -59714,7 +61417,7 @@
               floating = innermostContainer.floating || isFloating(this.currentItem);
               posProperty = floating ? "left" : "top";
               sizeProperty = floating ? "width" : "height";
-              base = this.positionAbs[posProperty] + this.offset.click[posProperty];
+              base2 = this.positionAbs[posProperty] + this.offset.click[posProperty];
               for (j = this.items.length - 1; j >= 0; j--) {
                 if (!$2.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) {
                   continue;
@@ -59727,12 +61430,12 @@
                 }
                 cur = this.items[j].item.offset()[posProperty];
                 nearBottom = false;
-                if (Math.abs(cur - base) > Math.abs(cur + this.items[j][sizeProperty] - base)) {
+                if (Math.abs(cur - base2) > Math.abs(cur + this.items[j][sizeProperty] - base2)) {
                   nearBottom = true;
                   cur += this.items[j][sizeProperty];
                 }
-                if (Math.abs(cur - base) < dist) {
-                  dist = Math.abs(cur - base);
+                if (Math.abs(cur - base2) < dist) {
+                  dist = Math.abs(cur - base2);
                   itemWithLeastDistance = this.items[j];
                   this.direction = nearBottom ? "up" : "down";
                 }
@@ -60478,11 +62181,11 @@
           color.hook(stepHooks);
           jQuery2.cssHooks.borderColor = {
             expand: function(value) {
-              var expanded = {};
+              var expanded2 = {};
               each(["Top", "Right", "Bottom", "Left"], function(i, part) {
-                expanded["border" + part + "Color"] = value;
+                expanded2["border" + part + "Color"] = value;
               });
-              return expanded;
+              return expanded2;
             }
           };
           colors = jQuery2.Color.names = {
@@ -60568,8 +62271,8 @@
               );
             };
           }
-          $2.effects.animateClass = function(value, duration, easing, callback) {
-            var o = $2.speed(duration, easing, callback);
+          $2.effects.animateClass = function(value, duration2, easing, callback) {
+            var o = $2.speed(duration2, easing, callback);
             return this.queue(function() {
               var animated = $2(this), baseClass = animated.attr("class") || "", applyClassChange, allAnimations = o.children ? animated.find("*").addBack() : animated;
               allAnimations = allAnimations.map(function() {
@@ -60754,15 +62457,15 @@
               }), size = {
                 width: element.width(),
                 height: element.height()
-              }, active8 = document.activeElement;
+              }, active9 = document.activeElement;
               try {
-                active8.id;
+                active9.id;
               } catch (e) {
-                active8 = document.body;
+                active9 = document.body;
               }
               element.wrap(wrapper);
-              if (element[0] === active8 || $2.contains(element[0], active8)) {
-                $2(active8).focus();
+              if (element[0] === active9 || $2.contains(element[0], active9)) {
+                $2(active9).focus();
               }
               wrapper = element.parent();
               if (element.css("position") === "static") {
@@ -60791,11 +62494,11 @@
               return wrapper.css(props).show();
             },
             removeWrapper: function(element) {
-              var active8 = document.activeElement;
+              var active9 = document.activeElement;
               if (element.parent().is(".ui-effects-wrapper")) {
                 element.parent().replaceWith(element);
-                if (element[0] === active8 || $2.contains(element[0], active8)) {
-                  $2(active8).focus();
+                if (element[0] === active9 || $2.contains(element[0], active9)) {
+                  $2(active9).focus();
                 }
               }
               return element;
@@ -61190,14 +62893,14 @@
             }
           },
           _activate: function(index) {
-            var active8 = this._findActive(index)[0];
-            if (active8 === this.active[0]) {
+            var active9 = this._findActive(index)[0];
+            if (active9 === this.active[0]) {
               return;
             }
-            active8 = active8 || this.active[0];
+            active9 = active9 || this.active[0];
             this._eventHandler({
-              target: active8,
-              currentTarget: active8,
+              target: active9,
+              currentTarget: active9,
               preventDefault: $2.noop
             });
           },
@@ -61220,8 +62923,8 @@
             this._focusable(this.headers);
           },
           _eventHandler: function(event) {
-            var options = this.options, active8 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active8[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active8.next(), eventData = {
-              oldHeader: active8,
+            var options = this.options, active9 = this.active, clicked = $2(event.currentTarget), clickedIsActive = clicked[0] === active9[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : clicked.next(), toHide = active9.next(), eventData = {
+              oldHeader: active9,
               oldPanel: toHide,
               newHeader: collapsing ? $2() : clicked,
               newPanel: toShow
@@ -61237,9 +62940,9 @@
             options.active = collapsing ? false : this.headers.index(clicked);
             this.active = clickedIsActive ? $2() : clicked;
             this._toggle(eventData);
-            active8.removeClass("ui-accordion-header-active ui-state-active");
+            active9.removeClass("ui-accordion-header-active ui-state-active");
             if (options.icons) {
-              active8.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
+              active9.children(".ui-accordion-header-icon").removeClass(options.icons.activeHeader).addClass(options.icons.header);
             }
             if (!clickedIsActive) {
               clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
@@ -61282,33 +62985,33 @@
             });
           },
           _animate: function(toShow, toHide, data) {
-            var total, easing, duration, that = this, adjust = 0, down = toShow.length && (!toHide.length || toShow.index() < toHide.index()), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function() {
+            var total, easing, duration2, that = this, adjust = 0, down = toShow.length && (!toHide.length || toShow.index() < toHide.index()), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function() {
               that._toggleComplete(data);
             };
             if (typeof options === "number") {
-              duration = options;
+              duration2 = options;
             }
             if (typeof options === "string") {
               easing = options;
             }
             easing = easing || options.easing || animate.easing;
-            duration = duration || options.duration || animate.duration;
+            duration2 = duration2 || options.duration || animate.duration;
             if (!toHide.length) {
-              return toShow.animate(showProps, duration, easing, complete);
+              return toShow.animate(showProps, duration2, easing, complete);
             }
             if (!toShow.length) {
-              return toHide.animate(hideProps, duration, easing, complete);
+              return toHide.animate(hideProps, duration2, easing, complete);
             }
             total = toShow.show().outerHeight();
             toHide.animate(hideProps, {
-              duration,
+              duration: duration2,
               easing,
               step: function(now, fx) {
                 fx.now = Math.round(now);
               }
             });
             toShow.hide().animate(showProps, {
-              duration,
+              duration: duration2,
               easing,
               complete,
               step: function(now, fx) {
@@ -62732,7 +64435,7 @@
             if ($2.datepicker._isDisabledDatepicker(input) || $2.datepicker._lastInput === input) {
               return;
             }
-            var inst, beforeShow, beforeShowSettings, isFixed, offset, showAnim, duration;
+            var inst, beforeShow, beforeShowSettings, isFixed, offset, showAnim, duration2;
             inst = $2.datepicker._getInst(input);
             if ($2.datepicker._curInst && $2.datepicker._curInst !== inst) {
               $2.datepicker._curInst.dpDiv.stop(true, true);
@@ -62775,13 +64478,13 @@
             });
             if (!inst.inline) {
               showAnim = $2.datepicker._get(inst, "showAnim");
-              duration = $2.datepicker._get(inst, "duration");
+              duration2 = $2.datepicker._get(inst, "duration");
               inst.dpDiv.zIndex($2(input).zIndex() + 1);
               $2.datepicker._datepickerShowing = true;
               if ($2.effects && $2.effects.effect[showAnim]) {
-                inst.dpDiv.show(showAnim, $2.datepicker._get(inst, "showOptions"), duration);
+                inst.dpDiv.show(showAnim, $2.datepicker._get(inst, "showOptions"), duration2);
               } else {
-                inst.dpDiv[showAnim || "show"](showAnim ? duration : null);
+                inst.dpDiv[showAnim || "show"](showAnim ? duration2 : null);
               }
               if ($2.datepicker._shouldFocusInput(inst)) {
                 inst.input.focus();
@@ -62845,20 +64548,20 @@
            * @param  input  element - the input field attached to the date picker
            */
           _hideDatepicker: function(input) {
-            var showAnim, duration, postProcess, onClose, inst = this._curInst;
+            var showAnim, duration2, postProcess, onClose, inst = this._curInst;
             if (!inst || input && inst !== $2.data(input, PROP_NAME)) {
               return;
             }
             if (this._datepickerShowing) {
               showAnim = this._get(inst, "showAnim");
-              duration = this._get(inst, "duration");
+              duration2 = this._get(inst, "duration");
               postProcess = function() {
                 $2.datepicker._tidyDialog(inst);
               };
               if ($2.effects && ($2.effects.effect[showAnim] || $2.effects[showAnim])) {
-                inst.dpDiv.hide(showAnim, $2.datepicker._get(inst, "showOptions"), duration, postProcess);
+                inst.dpDiv.hide(showAnim, $2.datepicker._get(inst, "showOptions"), duration2, postProcess);
               } else {
-                inst.dpDiv[showAnim === "slideDown" ? "slideUp" : showAnim === "fadeIn" ? "fadeOut" : "hide"](showAnim ? duration : null, postProcess);
+                inst.dpDiv[showAnim === "slideDown" ? "slideUp" : showAnim === "fadeIn" ? "fadeOut" : "hide"](showAnim ? duration2 : null, postProcess);
               }
               if (!showAnim) {
                 postProcess();
@@ -63037,12 +64740,12 @@
               }
               return matches;
             }, getNumber = function(match) {
-              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num3 = value.substring(iValue).match(digits);
-              if (!num3) {
+              var isDoubled = lookAhead(match), size = match === "@" ? 14 : match === "!" ? 20 : match === "y" && isDoubled ? 4 : match === "o" ? 3 : 2, digits = new RegExp("^\\d{1," + size + "}"), num4 = value.substring(iValue).match(digits);
+              if (!num4) {
                 throw "Missing number at position " + iValue;
               }
-              iValue += num3[0].length;
-              return parseInt(num3[0], 10);
+              iValue += num4[0].length;
+              return parseInt(num4[0], 10);
             }, getName = function(match, shortNames, longNames) {
               var index = -1, names = $2.map(lookAhead(match) ? longNames : shortNames, function(v, k) {
                 return [[k, v]];
@@ -63204,13 +64907,13 @@
               }
               return matches;
             }, formatNumber = function(match, value, len) {
-              var num3 = "" + value;
+              var num4 = "" + value;
               if (lookAhead(match)) {
-                while (num3.length < len) {
-                  num3 = "0" + num3;
+                while (num4.length < len) {
+                  num4 = "0" + num4;
                 }
               }
-              return num3;
+              return num4;
             }, formatName = function(match, value, shortNames, longNames) {
               return lookAhead(match) ? longNames[value] : shortNames[value];
             }, output = "", literal = false;
@@ -64028,11 +65731,11 @@
                 if (event.keyCode !== $2.ui.keyCode.TAB) {
                   return;
                 }
-                var tabbables = this.uiDialog.find(":tabbable"), first = tabbables.filter(":first"), last = tabbables.filter(":last");
+                var tabbables = this.uiDialog.find(":tabbable"), first2 = tabbables.filter(":first"), last = tabbables.filter(":last");
                 if ((event.target === last[0] || event.target === this.uiDialog[0]) && !event.shiftKey) {
-                  first.focus(1);
+                  first2.focus(1);
                   event.preventDefault();
-                } else if ((event.target === first[0] || event.target === this.uiDialog[0]) && event.shiftKey) {
+                } else if ((event.target === first2[0] || event.target === this.uiDialog[0]) && event.shiftKey) {
                   last.focus(1);
                   event.preventDefault();
                 }
@@ -64604,7 +66307,7 @@
       })(jQuery);
       (function($2, undefined2) {
         $2.effects.effect.fold = function(o, done) {
-          var el = $2(this), props = ["position", "top", "bottom", "left", "right", "height", "width"], mode = $2.effects.setMode(el, o.mode || "hide"), show = mode === "show", hide = mode === "hide", size = o.size || 15, percent = /([0-9]+)%/.exec(size), horizFirst = !!o.horizFirst, widthFirst = show !== horizFirst, ref = widthFirst ? ["width", "height"] : ["height", "width"], duration = o.duration / 2, wrapper, distance, animation1 = {}, animation2 = {};
+          var el = $2(this), props = ["position", "top", "bottom", "left", "right", "height", "width"], mode = $2.effects.setMode(el, o.mode || "hide"), show = mode === "show", hide = mode === "hide", size = o.size || 15, percent = /([0-9]+)%/.exec(size), horizFirst = !!o.horizFirst, widthFirst = show !== horizFirst, ref = widthFirst ? ["width", "height"] : ["height", "width"], duration2 = o.duration / 2, wrapper, distance, animation1 = {}, animation2 = {};
           $2.effects.save(el, props);
           el.show();
           wrapper = $2.effects.createWrapper(el).css({
@@ -64625,7 +66328,7 @@
           }
           animation1[ref[0]] = show ? distance[0] : size;
           animation2[ref[1]] = show ? distance[1] : 0;
-          wrapper.animate(animation1, duration, o.easing).animate(animation2, duration, o.easing, function() {
+          wrapper.animate(animation1, duration2, o.easing).animate(animation2, duration2, o.easing, function() {
             if (hide) {
               el.hide();
             }
@@ -64663,7 +66366,7 @@
       })(jQuery);
       (function($2, undefined2) {
         $2.effects.effect.pulsate = function(o, done) {
-          var elem = $2(this), mode = $2.effects.setMode(elem, o.mode || "show"), show = mode === "show", hide = mode === "hide", showhide = show || mode === "hide", anims = (o.times || 5) * 2 + (showhide ? 1 : 0), duration = o.duration / anims, animateTo = 0, queue = elem.queue(), queuelen = queue.length, i;
+          var elem = $2(this), mode = $2.effects.setMode(elem, o.mode || "show"), show = mode === "show", hide = mode === "hide", showhide = show || mode === "hide", anims = (o.times || 5) * 2 + (showhide ? 1 : 0), duration2 = o.duration / anims, animateTo = 0, queue = elem.queue(), queuelen = queue.length, i;
           if (show || !elem.is(":visible")) {
             elem.css("opacity", 0).show();
             animateTo = 1;
@@ -64671,12 +66374,12 @@
           for (i = 1; i < anims; i++) {
             elem.animate({
               opacity: animateTo
-            }, duration, o.easing);
+            }, duration2, o.easing);
             animateTo = 1 - animateTo;
           }
           elem.animate({
             opacity: animateTo
-          }, duration, o.easing);
+          }, duration2, o.easing);
           elem.queue(function() {
             if (hide) {
               elem.hide();
@@ -65337,7 +67040,7 @@
             this.focus(event, next2);
           },
           nextPage: function(event) {
-            var item2, base, height;
+            var item2, base2, height;
             if (!this.active) {
               this.next(event);
               return;
@@ -65346,11 +67049,11 @@
               return;
             }
             if (this._hasScroll()) {
-              base = this.active.offset().top;
+              base2 = this.active.offset().top;
               height = this.element.height();
               this.active.nextAll(".ui-menu-item").each(function() {
                 item2 = $2(this);
-                return item2.offset().top - base - height < 0;
+                return item2.offset().top - base2 - height < 0;
               });
               this.focus(event, item2);
             } else {
@@ -65358,7 +67061,7 @@
             }
           },
           previousPage: function(event) {
-            var item2, base, height;
+            var item2, base2, height;
             if (!this.active) {
               this.next(event);
               return;
@@ -65367,11 +67070,11 @@
               return;
             }
             if (this._hasScroll()) {
-              base = this.active.offset().top;
+              base2 = this.active.offset().top;
               height = this.element.height();
               this.active.prevAll(".ui-menu-item").each(function() {
                 item2 = $2(this);
-                return item2.offset().top - base + height > 0;
+                return item2.offset().top - base2 + height > 0;
               });
               this.focus(event, item2);
             } else {
@@ -66510,16 +68213,16 @@
             }
             return precision;
           },
-          _precisionOf: function(num3) {
-            var str = num3.toString(), decimal = str.indexOf(".");
+          _precisionOf: function(num4) {
+            var str = num4.toString(), decimal = str.indexOf(".");
             return decimal === -1 ? 0 : str.length - decimal - 1;
           },
           _adjustValue: function(value) {
-            var base, aboveMin, options = this.options;
-            base = options.min !== null ? options.min : 0;
-            aboveMin = value - base;
+            var base2, aboveMin, options = this.options;
+            base2 = options.min !== null ? options.min : 0;
+            aboveMin = value - base2;
             aboveMin = Math.round(aboveMin / options.step) * options.step;
-            value = base + aboveMin;
+            value = base2 + aboveMin;
             value = parseFloat(value.toFixed(this._precision()));
             if (options.max !== null && value > options.max) {
               return options.max;
@@ -66700,33 +68403,33 @@
             }
           },
           _initialActive: function() {
-            var active8 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
-            if (active8 === null) {
+            var active9 = this.options.active, collapsible = this.options.collapsible, locationHash = location.hash.substring(1);
+            if (active9 === null) {
               if (locationHash) {
                 this.tabs.each(function(i, tab) {
                   if ($2(tab).attr("aria-controls") === locationHash) {
-                    active8 = i;
+                    active9 = i;
                     return false;
                   }
                 });
               }
-              if (active8 === null) {
-                active8 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
+              if (active9 === null) {
+                active9 = this.tabs.index(this.tabs.filter(".ui-tabs-active"));
               }
-              if (active8 === null || active8 === -1) {
-                active8 = this.tabs.length ? 0 : false;
-              }
-            }
-            if (active8 !== false) {
-              active8 = this.tabs.index(this.tabs.eq(active8));
-              if (active8 === -1) {
-                active8 = collapsible ? false : 0;
+              if (active9 === null || active9 === -1) {
+                active9 = this.tabs.length ? 0 : false;
               }
             }
-            if (!collapsible && active8 === false && this.anchors.length) {
-              active8 = 0;
+            if (active9 !== false) {
+              active9 = this.tabs.index(this.tabs.eq(active9));
+              if (active9 === -1) {
+                active9 = collapsible ? false : 0;
+              }
             }
-            return active8;
+            if (!collapsible && active9 === false && this.anchors.length) {
+              active9 = 0;
+            }
+            return active9;
           },
           _getCreateEventData: function() {
             return {
@@ -67006,8 +68709,8 @@
             }
           },
           _eventHandler: function(event) {
-            var options = this.options, active8 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active8[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active8.length ? $2() : this._getPanelForTab(active8), eventData = {
-              oldTab: active8,
+            var options = this.options, active9 = this.active, anchor = $2(event.currentTarget), tab = anchor.closest("li"), clickedIsActive = tab[0] === active9[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $2() : this._getPanelForTab(tab), toHide = !active9.length ? $2() : this._getPanelForTab(active9), eventData = {
+              oldTab: active9,
               oldPanel: toHide,
               newTab: collapsing ? $2() : tab,
               newPanel: toShow
@@ -67082,14 +68785,14 @@
             });
           },
           _activate: function(index) {
-            var anchor, active8 = this._findActive(index);
-            if (active8[0] === this.active[0]) {
+            var anchor, active9 = this._findActive(index);
+            if (active9[0] === this.active[0]) {
               return;
             }
-            if (!active8.length) {
-              active8 = this.active;
+            if (!active9.length) {
+              active9 = this.active;
             }
-            anchor = active8.find(".ui-tabs-anchor")[0];
+            anchor = active9.find(".ui-tabs-anchor")[0];
             this._eventHandler({
               target: anchor,
               currentTarget: anchor,
@@ -67142,12 +68845,12 @@
             } else {
               index = this._getIndex(index);
               if ($2.isArray(disabled)) {
-                disabled = $2.map(disabled, function(num3) {
-                  return num3 !== index ? num3 : null;
+                disabled = $2.map(disabled, function(num4) {
+                  return num4 !== index ? num4 : null;
                 });
               } else {
-                disabled = $2.map(this.tabs, function(li, num3) {
-                  return num3 !== index ? num3 : null;
+                disabled = $2.map(this.tabs, function(li, num4) {
+                  return num4 !== index ? num4 : null;
                 });
               }
             }
@@ -67509,6 +69212,7 @@
   var CameraView2 = (init_CameraView(), __toCommonJS(CameraView_exports)).CameraView;
   var EnergyView2 = (init_EnergyView(), __toCommonJS(EnergyView_exports)).EnergyView;
   var HomelabView2 = (init_HomelabView(), __toCommonJS(HomelabView_exports)).HomelabView;
+  var NetworkView2 = (init_NetworkView(), __toCommonJS(NetworkView_exports)).NetworkView;
   var Areas2 = (init_Areas(), __toCommonJS(Areas_exports)).Areas;
   var LeakWatch2 = (init_LeakWatch(), __toCommonJS(LeakWatch_exports)).LeakWatch;
   var areas4 = null;
@@ -67560,22 +69264,24 @@
     this.css("left", left + "px");
     return this;
   };
-  var active7 = "lt";
+  var active8 = "lt";
   var ha = haSource.start(function(message) {
-    if (active7 === "lt") {
+    if (active8 === "lt") {
       LightTable.message(message);
-    } else if (active7 === "house") {
+    } else if (active8 === "house") {
       HouseView2.message(message);
-    } else if (active7 === "climate") {
+    } else if (active8 === "climate") {
       ClimateView2.message(message);
-    } else if (active7 === "security") {
+    } else if (active8 === "security") {
       SecurityView2.message(message);
-    } else if (active7 === "cameras") {
+    } else if (active8 === "cameras") {
       CameraView2.message(message);
-    } else if (active7 === "energy") {
+    } else if (active8 === "energy") {
       EnergyView2.message(message);
-    } else if (active7 === "homelab") {
+    } else if (active8 === "homelab") {
       HomelabView2.message(message);
+    } else if (active8 === "network") {
+      NetworkView2.message(message);
     } else {
       setTimeout(function() {
         Boardroom.message(message);
@@ -67619,47 +69325,53 @@
       HouseView2.init(ha);
       HouseView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active7 = "house";
+        active8 = "house";
         HouseView2.show();
       }, 3e3);
     } else if (system.key === "climate") {
       ClimateView2.init(ha);
       ClimateView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active7 = "climate";
+        active8 = "climate";
         ClimateView2.show();
       }, 3e3);
     } else if (system.key === "security") {
       SecurityView2.init(ha, areas4);
       SecurityView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active7 = "security";
+        active8 = "security";
         SecurityView2.show();
       }, 3e3);
     } else if (system.key === "cameras") {
       CameraView2.init(ha, areas4);
       CameraView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active7 = "cameras";
+        active8 = "cameras";
         CameraView2.show();
       }, 3e3);
     } else if (system.key === "energy") {
       EnergyView2.init(ha, areas4);
       EnergyView2.seed(haSource.getSeed());
       setTimeout(function() {
-        active7 = "energy";
+        active8 = "energy";
         EnergyView2.show();
+      }, 3e3);
+    } else if (system.key === "network") {
+      NetworkView2.init();
+      setTimeout(function() {
+        active8 = "network";
+        NetworkView2.show();
       }, 3e3);
     } else if (system.key === "homelab") {
       HomelabView2.init();
       setTimeout(function() {
-        active7 = "homelab";
+        active8 = "homelab";
         HomelabView2.show();
       }, 3e3);
     } else {
       Boardroom.init(system.key);
       setTimeout(function() {
-        active7 = "br";
+        active8 = "br";
         Boardroom.show();
       }, 3e3);
     }
@@ -67703,20 +69415,22 @@
     $("#boardroom").fitScreen(1900, 715);
     LightTable.show();
     var animate = function() {
-      if (active7 === "lt") {
+      if (active8 === "lt") {
         LightTable.animate();
-      } else if (active7 === "house") {
+      } else if (active8 === "house") {
         HouseView2.animate();
-      } else if (active7 === "climate") {
+      } else if (active8 === "climate") {
         ClimateView2.animate();
-      } else if (active7 === "security") {
+      } else if (active8 === "security") {
         SecurityView2.animate();
-      } else if (active7 === "cameras") {
+      } else if (active8 === "cameras") {
         CameraView2.animate();
-      } else if (active7 === "energy") {
+      } else if (active8 === "energy") {
         EnergyView2.animate();
-      } else if (active7 === "homelab") {
+      } else if (active8 === "homelab") {
         HomelabView2.animate();
+      } else if (active8 === "network") {
+        NetworkView2.animate();
       } else {
         Boardroom.animate();
       }
@@ -67725,21 +69439,23 @@
     animate();
     var timeout = 0;
     function onWindowResize2() {
-      if (active7 === "lt") {
+      if (active8 === "lt") {
         $("#light-table").fitLauncher();
         LightTable.resize();
-      } else if (active7 === "house") {
+      } else if (active8 === "house") {
         HouseView2.resizeDebounced();
-      } else if (active7 === "climate") {
+      } else if (active8 === "climate") {
         ClimateView2.resizeDebounced();
-      } else if (active7 === "security") {
+      } else if (active8 === "security") {
         SecurityView2.resizeDebounced();
-      } else if (active7 === "cameras") {
+      } else if (active8 === "cameras") {
         CameraView2.resizeDebounced();
-      } else if (active7 === "energy") {
+      } else if (active8 === "energy") {
         EnergyView2.resizeDebounced();
-      } else if (active7 === "homelab") {
+      } else if (active8 === "homelab") {
         HomelabView2.resizeDebounced();
+      } else if (active8 === "network") {
+        NetworkView2.resizeDebounced();
       } else {
         Boardroom.resize();
       }

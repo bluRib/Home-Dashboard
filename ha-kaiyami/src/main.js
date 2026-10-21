@@ -10,6 +10,7 @@ var $ = require("jquery"),
     CameraView = require("./CameraView.js").CameraView,
     EnergyView = require("./EnergyView.js").EnergyView,
     HomelabView = require("./HomelabView.js").HomelabView,
+    NetworkView = require("./NetworkView.js").NetworkView,
     Areas = require("./Areas.js").Areas,
     LeakWatch = require("./LeakWatch.js").LeakWatch,
     areas = null,
@@ -115,6 +116,8 @@ var ha = haSource.start(function(message){
         EnergyView.message(message);
     } else if(active === "homelab"){
         HomelabView.message(message);
+    } else if(active === "network"){
+        NetworkView.message(message);
     } else {
         /* Encom staggered incoming events so the widgets do not all fire on
            the same frame. A busy house is burstier than GitHub was, so keep it. */
@@ -228,6 +231,14 @@ var onSwitch = function(view){
             EnergyView.show();
         }, 3000);
 
+    } else if(system.key === "network"){
+        NetworkView.init();
+
+        setTimeout(function(){
+            active = "network";
+            NetworkView.show();
+        }, 3000);
+
     } else if(system.key === "homelab"){
         /* A placeholder screen for now: nothing scrapes Proxmox or the
            services yet, so there is no data to draw. It still goes through
@@ -317,6 +328,8 @@ PleaseRotate.start({onHide: function(){
             EnergyView.animate();
         } else if(active === "homelab"){
             HomelabView.animate();
+        } else if(active === "network"){
+            NetworkView.animate();
         } else {
             Boardroom.animate()
         }
@@ -346,6 +359,8 @@ PleaseRotate.start({onHide: function(){
             EnergyView.resizeDebounced();
         } else if(active === "homelab"){
             HomelabView.resizeDebounced();
+        } else if(active === "network"){
+            NetworkView.resizeDebounced();
         } else {
             Boardroom.resize();
         }

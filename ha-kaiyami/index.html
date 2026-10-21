@@ -16,6 +16,7 @@
         <link href="css/cameras-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/energy-screen.css" rel="stylesheet" type="text/css" />
         <link href="css/homelab-screen.css" rel="stylesheet" type="text/css" />
+        <link href="css/network-screen.css" rel="stylesheet" type="text/css" />
         <!-- Leaflet, for the radar map on the Climate screen. Plain global,
              separate from the fork's three.js r66 and the house widget's r128. -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet" type="text/css" />
@@ -1056,6 +1057,74 @@
             <div id="cm-clock">
                 <div id="cm-time">--:--:--</div>
                 <div id="cm-date"></div>
+            </div>
+
+        </div>
+
+        <!-- The Network screen. The topology is drawn by NetworkView from the
+             live unpoller label graph, so the markup is the furniture. -->
+        <div id="network-screen">
+
+            <div id="nw-status">
+                <div class="nw-stat" id="nw-stat-wan"><b>--</b><span>Active line</span></div>
+                <div class="nw-stat" id="nw-stat-down"><b>--</b><span>Down</span></div>
+                <div class="nw-stat" id="nw-stat-latency"><b>--</b><span>Latency</span></div>
+                <div class="nw-stat" id="nw-stat-clients"><b>--</b><span>Clients</span></div>
+            </div>
+
+            <div class="nw-panel" id="nw-map">
+                <div class="hs-head">Topology <em>Click a cluster to expand, a node for detail</em></div>
+                <div class="hs-body">
+                    <div id="nw-map-body">
+                        <svg id="nw-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                        <canvas id="nw-pulses"></canvas>
+
+                        <!-- Inside the map body so the panel header above stays
+                             visible and clickable while a device is open. -->
+                        <div id="nw-detail">
+                            <div id="nw-detail-head">
+                                <span id="nw-detail-name">Device</span>
+                                <span id="nw-detail-sub"></span>
+                                <button type="button" id="nw-detail-close">ESC</button>
+                            </div>
+                            <div id="nw-detail-body">
+                                <div id="nw-detail-rows"></div>
+                                <div id="nw-detail-chart">
+                                    <canvas id="nw-detail-canvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nw-failover"></div>
+                </div>
+            </div>
+
+            <div class="nw-panel" id="nw-wan">
+                <div class="hs-head">WAN <em>Last 24 hours</em></div>
+                <div class="hs-body">
+                    <div id="nw-wan-lines"><div class="nw-wait">Loading</div></div>
+                    <div id="nw-wan-chart"><canvas id="nw-wan-canvas"></canvas></div>
+                    <div id="nw-wan-loss"></div>
+                </div>
+            </div>
+
+            <div class="nw-panel" id="nw-clients">
+                <div class="hs-head">Clients <em>Live</em></div>
+                <div class="hs-body">
+                    <div id="nw-clients-body"><div class="nw-wait">Loading</div></div>
+                </div>
+            </div>
+
+            <div class="nw-panel" id="nw-infra">
+                <div class="hs-head">Switches and APs <em>PoE and ports</em></div>
+                <div class="hs-body">
+                    <div id="nw-infra-body"><div class="nw-wait">Loading</div></div>
+                </div>
+            </div>
+
+            <div id="nw-clock">
+                <div id="nw-time">--:--:--</div>
+                <div id="nw-date"></div>
             </div>
 
         </div>
