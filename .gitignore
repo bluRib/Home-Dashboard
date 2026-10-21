@@ -12,6 +12,11 @@ ha-kaiyami/config.local.js
 # get wrong when the next file lands here.
 private/
 
+# A stray copy at the repo root, in case one is ever dropped there again
+# before it reaches private/. It arrived there once already.
+/homepage.yml
+/services.yaml
+
 # Dependencies and the esbuild binary, restored by
 # ha-kaiyami/tools/install-deps.py
 ha-kaiyami/node_modules/
