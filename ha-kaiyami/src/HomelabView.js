@@ -192,10 +192,25 @@ function escapeText(s) {
         .replace(/"/g, "&quot;");
 }
 
-/* The one place that decides how a panel says it has no source yet. */
-function awaiting(source) {
-    return '<div class="hl-awaiting"><b>AWAITING DATA</b>' +
-        '<span>' + escapeText(source) + '</span></div>';
+/* Nothing on this screen is a placeholder. A panel or a field whose source is
+ * not answering is removed from the layout rather than shown empty, and the
+ * grid closes up behind it. The wiring stays, so the moment a source starts
+ * answering its panel reappears on its own.
+ *
+ * The one shared piece of furniture for anything that opens a web interface:
+ * a small arrow, and the URL in the tooltip. */
+var LINK_ICON = "\u2197";
+
+function linkIcon() {
+    return '<i class="hl-link-icon">' + LINK_ICON + '</i>';
+}
+
+/* Open a web interface in a new tab. noopener because these are other
+ * people's admin panels and none of them need a handle back to this page. */
+function openUrl(url) {
+    if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+    }
 }
 
 /* ---- the map ------------------------------------------------------------------------ */
@@ -244,7 +259,8 @@ function buildMap() {
        host label prints on top of the band name. */
     var spineX = padX * 0.42;
     var bandNameW = 7 * charW * 1.35;
-    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 22);
+    /* Plus the arrow the first host's label now carries. */
+    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 34);
 
     function place(list, y) {
         var n = list.length;
@@ -359,11 +375,13 @@ function nodeMarkup(n, i, fontPx, charW, w) {
     }
 
     if (n.kind === "service") {
-        var s = n.service;
-        var ok = s.status === null ? null : s.status === 1;
-        var col = ok === false ? ALERT : DIM;
-        return '<circle class="hl-node hl-node-service" cx="' + n.x + '" cy="' + n.y +
-            '" r="' + n.r + '" fill="' + col + '" data-node="' + i + '"></circle>';
+        var sv = n.service;
+        var down = sv.status === 0 || (sv.status === null && !sv.hostSeen);
+        var col = down ? ALERT : DIM;
+        return '<circle class="hl-node hl-node-service' + (down ? " bad" : "") +
+            '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + col +
+            '" data-node="' + i + '"><title>' + escapeText(sv.name + "  " + sv.url) +
+            '</title></circle>';
     }
 
     var bad = false, colour = CYAN;
@@ -388,24 +406,38 @@ function nodeMarkup(n, i, fontPx, charW, w) {
         }
     }
 
-    var maxChars = Math.floor((w * 0.13) / charW);
+    /* The arrow is appended after truncation, so its two characters come out
+       of the budget first. Without that the label grew past the gap and ran
+       into the band name on the left again. */
+    var url0 = n.host ? n.host.url : null;
+    var maxChars = Math.floor((w * 0.13) / charW) - (url0 ? 2 : 0);
     if (label.length > maxChars && maxChars > 4) {
         label = label.slice(0, maxChars - 1) + "…";
     }
 
+    /* Everything in the map that has a web interface says so, in the tooltip
+       and with the arrow after its name. */
+    var url = n.host ? n.host.url : null;
+    var tip = n.kind === "cluster"
+        ? "Click to open the singles"
+        : (n.host ? (n.host.name + (url ? "  " + url : "")) : "");
+
     var shape = n.kind === "cluster"
         ? '<rect class="hl-node hl-node-cluster' + (bad ? " bad" : "") +
           '" x="' + (n.x - n.r) + '" y="' + (n.y - n.r) + '" width="' + (n.r * 2) +
-          '" height="' + (n.r * 2) + '" fill="' + colour + '" data-node="' + i + '"></rect>'
+          '" height="' + (n.r * 2) + '" fill="' + colour + '" data-node="' + i +
+          '"><title>' + escapeText(tip) + '</title></rect>'
         : '<circle class="hl-node hl-node-' + n.kind + (bad ? " bad" : "") +
           '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + colour +
-          '" data-node="' + i + '"></circle>';
+          '" data-node="' + i + '"><title>' + escapeText(tip) + '</title></circle>';
 
     return shape +
         '<text class="hl-label hl-label-' + n.kind + (bad ? " bad" : "") +
         '" x="' + n.x + '" y="' + (n.y - n.r - fontPx * 0.8) +
         '" text-anchor="middle" data-node="' + i + '">' +
-        '<tspan class="hl-label-name" x="' + n.x + '">' + escapeText(label) + '</tspan>' +
+        '<title>' + escapeText(tip) + '</title>' +
+        '<tspan class="hl-label-name" x="' + n.x + '">' + escapeText(label) +
+        (url ? ' ' + LINK_ICON : '') + '</tspan>' +
         (sub ? '<tspan class="hl-label-sub" x="' + n.x + '" dy="' +
                (-fontPx * 1.05).toFixed(1) + '">' + escapeText(sub) + '</tspan>' : '') +
         '</text>';
@@ -495,14 +527,20 @@ function renderStatus() {
          "Hosts seen, " + s.nodesUp + " of " + s.nodesTotal + " Proxmox",
          s.hostsUp < s.hostsTotal);
 
-    stat("hl-stat-guests",
-         s.guestsKnown ? (s.guestsRunning + " / " + s.guestsTotal) : "--",
-         s.guestsKnown ? "Guests running" : "Guests, awaiting pve-exporter", false);
+    /* The guests tile only exists once something enumerates guests. Until
+       then the row is three columns wide and closes up behind it. */
+    var root = $id("homelab-screen");
+    root.classList.toggle("has-guests", s.guestsKnown);
+    if (s.guestsKnown) {
+        stat("hl-stat-guests", s.guestsRunning + " / " + s.guestsTotal,
+             "Guests running", false);
+    }
 
-    stat("hl-stat-services",
-         s.servicesKnown ? (s.servicesUp + " / " + s.servicesTotal)
-                         : ("-- / " + s.servicesTotal),
-         s.servicesKnown ? "Services up" : "Services, awaiting Uptime Kuma", false);
+    /* Without Uptime Kuma a service is up when its host's link is up, which is
+       a real reading from the controller rather than a placeholder. */
+    stat("hl-stat-services", s.servicesReachable + " / " + s.servicesTotal,
+         s.servicesKnown ? "Services up" : "Services on hosts that are up",
+         s.servicesReachable < s.servicesTotal);
 
     stat("hl-stat-alerts", String(s.alerts.length),
          s.alerts.length ? s.alerts[0].text : "No active alerts",
@@ -519,18 +557,10 @@ function renderServices() {
     var groups = feeds.services();
     var kumaLive = feeds.sources.kuma.live;
     if (head) {
-        head.textContent = kumaLive ? "Live" : "Host link only";
-        head.className = kumaLive ? "" : "warn";
+        head.textContent = kumaLive ? "Live checks" : "Host link";
     }
 
     var html = "";
-    if (!kumaLive) {
-        html += '<div class="hl-note"><b>AWAITING Uptime Kuma</b>' +
-            'Per service checks and response times need Uptime Kuma scraped by ' +
-            'Prometheus. What is shown below is whether each service\'s HOST is ' +
-            'seen by the UniFi controller, which is not the same thing.</div>';
-    }
-
     groups.forEach(function (g) {
         /* Anything down sorts to the top of its group. */
         var items = g.items.slice().sort(function (a, b) {
@@ -539,18 +569,20 @@ function renderServices() {
             return ad - bd || a.name.localeCompare(b.name);
         });
         html += '<div class="hl-sgroup">' + escapeText(g.group) + '</div>';
-        items.forEach(function (s) {
-            var down = s.status === 0 || (!kumaLive && !s.hostSeen);
-            var stateText = s.status === 1 ? "UP"
-                : s.status === 0 ? "DOWN"
-                : s.hostSeen ? "host up" : "HOST DOWN";
+        items.forEach(function (sv) {
+            var down = sv.status === 0 || (sv.status === null && !sv.hostSeen);
+            var stateText = sv.status === 1 ? "UP"
+                : sv.status === 0 ? "DOWN"
+                : sv.hostSeen ? "UP" : "NOT SEEN";
             html += '<div class="hl-srow' + (down ? " bad" : "") +
-                '" data-url="' + escapeText(s.url) + '">' +
-                '<span class="hl-sname">' + escapeText(s.name) + '</span>' +
+                '" data-url="' + escapeText(sv.url) + '"' +
+                ' title="' + escapeText(sv.name + "  " + sv.url) + '">' +
+                '<span class="hl-sname">' + escapeText(sv.name) + '</span>' +
                 '<span class="hl-sstate">' + stateText + '</span>' +
-                '<span class="hl-sms">' +
-                    (s.ms !== null && s.ms !== undefined ? Math.round(s.ms) + " ms" : "") +
-                '</span></div>';
+                (sv.ms !== null && sv.ms !== undefined
+                    ? '<span class="hl-sms">' + Math.round(sv.ms) + ' ms</span>'
+                    : '<span class="hl-sms"></span>') +
+                linkIcon() + '</div>';
         });
     });
 
@@ -564,10 +596,12 @@ function renderHa() {
     if (!box || !feeds) { return; }
     var ha = feeds.homeAssistant();
 
-    if (!ha.live) {
-        box.innerHTML = awaiting("Home Assistant WebSocket");
-        return;
-    }
+    /* Home Assistant is the one source that is always up here, because the
+       whole dashboard runs on its socket. If it ever is not, the panel is
+       removed rather than shown empty. */
+    var panel = $id("hl-ha");
+    if (panel) { panel.style.display = ha.live ? "" : "none"; }
+    if (!ha.live) { return; }
 
     var row = function (label, value, note, bad) {
         return '<div class="hl-row' + (bad ? " bad" : "") + '">' +
@@ -584,14 +618,17 @@ function renderHa() {
                     return u.name;
                 }).join(", ") : "none", ha.updates.length > 0);
 
-    /* No processor or memory entity exists on this instance, so this says what
-       would add them rather than showing a zero. */
-    html += ha.cpu !== null
-        ? row("CPU", Math.round(ha.cpu) + "%", "", ha.cpu > 85)
-        : row("CPU and RAM", "AWAITING", "add the System Monitor integration", false);
-    html += ha.dbSize !== null
-        ? row("Database", ha.dbSize.toFixed(1) + " MB", "", false)
-        : row("Database size", "AWAITING", "enable the recorder size sensor", false);
+    /* These two only appear if the entities exist. No System Monitor
+       integration on this instance, so today they simply are not drawn. */
+    if (ha.cpu !== null) {
+        html += row("CPU", Math.round(ha.cpu) + "%", "", ha.cpu > 85);
+    }
+    if (ha.memory !== null) {
+        html += row("Memory", Math.round(ha.memory) + "%", "", ha.memory > 90);
+    }
+    if (ha.dbSize !== null) {
+        html += row("Database", ha.dbSize.toFixed(1) + " MB", "", false);
+    }
 
     html += row("Zigbee coordinator",
                 ha.zigbee.eth && ha.zigbee.net ? "ONLINE" : "LINK DOWN",
@@ -617,23 +654,40 @@ function renderHa() {
                 age !== null ? Math.round(age) + " h ago" : "",
                 ha.backups.stale || (age !== null && age > BACKUP_STALE_HOURS));
 
+    /* The panel header doubles as the link to Home Assistant itself. */
+    html += '<div class="hl-row hl-open" data-url="http://10.69.2.151:8123"' +
+        ' title="Home Assistant  http://10.69.2.151:8123">' +
+        '<span>Open</span><b>10.69.2.151:8123 ' + LINK_ICON + '</b></div>';
+
     box.innerHTML = html;
 }
 
 /* ---- storage and backups ------------------------------------------------------------------ */
 
+/* The storage panel is removed from the grid until TrueNAS and PBS are
+ * reaching Prometheus. The markup and the wiring stay, so it reappears on its
+ * own the moment those metrics exist. */
 function renderStorage() {
+    var panel = $id("hl-storage");
     var box = $id("hl-storage-body");
-    if (!box || !feeds) { return; }
+    if (!panel || !box || !feeds) { return; }
+
     var st = feeds.storage();
-    if (!st.live) {
-        box.innerHTML = awaiting("TrueNAS and PBS exporters") +
-            '<div class="hl-note">Both answer on the network but send no CORS ' +
-            'headers, so the browser cannot read them whatever credentials it ' +
-            'has. They need an exporter in front of Prometheus.</div>';
-        return;
-    }
-    box.innerHTML = "";
+    var root = $id("homelab-screen");
+    root.classList.toggle("has-storage", !!st.live);
+    panel.style.display = st.live ? "" : "none";
+    if (!st.live) { return; }
+
+    var html = "";
+    st.pools.forEach(function (pool) {
+        html += '<div class="hl-row"><span>' + escapeText(pool.name) + '</span>' +
+            '<b>' + Math.round(pool.usedPercent) + '%</b></div>';
+    });
+    st.datastores.forEach(function (ds) {
+        html += '<div class="hl-row"><span>' + escapeText(ds.name) + '</span>' +
+            '<b>' + Math.round(ds.usedPercent) + '%</b></div>';
+    });
+    box.innerHTML = html;
 }
 
 /* ---- power and UPS -------------------------------------------------------------------------- */
@@ -644,10 +698,9 @@ function renderPower() {
     var p = feeds.power();
     var u = feeds.ups();
 
-    if (!p.live && !u.live) {
-        box.innerHTML = awaiting("Home Assistant");
-        return;
-    }
+    var panel = $id("hl-power");
+    if (panel) { panel.style.display = (p.live || u.live) ? "" : "none"; }
+    if (!p.live && !u.live) { return; }
 
     var html = '<div class="hl-pgrid">';
 
@@ -663,9 +716,7 @@ function renderPower() {
     html += '</div>';
 
     html += '<div class="hl-pcol"><div class="hl-sub">UPS</div>';
-    if (!u.live) {
-        html += awaiting("Home Assistant NUT");
-    } else {
+    if (u.live) {
         u.units.forEach(function (x) {
             var low = x.charge !== null && x.charge < 95;
             html += '<div class="hl-ups' + (low ? " bad" : "") + '">' +
@@ -728,6 +779,19 @@ function renderDetail() {
     $id("hl-detail-name").className = host.seen ? "" : "bad";
     $id("hl-detail-sub").textContent = host.ip;
 
+    /* The way out of the panel and into the thing itself. */
+    var openBtn = $id("hl-detail-open");
+    if (openBtn) {
+        if (host.url) {
+            openBtn.style.display = "";
+            openBtn.setAttribute("data-url", host.url);
+            openBtn.setAttribute("title", host.name + "  " + host.url);
+            openBtn.innerHTML = "OPEN " + LINK_ICON;
+        } else {
+            openBtn.style.display = "none";
+        }
+    }
+
     var rows = [
         ["Link", host.seen ? "UP" : "NOT SEEN",
          host.seen ? host.via + (host.port ? " port " + host.port : "") : "", !host.seen],
@@ -739,13 +803,11 @@ function renderDetail() {
             : host.kind === "docker" ? "Docker host" : "Single service host", "", false]
     ];
 
+    /* Host metrics are only listed when something is reporting them. */
     if (host.stats) {
         rows.push(["CPU", Math.round(host.stats.cpu) + "%", "", host.stats.cpu > 85]);
         rows.push(["Memory", Math.round(host.stats.memPct) + "%", "", host.stats.memPct > 90]);
         rows.push(["Disk", Math.round(host.stats.diskPct) + "%", "", host.stats.diskPct > 90]);
-    } else {
-        rows.push(["CPU, RAM, disk", "AWAITING",
-            host.kind === "pve" ? "prometheus-pve-exporter" : "node_exporter or Beszel", false]);
     }
 
     $id("hl-detail-rows").innerHTML = rows.map(function (r) {
@@ -758,8 +820,10 @@ function renderDetail() {
     if (svcBox) {
         svcBox.innerHTML = host.services.length
             ? '<div class="hl-sub">Services on this host</div>' +
-              host.services.map(function (s) {
-                  return '<span class="hl-chip">' + escapeText(s.name) + '</span>';
+              host.services.map(function (sv) {
+                  return '<span class="hl-chip" data-url="' + escapeText(sv.url) +
+                      '" title="' + escapeText(sv.name + "  " + sv.url) + '">' +
+                      escapeText(sv.name) + ' ' + LINK_ICON + '</span>';
               }).join("")
             : '<div class="hl-sub">No Homepage services on this host</div>';
     }
@@ -868,9 +932,11 @@ function bindControls() {
             return;
         }
 
-        var srow = e.target.closest("[data-url]");
-        if (srow) {
-            window.open(srow.getAttribute("data-url"), "_blank", "noopener");
+        /* Anything carrying a URL goes straight to it: a services row, a
+           chip in the detail panel, the OPEN button, the Home Assistant row. */
+        var linked = e.target.closest("[data-url]");
+        if (linked) {
+            openUrl(linked.getAttribute("data-url"));
             return;
         }
 
@@ -885,8 +951,12 @@ function bindControls() {
             lastRender = 0;
             buildMap();
         } else if (n.kind === "service") {
-            window.open(n.service.url, "_blank", "noopener");
+            /* A satellite is a service, and a service has no detail panel, so
+               it goes straight to its interface. */
+            openUrl(n.service.url);
         } else if (n.host) {
+            /* A host opens its detail panel; the panel's OPEN button is the
+               way through to its web interface. */
             openHost(n.host.ip);
         }
     });

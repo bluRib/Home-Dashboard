@@ -18,13 +18,19 @@
     gap: 10px;
     background: #03060a;
 
-    grid-template-columns: minmax(0, 1fr) minmax(250px, 19vw) minmax(240px, 18vw);
-    grid-template-rows: auto minmax(0, 1.5fr) minmax(0, 1fr) auto;
+    /* Panels are sized to what they hold. The services list is the only one
+       that can absorb any height, so it takes the tall right column; the Home
+       Assistant panel is a fixed nine rows and sits in a cell that matches it,
+       beside the power panel. The map, which scales, gets the width.
+       .has-storage below gives storage a cell the moment TrueNAS and PBS
+       start reaching Prometheus. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) minmax(275px, 21vw);
+    grid-template-rows: auto minmax(0, 2.4fr) minmax(0, 1fr) auto;
     grid-template-areas:
-        "status   status   status"
-        "map      services ha"
-        "power    services storage"
-        "power    services clock";
+        "status status status"
+        "map    map    services"
+        "power  ha     services"
+        "power  ha     clock";
 
     font-family: Menlo, Consolas, "Courier New", monospace;
     color: #bff4ff;
@@ -32,6 +38,14 @@
 }
 
 #homelab-screen * { box-sizing: border-box; }
+
+#homelab-screen.has-storage {
+    grid-template-areas:
+        "status status  status"
+        "map    map     services"
+        "power  ha      services"
+        "power  storage clock";
+}
 
 #hl-status   { grid-area: status; }
 #hl-map      { grid-area: map; }
@@ -54,52 +68,39 @@
     overflow: hidden;
 }
 
-/* ---- the one way a panel says it has no source yet ---------------------------- */
+/* ---- anything that opens a web interface -------------------------------------- */
 
-.hl-awaiting {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 8px 2px;
+/* A small arrow after the name, and the URL in the tooltip. Dim until the row
+   is hovered, so it marks the affordance without shouting. */
+.hl-link-icon {
+    font-style: normal;
+    color: #3fe0ff;
+    opacity: .45;
+    font-size: .9em;
+    padding-left: 2px;
 }
 
-.hl-awaiting b {
-    color: #ff8a1f;
-    font-weight: normal;
-    letter-spacing: .2em;
-    font-size: clamp(9px, 0.6vw, 13px);
-}
+.hl-srow:hover .hl-link-icon,
+.hl-chip:hover .hl-link-icon { opacity: 1; }
 
-.hl-awaiting span {
-    font-size: clamp(8px, 0.52vw, 11px);
-    opacity: .55;
-    letter-spacing: .08em;
-}
-
-.hl-note {
-    font-size: clamp(8px, 0.5vw, 11px);
-    line-height: 1.5;
-    opacity: .55;
-    padding: 4px 2px 6px;
-}
-
-.hl-note b {
-    display: block;
-    color: #ff8a1f;
-    font-weight: normal;
-    letter-spacing: .16em;
-    opacity: 1;
-    margin-bottom: 2px;
-}
+.hl-label-name { pointer-events: none; }
 
 /* ---- status row ---------------------------------------------------------------- */
 
 #hl-status {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     min-height: 0;
 }
+
+#homelab-screen.has-guests #hl-status {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Hidden until pve-exporter enumerates guests, rather than shown as a dash. */
+#hl-stat-guests { display: none; }
+#homelab-screen.has-guests #hl-stat-guests { display: flex; }
 
 .hl-stat {
     display: flex;
@@ -210,7 +211,7 @@
 
 .hl-srow {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
     gap: 7px;
     padding: 2px;
     font-size: clamp(9px, 0.56vw, 12px);
@@ -229,7 +230,21 @@
 
 /* ---- Home Assistant and generic rows ------------------------------------------------ */
 
-#hl-ha .hs-body { overflow-y: auto; }
+#hl-ha .hs-body {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* The rows share the height of the panel instead of bunching at the top and
+   leaving the rest of the cell empty. */
+#hl-ha-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
 .hl-row {
     display: grid;
@@ -275,7 +290,13 @@
 
 /* ---- power and UPS --------------------------------------------------------------------- */
 
-#hl-power .hs-body { overflow: hidden; }
+#hl-power .hs-body {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#hl-power-body { flex: 1 1 auto; min-height: 0; }
 
 .hl-pgrid {
     display: grid;
@@ -285,7 +306,15 @@
     min-height: 0;
 }
 
-.hl-pcol { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+/* The readings share the height of the panel rather than bunching at the top
+   and leaving the rest of the cell empty. */
+.hl-pcol {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-width: 0;
+    min-height: 0;
+}
 
 .hl-sub {
     color: #3fe0ff;
@@ -412,8 +441,22 @@
     white-space: nowrap;
 }
 
-#hl-detail-close {
+#hl-detail-open {
     margin-left: auto;
+    flex: none;
+    font-family: inherit;
+    font-size: clamp(9px, 0.58vw, 13px);
+    letter-spacing: .16em;
+    color: #4dffb0;
+    background: transparent;
+    border: 1px solid rgba(77, 255, 176, .45);
+    padding: 1px 10px;
+    cursor: pointer;
+}
+
+#hl-detail-open:hover { background: rgba(77, 255, 176, .16); }
+
+#hl-detail-close {
     flex: none;
     font-family: inherit;
     font-size: clamp(9px, 0.58vw, 13px);
@@ -469,7 +512,15 @@
     border: 1px solid rgba(63, 224, 255, .3);
     color: #bff4ff;
     white-space: nowrap;
+    cursor: pointer;
 }
+
+.hl-chip:hover { background: rgba(63, 224, 255, .16); border-color: #3fe0ff; }
+
+/* The last row of the Home Assistant panel is the way into Home Assistant. */
+.hl-row.hl-open { cursor: pointer; border-bottom: none; padding-top: 6px; }
+.hl-row.hl-open:hover b { color: #3fe0ff; }
+.hl-row.hl-open b { color: #bff4ff; opacity: .8; }
 
 .hl-drow {
     display: grid;

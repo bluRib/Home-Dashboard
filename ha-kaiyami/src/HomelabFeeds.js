@@ -55,29 +55,53 @@ var SOURCES = {
  * Homepage directory; the Arcane container on port 3552 is what marks a Docker
  * host, and every one of them has it. */
 var HOSTS = [
-    { ip: "10.69.2.40",  name: "Proxmox red",   kind: "pve" },
-    { ip: "10.69.2.50",  name: "Proxmox blu",   kind: "pve" },
-    { ip: "10.69.2.60",  name: "Proxmox grey",  kind: "pve" },
+    { ip: "10.69.2.40",  name: "Proxmox red",   kind: "pve",
+      url: "https://10.69.2.40:8006" },
+    { ip: "10.69.2.50",  name: "Proxmox blu",   kind: "pve",
+      url: "https://10.69.2.50:8006" },
+    { ip: "10.69.2.60",  name: "Proxmox grey",  kind: "pve",
+      url: "https://10.69.2.60:8006" },
 
-    { ip: "10.69.2.134", name: "Frigate",       kind: "docker" },
-    { ip: "10.69.2.222", name: "Media",         kind: "docker" },
-    { ip: "10.69.2.5",   name: "Trusted",       kind: "docker" },
-    { ip: "10.69.2.184", name: "Paperless",     kind: "docker" },
-    { ip: "10.69.2.18",  name: "Newt",          kind: "docker" },
+    /* A Docker host's own interface is the Arcane container it runs on 3552,
+       which is the thing that actually manages it. */
+    { ip: "10.69.2.134", name: "Frigate",       kind: "docker",
+      url: "http://10.69.2.134:3552" },
+    { ip: "10.69.2.222", name: "Media",         kind: "docker",
+      url: "http://10.69.2.222:3552" },
+    { ip: "10.69.2.5",   name: "Trusted",       kind: "docker",
+      url: "http://10.69.2.5:3552" },
+    { ip: "10.69.2.184", name: "Paperless",     kind: "docker",
+      url: "http://10.69.2.184:3552" },
+    { ip: "10.69.2.18",  name: "Newt",          kind: "docker",
+      url: "http://10.69.2.18:3552" },
 
-    { ip: "10.69.2.41",  name: "PBS",           kind: "single" },
-    { ip: "10.69.2.180", name: "TrueNAS",       kind: "single" },
-    { ip: "10.69.2.70",  name: "Immich",        kind: "single" },
-    { ip: "10.69.2.3",   name: "Pi-hole",       kind: "single" },
-    { ip: "10.69.2.10",  name: "Zigbee2MQTT",   kind: "single" },
-    { ip: "10.69.2.29",  name: "Z-Wave JS",     kind: "single" },
-    { ip: "10.69.2.140", name: "SLZB-06",       kind: "single" },
-    { ip: "10.69.2.133", name: "Node-RED",      kind: "single" },
-    { ip: "10.69.2.112", name: "PostgreSQL",    kind: "single" },
-    { ip: "10.69.2.167", name: "Semaphore",     kind: "single" },
-    { ip: "10.69.2.163", name: "LoRa",          kind: "single" },
-    { ip: "10.69.2.77",  name: "PeaNut",        kind: "single" },
-    { ip: "10.69.2.151", name: "Home Assistant", kind: "single" }
+    { ip: "10.69.2.41",  name: "PBS",           kind: "single",
+      url: "https://10.69.2.41:8007" },
+    { ip: "10.69.2.180", name: "TrueNAS",       kind: "single",
+      url: "http://10.69.2.180" },
+    { ip: "10.69.2.70",  name: "Immich",        kind: "single",
+      url: "http://10.69.2.70:2283/" },
+    { ip: "10.69.2.3",   name: "Pi-hole",       kind: "single",
+      url: "https://10.69.2.3/admin" },
+    { ip: "10.69.2.10",  name: "Zigbee2MQTT",   kind: "single",
+      url: "http://10.69.2.10:8080" },
+    { ip: "10.69.2.29",  name: "Z-Wave JS",     kind: "single",
+      url: "http://10.69.2.29:8091" },
+    { ip: "10.69.2.140", name: "SLZB-06",       kind: "single",
+      url: "http://10.69.2.140/" },
+    { ip: "10.69.2.133", name: "Node-RED",      kind: "single",
+      url: "http://10.69.2.133:1880" },
+    { ip: "10.69.2.112", name: "PostgreSQL",    kind: "single",
+      url: "http://10.69.2.112/adminer/" },
+    { ip: "10.69.2.167", name: "Semaphore",     kind: "single",
+      url: "http://10.69.2.167:3000" },
+    { ip: "10.69.2.163", name: "LoRa",          kind: "single",
+      url: "http://10.69.2.163" },
+    /* PeaNut answers on 8080. Homepage lists 3000, where nothing listens. */
+    { ip: "10.69.2.77",  name: "PeaNut",        kind: "single",
+      url: "http://10.69.2.77:8080" },
+    { ip: "10.69.2.151", name: "Home Assistant", kind: "single",
+      url: "http://10.69.2.151:8123" }
 ];
 
 /* The Homepage service directory, by host. Names, groups and ports only, which
@@ -188,12 +212,22 @@ var POWER = [
 ];
 
 var POLL_MS = 6000;
+/* The optional sources are checked on load and then every five minutes. The
+ * moment one of them starts answering, its panel appears on its own. */
+var SOURCE_CHECK_MS = 5 * 60 * 1000;
 var DAY_MS = 24 * 3600 * 1000;
 var BACKUP_STALE_HOURS = 26;
 
 /* Number(null) is 0 and Number("") is 0, so a missing entity was arriving as
  * a real zero and the Home Assistant panel printed "CPU 0%" for a sensor that
  * does not exist. Absent has to stay absent, or the panel invents a reading. */
+/* The one place a service URL is assembled. hosts() and services() both use
+ * it, so a satellite in the map and a row in the list always agree. */
+function serviceUrl(s) {
+    return (s.https ? "https://" : "http://") + s.host +
+        ((s.port === 80 || s.port === 443) ? "" : ":" + s.port) + (s.path || "");
+}
+
 function num(v) {
     if (v === null || v === undefined || v === "" ||
         v === "unknown" || v === "unavailable") {
@@ -252,7 +286,10 @@ function HomelabFeeds(ha, onUpdate) {
 HomelabFeeds.prototype.start = function () {
     var self = this;
     this.poll();
+    this.checkSources();
     this._timers.push(setInterval(function () { self.poll(); }, POLL_MS));
+    this._timers.push(setInterval(function () { self.checkSources(); },
+                                  SOURCE_CHECK_MS));
 };
 
 HomelabFeeds.prototype.stop = function () {
@@ -260,43 +297,56 @@ HomelabFeeds.prototype.stop = function () {
     this._timers = [];
 };
 
+/* The live tick: Home Assistant, plus the one unpoller query that carries
+ * every homelab host's link state, switch and port, uptime and throughput. */
 HomelabFeeds.prototype.poll = function () {
     var self = this;
 
-    /* Home Assistant is live if the shared socket has states in it. */
     this.sources.ha.live = !!(this.ha && this.ha.states && this.ha.states.size > 0);
 
+    instant('{__name__=~"unpoller_client_(uptime_seconds|receive_rate_bytes|' +
+            'transmit_rate_bytes)"}')
+        .then(function (res) {
+            self.sources.unifi.live = res.length > 0;
+            var by = {};
+            res.forEach(function (ser) {
+                var ip = ser.metric.ip;
+                if (!ip) { return; }
+                if (!by[ip]) { by[ip] = { m: ser.metric }; }
+                var n = ser.metric.__name__;
+                if (n === "unpoller_client_uptime_seconds") { by[ip].uptime = num(ser.value[1]); }
+                if (n === "unpoller_client_receive_rate_bytes") { by[ip].rx = num(ser.value[1]); }
+                if (n === "unpoller_client_transmit_rate_bytes") { by[ip].tx = num(ser.value[1]); }
+            });
+            self.unifi = by;
+            self.error = null;
+            self.onUpdate();
+        })
+        .catch(function (e) { self.error = e.message; });
+};
+
+/* The optional sources, checked on load and every five minutes. Each one that
+ * starts answering turns its panel on by itself, with no code change. */
+HomelabFeeds.prototype.checkSources = function () {
+    var self = this;
+
     Promise.all([
-        /* Every homelab host is a UniFi client, so this one query gives link
-           state, switch and port, uptime and throughput for all of them. */
-        instant('{__name__=~"unpoller_client_(uptime_seconds|receive_rate_bytes|' +
-                'transmit_rate_bytes)"}').catch(function () { return null; }),
-        /* These two stay empty until the exporters exist. Asking anyway means
-           the screen lights up on its own the moment they do. */
         instant('{__name__=~"pve_(up|node_info|cpu_usage_ratio|memory_usage_bytes|' +
                 'memory_size_bytes|disk_usage_bytes|disk_size_bytes|uptime_seconds|' +
                 'guest_info)"}').catch(function () { return null; }),
         instant('{__name__=~"monitor_(status|response_time|cert_days_remaining)"}')
+            .catch(function () { return null; }),
+        /* TrueNAS and PBS will arrive as Prometheus metrics too, because
+           neither can be read from the browser directly. */
+        instant('{__name__=~"(zfs|truenas|pbs)_[a-z_]+"}')
             .catch(function () { return null; })
     ]).then(function (res) {
-        if (res[0]) {
-            self.sources.unifi.live = res[0].length > 0;
-            var by = {};
-            res[0].forEach(function (s) {
-                var ip = s.metric.ip;
-                if (!ip) { return; }
-                if (!by[ip]) { by[ip] = { m: s.metric }; }
-                var n = s.metric.__name__;
-                if (n === "unpoller_client_uptime_seconds") { by[ip].uptime = num(s.value[1]); }
-                if (n === "unpoller_client_receive_rate_bytes") { by[ip].rx = num(s.value[1]); }
-                if (n === "unpoller_client_transmit_rate_bytes") { by[ip].tx = num(s.value[1]); }
-            });
-            self.unifi = by;
-        }
-        self.sources.pve.live = !!(res[1] && res[1].length > 0);
-        self.pve = self.sources.pve.live ? res[1] : null;
-        self.sources.kuma.live = !!(res[2] && res[2].length > 0);
-        self.kuma = self.sources.kuma.live ? res[2] : null;
+        self.sources.pve.live = !!(res[0] && res[0].length > 0);
+        self.pve = self.sources.pve.live ? res[0] : null;
+        self.sources.kuma.live = !!(res[1] && res[1].length > 0);
+        self.kuma = self.sources.kuma.live ? res[1] : null;
+        self.sources.storage.live = !!(res[2] && res[2].length > 0);
+        self.storageRaw = self.sources.storage.live ? res[2] : null;
         self.onUpdate();
     });
 
@@ -386,7 +436,10 @@ HomelabFeeds.prototype.hosts = function () {
         var c = self.unifi[h.ip];
         var stats = self.hostStats
             ? (self.hostStats[h.name] || self.hostStats[h.ip] || null) : null;
-        var services = SERVICES.filter(function (s) { return s.host === h.ip; });
+        var services = SERVICES.filter(function (s) { return s.host === h.ip; })
+            .map(function (s) {
+                return Object.assign({}, s, { url: serviceUrl(s) });
+            });
 
         return {
             ip: h.ip,
@@ -401,6 +454,7 @@ HomelabFeeds.prototype.hosts = function () {
             via: c ? (c.m.sw_name || c.m.ap_name || "") : "",
             port: c ? (c.m.sw_port || "") : "",
             mac: c ? c.m.mac : "",
+            url: h.url || null,
             stats: stats,
             services: services,
             serviceCount: services.length
@@ -568,8 +622,7 @@ HomelabFeeds.prototype.services = function () {
             name: s.name,
             group: s.group,
             host: s.host,
-            url: (s.https ? "https://" : "http://") + s.host +
-                 ((s.port === 80 || s.port === 443) ? "" : ":" + s.port) + (s.path || ""),
+            url: serviceUrl(s),
             /* The host's link state is known from the controller. Whether the
                service itself answers is not, until Uptime Kuma is scraped, and
                the board labels the difference rather than implying one from
@@ -638,7 +691,20 @@ HomelabFeeds.prototype.status = function () {
         }
     }
 
+    /* Without Uptime Kuma, a service counts as reachable when its host's link
+       is up. That is a real reading from the controller, just coarser than a
+       per service check. */
+    var reachable = 0;
+    services.forEach(function (g) {
+        g.items.forEach(function (sv) {
+            if (sv.status === 1 || (sv.status === null && sv.hostSeen)) {
+                reachable += 1;
+            }
+        });
+    });
+
     return {
+        servicesReachable: reachable,
         nodesUp: pve.filter(function (h) { return h.seen; }).length,
         nodesTotal: pve.length,
         hostsUp: hosts.filter(function (h) { return h.seen; }).length,

@@ -56310,6 +56310,9 @@
       pass: c2.beszelPass || null
     };
   }
+  function serviceUrl(s) {
+    return (s.https ? "https://" : "http://") + s.host + (s.port === 80 || s.port === 443 ? "" : ":" + s.port) + (s.path || "");
+  }
   function num3(v) {
     if (v === null || v === void 0 || v === "" || v === "unknown" || v === "unavailable") {
       return null;
@@ -56362,7 +56365,7 @@
     this._timers = [];
     this._history = {};
   }
-  var PROM, SOURCES, HOSTS, SERVICES, HA_ENTITIES, UPS, POWER, POLL_MS, DAY_MS2, BACKUP_STALE_HOURS;
+  var PROM, SOURCES, HOSTS, SERVICES, HA_ENTITIES, UPS, POWER, POLL_MS, SOURCE_CHECK_MS, DAY_MS2, BACKUP_STALE_HOURS;
   var init_HomelabFeeds = __esm({
     "src/HomelabFeeds.js"() {
       PROM = "http://10.69.2.134:9090";
@@ -56375,27 +56378,135 @@
         storage: { label: "TrueNAS and PBS exporters", live: false }
       };
       HOSTS = [
-        { ip: "10.69.2.40", name: "Proxmox red", kind: "pve" },
-        { ip: "10.69.2.50", name: "Proxmox blu", kind: "pve" },
-        { ip: "10.69.2.60", name: "Proxmox grey", kind: "pve" },
-        { ip: "10.69.2.134", name: "Frigate", kind: "docker" },
-        { ip: "10.69.2.222", name: "Media", kind: "docker" },
-        { ip: "10.69.2.5", name: "Trusted", kind: "docker" },
-        { ip: "10.69.2.184", name: "Paperless", kind: "docker" },
-        { ip: "10.69.2.18", name: "Newt", kind: "docker" },
-        { ip: "10.69.2.41", name: "PBS", kind: "single" },
-        { ip: "10.69.2.180", name: "TrueNAS", kind: "single" },
-        { ip: "10.69.2.70", name: "Immich", kind: "single" },
-        { ip: "10.69.2.3", name: "Pi-hole", kind: "single" },
-        { ip: "10.69.2.10", name: "Zigbee2MQTT", kind: "single" },
-        { ip: "10.69.2.29", name: "Z-Wave JS", kind: "single" },
-        { ip: "10.69.2.140", name: "SLZB-06", kind: "single" },
-        { ip: "10.69.2.133", name: "Node-RED", kind: "single" },
-        { ip: "10.69.2.112", name: "PostgreSQL", kind: "single" },
-        { ip: "10.69.2.167", name: "Semaphore", kind: "single" },
-        { ip: "10.69.2.163", name: "LoRa", kind: "single" },
-        { ip: "10.69.2.77", name: "PeaNut", kind: "single" },
-        { ip: "10.69.2.151", name: "Home Assistant", kind: "single" }
+        {
+          ip: "10.69.2.40",
+          name: "Proxmox red",
+          kind: "pve",
+          url: "https://10.69.2.40:8006"
+        },
+        {
+          ip: "10.69.2.50",
+          name: "Proxmox blu",
+          kind: "pve",
+          url: "https://10.69.2.50:8006"
+        },
+        {
+          ip: "10.69.2.60",
+          name: "Proxmox grey",
+          kind: "pve",
+          url: "https://10.69.2.60:8006"
+        },
+        /* A Docker host's own interface is the Arcane container it runs on 3552,
+           which is the thing that actually manages it. */
+        {
+          ip: "10.69.2.134",
+          name: "Frigate",
+          kind: "docker",
+          url: "http://10.69.2.134:3552"
+        },
+        {
+          ip: "10.69.2.222",
+          name: "Media",
+          kind: "docker",
+          url: "http://10.69.2.222:3552"
+        },
+        {
+          ip: "10.69.2.5",
+          name: "Trusted",
+          kind: "docker",
+          url: "http://10.69.2.5:3552"
+        },
+        {
+          ip: "10.69.2.184",
+          name: "Paperless",
+          kind: "docker",
+          url: "http://10.69.2.184:3552"
+        },
+        {
+          ip: "10.69.2.18",
+          name: "Newt",
+          kind: "docker",
+          url: "http://10.69.2.18:3552"
+        },
+        {
+          ip: "10.69.2.41",
+          name: "PBS",
+          kind: "single",
+          url: "https://10.69.2.41:8007"
+        },
+        {
+          ip: "10.69.2.180",
+          name: "TrueNAS",
+          kind: "single",
+          url: "http://10.69.2.180"
+        },
+        {
+          ip: "10.69.2.70",
+          name: "Immich",
+          kind: "single",
+          url: "http://10.69.2.70:2283/"
+        },
+        {
+          ip: "10.69.2.3",
+          name: "Pi-hole",
+          kind: "single",
+          url: "https://10.69.2.3/admin"
+        },
+        {
+          ip: "10.69.2.10",
+          name: "Zigbee2MQTT",
+          kind: "single",
+          url: "http://10.69.2.10:8080"
+        },
+        {
+          ip: "10.69.2.29",
+          name: "Z-Wave JS",
+          kind: "single",
+          url: "http://10.69.2.29:8091"
+        },
+        {
+          ip: "10.69.2.140",
+          name: "SLZB-06",
+          kind: "single",
+          url: "http://10.69.2.140/"
+        },
+        {
+          ip: "10.69.2.133",
+          name: "Node-RED",
+          kind: "single",
+          url: "http://10.69.2.133:1880"
+        },
+        {
+          ip: "10.69.2.112",
+          name: "PostgreSQL",
+          kind: "single",
+          url: "http://10.69.2.112/adminer/"
+        },
+        {
+          ip: "10.69.2.167",
+          name: "Semaphore",
+          kind: "single",
+          url: "http://10.69.2.167:3000"
+        },
+        {
+          ip: "10.69.2.163",
+          name: "LoRa",
+          kind: "single",
+          url: "http://10.69.2.163"
+        },
+        /* PeaNut answers on 8080. Homepage lists 3000, where nothing listens. */
+        {
+          ip: "10.69.2.77",
+          name: "PeaNut",
+          kind: "single",
+          url: "http://10.69.2.77:8080"
+        },
+        {
+          ip: "10.69.2.151",
+          name: "Home Assistant",
+          kind: "single",
+          url: "http://10.69.2.151:8123"
+        }
       ];
       SERVICES = [
         { host: "10.69.2.40", name: "Proxmox Red", group: "System", port: 8006, https: true },
@@ -56484,14 +56595,22 @@
         { entity: "sensor.attic_3d_printer_plug_power", label: "USW Switch" }
       ];
       POLL_MS = 6e3;
+      SOURCE_CHECK_MS = 5 * 60 * 1e3;
       DAY_MS2 = 24 * 3600 * 1e3;
       BACKUP_STALE_HOURS = 26;
       HomelabFeeds.prototype.start = function() {
         var self = this;
         this.poll();
+        this.checkSources();
         this._timers.push(setInterval(function() {
           self.poll();
         }, POLL_MS));
+        this._timers.push(setInterval(
+          function() {
+            self.checkSources();
+          },
+          SOURCE_CHECK_MS
+        ));
       };
       HomelabFeeds.prototype.stop = function() {
         this._timers.forEach(clearInterval);
@@ -56500,49 +56619,56 @@
       HomelabFeeds.prototype.poll = function() {
         var self = this;
         this.sources.ha.live = !!(this.ha && this.ha.states && this.ha.states.size > 0);
+        instant('{__name__=~"unpoller_client_(uptime_seconds|receive_rate_bytes|transmit_rate_bytes)"}').then(function(res) {
+          self.sources.unifi.live = res.length > 0;
+          var by = {};
+          res.forEach(function(ser) {
+            var ip = ser.metric.ip;
+            if (!ip) {
+              return;
+            }
+            if (!by[ip]) {
+              by[ip] = { m: ser.metric };
+            }
+            var n = ser.metric.__name__;
+            if (n === "unpoller_client_uptime_seconds") {
+              by[ip].uptime = num3(ser.value[1]);
+            }
+            if (n === "unpoller_client_receive_rate_bytes") {
+              by[ip].rx = num3(ser.value[1]);
+            }
+            if (n === "unpoller_client_transmit_rate_bytes") {
+              by[ip].tx = num3(ser.value[1]);
+            }
+          });
+          self.unifi = by;
+          self.error = null;
+          self.onUpdate();
+        }).catch(function(e) {
+          self.error = e.message;
+        });
+      };
+      HomelabFeeds.prototype.checkSources = function() {
+        var self = this;
         Promise.all([
-          /* Every homelab host is a UniFi client, so this one query gives link
-             state, switch and port, uptime and throughput for all of them. */
-          instant('{__name__=~"unpoller_client_(uptime_seconds|receive_rate_bytes|transmit_rate_bytes)"}').catch(function() {
-            return null;
-          }),
-          /* These two stay empty until the exporters exist. Asking anyway means
-             the screen lights up on its own the moment they do. */
           instant('{__name__=~"pve_(up|node_info|cpu_usage_ratio|memory_usage_bytes|memory_size_bytes|disk_usage_bytes|disk_size_bytes|uptime_seconds|guest_info)"}').catch(function() {
             return null;
           }),
           instant('{__name__=~"monitor_(status|response_time|cert_days_remaining)"}').catch(function() {
             return null;
+          }),
+          /* TrueNAS and PBS will arrive as Prometheus metrics too, because
+             neither can be read from the browser directly. */
+          instant('{__name__=~"(zfs|truenas|pbs)_[a-z_]+"}').catch(function() {
+            return null;
           })
         ]).then(function(res) {
-          if (res[0]) {
-            self.sources.unifi.live = res[0].length > 0;
-            var by = {};
-            res[0].forEach(function(s) {
-              var ip = s.metric.ip;
-              if (!ip) {
-                return;
-              }
-              if (!by[ip]) {
-                by[ip] = { m: s.metric };
-              }
-              var n = s.metric.__name__;
-              if (n === "unpoller_client_uptime_seconds") {
-                by[ip].uptime = num3(s.value[1]);
-              }
-              if (n === "unpoller_client_receive_rate_bytes") {
-                by[ip].rx = num3(s.value[1]);
-              }
-              if (n === "unpoller_client_transmit_rate_bytes") {
-                by[ip].tx = num3(s.value[1]);
-              }
-            });
-            self.unifi = by;
-          }
-          self.sources.pve.live = !!(res[1] && res[1].length > 0);
-          self.pve = self.sources.pve.live ? res[1] : null;
-          self.sources.kuma.live = !!(res[2] && res[2].length > 0);
-          self.kuma = self.sources.kuma.live ? res[2] : null;
+          self.sources.pve.live = !!(res[0] && res[0].length > 0);
+          self.pve = self.sources.pve.live ? res[0] : null;
+          self.sources.kuma.live = !!(res[1] && res[1].length > 0);
+          self.kuma = self.sources.kuma.live ? res[1] : null;
+          self.sources.storage.live = !!(res[2] && res[2].length > 0);
+          self.storageRaw = self.sources.storage.live ? res[2] : null;
           self.onUpdate();
         });
         this.pollBeszel();
@@ -56617,6 +56743,8 @@
           var stats = self.hostStats ? self.hostStats[h.name] || self.hostStats[h.ip] || null : null;
           var services = SERVICES.filter(function(s) {
             return s.host === h.ip;
+          }).map(function(s) {
+            return Object.assign({}, s, { url: serviceUrl(s) });
           });
           return {
             ip: h.ip,
@@ -56631,6 +56759,7 @@
             via: c2 ? c2.m.sw_name || c2.m.ap_name || "" : "",
             port: c2 ? c2.m.sw_port || "" : "",
             mac: c2 ? c2.m.mac : "",
+            url: h.url || null,
             stats,
             services,
             serviceCount: services.length
@@ -56804,7 +56933,7 @@
             name: s.name,
             group: s.group,
             host: s.host,
-            url: (s.https ? "https://" : "http://") + s.host + (s.port === 80 || s.port === 443 ? "" : ":" + s.port) + (s.path || ""),
+            url: serviceUrl(s),
             /* The host's link state is known from the controller. Whether the
                service itself answers is not, until Uptime Kuma is scraped, and
                the board labels the difference rather than implying one from
@@ -56868,7 +56997,16 @@
             alerts.push({ kind: "update", text: ha2.updates.length + " updates available" });
           }
         }
+        var reachable = 0;
+        services.forEach(function(g) {
+          g.items.forEach(function(sv) {
+            if (sv.status === 1 || sv.status === null && sv.hostSeen) {
+              reachable += 1;
+            }
+          });
+        });
         return {
+          servicesReachable: reachable,
           nodesUp: pve.filter(function(h) {
             return h.seen;
           }).length,
@@ -56988,8 +57126,13 @@
   function escapeText2(s) {
     return String(s === null || s === void 0 ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
-  function awaiting(source) {
-    return '<div class="hl-awaiting"><b>AWAITING DATA</b><span>' + escapeText2(source) + "</span></div>";
+  function linkIcon() {
+    return '<i class="hl-link-icon">' + LINK_ICON + "</i>";
+  }
+  function openUrl(url) {
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
   }
   function buildMap() {
     var host = $id6("hl-map-body");
@@ -57027,7 +57170,7 @@
     var bandY = [h * 0.17, h * 0.52, h * 0.86];
     var spineX = padX * 0.42;
     var bandNameW = 7 * charW * 1.35;
-    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 22);
+    var bandLeft = Math.max(padX, spineX + bandNameW / 2 + 34);
     function place(list, y) {
       var n = list.length;
       var span = w - bandLeft - padX;
@@ -57148,10 +57291,10 @@
       return '<circle class="hl-node hl-node-spine" cx="' + n.x + '" cy="' + n.y + '" r="3" fill="' + DIM + '"></circle><text class="hl-label hl-label-spine" x="' + n.x + '" y="' + (n.y - 10) + '" text-anchor="middle">' + escapeText2(n.label) + "</text>";
     }
     if (n.kind === "service") {
-      var s = n.service;
-      var ok = s.status === null ? null : s.status === 1;
-      var col = ok === false ? ALERT3 : DIM;
-      return '<circle class="hl-node hl-node-service" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + col + '" data-node="' + i + '"></circle>';
+      var sv = n.service;
+      var down = sv.status === 0 || sv.status === null && !sv.hostSeen;
+      var col = down ? ALERT3 : DIM;
+      return '<circle class="hl-node hl-node-service' + (down ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + col + '" data-node="' + i + '"><title>' + escapeText2(sv.name + "  " + sv.url) + "</title></circle>";
     }
     var bad = false, colour = CYAN3;
     var label = "", sub = "";
@@ -57173,12 +57316,15 @@
         sub = rate(hst.rx + hst.tx);
       }
     }
-    var maxChars = Math.floor(w * 0.13 / charW);
+    var url0 = n.host ? n.host.url : null;
+    var maxChars = Math.floor(w * 0.13 / charW) - (url0 ? 2 : 0);
     if (label.length > maxChars && maxChars > 4) {
       label = label.slice(0, maxChars - 1) + "\u2026";
     }
-    var shape = n.kind === "cluster" ? '<rect class="hl-node hl-node-cluster' + (bad ? " bad" : "") + '" x="' + (n.x - n.r) + '" y="' + (n.y - n.r) + '" width="' + n.r * 2 + '" height="' + n.r * 2 + '" fill="' + colour + '" data-node="' + i + '"></rect>' : '<circle class="hl-node hl-node-' + n.kind + (bad ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + colour + '" data-node="' + i + '"></circle>';
-    return shape + '<text class="hl-label hl-label-' + n.kind + (bad ? " bad" : "") + '" x="' + n.x + '" y="' + (n.y - n.r - fontPx * 0.8) + '" text-anchor="middle" data-node="' + i + '"><tspan class="hl-label-name" x="' + n.x + '">' + escapeText2(label) + "</tspan>" + (sub ? '<tspan class="hl-label-sub" x="' + n.x + '" dy="' + (-fontPx * 1.05).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
+    var url = n.host ? n.host.url : null;
+    var tip = n.kind === "cluster" ? "Click to open the singles" : n.host ? n.host.name + (url ? "  " + url : "") : "";
+    var shape = n.kind === "cluster" ? '<rect class="hl-node hl-node-cluster' + (bad ? " bad" : "") + '" x="' + (n.x - n.r) + '" y="' + (n.y - n.r) + '" width="' + n.r * 2 + '" height="' + n.r * 2 + '" fill="' + colour + '" data-node="' + i + '"><title>' + escapeText2(tip) + "</title></rect>" : '<circle class="hl-node hl-node-' + n.kind + (bad ? " bad" : "") + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + colour + '" data-node="' + i + '"><title>' + escapeText2(tip) + "</title></circle>";
+    return shape + '<text class="hl-label hl-label-' + n.kind + (bad ? " bad" : "") + '" x="' + n.x + '" y="' + (n.y - n.r - fontPx * 0.8) + '" text-anchor="middle" data-node="' + i + '"><title>' + escapeText2(tip) + '</title><tspan class="hl-label-name" x="' + n.x + '">' + escapeText2(label) + (url ? " " + LINK_ICON : "") + "</tspan>" + (sub ? '<tspan class="hl-label-sub" x="' + n.x + '" dy="' + (-fontPx * 1.05).toFixed(1) + '">' + escapeText2(sub) + "</tspan>" : "") + "</text>";
   }
   function samplePath2(d, n) {
     var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -57288,17 +57434,21 @@
       "Hosts seen, " + s.nodesUp + " of " + s.nodesTotal + " Proxmox",
       s.hostsUp < s.hostsTotal
     );
-    stat4(
-      "hl-stat-guests",
-      s.guestsKnown ? s.guestsRunning + " / " + s.guestsTotal : "--",
-      s.guestsKnown ? "Guests running" : "Guests, awaiting pve-exporter",
-      false
-    );
+    var root = $id6("homelab-screen");
+    root.classList.toggle("has-guests", s.guestsKnown);
+    if (s.guestsKnown) {
+      stat4(
+        "hl-stat-guests",
+        s.guestsRunning + " / " + s.guestsTotal,
+        "Guests running",
+        false
+      );
+    }
     stat4(
       "hl-stat-services",
-      s.servicesKnown ? s.servicesUp + " / " + s.servicesTotal : "-- / " + s.servicesTotal,
-      s.servicesKnown ? "Services up" : "Services, awaiting Uptime Kuma",
-      false
+      s.servicesReachable + " / " + s.servicesTotal,
+      s.servicesKnown ? "Services up" : "Services on hosts that are up",
+      s.servicesReachable < s.servicesTotal
     );
     stat4(
       "hl-stat-alerts",
@@ -57316,13 +57466,9 @@
     var groups = feeds6.services();
     var kumaLive = feeds6.sources.kuma.live;
     if (head) {
-      head.textContent = kumaLive ? "Live" : "Host link only";
-      head.className = kumaLive ? "" : "warn";
+      head.textContent = kumaLive ? "Live checks" : "Host link";
     }
     var html = "";
-    if (!kumaLive) {
-      html += `<div class="hl-note"><b>AWAITING Uptime Kuma</b>Per service checks and response times need Uptime Kuma scraped by Prometheus. What is shown below is whether each service's HOST is seen by the UniFi controller, which is not the same thing.</div>`;
-    }
     groups.forEach(function(g) {
       var items = g.items.slice().sort(function(a, b) {
         var ad = a.status === 0 ? 0 : a.hostSeen ? 2 : 1;
@@ -57330,10 +57476,10 @@
         return ad - bd || a.name.localeCompare(b.name);
       });
       html += '<div class="hl-sgroup">' + escapeText2(g.group) + "</div>";
-      items.forEach(function(s) {
-        var down = s.status === 0 || !kumaLive && !s.hostSeen;
-        var stateText = s.status === 1 ? "UP" : s.status === 0 ? "DOWN" : s.hostSeen ? "host up" : "HOST DOWN";
-        html += '<div class="hl-srow' + (down ? " bad" : "") + '" data-url="' + escapeText2(s.url) + '"><span class="hl-sname">' + escapeText2(s.name) + '</span><span class="hl-sstate">' + stateText + '</span><span class="hl-sms">' + (s.ms !== null && s.ms !== void 0 ? Math.round(s.ms) + " ms" : "") + "</span></div>";
+      items.forEach(function(sv) {
+        var down = sv.status === 0 || sv.status === null && !sv.hostSeen;
+        var stateText = sv.status === 1 ? "UP" : sv.status === 0 ? "DOWN" : sv.hostSeen ? "UP" : "NOT SEEN";
+        html += '<div class="hl-srow' + (down ? " bad" : "") + '" data-url="' + escapeText2(sv.url) + '" title="' + escapeText2(sv.name + "  " + sv.url) + '"><span class="hl-sname">' + escapeText2(sv.name) + '</span><span class="hl-sstate">' + stateText + "</span>" + (sv.ms !== null && sv.ms !== void 0 ? '<span class="hl-sms">' + Math.round(sv.ms) + " ms</span>" : '<span class="hl-sms"></span>') + linkIcon() + "</div>";
       });
     });
     box.innerHTML = html;
@@ -57344,8 +57490,11 @@
       return;
     }
     var ha2 = feeds6.homeAssistant();
+    var panel = $id6("hl-ha");
+    if (panel) {
+      panel.style.display = ha2.live ? "" : "none";
+    }
     if (!ha2.live) {
-      box.innerHTML = awaiting("Home Assistant WebSocket");
       return;
     }
     var row = function(label, value, note, bad) {
@@ -57366,8 +57515,15 @@
       }).join(", ") : "none",
       ha2.updates.length > 0
     );
-    html += ha2.cpu !== null ? row("CPU", Math.round(ha2.cpu) + "%", "", ha2.cpu > 85) : row("CPU and RAM", "AWAITING", "add the System Monitor integration", false);
-    html += ha2.dbSize !== null ? row("Database", ha2.dbSize.toFixed(1) + " MB", "", false) : row("Database size", "AWAITING", "enable the recorder size sensor", false);
+    if (ha2.cpu !== null) {
+      html += row("CPU", Math.round(ha2.cpu) + "%", "", ha2.cpu > 85);
+    }
+    if (ha2.memory !== null) {
+      html += row("Memory", Math.round(ha2.memory) + "%", "", ha2.memory > 90);
+    }
+    if (ha2.dbSize !== null) {
+      html += row("Database", ha2.dbSize.toFixed(1) + " MB", "", false);
+    }
     html += row(
       "Zigbee coordinator",
       ha2.zigbee.eth && ha2.zigbee.net ? "ONLINE" : "LINK DOWN",
@@ -57393,19 +57549,30 @@
       age !== null ? Math.round(age) + " h ago" : "",
       ha2.backups.stale || age !== null && age > BACKUP_STALE_HOURS
     );
+    html += '<div class="hl-row hl-open" data-url="http://10.69.2.151:8123" title="Home Assistant  http://10.69.2.151:8123"><span>Open</span><b>10.69.2.151:8123 ' + LINK_ICON + "</b></div>";
     box.innerHTML = html;
   }
   function renderStorage() {
+    var panel = $id6("hl-storage");
     var box = $id6("hl-storage-body");
-    if (!box || !feeds6) {
+    if (!panel || !box || !feeds6) {
       return;
     }
     var st = feeds6.storage();
+    var root = $id6("homelab-screen");
+    root.classList.toggle("has-storage", !!st.live);
+    panel.style.display = st.live ? "" : "none";
     if (!st.live) {
-      box.innerHTML = awaiting("TrueNAS and PBS exporters") + '<div class="hl-note">Both answer on the network but send no CORS headers, so the browser cannot read them whatever credentials it has. They need an exporter in front of Prometheus.</div>';
       return;
     }
-    box.innerHTML = "";
+    var html = "";
+    st.pools.forEach(function(pool) {
+      html += '<div class="hl-row"><span>' + escapeText2(pool.name) + "</span><b>" + Math.round(pool.usedPercent) + "%</b></div>";
+    });
+    st.datastores.forEach(function(ds) {
+      html += '<div class="hl-row"><span>' + escapeText2(ds.name) + "</span><b>" + Math.round(ds.usedPercent) + "%</b></div>";
+    });
+    box.innerHTML = html;
   }
   function renderPower() {
     var box = $id6("hl-power-body");
@@ -57414,8 +57581,11 @@
     }
     var p = feeds6.power();
     var u = feeds6.ups();
+    var panel = $id6("hl-power");
+    if (panel) {
+      panel.style.display = p.live || u.live ? "" : "none";
+    }
     if (!p.live && !u.live) {
-      box.innerHTML = awaiting("Home Assistant");
       return;
     }
     var html = '<div class="hl-pgrid">';
@@ -57429,9 +57599,7 @@
     });
     html += "</div>";
     html += '<div class="hl-pcol"><div class="hl-sub">UPS</div>';
-    if (!u.live) {
-      html += awaiting("Home Assistant NUT");
-    } else {
+    if (u.live) {
       u.units.forEach(function(x) {
         var low = x.charge !== null && x.charge < 95;
         html += '<div class="hl-ups' + (low ? " bad" : "") + '"><div class="hl-ups-head"><b>' + escapeText2(x.label) + "</b><span>" + (x.charge !== null ? Math.round(x.charge) + "%" : "n/a") + '</span></div><div class="hl-ups-bar"><i style="width:' + (x.charge !== null ? Math.max(2, x.charge) : 0) + '%"></i></div><div class="hl-ups-sub">load ' + (x.load !== null ? Math.round(x.load) + "%" : "n/a") + ", in " + (x.volts !== null ? Math.round(x.volts) + " V" : "n/a") + ", runtime not reported</div></div>";
@@ -57484,6 +57652,17 @@
     $id6("hl-detail-name").textContent = host.name;
     $id6("hl-detail-name").className = host.seen ? "" : "bad";
     $id6("hl-detail-sub").textContent = host.ip;
+    var openBtn = $id6("hl-detail-open");
+    if (openBtn) {
+      if (host.url) {
+        openBtn.style.display = "";
+        openBtn.setAttribute("data-url", host.url);
+        openBtn.setAttribute("title", host.name + "  " + host.url);
+        openBtn.innerHTML = "OPEN " + LINK_ICON;
+      } else {
+        openBtn.style.display = "none";
+      }
+    }
     var rows2 = [
       [
         "Link",
@@ -57501,21 +57680,14 @@
       rows2.push(["CPU", Math.round(host.stats.cpu) + "%", "", host.stats.cpu > 85]);
       rows2.push(["Memory", Math.round(host.stats.memPct) + "%", "", host.stats.memPct > 90]);
       rows2.push(["Disk", Math.round(host.stats.diskPct) + "%", "", host.stats.diskPct > 90]);
-    } else {
-      rows2.push([
-        "CPU, RAM, disk",
-        "AWAITING",
-        host.kind === "pve" ? "prometheus-pve-exporter" : "node_exporter or Beszel",
-        false
-      ]);
     }
     $id6("hl-detail-rows").innerHTML = rows2.map(function(r) {
       return '<div class="hl-drow' + (r[3] ? " bad" : "") + '"><span>' + escapeText2(r[0]) + "</span><b>" + escapeText2(r[1]) + "</b><i>" + escapeText2(r[2] || "") + "</i></div>";
     }).join("");
     var svcBox = $id6("hl-detail-services");
     if (svcBox) {
-      svcBox.innerHTML = host.services.length ? '<div class="hl-sub">Services on this host</div>' + host.services.map(function(s) {
-        return '<span class="hl-chip">' + escapeText2(s.name) + "</span>";
+      svcBox.innerHTML = host.services.length ? '<div class="hl-sub">Services on this host</div>' + host.services.map(function(sv) {
+        return '<span class="hl-chip" data-url="' + escapeText2(sv.url) + '" title="' + escapeText2(sv.name + "  " + sv.url) + '">' + escapeText2(sv.name) + " " + LINK_ICON + "</span>";
       }).join("") : '<div class="hl-sub">No Homepage services on this host</div>';
     }
     sizeCanvas3(detailCanvas, dctx);
@@ -57631,9 +57803,9 @@
         closeDetail();
         return;
       }
-      var srow = e.target.closest("[data-url]");
-      if (srow) {
-        window.open(srow.getAttribute("data-url"), "_blank", "noopener");
+      var linked = e.target.closest("[data-url]");
+      if (linked) {
+        openUrl(linked.getAttribute("data-url"));
         return;
       }
       var hit = e.target.closest("[data-node]");
@@ -57650,7 +57822,7 @@
         lastRender6 = 0;
         buildMap();
       } else if (n.kind === "service") {
-        window.open(n.service.url, "_blank", "noopener");
+        openUrl(n.service.url);
       } else if (n.host) {
         openHost(n.host.ip);
       }
@@ -57669,7 +57841,7 @@
       }
     });
   }
-  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS3, HomelabView, feeds6, active6, built5, dirty6, lastRender6, lastFrame2, resizeTimer6, observer6, svg2, pulseCanvas, pctx2, detailCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, DAYS6, MONTHS6, lastClock3;
+  var CYAN3, ALERT3, ACCENT2, DIM, REFRESH_MS3, HomelabView, feeds6, active6, built5, dirty6, lastRender6, lastFrame2, resizeTimer6, observer6, svg2, pulseCanvas, pctx2, detailCanvas, dctx, expanded, selected4, selectedHistory, layout2, pulses, LINK_ICON, DAYS6, MONTHS6, lastClock3;
   var init_HomelabView = __esm({
     "src/HomelabView.js"() {
       init_HomelabFeeds();
@@ -57782,6 +57954,7 @@
           HomelabView.resize();
         }, 150);
       };
+      LINK_ICON = "\u2197";
       DAYS6 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       MONTHS6 = [
         "January",
